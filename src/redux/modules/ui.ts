@@ -11,7 +11,7 @@ type UISliceState = {
 };
 
 const initialState: UISliceState = {
-    theme: localStore.get(LOCAL_STORAGE_KEYS.UI_THEME) || Theme.NEUTRAL,
+    theme: localStore.get(LOCAL_STORAGE_KEYS.UI_THEME) || Theme.DARK,
 };
 
 export const uiSlice = createSlice({

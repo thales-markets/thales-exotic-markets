@@ -26,7 +26,6 @@ const Home: React.FC = () => {
                     <p>{network.networkName}</p>
                 </div>
             )}
-            <button onClick={() => dispatch(setTheme(Theme.NEUTRAL))}>NEUTRAL</button>
             <button onClick={() => dispatch(setTheme(Theme.LIGHT))}>LIGHT</button>
             <button onClick={() => dispatch(setTheme(Theme.DARK))}>DARK</button>
             <TestDiv></TestDiv>

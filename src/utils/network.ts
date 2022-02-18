@@ -29,8 +29,7 @@ export async function getDefaultNetworkId(): Promise<NetworkId> {
         if (hasEthereumInjected()) {
             const provider = (await detectEthereumProvider()) as EthereumProvider;
             if (provider && provider.chainId) {
-                const id = Number(provider.chainId) as NetworkId;
-                return isNetworkSupported(id) ? id : DEFAULT_NETWORK_ID;
+                return Number(provider.chainId) as NetworkId;
             }
         }
         return DEFAULT_NETWORK_ID;

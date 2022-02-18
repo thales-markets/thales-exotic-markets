@@ -22,6 +22,7 @@ const UnsupportedNetwork: React.FC = () => {
                     method: 'wallet_switchEthereumChain',
                     params: [{ chainId: optimismNetworkParms.chainId }],
                 });
+                location.reload();
             } catch (switchError: any) {
                 if (switchError.code === 4902) {
                     try {
@@ -33,6 +34,7 @@ const UnsupportedNetwork: React.FC = () => {
                             method: 'wallet_switchEthereumChain',
                             params: [{ chainId: optimismNetworkParms.chainId }],
                         });
+                        location.reload();
                     } catch (addError) {
                         console.log(addError);
                     }
