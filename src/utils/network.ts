@@ -5,7 +5,7 @@ import { GWEI_UNIT } from 'constants/network';
 import { BigNumber } from 'ethers';
 import { serializeTransaction, UnsignedTransaction } from 'ethers/lib/utils';
 import { EthereumProvider, NetworkId } from 'types/network';
-import thalesConnector from 'utils/thalesConnector';
+import networkConnector from 'utils/networkConnector';
 
 export const NetworkIdByName: Record<string, NetworkId> = {
     OptimsimMainnet: 10,
@@ -66,10 +66,10 @@ export const isNetworkSupported = (networkId: number | string): networkId is Net
 export const formatGwei = (wei: number) => wei / GWEI_UNIT;
 
 export const getL1FeeInWei = async (txRequest: any) => {
-    const OVM_GasPriceOracle = getContractFactory('OVM_GasPriceOracle', thalesConnector.signer).attach(
+    const OVM_GasPriceOracle = getContractFactory('OVM_GasPriceOracle', networkConnector.signer).attach(
         predeploys.OVM_GasPriceOracle
     );
-    const unsignedTx = (await thalesConnector.signer?.populateTransaction(txRequest)) as UnsignedTransaction;
+    const unsignedTx = (await networkConnector.signer?.populateTransaction(txRequest)) as UnsignedTransaction;
     if (unsignedTx) {
         const serializedTx = serializeTransaction({
             nonce: unsignedTx.nonce ? parseInt(unsignedTx.nonce.toString(10), 10) : 0,

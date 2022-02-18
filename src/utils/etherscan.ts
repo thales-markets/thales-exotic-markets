@@ -8,7 +8,7 @@ export const EtherscanNetworkNameById: Record<NetworkId, string> = {
 const getEtherscanBaseURL = (networkId: NetworkId) => {
     const network = EtherscanNetworkNameById[networkId];
 
-    return `https://${network.toLowerCase()}.etherscan.io`;
+    return `https://${network?.toLowerCase()}.etherscan.io`;
 };
 
 export const getEtherscanTxLink = (networkId: NetworkId, txId: string) => {

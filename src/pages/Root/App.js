@@ -10,16 +10,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Route, Router, Switch } from 'react-router-dom';
 import { getIsAppReady, setAppReady } from 'redux/modules/app';
 import { getNetworkId, updateNetworkSettings, updateWallet } from 'redux/modules/wallet';
-import { setTheme } from 'redux/modules/ui';
 import { getDefaultNetworkId, isNetworkSupported } from 'utils/network';
 import onboardConnector from 'utils/onboardConnector';
 import queryConnector from 'utils/queryConnector';
 import { history } from 'utils/routes';
-import thalesConnector from 'utils/thalesConnector';
-import localStore from 'utils/localStore';
+import networkConnector from 'utils/networkConnector';
 import ROUTES from 'constants/routes';
+import Theme from 'layouts/Theme';
 
-const Home = lazy(() => import('../Home'));
+const Home = lazy(() => import('pages/Home'));
 
 const App = () => {
     const dispatch = useDispatch();
@@ -34,14 +33,14 @@ const App = () => {
             const networkId = await getDefaultNetworkId();
             try {
                 dispatch(updateNetworkSettings({ networkId }));
-                if (!thalesConnector.initialized) {
+                if (!networkConnector.initialized) {
                     const provider = loadProvider({
                         networkId,
                         infuraId: process.env.REACT_APP_INFURA_PROJECT_ID,
                         provider: window.ethereum,
                     });
 
-                    thalesConnector.setNetworkSettings({ networkId, provider });
+                    networkConnector.setNetworkSettings({ networkId, provider });
                 }
                 dispatch(setAppReady());
             } catch (e) {
@@ -54,32 +53,29 @@ const App = () => {
     }, []);
 
     useEffect(() => {
-        // Init value of theme selected from the cookie
-        if (isAppReady) {
-            dispatch(setTheme(Number(localStore.get(LOCAL_STORAGE_KEYS.UI_THEME)) == 0 ? 0 : 1));
-        }
-
-        if (isAppReady && networkId) {
+        if (isAppReady && networkId && isNetworkSupported(networkId)) {
             const onboard = initOnboard(networkId, {
                 address: (walletAddress) => {
-                    dispatch(updateWallet({ walletAddress }));
+                    if (walletAddress) {
+                        dispatch(updateWallet({ walletAddress }));
+                    }
                 },
                 network: (networkId) => {
                     if (networkId) {
-                        if (isNetworkSupported(networkId)) {
+                        if (networkId && isNetworkSupported(networkId)) {
                             if (onboardConnector.onboard.getState().wallet.provider) {
                                 const provider = loadProvider({
                                     provider: onboardConnector.onboard.getState().wallet.provider,
                                 });
                                 const signer = provider.getSigner();
 
-                                thalesConnector.setNetworkSettings({
+                                networkConnector.setNetworkSettings({
                                     networkId,
                                     provider,
                                     signer,
                                 });
                             } else {
-                                thalesConnector.setNetworkSettings({ networkId });
+                                networkConnector.setNetworkSettings({ networkId });
                             }
 
                             onboardConnector.onboard.config({ networkId });
@@ -95,7 +91,7 @@ const App = () => {
                         const signer = provider.getSigner();
                         const network = await provider.getNetwork();
                         const networkId = network.chainId;
-                        thalesConnector.setNetworkSettings({
+                        networkConnector.setNetworkSettings({
                             networkId,
                             provider,
                             signer,
@@ -103,6 +99,7 @@ const App = () => {
                         setSelectedWallet(wallet.name);
                         dispatch(updateNetworkSettings({ networkId }));
                     } else {
+                        dispatch(updateWallet({ walletAddress: null }));
                         setSelectedWallet(null);
                     }
                 },
@@ -119,18 +116,20 @@ const App = () => {
     }, [isAppReady, onboardConnector.onboard, selectedWallet]);
 
     return (
-        <QueryClientProvider client={queryConnector.queryClient}>
-            <Suspense fallback={<div>Loading...</div>}>
-                <Router history={history}>
-                    <Switch>
-                        <Route exact path={ROUTES.Home}>
-                            <Home />
-                        </Route>
-                    </Switch>
-                </Router>
-                <ReactQueryDevtools initialIsOpen={false} />
-            </Suspense>
-        </QueryClientProvider>
+        <Theme>
+            <QueryClientProvider client={queryConnector.queryClient}>
+                <Suspense fallback={<div>Loading...</div>}>
+                    <Router history={history}>
+                        <Switch>
+                            <Route exact path={ROUTES.Home}>
+                                <Home />
+                            </Route>
+                        </Switch>
+                    </Router>
+                    <ReactQueryDevtools initialIsOpen={false} />
+                </Suspense>
+            </QueryClientProvider>
+        </Theme>
     );
 };
 

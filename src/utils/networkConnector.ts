@@ -1,7 +1,7 @@
 import { ethers, Signer } from 'ethers';
 import { NetworkSettings } from 'types/network';
 
-type ThalesConnector = {
+type NetworkConnector = {
     initialized: boolean;
     provider: ethers.providers.Provider | undefined;
     signer: Signer | undefined;
@@ -9,7 +9,7 @@ type ThalesConnector = {
 };
 
 // @ts-ignore
-const thalesConnector: ThalesConnector = {
+const networkConnector: NetworkConnector = {
     initialized: false,
 
     setNetworkSettings: function (networkSettings: NetworkSettings) {
@@ -20,15 +20,15 @@ const thalesConnector: ThalesConnector = {
 };
 
 // const initializeContract = (contract: any, networkSettings: NetworkSettings) =>
-//     new ethers.Contract(contract.addresses[networkSettings.networkId || 1], contract.abi, thalesConnector.provider);
+//     new ethers.Contract(contract.addresses[networkSettings.networkId || 1], contract.abi, networkConnector.provider);
 
 // const conditionalInitializeContract = (contract: any, networkSettings: NetworkSettings) =>
 //     contract.addresses[networkSettings.networkId || 1] !== 'TBD'
 //         ? new ethers.Contract(
 //               contract.addresses[networkSettings.networkId || 1],
 //               contract.abi,
-//               thalesConnector.provider
+//               networkConnector.provider
 //           )
 //         : undefined;
 
-export default thalesConnector;
+export default networkConnector;

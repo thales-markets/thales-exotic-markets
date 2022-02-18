@@ -1,21 +1,17 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { LOCAL_STORAGE_KEYS } from 'constants/storage';
+import { Theme } from 'constants/ui';
 import localStore from 'utils/localStore';
 import { RootState } from '../rootReducer';
 
 const sliceName = 'ui';
 
-export enum Theme {
-    Light,
-    Dark,
-}
-
 type UISliceState = {
-    theme: number;
+    theme: Theme;
 };
 
 const initialState: UISliceState = {
-    theme: 1,
+    theme: localStore.get(LOCAL_STORAGE_KEYS.UI_THEME) || Theme.NEUTRAL,
 };
 
 export const uiSlice = createSlice({
@@ -33,4 +29,5 @@ export const { setTheme } = uiSlice.actions;
 
 export const getUIState = (state: RootState) => state[sliceName];
 export const getTheme = (state: RootState) => getUIState(state).theme;
+
 export default uiSlice.reducer;

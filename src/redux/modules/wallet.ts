@@ -45,7 +45,7 @@ export const walletDetailsSlice = createSlice({
             const { networkId } = action.payload;
 
             state.networkId = networkId;
-            state.networkName = NetworkNameById[networkId].toLowerCase();
+            state.networkName = NetworkNameById[networkId]?.toLowerCase();
         },
     },
 });
