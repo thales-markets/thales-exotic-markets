@@ -1,64 +1,113 @@
 import React from 'react';
 import styled from 'styled-components';
-import angryThales from 'assets/images/angry_thales.gif';
 import { useTranslation } from 'react-i18next';
+import { FlexDivCentered, FlexDivColumnCentered } from 'styles/common';
+import { L1_TO_L2_NETWORK_MAPPER, OPTIMISM_NETWORKS } from 'constants/network';
+import { NetworkIdByName } from 'utils/network';
+import { useSelector } from 'react-redux';
+import { getNetworkId } from 'redux/modules/wallet';
+import { RootState } from 'redux/rootReducer';
 
 const UnsupportedNetwork: React.FC = () => {
     const { t } = useTranslation();
+    const networkId = useSelector((state: RootState) => getNetworkId(state));
+
+    const switchOrAddOptimismNetwork = async () => {
+        const switchTo = L1_TO_L2_NETWORK_MAPPER[networkId] ?? NetworkIdByName.OptimsimMainnet;
+        const optimismNetworkParms = OPTIMISM_NETWORKS[switchTo];
+
+        if (typeof window.ethereum !== 'undefined') {
+            try {
+                await (window.ethereum as any).request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: optimismNetworkParms.chainId }],
+                });
+            } catch (switchError: any) {
+                if (switchError.code === 4902) {
+                    try {
+                        await (window.ethereum as any).request({
+                            method: 'wallet_addEthereumChain',
+                            params: [optimismNetworkParms],
+                        });
+                        await (window.ethereum as any).request({
+                            method: 'wallet_switchEthereumChain',
+                            params: [{ chainId: optimismNetworkParms.chainId }],
+                        });
+                    } catch (addError) {
+                        console.log(addError);
+                    }
+                } else {
+                    console.log(switchError);
+                }
+            }
+        }
+    };
 
     return (
-        <Wrapper>
-            <WrongNetworkWrapper>
-                <img style={{ width: 200, height: 200, margin: 'auto' }} src={angryThales}></img>
-                <div className="pale-grey text-l ls25">{t(`common.unsupported-network.title`)}</div>
-
-                <div>{t(`common.unsupported-network.description`)}</div>
-                <div>
-                    <button
-                        style={{ alignSelf: 'flex-end', margin: '80px 0' }}
-                        className="primary"
-                        onClick={switchNetwork.bind(this, '0xA')}
-                    >
+        <Container>
+            <Wrapper>
+                <Title>{t(`common.unsupported-network.title`)}</Title>
+                <Description>{t(`common.unsupported-network.description`)}</Description>
+                <ButtonContainer>
+                    <Button onClick={switchOrAddOptimismNetwork}>
                         {t(`common.unsupported-network.button.optimism`)}
-                    </button>
-                </div>
-            </WrongNetworkWrapper>
-        </Wrapper>
+                    </Button>
+                </ButtonContainer>
+            </Wrapper>
+        </Container>
     );
 };
 
-const switchNetwork = async (networkId: any) => {
-    if (typeof window.ethereum !== 'undefined') {
-        try {
-            await (window.ethereum as any).request({
-                method: 'wallet_switchEthereumChain',
-                params: [{ chainId: networkId }],
-            });
-            location.reload();
-        } catch (switchError) {
-            console.log(switchError);
-        }
-    }
-};
-
-const Wrapper = styled.div`
+const Container = styled(FlexDivCentered)`
     position: fixed;
     height: 100%;
     width: 100%;
-    background: #04045a;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    background: linear-gradient(180deg, #5e2167 1.04%, #7760a8 100%);
 `;
 
-const WrongNetworkWrapper = styled.div`
-    background: #04045a;
-    border-radius: 23px;
-    display: flex;
-    flex-direction: column;
+const Wrapper = styled(FlexDivColumnCentered)`
     max-width: 600px;
-    padding: 40px;
+    padding: 20px;
     text-align: center;
+`;
+
+const Title = styled.p`
+    color: #f6f6fe;
+    letter-spacing: 0.25px;
+    font-size: 32px;
+    line-height: 48px;
+`;
+
+const Description = styled.p`
+    color: #f6f6fe;
+    letter-spacing: 0.25px;
+    font-size: 16px;
+    line-height: 32px;
+    margin-top: 45px;
+`;
+
+const ButtonContainer = styled.div`
+    margin: 80px 0px;
+`;
+
+const Button = styled.button`
+    background: #28d4b4;
+    padding: 4px 35px;
+    border-radius: 30px;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 20px;
+    line-height: 27px;
+    color: #6c438a;
+    text-align: center;
+    border: none;
+    outline: none;
+    text-transform: none !important;
+    cursor: pointer;
+    white-space: break-spaces;
+    &:hover {
+        opacity: 0.8;
+    }
 `;
 
 export default UnsupportedNetwork;

@@ -4,7 +4,6 @@ import { Store } from 'redux';
 import dotenv from 'dotenv';
 dotenv.config();
 import App from './App';
-
 interface RootProps {
     store: Store;
 }
