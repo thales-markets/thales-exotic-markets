@@ -17,6 +17,7 @@ import { history } from 'utils/routes';
 import networkConnector from 'utils/networkConnector';
 import ROUTES from 'constants/routes';
 import Theme from 'layouts/Theme';
+import DappLayout from 'layouts/DappLayout';
 
 const Home = lazy(() => import('pages/Home'));
 
@@ -122,7 +123,9 @@ const App = () => {
                     <Router history={history}>
                         <Switch>
                             <Route exact path={ROUTES.Home}>
-                                <Home />
+                                <DappLayout>
+                                    <Home />
+                                </DappLayout>
                             </Route>
                         </Switch>
                     </Router>

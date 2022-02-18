@@ -1,0 +1,11 @@
+{
+    "common": {
+        "unsupported-network": {
+            "title": "Oops! You are on the wrong network!",
+            "description": "You have selected the wrong network in your wallet. To continue, please switch to Optimism Mainnet network.",
+            "button": {
+                "optimism": "Switch to Optimism"
+            }
+        }
+    }
+}
