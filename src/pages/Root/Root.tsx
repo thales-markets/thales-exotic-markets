@@ -1,8 +1,9 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { Store } from 'redux';
-import App from './App';
+import App from 'pages/Root/App';
 import dotenv from 'dotenv';
+
 dotenv.config();
 interface RootProps {
     store: Store;
