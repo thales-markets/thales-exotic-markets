@@ -5,7 +5,7 @@
 
 Thales: Exotic Positional Markets.
 
-The trading UI is available on [TBD](https://thales-exotic-markets.vercel.app/).
+The UI is available on [TBD](https://thales-exotic-markets.vercel.app/).
 
 ## Tech stack
 
