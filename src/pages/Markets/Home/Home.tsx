@@ -1,42 +1,28 @@
-import { Theme } from 'constants/ui';
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { setTheme } from 'redux/modules/ui';
-import { getIsWalletConnected, getNetwork, getWalletAddress } from 'redux/modules/wallet';
-import { RootState } from 'redux/rootReducer';
 import styled from 'styled-components';
-import onboardConnector from 'utils/onboardConnector';
+import { FlexDivColumnCentered } from 'styles/common';
 
 const Home: React.FC = () => {
-    const dispatch = useDispatch();
-    const isWalletConnected = useSelector((state: RootState) => getIsWalletConnected(state));
-    const walletAddress = useSelector((state: RootState) => getWalletAddress(state)) || '';
-    const network = useSelector((state: RootState) => getNetwork(state));
-
     return (
-        <>
-            Thales: Exotic Positional Markets Homepage
-            {!isWalletConnected && <button onClick={() => onboardConnector.connectWallet()}>Connect wallet</button>}
-            {isWalletConnected && (
-                <button onClick={() => onboardConnector.disconnectWallet()}>Disconnect wallet</button>
-            )}
-            {isWalletConnected && (
-                <div>
-                    <p>{walletAddress}</p>
-                    <p>{network.networkName}</p>
-                </div>
-            )}
-            <button onClick={() => dispatch(setTheme(Theme.LIGHT))}>LIGHT</button>
-            <button onClick={() => dispatch(setTheme(Theme.DARK))}>DARK</button>
-            <TestDiv></TestDiv>
-        </>
+        <ContentContainer>
+            <Content>Thales: Exotic Positional Markets</Content>
+            <Content>Coming soon...</Content>
+        </ContentContainer>
     );
 };
 
-const TestDiv = styled.div`
-    width: 100px;
-    height: 30px;
-    background: ${(props) => props.theme.background};
+const ContentContainer = styled(FlexDivColumnCentered)`
+    jusify-content: space-between;
+    align-items: center;
+    margin-bottom: 80px;
+`;
+
+const Content = styled.div`
+    font-style: normal;
+    font-weight: bold;
+    font-size: 44px;
+    line-height: 130%;
+    color: ${(props) => props.theme.textColor};
 `;
 
 export default Home;

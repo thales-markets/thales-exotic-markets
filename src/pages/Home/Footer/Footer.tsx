@@ -13,7 +13,10 @@ const Footer: React.FC = () => {
     );
 };
 
-const Container = styled(FlexDivColumnCentered)``;
+const Container = styled(FlexDivColumnCentered)`
+    margin-top: auto;
+    max-height: 40px;
+`;
 
 const RightsReserved = styled(FlexDivColumnCentered)`
     font-style: normal;
