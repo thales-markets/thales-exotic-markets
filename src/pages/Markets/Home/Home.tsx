@@ -14,7 +14,7 @@ const Home: React.FC = () => {
     const network = useSelector((state: RootState) => getNetwork(state));
 
     return (
-        <div>
+        <>
             Thales: Exotic Positional Markets Homepage
             {!isWalletConnected && <button onClick={() => onboardConnector.connectWallet()}>Connect wallet</button>}
             {isWalletConnected && (
@@ -29,7 +29,7 @@ const Home: React.FC = () => {
             <button onClick={() => dispatch(setTheme(Theme.LIGHT))}>LIGHT</button>
             <button onClick={() => dispatch(setTheme(Theme.DARK))}>DARK</button>
             <TestDiv></TestDiv>
-        </div>
+        </>
     );
 };
 

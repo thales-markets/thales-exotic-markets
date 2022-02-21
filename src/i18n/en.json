@@ -10,6 +10,18 @@
             "button": {
                 "optimism": "Switch to Optimism"
             }
+        },
+        "dapp": "dapp"
+    },
+    "header": {
+        "links": {
+            "community": "Community",
+            "blog": "Blog"
         }
+    },
+    "footer": {
+        "privacy-policy": "Privacy Policy",
+        "terms-of-use": "Terms of Use",
+        "all-rights-reserved": "© {{year}} THALES DAO All rights reserved."
     }
 }

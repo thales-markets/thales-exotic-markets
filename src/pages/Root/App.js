@@ -18,6 +18,7 @@ import networkConnector from 'utils/networkConnector';
 import ROUTES from 'constants/routes';
 import Theme from 'layouts/Theme';
 import DappLayout from 'layouts/DappLayout';
+import HomeLayout from 'layouts/HomeLayout';
 
 const Home = lazy(() => import('pages/Home'));
 const Markets = lazy(() => import('pages/Markets/Home'));
@@ -131,7 +132,9 @@ const App = () => {
                         </Switch>
                         <Switch>
                             <Route exact path={ROUTES.Home}>
-                                <Home />
+                                <HomeLayout>
+                                    <Home />
+                                </HomeLayout>
                             </Route>
                         </Switch>
                     </Router>

@@ -26,6 +26,7 @@ export const FlexDivRowCentered = styled(FlexDivRow)`
 `;
 
 export const FlexDivColumn = styled(FlexDiv)`
+    flex: 1;
     flex-direction: column;
 `;
 

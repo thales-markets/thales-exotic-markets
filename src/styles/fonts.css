@@ -4,6 +4,16 @@
 }
 
 @font-face {
+    font-family: 'Icons';
+    src: local('Icons'), url(../assets/fonts/ThalesIcons/icons.ttf) format('truetype');
+}
+
+@font-face {
     font-family: 'SidebarIcons';
     src: local('SidebarIcons'), url(../assets/fonts/ThalesIcons/sidebar.ttf) format('truetype');
+}
+
+@font-face {
+    font-family: 'HomepageIcons';
+    src: local('Homepage Icons'), url(../assets/fonts/ThalesIcons/homepage.ttf) format('truetype');
 }
