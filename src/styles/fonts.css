@@ -2,3 +2,8 @@
     font-family: 'Nunito';
     src: local('Nunito'), url(../assets/fonts/Nunito/Nunito.ttf) format('truetype');
 }
+
+@font-face {
+    font-family: 'SidebarIcons';
+    src: local('SidebarIcons'), url(../assets/fonts/ThalesIcons/sidebar.ttf) format('truetype');
+}

@@ -7,6 +7,7 @@ import { getNetworkId } from 'redux/modules/wallet';
 import UnsupportedNetwork from 'components/UnsupportedNetwork';
 import { isNetworkSupported } from 'utils/network';
 import { FlexDivColumn } from 'styles/common';
+import DappHeader from './DappHeader';
 
 type DappLayoutProps = {
     children: React.ReactNode;
@@ -23,7 +24,10 @@ const DappLayout: React.FC<DappLayoutProps> = ({ children }) => {
                     <UnsupportedNetwork />
                 ) : (
                     <Background>
-                        <Wrapper>{children}</Wrapper>
+                        <Wrapper>
+                            <DappHeader />
+                            {children}
+                        </Wrapper>
                     </Background>
                 )
             ) : (

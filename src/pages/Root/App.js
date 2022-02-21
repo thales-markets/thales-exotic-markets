@@ -20,6 +20,7 @@ import Theme from 'layouts/Theme';
 import DappLayout from 'layouts/DappLayout';
 
 const Home = lazy(() => import('pages/Home'));
+const Markets = lazy(() => import('pages/Markets/Home'));
 
 const App = () => {
     const dispatch = useDispatch();
@@ -122,10 +123,15 @@ const App = () => {
                 <Suspense fallback={<div>Loading...</div>}>
                     <Router history={history}>
                         <Switch>
-                            <Route exact path={ROUTES.Home}>
+                            <Route exact path={ROUTES.Markets.Home}>
                                 <DappLayout>
-                                    <Home />
+                                    <Markets />
                                 </DappLayout>
+                            </Route>
+                        </Switch>
+                        <Switch>
+                            <Route exact path={ROUTES.Home}>
+                                <Home />
                             </Route>
                         </Switch>
                     </Router>

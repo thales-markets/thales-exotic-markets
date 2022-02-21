@@ -6,9 +6,6 @@ import { getIsWalletConnected, getNetwork, getWalletAddress } from 'redux/module
 import { RootState } from 'redux/rootReducer';
 import styled from 'styled-components';
 import onboardConnector from 'utils/onboardConnector';
-import { buildHref } from 'utils/routes';
-import SPAAnchor from 'components/SPAAnchor';
-import ROUTES from 'constants/routes';
 
 const Home: React.FC = () => {
     const dispatch = useDispatch();
@@ -31,9 +28,6 @@ const Home: React.FC = () => {
             )}
             <button onClick={() => dispatch(setTheme(Theme.LIGHT))}>LIGHT</button>
             <button onClick={() => dispatch(setTheme(Theme.DARK))}>DARK</button>
-            <div>
-                <SPAAnchor href={buildHref(ROUTES.Markets.Home)}>DAPP</SPAAnchor>
-            </div>
             <TestDiv></TestDiv>
         </div>
     );
