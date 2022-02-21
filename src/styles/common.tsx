@@ -2,7 +2,6 @@ import styled from 'styled-components';
 
 export const FlexDiv = styled.div`
     display: flex;
-    outline: none !important;
 `;
 
 export const FlexDivCentered = styled(FlexDiv)`
@@ -27,10 +26,16 @@ export const FlexDivRowCentered = styled(FlexDivRow)`
 `;
 
 export const FlexDivColumn = styled(FlexDiv)`
-    flex: 1;
     flex-direction: column;
 `;
 
 export const FlexDivColumnCentered = styled(FlexDivColumn)`
     justify-content: center;
 `;
+
+export const Colors = {
+    PURPLE: '#6c438a',
+    PURPLE_GRADIENT: 'linear-gradient(180deg, #5e2167 1.04%, #7760a8 100%)',
+    WHITE: '#f6f6fe',
+    GREEN: '#28d4b4',
+};

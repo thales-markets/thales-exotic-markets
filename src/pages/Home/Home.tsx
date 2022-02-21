@@ -36,7 +36,7 @@ const Home: React.FC = () => {
 const TestDiv = styled.div`
     width: 100px;
     height: 30px;
-    background: ${(props) => props.theme.colors.background};
+    background: ${(props) => props.theme.background};
 `;
 
 export default Home;

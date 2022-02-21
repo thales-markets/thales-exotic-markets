@@ -6,12 +6,17 @@ import { RootState } from '../rootReducer';
 
 const sliceName = 'ui';
 
+const getDefaultTheme = (): Theme => {
+    const lsTheme = localStore.get(LOCAL_STORAGE_KEYS.UI_THEME);
+    return (lsTheme !== undefined ? lsTheme : Theme.DARK) as Theme;
+};
+
 type UISliceState = {
     theme: Theme;
 };
 
 const initialState: UISliceState = {
-    theme: localStore.get(LOCAL_STORAGE_KEYS.UI_THEME) || Theme.DARK,
+    theme: getDefaultTheme(),
 };
 
 export const uiSlice = createSlice({

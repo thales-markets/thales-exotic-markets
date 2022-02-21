@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import { getNetworkId } from 'redux/modules/wallet';
 import UnsupportedNetwork from 'components/UnsupportedNetwork';
 import { isNetworkSupported } from 'utils/network';
+import { FlexDivColumn } from 'styles/common';
 
 type DappLayoutProps = {
     children: React.ReactNode;
@@ -21,8 +22,8 @@ const DappLayout: React.FC<DappLayoutProps> = ({ children }) => {
                 networkId && !isNetworkSupported(networkId) ? (
                     <UnsupportedNetwork />
                 ) : (
-                    <Background style={{ minHeight: '100vh' }}>
-                        <NewWrapper>{children}</NewWrapper>
+                    <Background>
+                        <Wrapper>{children}</Wrapper>
                     </Background>
                 )
             ) : (
@@ -32,12 +33,12 @@ const DappLayout: React.FC<DappLayoutProps> = ({ children }) => {
     );
 };
 
-const Background = styled.section``;
+const Background = styled.section`
+    min-height: 100vh;
+    background: ${(props) => props.theme.background};
+`;
 
-const NewWrapper = styled.div`
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
+const Wrapper = styled(FlexDivColumn)`
     align-items: center;
     width: 100%;
     margin-left: auto;
