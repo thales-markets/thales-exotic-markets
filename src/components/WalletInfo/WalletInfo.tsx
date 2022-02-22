@@ -35,7 +35,7 @@ const WalletInfo: React.FC = () => {
 };
 
 const Container = styled(FlexDivRowCentered)<{ isWalletConnected: boolean }>`
-    border: 1px solid ${(props) => props.theme.textColor};
+    border: 1px solid ${(props) => props.theme.borderColor};
     border-radius: 30px;
     height: 28px;
     padding: 0 20px;

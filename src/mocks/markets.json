@@ -2,46 +2,64 @@
     {
         "title": "Who will win the Super Bowl LVI?",
         "options": ["Rams", "Bengals"],
-        "maturityDate": 1645534784000
+        "maturityDate": 1645534784000,
+        "isOpen": true,
+        "tags": ["Sports", "NFL"]
     },
     {
         "title": "Will Lakers win the NBA Championship 2022-23??",
         "options": ["YES", "NO"],
-        "maturityDate": 1647937376000
+        "maturityDate": 1647937376000,
+        "isOpen": true,
+        "tags": ["Sports", "NBA"]
     },
     {
         "title": "How many goals will be scored in Liverpool vs Manchester United?",
         "options": ["0-2", "3-4", "5+"],
-        "maturityDate": 1647937376000
+        "maturityDate": 1647937376000,
+        "isOpen": true,
+        "tags": ["Sports", "Football"]
     },
     {
         "title": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec vel odio quis eros scelerisque laoreet.",
         "options": ["YES", "NO", "MAYBE", "DUNNO", "NEXT QUESTION"],
-        "maturityDate": 1647937376000
+        "maturityDate": 1647937376000,
+        "isOpen": true,
+        "tags": ["Dummy", "Test"]
     },
     {
         "title": "Lorem ipsum dolor sit amet",
         "options": ["UP", "DOWN"],
-        "maturityDate": 1645622153000
+        "maturityDate": 1645622153000,
+        "isOpen": true,
+        "tags": ["Crypto", "DeFi"]
     },
     {
         "title": "Thales at the end of year?",
         "options": ["<1$", "1-2$", "2-10$", ">10$"],
-        "maturityDate": 1645614953000
+        "maturityDate": 1645614953000,
+        "isOpen": false,
+        "tags": ["Crypto", "DeFi"]
     },
     {
         "title": "NBA MVP?",
         "options": ["Nikola Jokic", "Joel Embiid", "Giannis Antetokounmpo", "DeMar DeRozan", "Chris Paul", "Other"],
-        "maturityDate": 1645577993000
+        "maturityDate": 1645577993000,
+        "isOpen": true,
+        "tags": ["Sports", "NBA"]
     },
     {
         "title": "Lorem ipsum dolor sit amet",
         "options": ["Yes", "No"],
-        "maturityDate": 1645576253000
+        "maturityDate": 1645576253000,
+        "isOpen": false,
+        "tags": ["Sports", "NBA", "Crypto", "DeFi", "Football", "Basketball"]
     },
     {
         "title": "Who is the best?",
         "options": ["Thales", "Thales OP"],
-        "maturityDate": 1645533044000
+        "maturityDate": 1645533044000,
+        "isOpen": true,
+        "tags": ["Crypto", "DeFi", "Thales", "ETH", "OP"]
     }
 ]

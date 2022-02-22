@@ -1,8 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-
 import intervalToDuration from 'date-fns/intervalToDuration';
-//import differenceInHours from 'date-fns/differenceInHours';
 import differenceInWeeks from 'date-fns/differenceInWeeks';
 import { formattedDuration, formattedDurationFull } from 'utils/formatters/date';
 import useInterval from 'hooks/useInterval';
@@ -12,20 +10,12 @@ type TimeRemainingProps = {
     end: Date | number;
     onEnded?: () => void;
     fontSize?: number;
-    showBorder?: boolean;
     showFullCounter?: boolean;
 };
 
 const ONE_SECOND_IN_MS = 1000;
-//const ENDING_SOON_IN_HOURS = 48;
 
-export const TimeRemaining: React.FC<TimeRemainingProps> = ({
-    end,
-    onEnded,
-    fontSize,
-    showBorder,
-    showFullCounter,
-}) => {
+export const TimeRemaining: React.FC<TimeRemainingProps> = ({ end, onEnded, fontSize, showFullCounter }) => {
     const now = Date.now();
     const [timeElapsed, setTimeElapsed] = useState(now >= end);
     const [weeksDiff, setWeekDiff] = useState(Math.abs(differenceInWeeks(now, end)));
@@ -82,7 +72,7 @@ export const TimeRemaining: React.FC<TimeRemainingProps> = ({
     }, timeInterval);
 
     return (
-        <Container fontSize={fontSize} duration={duration} showBorder={showBorder}>
+        <Container fontSize={fontSize} duration={duration}>
             {timeElapsed
                 ? t('common.time-remaining.ended')
                 : showRemainingInWeeks
@@ -94,34 +84,25 @@ export const TimeRemaining: React.FC<TimeRemainingProps> = ({
     );
 };
 
-const getColor = (duration: Duration) => {
-    if (duration.years || duration.months || duration.days) {
-        return `#f6f6fe`;
-    }
-    if (duration.hours) {
-        return `#FFCC00`;
-    }
-    if (duration.minutes && duration.minutes > 10) {
-        if (duration.minutes > 10) {
-            return `#FF8800`;
-        }
-    }
-    return '#D82418';
-};
+// const getColor = (duration: Duration) => {
+//     if (duration.years || duration.months || duration.days) {
+//         return `#f6f6fe`;
+//     }
+//     if (duration.hours) {
+//         return `#FFCC00`;
+//     }
+//     if (duration.minutes && duration.minutes > 10) {
+//         if (duration.minutes > 10) {
+//             return `#FF8800`;
+//         }
+//     }
+//     return '#D82418';
+// };
 
 const Container = styled.span<{ fontSize?: number; duration: Duration; showBorder?: boolean }>`
-    font-size: ${(props) => props.fontSize || 12}px;
-    @media (max-width: 512px) {
-        font-size: ${(props) => props.fontSize || 10}px;
-    }
-    color: ${(props) => getColor(props.duration)};
-    border: 1px solid
-        ${(props) => (props.showBorder ? (getColor(props.duration) === '#D82418' ? '#D82418' : 'transparent') : 'none')};
-    padding: ${(props) => (props.showBorder ? '2px 12px 4px 12px' : '0')};
-    border-radius: ${(props) => (props.showBorder ? '5px' : '0')};
+    font-size: ${(props) => props.fontSize || 25}px;
+    color: ${(props) => props.theme.textColor};
     text-align: center;
-    z-index: 3;
-    white-space: pre;
 `;
 
 export default TimeRemaining;
