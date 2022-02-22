@@ -1,3 +1,4 @@
+import Loader from 'components/Loader';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { getIsAppReady } from 'redux/modules/app';
@@ -15,7 +16,7 @@ const HomeLayout: React.FC = ({ children }) => {
                     <Wrapper>{children}</Wrapper>
                 </Background>
             ) : (
-                <div>Loading...</div>
+                <Loader />
             )}
         </>
     );

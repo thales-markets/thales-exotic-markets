@@ -1,5 +1,5 @@
 import { loadProvider } from '@synthetixio/providers';
-// import Loader from 'components/Loader';
+import Loader from 'components/Loader';
 import { initOnboard } from 'config/onboard';
 import { LOCAL_STORAGE_KEYS } from 'constants/storage';
 import useLocalStorage from 'hooks/useLocalStorage';
@@ -121,7 +121,7 @@ const App = () => {
     return (
         <Theme>
             <QueryClientProvider client={queryConnector.queryClient}>
-                <Suspense fallback={<div>Loading...</div>}>
+                <Suspense fallback={<Loader />}>
                     <Router history={history}>
                         <Switch>
                             <Route exact path={ROUTES.Markets.Home}>

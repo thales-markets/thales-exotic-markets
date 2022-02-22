@@ -8,6 +8,7 @@ import UnsupportedNetwork from 'components/UnsupportedNetwork';
 import { isNetworkSupported } from 'utils/network';
 import { FlexDivColumn } from 'styles/common';
 import DappHeader from './DappHeader';
+import Loader from 'components/Loader';
 
 type DappLayoutProps = {
     children: React.ReactNode;
@@ -31,7 +32,7 @@ const DappLayout: React.FC<DappLayoutProps> = ({ children }) => {
                     </Background>
                 )
             ) : (
-                <div>Loading...</div>
+                <Loader />
             )}
         </>
     );
