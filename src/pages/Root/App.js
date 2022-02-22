@@ -22,6 +22,8 @@ import HomeLayout from 'layouts/HomeLayout';
 
 const Home = lazy(() => import('pages/Home'));
 const Markets = lazy(() => import('pages/Markets/Home'));
+const CreateMarket = lazy(() => import('pages/Markets/CreateMarket'));
+const Market = lazy(() => import('pages/Markets/Market'));
 
 const App = () => {
     const dispatch = useDispatch();
@@ -124,13 +126,25 @@ const App = () => {
                 <Suspense fallback={<Loader />}>
                     <Router history={history}>
                         <Switch>
+                            <Route exact path={ROUTES.Markets.CreateMarket}>
+                                <DappLayout>
+                                    <CreateMarket />
+                                </DappLayout>
+                            </Route>
+                            <Route
+                                exact
+                                path={ROUTES.Markets.Market}
+                                render={(routeProps) => (
+                                    <DappLayout>
+                                        <Market {...routeProps} />
+                                    </DappLayout>
+                                )}
+                            />
                             <Route exact path={ROUTES.Markets.Home}>
                                 <DappLayout>
                                     <Markets />
                                 </DappLayout>
                             </Route>
-                        </Switch>
-                        <Switch>
                             <Route exact path={ROUTES.Home}>
                                 <HomeLayout>
                                     <Home />
