@@ -35,7 +35,7 @@ const WalletInfo: React.FC = () => {
 };
 
 const Container = styled(FlexDivRowCentered)<{ isWalletConnected: boolean }>`
-    border: 1px solid ${(props) => props.theme.borderColor};
+    border: 1px solid ${(props) => props.theme.borderColor.primary};
     border-radius: 30px;
     height: 28px;
     padding: 0 20px;
@@ -47,7 +47,7 @@ const Info = styled.span`
     font-weight: normal;
     font-size: 12.5px;
     line-height: 17px;
-    color: ${(props) => props.theme.textColor};
+    color: ${(props) => props.theme.textColor.primary};
 `;
 
 const WalletIcon = styled.i`
@@ -57,7 +57,7 @@ const WalletIcon = styled.i`
     &:before {
         font-family: SidebarIcons !important;
         content: '\\0063';
-        color: ${(props) => props.theme.textColor};
+        color: ${(props) => props.theme.textColor.primary};
     }
 `;
 

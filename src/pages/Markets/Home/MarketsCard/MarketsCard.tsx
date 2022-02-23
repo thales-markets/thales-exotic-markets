@@ -1,7 +1,8 @@
 import TimeRemaining from 'components/TimeRemaining';
+import Tags from 'pages/Markets/components/Tags';
 import React from 'react';
 import styled from 'styled-components';
-import { FlexDivCentered, FlexDivColumnCentered, FlexDivRow, FlexDivStart } from 'styles/common';
+import { FlexDivColumnCentered, FlexDivRow } from 'styles/common';
 import { Market } from 'types/markets';
 
 type MarketsCardProps = {
@@ -22,12 +23,7 @@ const MarketsCard: React.FC<MarketsCardProps> = ({ market }) => {
                 <TimeRemaining end={market.maturityDate} fontSize={25} />
             </TimeRemainingContainer>
             <CardFooter>
-                <Tags>
-                    <TagsLabel>Tags:</TagsLabel>
-                    {market.tags.map((tag: string) => (
-                        <Tag key={tag}>{tag}</Tag>
-                    ))}
-                </Tags>
+                <Tags tags={market.tags} />
                 <Button>Claim</Button>
             </CardFooter>
         </Container>
@@ -36,7 +32,7 @@ const MarketsCard: React.FC<MarketsCardProps> = ({ market }) => {
 
 const Container = styled(FlexDivColumnCentered)<{ isOpen: boolean }>`
     border: ${(props) => (props.isOpen ? 1 : 2)}px solid
-        ${(props) => (props.isOpen ? props.theme.borderColor : props.theme.borderColorHighlight)};
+        ${(props) => (props.isOpen ? props.theme.borderColor.primary : props.theme.borderColor.secondary)};
     box-sizing: border-box;
     border-radius: 25px;
     width: 390px;
@@ -53,7 +49,7 @@ const Title = styled.span`
     font-size: 25px;
     line-height: 100%;
     text-align: center;
-    color: ${(props) => props.theme.textColor};
+    color: ${(props) => props.theme.textColor.primary};
     margin-bottom: 25px;
 `;
 
@@ -67,7 +63,7 @@ const Option = styled.span`
     font-size: 20px;
     line-height: 27px;
     text-align: center;
-    color: ${(props) => props.theme.textColor};
+    color: ${(props) => props.theme.textColor.primary};
 `;
 
 const TimeRemainingContainer = styled(FlexDivColumnCentered)``;
@@ -78,41 +74,12 @@ const TimeRemainingLabel = styled.span`
     font-size: 15px;
     line-height: 100%;
     text-align: center;
-    color: ${(props) => props.theme.textColor};
+    color: ${(props) => props.theme.textColor.primary};
     margin-bottom: 4px;
 `;
 
 const CardFooter = styled(FlexDivRow)`
     margin-top: 25px;
-`;
-
-const Tags = styled(FlexDivStart)`
-    flex-wrap: wrap;
-    align-items: center;
-`;
-
-const TagsLabel = styled.span`
-    font-style: normal;
-    font-weight: bold;
-    font-size: 15px;
-    line-height: 100%;
-    text-align: center;
-    margin-top: 4px;
-    color: ${(props) => props.theme.textColor};
-`;
-
-const Tag = styled(FlexDivCentered)`
-    border: 1px solid ${(props) => props.theme.borderColor};
-    border-radius: 30px;
-    font-style: normal;
-    font-weight: normal;
-    font-size: 15px;
-    line-height: 20px;
-    padding: 4px 8px;
-    margin-left: 6px;
-    height: 28px;
-    margin-top: 4px;
-    color: ${(props) => props.theme.textColor};
 `;
 
 const Button = styled.button`

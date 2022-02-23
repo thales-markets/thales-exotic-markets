@@ -74,14 +74,14 @@ const Wrapper = styled(FlexDivColumnCentered)`
 `;
 
 const Title = styled.p`
-    color: ${(props) => props.theme.textColor};
+    color: ${(props) => props.theme.textColor.primary};
     letter-spacing: 0.25px;
     font-size: 32px;
     line-height: 48px;
 `;
 
 const Description = styled.p`
-    color: ${(props) => props.theme.textColor};
+    color: ${(props) => props.theme.textColor.primary};
     letter-spacing: 0.25px;
     font-size: 16px;
     line-height: 32px;

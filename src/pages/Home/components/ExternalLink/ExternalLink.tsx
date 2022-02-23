@@ -20,7 +20,7 @@ const Link = styled.a`
     line-height: 102.6%;
     letter-spacing: 0.035em;
     text-transform: uppercase;
-    color: ${(props) => props.theme.textColor};
+    color: ${(props) => props.theme.textColor.primary};
     margin-right: 30px;
 `;
 

@@ -58,7 +58,7 @@ const Title = styled.span`
     font-size: 40px;
     line-height: 100%;
     text-align: center;
-    color: ${(props) => props.theme.textColor};
+    color: ${(props) => props.theme.textColor.primary};
     margin-bottom: 25px;
 `;
 
@@ -72,7 +72,7 @@ const Option = styled.span`
     font-size: 40px;
     line-height: 40px;
     text-align: center;
-    color: ${(props) => props.theme.textColor};
+    color: ${(props) => props.theme.textColor.primary};
 `;
 
 export default Market;

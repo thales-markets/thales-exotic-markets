@@ -63,7 +63,7 @@ const ToggleIcon = styled.i<{ currentTheme: Theme }>`
     &:before {
         font-family: HomepageIcons !important;
         content: ${(props) => (props.currentTheme === Theme.LIGHT ? "'\\0042'" : "'\\0041'")};
-        color: ${(props) => props.theme.textColor};
+        color: ${(props) => props.theme.textColor.primary};
     }
 `;
 
@@ -75,9 +75,9 @@ const DappButtonContainer = styled(FlexDivRow)`
     line-height: 102.6%;
     letter-spacing: 0.035em;
     text-transform: uppercase;
-    color: ${(props) => props.theme.textColor};
+    color: ${(props) => props.theme.textColor.primary};
     a {
-        color: ${(props) => props.theme.textColor};
+        color: ${(props) => props.theme.textColor.primary};
     }
 `;
 
@@ -86,7 +86,7 @@ const RightIcon = styled.i`
     &:before {
         font-family: HomepageIcons !important;
         content: '\\004a';
-        color: ${(props) => props.theme.textColor};
+        color: ${(props) => props.theme.textColor.primary};
     }
 `;
 

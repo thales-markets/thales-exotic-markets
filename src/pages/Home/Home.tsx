@@ -28,7 +28,7 @@ const Content = styled.div`
     font-weight: bold;
     font-size: 44px;
     line-height: 130%;
-    color: ${(props) => props.theme.textColor};
+    color: ${(props) => props.theme.textColor.primary};
 `;
 
 export default Home;

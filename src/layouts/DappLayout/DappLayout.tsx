@@ -41,6 +41,7 @@ const DappLayout: React.FC<DappLayoutProps> = ({ children }) => {
 const Background = styled.section`
     min-height: 100vh;
     background: ${(props) => props.theme.background.primary};
+    color: ${(props) => props.theme.textColor.primary};
 `;
 
 const Wrapper = styled(FlexDivColumn)`
@@ -48,11 +49,11 @@ const Wrapper = styled(FlexDivColumn)`
     width: 100%;
     margin-left: auto;
     margin-right: auto;
-    padding: 40px 20px 40px 110px;
+    padding: 40px 0px;
     @media (max-width: 1024px) {
         padding: 40px 20px;
     }
-    max-width: 1440px;
+    max-width: 1220px;
     min-height: 100vh;
 `;
 
