@@ -18,7 +18,7 @@ const Home: React.FC = () => {
             return marketsQuery.data;
         }
         return [];
-    }, [marketsQuery]);
+    }, [marketsQuery.isSuccess, marketsQuery.data]);
 
     return (
         <Container>

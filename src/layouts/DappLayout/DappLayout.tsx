@@ -40,7 +40,7 @@ const DappLayout: React.FC<DappLayoutProps> = ({ children }) => {
 
 const Background = styled.section`
     min-height: 100vh;
-    background: ${(props) => props.theme.background};
+    background: ${(props) => props.theme.background.primary};
 `;
 
 const Wrapper = styled(FlexDivColumn)`

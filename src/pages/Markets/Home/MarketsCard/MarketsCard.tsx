@@ -43,7 +43,7 @@ const Container = styled(FlexDivColumnCentered)<{ isOpen: boolean }>`
     padding: 20px;
     margin: 7.5px;
     &:hover {
-        background: ${(props) => props.theme.backgroundHover};
+        background: ${(props) => props.theme.background.secondary};
     }
 `;
 

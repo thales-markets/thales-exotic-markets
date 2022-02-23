@@ -1,4 +1,5 @@
 export type Market = {
+    address: string;
     title: string;
     maturityDate: number;
     options: string[];

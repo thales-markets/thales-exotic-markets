@@ -25,7 +25,7 @@ const HomeLayout: React.FC = ({ children }) => {
 const Background = styled.section`
     width: 100%;
     min-height: 100vh;
-    background: ${(props) => props.theme.background};
+    background: ${(props) => props.theme.background.primary};
     font-size: 16px;
 `;
 
