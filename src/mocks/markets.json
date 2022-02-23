@@ -4,8 +4,9 @@
         "title": "Who will win the Super Bowl LVI?",
         "options": ["Rams", "Bengals"],
         "maturityDate": 1645534784000,
-        "isOpen": true,
-        "tags": ["Sports", "NFL"]
+        "isOpen": false,
+        "tags": ["Sports", "NFL"],
+        "isClaimAvailable": true
     },
     {
         "address": "2",
@@ -13,7 +14,8 @@
         "options": ["YES", "NO"],
         "maturityDate": 1647937376000,
         "isOpen": true,
-        "tags": ["Sports", "NBA"]
+        "tags": ["Sports", "NBA"],
+        "isClaimAvailable": false
     },
     {
         "address": "3",
@@ -21,7 +23,8 @@
         "options": ["0-2", "3-4", "5+"],
         "maturityDate": 1647937376000,
         "isOpen": true,
-        "tags": ["Sports", "Football"]
+        "tags": ["Sports", "Football"],
+        "isClaimAvailable": false
     },
     {
         "address": "4",
@@ -29,15 +32,17 @@
         "options": ["YES", "NO", "MAYBE", "DUNNO", "NEXT QUESTION"],
         "maturityDate": 1647937376000,
         "isOpen": true,
-        "tags": ["Dummy", "Test"]
+        "tags": ["Dummy", "Test"],
+        "isClaimAvailable": false
     },
     {
         "address": "5",
         "title": "Lorem ipsum dolor sit amet",
         "options": ["UP", "DOWN"],
-        "maturityDate": 1645622153000,
+        "maturityDate": 1645708242000,
         "isOpen": true,
-        "tags": ["Crypto", "DeFi"]
+        "tags": ["Crypto", "DeFi"],
+        "isClaimAvailable": false
     },
     {
         "address": "6",
@@ -45,15 +50,17 @@
         "options": ["<1$", "1-2$", "2-10$", ">10$"],
         "maturityDate": 1645614953000,
         "isOpen": false,
-        "tags": ["Crypto", "DeFi"]
+        "tags": ["Crypto", "DeFi"],
+        "isClaimAvailable": false
     },
     {
         "address": "7",
         "title": "NBA MVP?",
         "options": ["Nikola Jokic", "Joel Embiid", "Giannis Antetokounmpo", "DeMar DeRozan", "Chris Paul", "Other"],
         "maturityDate": 1645577993000,
-        "isOpen": true,
-        "tags": ["Sports", "NBA"]
+        "isOpen": false,
+        "tags": ["Sports", "NBA"],
+        "isClaimAvailable": true
     },
     {
         "address": "8",
@@ -61,14 +68,16 @@
         "options": ["Yes", "No"],
         "maturityDate": 1645576253000,
         "isOpen": false,
-        "tags": ["Sports", "NBA", "Crypto", "DeFi", "Football", "Basketball"]
+        "tags": ["Sports", "NBA", "Crypto", "DeFi", "Football", "Basketball"],
+        "isClaimAvailable": true
     },
     {
         "address": "9",
         "title": "Who is the best?",
         "options": ["Thales", "Thales OP"],
         "maturityDate": 1645533044000,
-        "isOpen": true,
-        "tags": ["Crypto", "DeFi", "Thales", "ETH", "OP"]
+        "isOpen": false,
+        "tags": ["Crypto", "DeFi", "Thales", "ETH", "OP"],
+        "isClaimAvailable": false
     }
 ]

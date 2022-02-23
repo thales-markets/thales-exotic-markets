@@ -5,6 +5,7 @@ export type Market = {
     options: string[];
     isOpen: boolean;
     tags: string[];
+    isClaimAvailable: boolean;
 };
 
 export type Markets = Market[];

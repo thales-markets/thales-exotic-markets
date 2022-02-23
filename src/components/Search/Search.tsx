@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { FlexDivStart } from 'styles/common';
 
@@ -8,11 +9,13 @@ type SearchProps = {
 };
 
 const Search: React.FC<SearchProps> = ({ text, handleChange }) => {
+    const { t } = useTranslation();
+
     return (
         <Wrapper>
             <Input
                 type="text"
-                placeholder="Search markets"
+                placeholder={t('market.search-placeholder')}
                 defaultValue={text}
                 onChange={(event) => handleChange(event.target.value)}
             />
@@ -38,7 +41,7 @@ const Input = styled.input`
     padding-left: 30px;
     padding-right: 10px;
     font-size: 18px;
-    outline: none !important;
+    outline: none;
 `;
 
 const IconWrapper = styled.div`

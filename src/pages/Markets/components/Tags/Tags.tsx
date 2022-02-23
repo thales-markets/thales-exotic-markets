@@ -42,6 +42,7 @@ const Tag = styled(FlexDivCentered)`
     margin-left: 6px;
     height: 28px;
     color: ${(props) => props.theme.textColor.primary};
+    margin-bottom: 4px;
 `;
 
 export default Tags;

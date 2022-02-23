@@ -44,5 +44,19 @@
         "privacy-policy": "Privacy Policy",
         "terms-of-use": "Terms of Use",
         "all-rights-reserved": "© {{year}} THALES DAO All rights reserved."
+    },
+    "market": {
+        "time-remaining-label": "Time remaining",
+        "status-label": "Status",
+        "tags-label": "Tags",
+        "search-placeholder": "Search markets",
+        "status": {
+            "claim-available": "Claim available",
+            "maturity": "Maturity"
+        },
+        "button": {
+            "claim-label": "Claim",
+            "open-dispute-label": "Open dispute"
+        }
     }
 }
