@@ -29,7 +29,9 @@ const MarketsCard: React.FC<MarketsCardProps> = ({ market }) => {
                 <Tags tags={market.tags} />
                 <ButtonsContainer>
                     {market.isClaimAvailable && <Button>{t('market.button.claim-label')}</Button>}
-                    <OpenDisputeButton>{t('market.button.open-dispute-label')}</OpenDisputeButton>
+                    <OpenDisputeButton numberOfOpenedDisputes={market.numberOfOpenedDisputes}>
+                        {t('market.button.open-dispute-label')}
+                    </OpenDisputeButton>
                 </ButtonsContainer>
             </CardFooter>
         </Container>

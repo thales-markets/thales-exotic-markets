@@ -6,6 +6,8 @@ export type Market = {
     isOpen: boolean;
     tags: string[];
     isClaimAvailable: boolean;
+    numberOfOpenedDisputes: number;
+    hasPosition: boolean;
 };
 
 export type Markets = Market[];

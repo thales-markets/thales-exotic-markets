@@ -6,7 +6,9 @@
         "maturityDate": 1645534784000,
         "isOpen": false,
         "tags": ["Sports", "NFL"],
-        "isClaimAvailable": true
+        "isClaimAvailable": true,
+        "numberOfOpenedDisputes": 2,
+        "hasPosition": false
     },
     {
         "address": "2",
@@ -15,7 +17,9 @@
         "maturityDate": 1647937376000,
         "isOpen": true,
         "tags": ["Sports", "NBA"],
-        "isClaimAvailable": false
+        "isClaimAvailable": false,
+        "numberOfOpenedDisputes": 0,
+        "hasPosition": false
     },
     {
         "address": "3",
@@ -24,7 +28,9 @@
         "maturityDate": 1647937376000,
         "isOpen": true,
         "tags": ["Sports", "Football"],
-        "isClaimAvailable": false
+        "isClaimAvailable": false,
+        "numberOfOpenedDisputes": 3,
+        "hasPosition": true
     },
     {
         "address": "4",
@@ -33,7 +39,9 @@
         "maturityDate": 1647937376000,
         "isOpen": true,
         "tags": ["Dummy", "Test"],
-        "isClaimAvailable": false
+        "isClaimAvailable": false,
+        "numberOfOpenedDisputes": 1,
+        "hasPosition": true
     },
     {
         "address": "5",
@@ -42,7 +50,9 @@
         "maturityDate": 1645708242000,
         "isOpen": true,
         "tags": ["Crypto", "DeFi"],
-        "isClaimAvailable": false
+        "isClaimAvailable": false,
+        "numberOfOpenedDisputes": 2,
+        "hasPosition": false
     },
     {
         "address": "6",
@@ -51,7 +61,9 @@
         "maturityDate": 1645614953000,
         "isOpen": false,
         "tags": ["Crypto", "DeFi"],
-        "isClaimAvailable": false
+        "isClaimAvailable": false,
+        "numberOfOpenedDisputes": 14,
+        "hasPosition": true
     },
     {
         "address": "7",
@@ -60,7 +72,9 @@
         "maturityDate": 1645577993000,
         "isOpen": false,
         "tags": ["Sports", "NBA"],
-        "isClaimAvailable": true
+        "isClaimAvailable": true,
+        "numberOfOpenedDisputes": 0,
+        "hasPosition": false
     },
     {
         "address": "8",
@@ -69,7 +83,9 @@
         "maturityDate": 1645576253000,
         "isOpen": false,
         "tags": ["Sports", "NBA", "Crypto", "DeFi", "Football", "Basketball"],
-        "isClaimAvailable": true
+        "isClaimAvailable": true,
+        "numberOfOpenedDisputes": 7,
+        "hasPosition": true
     },
     {
         "address": "9",
@@ -78,6 +94,8 @@
         "maturityDate": 1645533044000,
         "isOpen": false,
         "tags": ["Crypto", "DeFi", "Thales", "ETH", "OP"],
-        "isClaimAvailable": false
+        "isClaimAvailable": false,
+        "numberOfOpenedDisputes": 0,
+        "hasPosition": true
     }
 ]

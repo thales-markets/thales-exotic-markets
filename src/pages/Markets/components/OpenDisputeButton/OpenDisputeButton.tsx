@@ -5,14 +5,20 @@ import { FlexDivStart } from 'styles/common';
 type OpenDisputeButtonProps = {
     disabled?: boolean;
     onClick?: any;
+    numberOfOpenedDisputes: number;
 };
 
-const OpenDisputeButton: React.FC<OpenDisputeButtonProps> = ({ disabled, onClick, children }) => {
+const OpenDisputeButton: React.FC<OpenDisputeButtonProps> = ({
+    disabled,
+    onClick,
+    children,
+    numberOfOpenedDisputes,
+}) => {
     return (
         <StyledButton disabled={disabled} onClick={onClick}>
             <Container>
                 <Label>{children}</Label>
-                <OpenDisputesNumber>32</OpenDisputesNumber>
+                {numberOfOpenedDisputes > 0 && <OpenDisputesNumber>{numberOfOpenedDisputes}</OpenDisputesNumber>}
             </Container>
         </StyledButton>
     );

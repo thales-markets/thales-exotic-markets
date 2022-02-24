@@ -56,7 +56,32 @@
         },
         "button": {
             "claim-label": "Claim",
-            "open-dispute-label": "Open dispute"
+            "open-dispute-label": "Open dispute",
+            "create-market-label": "Create market"
+        },
+        "filter-label": {
+            "global": {
+                "all": "All markets",
+                "disputed": "Disputed",
+                "yourpositions": "Your positions",
+                "claim": "Claim",
+                "history": "History"
+            },
+            "tag": {
+                "all": "All",
+                "sports": "Sports",
+                "nfl": "NFL",
+                "nba": "NBA",
+                "football": "Football",
+                "dummy": "Dummy",
+                "test": "Test",
+                "crypto": "Crypto",
+                "defi": "DeFi",
+                "basketball": "Basketball",
+                "eth": "ETH",
+                "op": "OP",
+                "thales": "Thales"
+            }
         }
     }
 }

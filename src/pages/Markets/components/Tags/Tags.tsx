@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { FlexDivCentered, FlexDivStart } from 'styles/common';
 
@@ -7,9 +8,11 @@ type TagsProps = {
 };
 
 const Tags: React.FC<TagsProps> = ({ tags }) => {
+    const { t } = useTranslation();
+
     return (
         <Container>
-            <TagLabel>Tags:</TagLabel>
+            <TagLabel>{t('market.tags-label')}:</TagLabel>
             {tags.map((tag: string) => (
                 <Tag key={tag}>{tag}</Tag>
             ))}
@@ -22,13 +25,14 @@ const Container = styled(FlexDivStart)`
     align-items: center;
 `;
 
-const TagLabel = styled.span`
+export const TagLabel = styled.span`
     font-style: normal;
     font-weight: bold;
     font-size: 15px;
     line-height: 100%;
     text-align: center;
     color: ${(props) => props.theme.textColor.primary};
+    margin-bottom: 4px;
 `;
 
 const Tag = styled(FlexDivCentered)`
