@@ -16,7 +16,7 @@ const Logo: React.FC = () => (
 const Container = styled.div``;
 
 const StyledLogo = styled(LogoIcon)`
-    fill: ${(props) => props.theme.textColor};
+    fill: ${(props) => props.theme.textColor.primary};
     height: 37px;
 `;
 

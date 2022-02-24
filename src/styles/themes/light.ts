@@ -1,7 +1,7 @@
 import { Colors } from 'styles/common';
 
 export default {
-    background: { primary: Colors.WHITE, secondary: Colors.PINK_GRADIENT },
+    background: { primary: Colors.WHITE, secondary: '#F9DEE6' },
     textColor: {
         primary: Colors.PURPLE,
         secondary: Colors.GREEN,

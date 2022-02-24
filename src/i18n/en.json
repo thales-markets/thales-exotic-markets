@@ -32,7 +32,8 @@
             "minutes-short": "m",
             "seconds-short": "s"
         },
-        "dapp": "dapp"
+        "dapp": "dapp",
+        "back-to-markets": "Back to Markets"
     },
     "header": {
         "links": {
