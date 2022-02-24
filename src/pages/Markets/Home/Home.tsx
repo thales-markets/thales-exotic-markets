@@ -1,5 +1,5 @@
 import Button from 'components/Button';
-import Loader from 'components/Loader';
+import SimpleLoader from 'components/SimpleLoader';
 import Search from 'components/Search';
 import { DEFAULT_SEARCH_DEBOUNCE_MS } from 'constants/defaults';
 import useDebouncedMemo from 'hooks/useDebouncedMemo';
@@ -112,9 +112,7 @@ const Home: React.FC = () => {
         DEFAULT_SEARCH_DEBOUNCE_MS
     );
 
-    return marketsQuery.isLoading ? (
-        <Loader />
-    ) : (
+    return (
         <Container>
             <SearchContainer>
                 <Search text={marketSearch} handleChange={setMarketSearch} />
@@ -159,7 +157,11 @@ const Home: React.FC = () => {
                     );
                 })}
             </TagsContainer>
-            <MarketsGrid markets={marketSearch ? searchFilteredMarkets : filteredMarkets} />
+            {marketsQuery.isLoading ? (
+                <SimpleLoader />
+            ) : (
+                <MarketsGrid markets={marketSearch ? searchFilteredMarkets : filteredMarkets} />
+            )}
         </Container>
     );
 };

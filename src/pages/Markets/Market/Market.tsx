@@ -1,4 +1,4 @@
-import Loader from 'components/Loader';
+import SimpleLoader from 'components/SimpleLoader';
 import useMarketQuery from 'queries/markets/useMarketQuery';
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
@@ -29,17 +29,21 @@ const Market: React.FC<MarketProps> = (props) => {
         return undefined;
     }, [marketQuery.isSuccess, marketQuery.data]);
 
-    return market ? (
+    return (
         <Container>
-            <Title>{market.title}</Title>
-            <Options>
-                {market.options.map((option: string) => (
-                    <Option key={option}>{option}</Option>
-                ))}
-            </Options>
+            {market ? (
+                <>
+                    <Title>{market.title}</Title>
+                    <Options>
+                        {market.options.map((option: string) => (
+                            <Option key={option}>{option}</Option>
+                        ))}
+                    </Options>
+                </>
+            ) : (
+                <SimpleLoader />
+            )}
         </Container>
-    ) : (
-        <Loader />
     );
 };
 
