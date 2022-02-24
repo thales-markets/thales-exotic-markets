@@ -11,3 +11,8 @@ export type Market = {
 };
 
 export type Markets = Market[];
+
+export type SortOptionType = {
+    id: number;
+    title: string;
+};

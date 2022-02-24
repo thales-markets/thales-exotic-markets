@@ -12,56 +12,30 @@ import { getNetworkId } from 'redux/modules/wallet';
 import { RootState } from 'redux/rootReducer';
 import styled from 'styled-components';
 import { FlexDivCentered, FlexDivColumn, FlexDivRow, FlexDivStart } from 'styles/common';
-import { Market, Markets } from 'types/markets';
+import { Market, Markets, SortOptionType } from 'types/markets';
 import GlobalFilter from '../components/GlobalFilter';
 import TagFilter from '../components/TagFilter';
 import { TagLabel } from '../components/Tags/Tags';
 import MarketsGrid from './MarketsGrid';
 import { navigateTo } from 'utils/routes';
 import ROUTES from 'constants/routes';
-
-export enum TagFilterEnum {
-    All = 'All',
-    Sports = 'Sports',
-    NFL = 'NFL',
-    NBA = 'NBA',
-    Football = 'Football',
-    Dummy = 'Dummy',
-    Test = 'Test',
-    Crypto = 'Crypto',
-    DeFi = 'DeFi',
-    Basketball = 'Basketball',
-    ETH = 'ETH',
-    OP = 'OP',
-    Thales = 'Thales',
-}
-
-export enum GlobalFilterEnum {
-    All = 'All',
-    Disputed = 'Disputed',
-    YourPositions = 'YourPositions',
-    Claim = 'Claim',
-    History = 'History',
-}
-
-export enum OrderDirection {
-    NONE,
-    ASC,
-    DESC,
-}
-
-const DEFAULT_ORDER_BY = 1;
+import { TagFilterEnum, GlobalFilterEnum, SortDirection, DEFAULT_SORT_BY } from 'constants/markets';
+import SortOption from '../components/SortOption';
 
 const Home: React.FC = () => {
     const { t } = useTranslation();
-
     const isAppReady = useSelector((state: RootState) => getIsAppReady(state));
     const networkId = useSelector((state: RootState) => getNetworkId(state));
     const [globalFilter, setGlobalFilter] = useState<GlobalFilterEnum>(GlobalFilterEnum.All);
     const [tagFilter, setTagFilter] = useState<TagFilterEnum>(TagFilterEnum.All);
-    const [orderDirection] = useState(OrderDirection.DESC);
-    const [orderBy] = useState(DEFAULT_ORDER_BY);
+    const [sortDirection, setSortDirection] = useState(SortDirection.DESC);
+    const [sortBy, setSortBy] = useState(DEFAULT_SORT_BY);
     const [marketSearch, setMarketSearch] = useState<string>('');
+
+    const sortOptions: SortOptionType[] = [
+        { id: 1, title: t('market.time-remaining-label') },
+        { id: 2, title: t('market.title-label') },
+    ];
 
     const marketsQuery = useMarketsQuery(networkId, { enabled: isAppReady });
 
@@ -91,14 +65,16 @@ const Home: React.FC = () => {
         }
 
         return filteredMarkets.sort((a, b) => {
-            switch (orderBy) {
+            switch (sortBy) {
                 case 1:
-                    return sortByField(a, b, orderDirection, 'maturityDate');
+                    return sortByField(a, b, sortDirection, 'maturityDate');
+                case 2:
+                    return sortByField(a, b, sortDirection, 'title');
                 default:
                     return 0;
             }
         });
-    }, [markets, orderBy, orderDirection, tagFilter, globalFilter]);
+    }, [markets, sortBy, sortDirection, tagFilter, globalFilter]);
 
     const searchFilteredMarkets = useDebouncedMemo(
         () => {
@@ -111,6 +87,26 @@ const Home: React.FC = () => {
         [filteredMarkets, marketSearch],
         DEFAULT_SEARCH_DEBOUNCE_MS
     );
+
+    const setSort = (sortOption: SortOptionType) => {
+        if (sortBy === sortOption.id) {
+            switch (sortDirection) {
+                case SortDirection.NONE:
+                    setSortDirection(SortDirection.DESC);
+                    break;
+                case SortDirection.DESC:
+                    setSortDirection(SortDirection.ASC);
+                    break;
+                case SortDirection.ASC:
+                    setSortDirection(SortDirection.DESC);
+                    setSortBy(DEFAULT_SORT_BY);
+                    break;
+            }
+        } else {
+            setSortBy(sortOption.id);
+            setSortDirection(SortDirection.DESC);
+        }
+    };
 
     return (
         <Container>
@@ -129,6 +125,19 @@ const Home: React.FC = () => {
                             >
                                 {t(`market.filter-label.global.${filterItem.toLowerCase()}`)}
                             </GlobalFilter>
+                        );
+                    })}
+                    {sortOptions.map((sortOption) => {
+                        return (
+                            <SortOption
+                                disabled={false}
+                                selected={sortOption.id === sortBy}
+                                sortDirection={sortDirection}
+                                onClick={() => setSort(sortOption)}
+                                key={sortOption.title}
+                            >
+                                {sortOption.title}
+                            </SortOption>
                         );
                     })}
                 </GlobalFiltersContainer>
@@ -166,11 +175,11 @@ const Home: React.FC = () => {
     );
 };
 
-const sortByField = (a: Market, b: Market, direction: OrderDirection, field: keyof Market) => {
-    if (direction === OrderDirection.ASC) {
+const sortByField = (a: Market, b: Market, direction: SortDirection, field: keyof Market) => {
+    if (direction === SortDirection.ASC) {
         return (a[field] as any) > (b[field] as any) ? 1 : -1;
     }
-    if (direction === OrderDirection.DESC) {
+    if (direction === SortDirection.DESC) {
         return (a[field] as any) > (b[field] as any) ? -1 : 1;
     }
 

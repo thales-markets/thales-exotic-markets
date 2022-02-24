@@ -38,6 +38,11 @@ const Container = styled(FlexDivCentered)`
         cursor: default;
         opacity: 0.4;
     }
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
 `;
 
 export default TagFilter;

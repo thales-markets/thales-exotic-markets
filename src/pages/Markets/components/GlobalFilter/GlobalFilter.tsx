@@ -35,6 +35,11 @@ const Container = styled.div`
     color: ${(props) => props.theme.textColor.primary};
     margin-right: 40px;
     padding-bottom: 5px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
 `;
 
 export default GlobalFilter;
