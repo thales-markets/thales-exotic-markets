@@ -1,3 +1,5 @@
+import Button from 'components/Button';
+import { FieldLabel } from 'components/fields/common';
 import TextInput from 'components/fields/TextInput';
 import Toggle from 'components/fields/Toggle';
 import { MarketType } from 'constants/markets';
@@ -5,6 +7,7 @@ import React, { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { FlexDivColumn, FlexDivRow } from 'styles/common';
+import PositionInput from '../components/PositionInput';
 
 const CreateMarket: React.FC = () => {
     const { t } = useTranslation();
@@ -12,6 +15,28 @@ const CreateMarket: React.FC = () => {
     const [dataSource, setDataSource] = useState<string>('');
     const [marketType, setMarketType] = useState<MarketType>(MarketType.TICKET);
     const [isWithdrawEnabled, setIsWithdrawEnabled] = useState<boolean>(true);
+    const [positions, setPositions] = useState<string[]>(new Array(2).fill(''));
+
+    const enableRemovePosition = positions.length > 2;
+    const enableAddPosition = positions.length < 5;
+
+    const addPosition = () => {
+        const newPostions = [...positions];
+        newPostions.push('');
+        setPositions(newPostions);
+    };
+
+    const removePosition = (i: number) => {
+        const newPostions = [...positions];
+        newPostions.splice(i, 1);
+        setPositions(newPostions);
+    };
+
+    const setPositionText = (i: number, text: string) => {
+        const newPostions = [...positions];
+        newPostions[i] = text;
+        setPositions(newPostions);
+    };
 
     return (
         <Container>
@@ -27,6 +52,21 @@ const CreateMarket: React.FC = () => {
                         onChange={setDataSource}
                         label={t('market.create-market.data-source-label')}
                     />
+                    <FlexDivColumn style={{ marginBottom: 15, flex: 'initial' }}>
+                        <FieldLabel>{t('market.create-market.positions-label')}:</FieldLabel>
+                        {positions.map((postiton: string, i: number) => {
+                            return (
+                                <PositionInput
+                                    key={`position${i}`}
+                                    value={postiton}
+                                    onChange={(text: string) => setPositionText(i, text)}
+                                    onRemove={() => removePosition(i)}
+                                    showRemoveButton={enableRemovePosition}
+                                />
+                            );
+                        })}
+                        {enableAddPosition && <Button onClick={addPosition}>Add position</Button>}
+                    </FlexDivColumn>
                     <Toggle
                         isLeftOptionSelected={marketType === MarketType.TICKET}
                         onClick={() => {
