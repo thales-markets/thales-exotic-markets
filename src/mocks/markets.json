@@ -36,7 +36,7 @@
         "address": "4",
         "title": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec vel odio quis eros scelerisque laoreet.",
         "options": ["YES", "NO", "MAYBE", "DUNNO", "NEXT QUESTION"],
-        "maturityDate": 1647937376000,
+        "maturityDate": 1648487642000,
         "isOpen": true,
         "tags": ["Dummy", "Test"],
         "isClaimAvailable": false,

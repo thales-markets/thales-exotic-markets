@@ -28,7 +28,7 @@ const Home: React.FC = () => {
     const networkId = useSelector((state: RootState) => getNetworkId(state));
     const [globalFilter, setGlobalFilter] = useState<GlobalFilterEnum>(GlobalFilterEnum.All);
     const [tagFilter, setTagFilter] = useState<TagFilterEnum>(TagFilterEnum.All);
-    const [sortDirection, setSortDirection] = useState(SortDirection.DESC);
+    const [sortDirection, setSortDirection] = useState(SortDirection.ASC);
     const [sortBy, setSortBy] = useState(DEFAULT_SORT_BY);
     const [marketSearch, setMarketSearch] = useState<string>('');
 

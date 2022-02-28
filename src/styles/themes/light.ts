@@ -19,4 +19,21 @@ export default {
             primary: Colors.WHITE,
         },
     },
+    input: {
+        background: {
+            primary: Colors.PURPLE,
+            selection: {
+                primary: Colors.PURPLE_DARK,
+            },
+        },
+        textColor: {
+            primary: Colors.WHITE,
+        },
+        borderColor: {
+            primary: Colors.PURPLE,
+            focus: {
+                primary: Colors.PURPLE_DARK,
+            },
+        },
+    },
 };

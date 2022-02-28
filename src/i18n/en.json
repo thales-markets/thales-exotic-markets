@@ -84,6 +84,22 @@
                 "op": "OP",
                 "thales": "Thales"
             }
+        },
+        "create-market": {
+            "description-title": "Guidelines",
+            "description-text": "<0>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur iaculis lacinia velit, eget cursus libero cursus vel. Suspendisse ultricies imperdiet metus, id viverra ex mattis eu. Donec quis massa eget sem lacinia fermentum. Etiam mattis, sapien nec ornare pharetra, diam velit vulputate magna, a viverra ante dui vitae tellus. Donec in tincidunt mauris, et porttitor arcu. Ut pretium sed felis eget fringilla. Nam sit amet rutrum eros.</0><0>Nullam purus est, eleifend sed orci sed, condimentum condimentum leo. Phasellus eu rutrum odio. Phasellus volutpat cursus auctor. Quisque consectetur laoreet dignissim. Vivamus dictum eleifend odio porttitor semper. Cras at posuere metus, eget fringilla erat. Donec pellentesque velit at nunc feugiat scelerisque. Sed commodo ante nisl, sed iaculis nulla volutpat vitae.</0><0>Nulla facilisi. Etiam laoreet diam at est rhoncus sollicitudin. Interdum et malesuada fames ac ante ipsum primis in faucibus. Curabitur tempor enim ac molestie tristique. Fusce nec nibh ut metus aliquet lacinia. Nunc mattis facilisis sagittis. Mauris tempus congue feugiat. Quisque at hendrerit ante. Donec a euismod ligula, in iaculis elit. Etiam vitae laoreet ex. Vivamus euismod mattis hendrerit. Curabitur et lorem purus. Integer semper ornare nunc. Curabitur efficitur a justo vel lobortis. Praesent nisl elit, vehicula a egestas non, ultrices eget velit. Mauris luctus dui sagittis tellus finibus, et bibendum erat pharetra.</0><0>Sed tincidunt et elit quis viverra. Suspendisse potenti. Donec luctus ac justo id vehicula. Phasellus vestibulum turpis sed cursus hendrerit. Duis egestas nibh at arcu laoreet dignissim. Cras nisi magna, condimentum vitae mauris nec, suscipit consequat libero. In ultricies laoreet mattis. In volutpat mi vitae est euismod, non ornare turpis ultrices. Etiam quis ultrices urna. Morbi ac nulla at orci consectetur faucibus. Maecenas ut lacus magna.</0>",
+            "question-label": "Question",
+            "data-source-label": "Data Source",
+            "type-label": "Type",
+            "type-options": {
+                "ticket": "Ticket",
+                "open-bid": "Open Bid"
+            },
+            "withdraw-label": "Withdraw",
+            "withdraw-options": {
+                "enabled": "Enabled",
+                "disabled": "Disabled"
+            }
         }
     }
 }

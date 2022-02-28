@@ -29,3 +29,8 @@ export enum SortDirection {
 }
 
 export const DEFAULT_SORT_BY = 1;
+
+export enum MarketType {
+    TICKET,
+    OPEN_BID,
+}
