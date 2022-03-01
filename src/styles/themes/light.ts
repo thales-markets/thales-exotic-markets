@@ -1,7 +1,7 @@
 import { Colors } from 'styles/common';
 
 export default {
-    background: { primary: Colors.WHITE, secondary: '#F9DEE6' },
+    background: { primary: Colors.WHITE, secondary: '#F9DEE6', tertiary: Colors.PINK },
     textColor: {
         primary: Colors.PURPLE,
         secondary: Colors.GREEN,
@@ -9,6 +9,7 @@ export default {
     borderColor: {
         primary: Colors.PURPLE,
         secondary: Colors.GREEN,
+        tertiary: Colors.PINK,
     },
     button: {
         background: {

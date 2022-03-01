@@ -30,11 +30,12 @@ const TagsInput: React.FC<TagsInputProps> = ({ tags, suggestions, label, onAddit
                 suggestions={suggestions}
                 tags={tags}
                 placeholderText={t('common.tags-placeholder')}
-                autoresize={true}
+                autoresize={false}
                 allowBackspace={false}
             />
             <TagsListContainer>
                 {Object.values(TagFilterEnum).map((filterItem, index) => {
+                    if (filterItem === TagFilterEnum.All) return;
                     const tag: Tag = {
                         id: index + 1,
                         name: t(`market.filter-label.tag.${filterItem.toLowerCase()}`),
