@@ -104,10 +104,13 @@ const DatePickerContainer = styled(FieldContainer)`
         font-size: 13px !important;
         height: 24px !important;
         letter-spacing: 0.4px;
-        color: #f6f6fe !important;
+        color: ${(props) => props.theme.textColor.primary} !important;
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
+        :hover {
+            background: ${(props) => props.theme.background.secondary} !important;
+        }
     }
 
     .react-datepicker__week,
@@ -117,7 +120,7 @@ const DatePickerContainer = styled(FieldContainer)`
     }
 
     .react-datepicker__day--keyboard-selected {
-        background: #0a2e66 !important;
+        background: ${(props) => props.theme.background.tertiary} !important;
     }
 
     .react-datepicker__week .react-datepicker__day--selected,
@@ -133,12 +136,13 @@ const DatePickerContainer = styled(FieldContainer)`
     }
 
     .react-datepicker__day--disabled {
-        color: #4564ae !important;
+        color: ${(props) => props.theme.input.background.selection.primary} !important;
+        opacity: 0.2;
     }
 
     .react-datepicker__day--in-range {
         position: relative;
-        background: ${(props) => props.theme.textColor.secondary} !important;
+        background: ${(props) => props.theme.input.background.selection.primary} !important;
         z-index: 1 !important;
         color: ${(props) => props.theme.textColor.primary} !important;
     }
