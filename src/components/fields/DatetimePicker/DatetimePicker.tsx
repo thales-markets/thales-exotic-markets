@@ -60,7 +60,7 @@ const DatePickerContainer = styled(FieldContainer)`
     .react-datepicker {
         display: flex !important;
         border: none;
-        background: ${(props) => props.theme.background.tertiary};
+        background: ${(props) => props.theme.background.tertiary} !important;
         border-radius: 10px;
     }
 
@@ -87,7 +87,7 @@ const DatePickerContainer = styled(FieldContainer)`
         font-size: 16px;
         line-height: 32px;
         letter-spacing: 0.35px;
-        color: ${(props) => props.theme.textColor.primary};
+        color: ${(props) => props.theme.textColor.primary} !important;
     }
 
     .react-datepicker__day-name {
@@ -95,7 +95,7 @@ const DatePickerContainer = styled(FieldContainer)`
         font-size: 10px;
         line-height: 16px;
         letter-spacing: 1px;
-        color: ${(props) => props.theme.textColor.primary};
+        color: ${(props) => props.theme.textColor.primary} !important;
         text-transform: uppercase;
     }
 
@@ -211,15 +211,15 @@ const DatePickerContainer = styled(FieldContainer)`
         letter-spacing: 1px;
         margin: auto;
         margin-bottom: 3px !important;
-        color: ${(props) => props.theme.textColor.primary};
+        color: ${(props) => props.theme.textColor.primary} !important;
     }
 
     .react-datepicker__time-list-item--selected {
-        background: ${(props) => props.theme.background.secondary};
+        background: ${(props) => props.theme.background.secondary} !important;
     }
 
     .react-datepicker__time-list-item:hover {
-        background: ${(props) => props.theme.background.secondary};
+        background: ${(props) => props.theme.background.secondary} !important;
     }
 
     .react-datepicker__time-list::-webkit-scrollbar-thumb {
