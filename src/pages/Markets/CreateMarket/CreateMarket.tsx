@@ -9,8 +9,8 @@ import { Trans, useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { FlexDivColumn, FlexDivRow } from 'styles/common';
 import PositionInput from '../components/PositionInput';
-import ReactTags, { Tag } from 'react-tag-autocomplete';
-import 'styles/react-tags.css';
+import { Tag } from 'react-tag-autocomplete';
+import TagsInput from 'components/fields/TagsInput';
 
 const roundMinutes = (date: Date) => {
     date.setUTCHours(12, 0, 0, 0);
@@ -151,16 +151,13 @@ const CreateMarket: React.FC = () => {
                         leftText={t('market.create-market.withdraw-options.enabled')}
                         rightText={t('market.create-market.withdraw-options.disabled')}
                     />
-                    <FlexDivColumn style={{ marginBottom: 15, flex: 'initial' }}>
-                        <FieldLabel>{t('market.create-market.tags-label')}:</FieldLabel>
-                        <ReactTags
-                            onDelete={handleDelete}
-                            onAddition={handleAddition}
-                            suggestions={suggestions}
-                            tags={tags}
-                            autoresize={false}
-                        />
-                    </FlexDivColumn>
+                    <TagsInput
+                        onDelete={handleDelete}
+                        onAddition={handleAddition}
+                        suggestions={suggestions}
+                        tags={tags}
+                        label={t('market.create-market.tags-label')}
+                    />
                 </Form>
                 <Description>
                     <DescriptionTitle>Guidelines</DescriptionTitle>

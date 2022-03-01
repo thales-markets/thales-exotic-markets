@@ -18,6 +18,9 @@ export default {
         textColor: {
             primary: Colors.PURPLE,
         },
+        borderColor: {
+            primary: Colors.PURPLE,
+        },
     },
     input: {
         background: {

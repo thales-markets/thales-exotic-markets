@@ -34,7 +34,8 @@
         },
         "dapp": "dapp",
         "back-to-markets": "Back to Markets",
-        "select-date": "select date"
+        "select-date": "select date",
+        "tags-placeholder": "Add new tag..."
     },
     "header": {
         "links": {
@@ -83,7 +84,8 @@
                 "basketball": "Basketball",
                 "eth": "ETH",
                 "op": "OP",
-                "thales": "Thales"
+                "thales": "Thales",
+                "thalesop": "Thales OP"
             }
         },
         "create-market": {

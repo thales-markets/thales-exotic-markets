@@ -12,6 +12,7 @@ export enum TagFilterEnum {
     ETH = 'ETH',
     OP = 'OP',
     Thales = 'Thales',
+    ThalesOp = 'ThalesOp',
 }
 
 export enum GlobalFilterEnum {
