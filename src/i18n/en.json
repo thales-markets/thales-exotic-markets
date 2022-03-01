@@ -33,7 +33,8 @@
             "seconds-short": "s"
         },
         "dapp": "dapp",
-        "back-to-markets": "Back to Markets"
+        "back-to-markets": "Back to Markets",
+        "select-date": "select date"
     },
     "header": {
         "links": {
@@ -91,6 +92,7 @@
             "question-label": "Question",
             "data-source-label": "Data Source",
             "positions-label": "Positions",
+            "positioning-end-label": "Positioning End",
             "type-label": "Type",
             "type-options": {
                 "ticket": "Ticket",
@@ -100,7 +102,8 @@
             "withdraw-options": {
                 "enabled": "Enabled",
                 "disabled": "Disabled"
-            }
+            },
+            "tags-label": "Tags"
         }
     }
 }
