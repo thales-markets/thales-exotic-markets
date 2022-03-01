@@ -68,7 +68,7 @@ const CreateMarket: React.FC = () => {
 
     const suggestions: Tag[] = Object.values(TagFilterEnum).map((filterItem, index) => ({
         id: index + 1,
-        name: filterItem,
+        name: t(`market.filter-label.tag.${filterItem.toLowerCase()}`),
     }));
 
     return (

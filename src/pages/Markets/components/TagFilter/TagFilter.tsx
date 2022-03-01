@@ -29,10 +29,14 @@ const Container = styled(FlexDivCentered)`
     color: ${(props) => props.theme.textColor.primary};
     margin-bottom: 4px;
     cursor: pointer;
-    &.selected,
+    &.selected {
+        background: ${(props) => props.theme.button.background.secondary};
+        color: ${(props) => props.theme.button.textColor.primary};
+    }
     &:hover {
         background: ${(props) => props.theme.button.background.secondary};
         color: ${(props) => props.theme.button.textColor.primary};
+        opacity: 0.8;
     }
     &.disabled {
         cursor: default;

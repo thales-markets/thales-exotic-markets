@@ -3,6 +3,9 @@ import { FieldContainer, FieldLabel } from '../common';
 import ReactTags, { Tag } from 'react-tag-autocomplete';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
+import TagFilter from 'pages/Markets/components/TagFilter';
+import { TagFilterEnum } from 'constants/markets';
+import { FlexDivStart } from 'styles/common';
 
 type TagsInputProps = {
     tags: Tag[];
@@ -16,6 +19,8 @@ type TagsInputProps = {
 const TagsInput: React.FC<TagsInputProps> = ({ tags, suggestions, label, onAddition, onDelete }) => {
     const { t } = useTranslation();
 
+    const findTagIndexInSelectedTags = (tag: Tag) => tags.findIndex((tagItem: Tag) => tag.id === tagItem.id);
+
     return (
         <TagsContainer>
             {label && <FieldLabel>{label}:</FieldLabel>}
@@ -28,6 +33,31 @@ const TagsInput: React.FC<TagsInputProps> = ({ tags, suggestions, label, onAddit
                 autoresize={true}
                 allowBackspace={false}
             />
+            <TagsListContainer>
+                {Object.values(TagFilterEnum).map((filterItem, index) => {
+                    const tag: Tag = {
+                        id: index + 1,
+                        name: t(`market.filter-label.tag.${filterItem.toLowerCase()}`),
+                    };
+                    return (
+                        <TagFilter
+                            disabled={false}
+                            selected={findTagIndexInSelectedTags(tag) > -1}
+                            onClick={() => {
+                                const tagIndex = findTagIndexInSelectedTags(tag);
+                                if (tagIndex > -1) {
+                                    onDelete(tagIndex);
+                                } else {
+                                    onAddition(tag);
+                                }
+                            }}
+                            key={filterItem}
+                        >
+                            {t(`market.filter-label.tag.${filterItem.toLowerCase()}`)}
+                        </TagFilter>
+                    );
+                })}
+            </TagsListContainer>
         </TagsContainer>
     );
 };
@@ -196,6 +226,12 @@ const TagsContainer = styled(FieldContainer)`
         opacity: 0.5;
         cursor: auto;
     }
+`;
+
+const TagsListContainer = styled(FlexDivStart)`
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: 15px;
 `;
 
 export default TagsInput;
