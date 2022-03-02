@@ -5,13 +5,14 @@ import { DEFAULT_POSITIONING_DURATION, MarketType, MAXIMUM_TAGS, TagFilterEnum }
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { FlexDivColumn, FlexDivRow } from 'styles/common';
+import { FlexDivCentered, FlexDivColumn, FlexDivRow } from 'styles/common';
 import { Tag } from 'react-tag-autocomplete';
 import TagsInput from 'components/fields/TagsInput';
 import Header from './Header';
 import Description from './Description';
 import { convertLocalToUTCDate, convertUTCToLocalDate, setDateTimeToUtcNoon } from 'utils/formatters/date';
 import Positions from 'components/fields/Positions/Positions';
+import Button from 'components/Button';
 
 const CreateMarket: React.FC = () => {
     const { t } = useTranslation();
@@ -124,6 +125,9 @@ const CreateMarket: React.FC = () => {
                         onTagRemove={removeTag}
                         label={t('market.create-market.tags-label', { max: MAXIMUM_TAGS })}
                     />
+                    <ButtonContainer>
+                        <CreateMarketButton>{t('market.create-market.button.create-market-label')}</CreateMarketButton>
+                    </ButtonContainer>
                 </Form>
                 <Description />
             </ContentWrapper>
@@ -136,13 +140,25 @@ const Container = styled(FlexDivColumn)`
     align-items: center;
 `;
 
-const ContentWrapper = styled(FlexDivRow)``;
+const ContentWrapper = styled(FlexDivRow)`
+    @media (max-width: 767px) {
+        flex-direction: column;
+    }
+`;
 
 const Form = styled(FlexDivColumn)`
     border: 1px solid ${(props) => props.theme.borderColor.primary};
-    filter: drop-shadow(0px 10px 30px rgba(0, 0, 0, 0.5));
     border-radius: 25px;
     padding: 20px;
+    height: fit-content;
+`;
+
+const CreateMarketButton = styled(Button)`
+    height: 32px;
+`;
+
+const ButtonContainer = styled(FlexDivCentered)`
+    margin: 40px 0;
 `;
 
 export default CreateMarket;

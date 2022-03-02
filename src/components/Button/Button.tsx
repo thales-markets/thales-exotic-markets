@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { CSSProperties } from 'react';
 import styled from 'styled-components';
 
 type ButtonType = 'primary' | 'secondary' | undefined;
@@ -7,11 +7,12 @@ type ButtonProps = {
     type?: ButtonType;
     disabled?: boolean;
     onClick?: any;
+    style?: CSSProperties;
 };
 
-const Button: React.FC<ButtonProps> = ({ type, disabled, onClick, children }) => {
+const Button: React.FC<ButtonProps> = ({ type, disabled, onClick, children, ...rest }) => {
     return (
-        <StyledButton disabled={disabled} onClick={onClick} buttonType={type}>
+        <StyledButton disabled={disabled} onClick={onClick} buttonType={type} {...rest}>
             {children}
         </StyledButton>
     );
@@ -22,20 +23,18 @@ const StyledButton = styled.button<{ buttonType: ButtonType }>`
         props.buttonType === 'secondary'
             ? props.theme.button.background.secondary
             : props.theme.button.background.primary};
-    padding: 2px 20px;
+    padding: 0 25px;
     border-radius: 30px;
     font-style: normal;
     font-weight: bold;
-    font-size: 19.2px;
-    line-height: 26px;
+    font-size: 20px;
     color: ${(props) => props.theme.button.textColor.primary};
     text-align: center;
     border: none;
     outline: none;
     text-transform: none;
     cursor: pointer;
-    white-space: break-spaces;
-    height: 28px;
+    min-height: 28px;
     width: fit-content;
     &:hover {
         opacity: 0.8;

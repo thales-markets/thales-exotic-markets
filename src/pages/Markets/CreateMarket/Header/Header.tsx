@@ -13,7 +13,7 @@ const Header: React.FC = () => {
                 <Title>{t('market.create-market.header.step-title.deposit-bond')}</Title>
                 <ProgressItem isCompleted={true} />
                 <ButtonContainer>
-                    <Button>{t('market.create-market.header.button.deposit-label')}</Button>
+                    <HeaderButton>{t('market.create-market.header.button.deposit-label')}</HeaderButton>
                 </ButtonContainer>
                 <InfoContainer>
                     <InfoLabel>{t('market.create-market.header.info.deposit-bond')}</InfoLabel>
@@ -28,7 +28,7 @@ const Header: React.FC = () => {
                 <Title>{t('market.create-market.header.step-title.launch-market')}</Title>
                 <ProgressItem isLineHidden={true} />
                 <ButtonContainer>
-                    <Button>{t('market.create-market.header.button.start-label')}</Button>
+                    <HeaderButton>{t('market.create-market.header.button.start-label')}</HeaderButton>
                 </ButtonContainer>
             </Step>
         </Container>
@@ -83,6 +83,10 @@ const ProgressItem = styled(FlexDivCentered)<{ isLineHidden?: boolean; isComplet
 
 const ButtonContainer = styled(FlexDivCentered)`
     margin-top: 15px;
+`;
+
+const HeaderButton = styled(Button)`
+    height: 32px;
 `;
 
 const InfoContainer = styled(FlexDivColumn)`
