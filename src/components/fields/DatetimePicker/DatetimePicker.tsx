@@ -59,7 +59,8 @@ const DatePickerContainer = styled(FieldContainer)`
 
     .react-datepicker {
         display: flex !important;
-        border: none;
+        box-sizing: border-box;
+        border: 1px solid ${(props) => props.theme.borderColor.tertiary} !important;
         background: ${(props) => props.theme.background.tertiary} !important;
         border-radius: 10px;
     }
@@ -136,15 +137,15 @@ const DatePickerContainer = styled(FieldContainer)`
     }
 
     .react-datepicker__day--disabled {
-        color: ${(props) => props.theme.input.background.selection.primary} !important;
+        color: ${(props) => props.theme.textColor.primary} !important;
         opacity: 0.2;
     }
 
     .react-datepicker__day--in-range {
         position: relative;
-        background: ${(props) => props.theme.input.background.selection.primary} !important;
+        background: ${(props) => props.theme.button.background.primary} !important;
         z-index: 1 !important;
-        color: ${(props) => props.theme.textColor.primary} !important;
+        color: ${(props) => props.theme.button.textColor.primary} !important;
     }
 
     .react-datepicker__day--in-range:first-child {
@@ -202,7 +203,7 @@ const DatePickerContainer = styled(FieldContainer)`
 
     .react-datepicker__time-list-item {
         width: 94px !important;
-        border: 0.5px solid #f6f6fe;
+        border: 0.5px solid ${(props) => props.theme.borderColor.primary} !important;
         border-radius: 10px !important;
         padding: 6px 10px !important;
         font-weight: bold;
@@ -222,19 +223,21 @@ const DatePickerContainer = styled(FieldContainer)`
         background: ${(props) => props.theme.background.secondary} !important;
     }
 
-    .react-datepicker__time-list::-webkit-scrollbar-thumb {
-        background: transparent !important;
+    .react-datepicker-popper[data-placement^='bottom'] .react-datepicker__triangle {
+        :before,
+        :after {
+            border-bottom-color: ${(props) => props.theme.background.tertiary} !important;
+            border-top-color: ${(props) => props.theme.background.tertiary} !important;
+            top: 0px !important;
+        }
     }
 
-    .react-datepicker__time-list::-webkit-scrollbar-track {
-        background: transparent !important;
-    }
-
-    .react-datepicker__triangle {
-        :after,
-        :before {
-            border-bottom-color: ${(props) => props.theme.borderColor.tertiary} !important;
-            top: 0;
+    .react-datepicker-popper[data-placement^='top'] .react-datepicker__triangle {
+        :before,
+        :after {
+            border-bottom-color: ${(props) => props.theme.background.tertiary} !important;
+            border-top-color: ${(props) => props.theme.background.tertiary} !important;
+            top: -8px !important;
         }
     }
 `;

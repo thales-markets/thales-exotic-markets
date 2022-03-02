@@ -50,8 +50,6 @@ const CreateMarket: React.FC = () => {
         setPositions(newPostions);
     };
 
-    const Today: Date = new Date();
-
     const datePickerMinDate: Date = new Date();
 
     const datePickerMaxDate: Date = new Date();
@@ -132,29 +130,16 @@ const CreateMarket: React.FC = () => {
                             timeFormat="HH:mm"
                             minDate={datePickerMinDate}
                             maxDate={datePickerMaxDate}
-                            startDate={Today}
                             selected={positioningEndDateTime}
-                            endDate={positioningEndDateTime}
                             // onFocus={(e) => {
                             //     document.body.clientWidth < 600
                             //         ? ((e.target.readOnly = true), e.target.scrollIntoView({ behavior: 'smooth' }))
                             //         : (e.target.readOnly = false);
                             // }}
                             onChange={(d: Date) => setPositioningEndDateTime(d)}
+                            showTimeSelect
                             // readOnly={isCreatingMarket || isMarketCreated}
                             popperPlacement="bottom-start"
-                            showTimeSelect
-                            // popperModifiers={{
-                            //     flip: {
-                            //         behavior: ['bottom'],
-                            //     },
-                            //     preventOverflow: {
-                            //         enabled: false,
-                            //     },
-                            //     hide: {
-                            //         enabled: false,
-                            //     },
-                            // }}
                         />
                     </FlexDivColumn>
                     <Toggle
@@ -226,10 +211,11 @@ const ProgressItem = styled(FlexDivCentered)<{ isLineHidden?: boolean; isComplet
         width: 30px;
         height: 30px;
         border-radius: 50%;
-        border: 8px solid #612a70;
+        border: 8px solid transparent;
         background: ${(props) => (props.isCompleted ? props.theme.textColor.secondary : props.theme.textColor.primary)};
         box-shadow: 0 0 0 2px
             ${(props) => (props.isCompleted ? props.theme.textColor.secondary : props.theme.textColor.primary)};
+        background-clip: padding-box;
     }
     &:after {
         content: '';
@@ -237,7 +223,7 @@ const ProgressItem = styled(FlexDivCentered)<{ isLineHidden?: boolean; isComplet
         box-sizing: border-box;
         left: 115px;
         top: 16px;
-        width: 200px;
+        width: 170px;
         height: 2px;
         background: ${(props) => (props.isCompleted ? props.theme.textColor.secondary : props.theme.textColor.primary)};
         display: ${(props) => (props.isLineHidden ? 'none' : 'block')};

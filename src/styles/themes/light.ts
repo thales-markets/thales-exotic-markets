@@ -1,15 +1,16 @@
 import { Colors } from 'styles/common';
 
 export default {
-    background: { primary: Colors.WHITE, secondary: '#F9DEE6', tertiary: Colors.PINK },
+    background: { primary: Colors.WHITE, secondary: Colors.PINK_LIGHT, tertiary: Colors.WHITE },
     textColor: {
         primary: Colors.PURPLE,
         secondary: Colors.GREEN,
+        tertiary: Colors.WHITE,
     },
     borderColor: {
         primary: Colors.PURPLE,
         secondary: Colors.GREEN,
-        tertiary: Colors.PINK,
+        tertiary: Colors.PURPLE,
     },
     button: {
         background: {
@@ -25,18 +26,19 @@ export default {
     },
     input: {
         background: {
-            primary: Colors.PURPLE,
+            primary: Colors.WHITE,
             selection: {
-                primary: Colors.PURPLE_DARK,
+                primary: Colors.PINK_LIGHT,
             },
         },
         textColor: {
-            primary: Colors.WHITE,
+            primary: Colors.PURPLE_DARK,
         },
         borderColor: {
             primary: Colors.PURPLE,
+            secondary: Colors.PURPLE,
             focus: {
-                primary: Colors.PURPLE_DARK,
+                primary: Colors.PINK,
             },
         },
     },

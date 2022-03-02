@@ -85,7 +85,7 @@ const TagsContainer = styled(FieldContainer)`
     }
 
     .react-tags.is-focused {
-        /* border-color: ${(props) => props.theme.input.borderColor.focus.primary}; */
+        border-color: ${(props) => props.theme.input.borderColor.focus.primary};
     }
 
     .react-tags__selected {
@@ -153,6 +153,10 @@ const TagsContainer = styled(FieldContainer)`
         font-size: inherit;
         line-height: inherit;
         color: ${(props) => props.theme.input.textColor.primary};
+
+        &::selection {
+            background: ${(props) => props.theme.input.background.selection.primary};
+        }
     }
 
     .react-tags__search input::-ms-clear {
@@ -176,15 +180,15 @@ const TagsContainer = styled(FieldContainer)`
         margin: 4px -10px;
         padding: 0;
         list-style: none;
-        background: ${(props) => props.theme.button.background.secondary};
-        border: 1px solid ${(props) => props.theme.button.borderColor.primary};
+        background: ${(props) => props.theme.input.background.primary};
+        border: 1px solid ${(props) => props.theme.input.borderColor.secondary};
         border-radius: 10px;
         box-shadow: none;
     }
 
     .react-tags__suggestions li {
         :not(:last-child) {
-            border-bottom: 1px solid ${(props) => props.theme.button.borderColor.primary};
+            border-bottom: 1px solid ${(props) => props.theme.input.borderColor.secondary};
         }
         padding: 6px 8px;
     }

@@ -5,6 +5,7 @@ export default {
     textColor: {
         primary: Colors.WHITE,
         secondary: Colors.GREEN,
+        tertiary: Colors.PURPLE,
     },
     borderColor: {
         primary: Colors.WHITE,
@@ -35,6 +36,7 @@ export default {
         },
         borderColor: {
             primary: Colors.WHITE,
+            secondary: Colors.PURPLE,
             focus: {
                 primary: Colors.PINK,
             },
