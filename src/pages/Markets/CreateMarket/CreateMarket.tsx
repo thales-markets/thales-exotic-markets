@@ -7,7 +7,7 @@ import { MarketType, TagFilterEnum } from 'constants/markets';
 import React, { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { FlexDivColumn, FlexDivRow } from 'styles/common';
+import { FlexDivCentered, FlexDivColumn, FlexDivRow } from 'styles/common';
 import PositionInput from '../components/PositionInput';
 import { Tag } from 'react-tag-autocomplete';
 import TagsInput from 'components/fields/TagsInput';
@@ -73,6 +73,30 @@ const CreateMarket: React.FC = () => {
 
     return (
         <Container>
+            <Header>
+                <HeaderColumn>
+                    <HeaderTitle>Deposit Bond</HeaderTitle>
+                    <ProgressItem isCompleted={true} />
+                    <HeaderButtonContainer>
+                        <Button>Deposit</Button>
+                    </HeaderButtonContainer>
+                    <InfoContainer>
+                        <InfoLabel>Bond deposit</InfoLabel>
+                        <Info>100 THALES</Info>
+                    </InfoContainer>
+                </HeaderColumn>
+                <HeaderColumn>
+                    <HeaderTitle>Create Market</HeaderTitle>
+                    <ProgressItem />
+                </HeaderColumn>
+                <HeaderColumn>
+                    <HeaderTitle>Launch Market</HeaderTitle>
+                    <ProgressItem isLineHidden={true} />
+                    <HeaderButtonContainer>
+                        <Button>Start</Button>
+                    </HeaderButtonContainer>
+                </HeaderColumn>
+            </Header>
             <ContentWrapper>
                 <Form>
                     <TextInput
@@ -172,6 +196,72 @@ const CreateMarket: React.FC = () => {
 
 const Container = styled(FlexDivColumn)`
     margin-top: 50px;
+    align-items: center;
+`;
+
+const Header = styled(FlexDivRow)`
+    margin-bottom: 40px;
+    width: 600px;
+`;
+
+const HeaderColumn = styled(FlexDivColumn)``;
+
+const HeaderTitle = styled.span`
+    font-style: normal;
+    font-weight: normal;
+    font-size: 25px;
+    line-height: 34px;
+    color: ${(props) => props.theme.textColor.primary};
+    text-align: center;
+`;
+
+const ProgressItem = styled(FlexDivCentered)<{ isLineHidden?: boolean; isCompleted?: boolean }>`
+    position: relative;
+    height: 34px;
+    margin-top: 10px;
+    &:before {
+        content: '';
+        position: absolute;
+        box-sizing: border-box;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: 8px solid #612a70;
+        background: ${(props) => (props.isCompleted ? props.theme.textColor.secondary : props.theme.textColor.primary)};
+        box-shadow: 0 0 0 2px
+            ${(props) => (props.isCompleted ? props.theme.textColor.secondary : props.theme.textColor.primary)};
+    }
+    &:after {
+        content: '';
+        position: absolute;
+        box-sizing: border-box;
+        left: 115px;
+        top: 16px;
+        width: 200px;
+        height: 2px;
+        background: ${(props) => (props.isCompleted ? props.theme.textColor.secondary : props.theme.textColor.primary)};
+        display: ${(props) => (props.isLineHidden ? 'none' : 'block')};
+    }
+`;
+
+const HeaderButtonContainer = styled(FlexDivCentered)`
+    margin-top: 15px;
+`;
+
+const InfoContainer = styled(FlexDivColumn)`
+    font-style: normal;
+    font-weight: normal;
+    font-size: 25px;
+    line-height: 100%;
+    text-align: center;
+    text-transform: uppercase;
+    margin-top: 15px;
+`;
+
+const InfoLabel = styled.span``;
+
+const Info = styled.span`
+    font-weight: bold;
 `;
 
 const ContentWrapper = styled(FlexDivRow)``;
