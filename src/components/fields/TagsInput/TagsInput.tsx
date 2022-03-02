@@ -4,7 +4,7 @@ import ReactTags, { Tag } from 'react-tag-autocomplete';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import TagFilter from 'pages/Markets/components/TagFilter';
-import { TagFilterEnum } from 'constants/markets';
+import { MAXIMUM_TAGS, TagFilterEnum } from 'constants/markets';
 import { FlexDivStart } from 'styles/common';
 
 type TagsInputProps = {
@@ -22,14 +22,15 @@ const TagsInput: React.FC<TagsInputProps> = ({ tags, suggestions, label, onTagAd
     const findTagIndexInSelectedTags = (tag: Tag) => tags.findIndex((tagItem: Tag) => tag.id === tagItem.id);
 
     return (
-        <TagsContainer>
+        <TagsContainer isInputDisabled={tags.length >= MAXIMUM_TAGS}>
             {label && <FieldLabel>{label}:</FieldLabel>}
             <ReactTags
                 tags={tags}
-                suggestions={suggestions}
+                suggestions={suggestions.filter((suggestion: Tag) => !suggestion.disabled)}
                 onAddition={onTagAdd}
                 onDelete={onTagRemove}
                 placeholderText={t('common.tags-placeholder')}
+                removeButtonText={t('common.remove-tag-tooltip')}
                 autoresize={false}
                 allowBackspace={false}
             />
@@ -63,7 +64,7 @@ const TagsInput: React.FC<TagsInputProps> = ({ tags, suggestions, label, onTagAd
     );
 };
 
-const TagsContainer = styled(FieldContainer)`
+const TagsContainer = styled(FieldContainer)<{ isInputDisabled: boolean }>`
     .react-tags {
         position: relative;
         padding: 0 0 0 8px;
@@ -153,6 +154,8 @@ const TagsContainer = styled(FieldContainer)`
         font-size: inherit;
         line-height: inherit;
         color: ${(props) => props.theme.input.textColor.primary};
+
+        display: ${(props) => (props.isInputDisabled ? 'none' : 'block')};
 
         &::selection {
             background: ${(props) => props.theme.input.background.selection.primary};

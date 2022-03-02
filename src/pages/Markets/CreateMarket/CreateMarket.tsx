@@ -1,7 +1,7 @@
 import DatetimePicker from 'components/fields/DatetimePicker';
 import TextInput from 'components/fields/TextInput';
 import Toggle from 'components/fields/Toggle';
-import { DEFAULT_POSITIONING_DURATION, MarketType, TagFilterEnum } from 'constants/markets';
+import { DEFAULT_POSITIONING_DURATION, MarketType, MAXIMUM_TAGS, TagFilterEnum } from 'constants/markets';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
@@ -24,6 +24,13 @@ const CreateMarket: React.FC = () => {
         setDateTimeToUtcNoon(new Date(new Date().getTime() + DEFAULT_POSITIONING_DURATION))
     );
     const [tags, setTags] = useState<Tag[]>([]);
+    const [suggestions, setSuggestions] = useState<Tag[]>(
+        Object.values(TagFilterEnum).map((filterItem, index) => ({
+            id: index + 1,
+            name: t(`market.filter-label.tag.${filterItem.toLowerCase()}`),
+            disabled: false,
+        }))
+    );
 
     const addPosition = () => {
         setPositions([...positions, '']);
@@ -42,19 +49,28 @@ const CreateMarket: React.FC = () => {
     };
 
     const addTag = (tag: Tag) => {
-        setTags([...tags, tag]);
+        const tagIndex = tags.findIndex((tagItem: Tag) => tag.id === tagItem.id);
+        if (tagIndex === -1 && tags.length < MAXIMUM_TAGS) {
+            const suggestionsTagIndex = suggestions.findIndex((tagItem: Tag) => tag.id === tagItem.id);
+            const newSuggestions = [...suggestions];
+            newSuggestions[suggestionsTagIndex].disabled = true;
+            setSuggestions(suggestions);
+
+            setTags([...tags, tag]);
+        }
     };
 
     const removeTag = (index: number) => {
+        const tagId = tags[index].id;
+        const tagIndex = suggestions.findIndex((tagItem: Tag) => tagId === tagItem.id);
+        const newSuggestions = [...suggestions];
+        newSuggestions[tagIndex].disabled = false;
+        setSuggestions(suggestions);
+
         const newTags = [...tags];
         newTags.splice(index, 1);
         setTags(newTags);
     };
-
-    const suggestions: Tag[] = Object.values(TagFilterEnum).map((filterItem, index) => ({
-        id: index + 1,
-        name: t(`market.filter-label.tag.${filterItem.toLowerCase()}`),
-    }));
 
     return (
         <Container>
@@ -106,7 +122,7 @@ const CreateMarket: React.FC = () => {
                         suggestions={suggestions}
                         onTagAdd={addTag}
                         onTagRemove={removeTag}
-                        label={t('market.create-market.tags-label')}
+                        label={t('market.create-market.tags-label', { max: MAXIMUM_TAGS })}
                     />
                 </Form>
                 <Description />
