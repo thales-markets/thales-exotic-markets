@@ -96,7 +96,7 @@ const TagsContainer = styled(FieldContainer)<{ isInputDisabled: boolean }>`
     .react-tags__selected-tag {
         display: inline-block;
         box-sizing: border-box;
-        padding: 1px 8px;
+        padding: 0px 8px;
         margin: 3px 6px 0px 0;
         border: 1px solid ${(props) => props.theme.button.borderColor.primary};
         border-radius: 30px;
