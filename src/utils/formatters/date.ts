@@ -86,3 +86,8 @@ export const convertUTCToLocalDate = (date: Date) => {
 export const convertLocalToUTCDate = (date: Date) => {
     return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes()));
 };
+
+export const setDateTimeToUtcNoon = (date: Date) => {
+    date.setUTCHours(12, 0, 0, 0);
+    return date;
+};

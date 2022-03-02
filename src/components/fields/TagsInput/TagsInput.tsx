@@ -12,11 +12,11 @@ type TagsInputProps = {
     suggestions: Tag[];
     label?: string;
     disabled?: boolean;
-    onAddition: (tag: Tag) => void;
-    onDelete: (i: number) => void;
+    onTagAdd: (tag: Tag) => void;
+    onTagRemove: (i: number) => void;
 };
 
-const TagsInput: React.FC<TagsInputProps> = ({ tags, suggestions, label, onAddition, onDelete }) => {
+const TagsInput: React.FC<TagsInputProps> = ({ tags, suggestions, label, onTagAdd, onTagRemove }) => {
     const { t } = useTranslation();
 
     const findTagIndexInSelectedTags = (tag: Tag) => tags.findIndex((tagItem: Tag) => tag.id === tagItem.id);
@@ -25,10 +25,10 @@ const TagsInput: React.FC<TagsInputProps> = ({ tags, suggestions, label, onAddit
         <TagsContainer>
             {label && <FieldLabel>{label}:</FieldLabel>}
             <ReactTags
-                onDelete={onDelete}
-                onAddition={onAddition}
-                suggestions={suggestions}
                 tags={tags}
+                suggestions={suggestions}
+                onAddition={onTagAdd}
+                onDelete={onTagRemove}
                 placeholderText={t('common.tags-placeholder')}
                 autoresize={false}
                 allowBackspace={false}
@@ -47,9 +47,9 @@ const TagsInput: React.FC<TagsInputProps> = ({ tags, suggestions, label, onAddit
                             onClick={() => {
                                 const tagIndex = findTagIndexInSelectedTags(tag);
                                 if (tagIndex > -1) {
-                                    onDelete(tagIndex);
+                                    onTagRemove(tagIndex);
                                 } else {
-                                    onAddition(tag);
+                                    onTagAdd(tag);
                                 }
                             }}
                             key={filterItem}

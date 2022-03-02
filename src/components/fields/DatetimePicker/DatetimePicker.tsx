@@ -2,20 +2,29 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import ReactDatePicker, { ReactDatePickerProps } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { FieldContainer } from '../common';
+import { FieldContainer, FieldLabel } from '../common';
 import styled from 'styled-components';
+import { DATE_PICKER_MAX_DATE, DATE_PICKER_MIN_DATE } from 'constants/markets';
 
-type DatetimePickerProps = ReactDatePickerProps;
+type DatetimePickerProps = ReactDatePickerProps & {
+    label?: string;
+};
 
-export const DatetimePicker: React.FC<DatetimePickerProps> = ({ ...rest }) => {
+export const DatetimePicker: React.FC<DatetimePickerProps> = ({ label, ...rest }) => {
     const { t } = useTranslation();
 
     return (
         <DatePickerContainer>
+            {label && <FieldLabel>{label}:</FieldLabel>}
             <ReactDatePicker
-                dateFormat="MMM d, yyyy h:mm aa"
+                dateFormat="MMM d, yyyy | HH:mm"
+                timeFormat="HH:mm"
+                minDate={DATE_PICKER_MIN_DATE}
+                maxDate={DATE_PICKER_MAX_DATE}
                 placeholderText={t('common.select-date')}
                 autoComplete="off"
+                popperPlacement="bottom-start"
+                showTimeSelect
                 {...rest}
             />
         </DatePickerContainer>
@@ -110,7 +119,8 @@ const DatePickerContainer = styled(FieldContainer)`
         align-items: center !important;
         justify-content: center !important;
         :hover {
-            background: ${(props) => props.theme.background.secondary} !important;
+            background: ${(props) => props.theme.input.background.selection.primary} !important;
+            color: ${(props) => props.theme.textColor.tertiary} !important;
         }
     }
 
@@ -129,7 +139,6 @@ const DatePickerContainer = styled(FieldContainer)`
         background: ${(props) => props.theme.background.secondary} !important;
         color: ${(props) => props.theme.textColor.primary} !important;
         box-sizing: border-box;
-        border-radius: 50% !important;
         width: 1.7rem !important;
         margin: 0.166rem !important;
         padding: 0;
@@ -159,7 +168,7 @@ const DatePickerContainer = styled(FieldContainer)`
     }
 
     .react-datepicker__navigation {
-        top: 136px !important;
+        top: 135px !important;
         width: 28px !important;
         height: 28px !important;
         border: none !important;
@@ -213,14 +222,19 @@ const DatePickerContainer = styled(FieldContainer)`
         margin: auto;
         margin-bottom: 3px !important;
         color: ${(props) => props.theme.textColor.primary} !important;
+        :hover {
+            background: ${(props) => props.theme.input.background.selection.primary} !important;
+            color: ${(props) => props.theme.textColor.tertiary} !important;
+        }
     }
 
     .react-datepicker__time-list-item--selected {
         background: ${(props) => props.theme.background.secondary} !important;
-    }
-
-    .react-datepicker__time-list-item:hover {
-        background: ${(props) => props.theme.background.secondary} !important;
+        color: ${(props) => props.theme.textColor.primary} !important;
+        :hover {
+            background: ${(props) => props.theme.background.secondary} !important;
+            color: ${(props) => props.theme.textColor.primary} !important;
+        }
     }
 
     .react-datepicker-popper[data-placement^='bottom'] .react-datepicker__triangle {

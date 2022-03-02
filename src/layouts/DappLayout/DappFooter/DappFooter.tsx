@@ -13,7 +13,7 @@ const DappFooter: React.FC = () => {
         <SPAAnchor href={buildHref(ROUTES.Markets.Home)}>
             <Container>
                 <LeftIcon />
-                {t('common.back-to-markets')}
+                {t('market.back-to-markets')}
             </Container>
         </SPAAnchor>
     );
