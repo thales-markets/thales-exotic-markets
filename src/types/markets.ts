@@ -2,12 +2,13 @@ export type Market = {
     address: string;
     title: string;
     maturityDate: number;
-    options: string[];
+    positions: string[];
     isOpen: boolean;
     tags: string[];
     isClaimAvailable: boolean;
     numberOfOpenedDisputes: number;
     hasPosition: boolean;
+    isTicketType: boolean;
 };
 
 export type Markets = Market[];

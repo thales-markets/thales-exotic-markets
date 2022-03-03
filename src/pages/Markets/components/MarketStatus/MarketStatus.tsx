@@ -7,18 +7,24 @@ import { Market } from 'types/markets';
 
 type MarketStatusProps = {
     market: Market;
+    fontSize?: number;
+    labelFontSize?: number;
 };
 
-const MarketStatus: React.FC<MarketStatusProps> = ({ market }) => {
+const MarketStatus: React.FC<MarketStatusProps> = ({ market, fontSize, labelFontSize }) => {
     const { t } = useTranslation();
 
     return (
         <Container>
-            <StatusLabel>{t(`market.${market.isOpen ? 'time-remaining-label' : 'status-label'}`)}:</StatusLabel>
+            <StatusLabel labelFontSize={labelFontSize}>
+                {t(`market.${market.isOpen ? 'time-remaining-label' : 'status-label'}`)}:
+            </StatusLabel>
             {market.isOpen ? (
-                <TimeRemaining end={market.maturityDate} fontSize={25} />
+                <TimeRemaining end={market.maturityDate} fontSize={fontSize || 25} />
             ) : (
-                <Status>{t(`market.status.${market.isClaimAvailable ? 'claim-available' : 'maturity'}`)}</Status>
+                <Status fontSize={fontSize}>
+                    {t(`market.status.${market.isClaimAvailable ? 'claim-available' : 'maturity'}`)}
+                </Status>
             )}
         </Container>
     );
@@ -26,20 +32,20 @@ const MarketStatus: React.FC<MarketStatusProps> = ({ market }) => {
 
 const Container = styled(FlexDivColumnCentered)``;
 
-const StatusLabel = styled.span`
+const StatusLabel = styled.span<{ labelFontSize?: number }>`
     font-style: normal;
     font-weight: normal;
-    font-size: 15px;
+    font-size: ${(props) => props.labelFontSize || 15}px;
     line-height: 100%;
     text-align: center;
     color: ${(props) => props.theme.textColor.primary};
     margin-bottom: 4px;
 `;
 
-const Status = styled.span`
+const Status = styled.span<{ fontSize?: number }>`
     font-style: normal;
     font-weight: normal;
-    font-size: 25px;
+    font-size: ${(props) => props.fontSize || 25}px;
     line-height: 100%;
     text-align: center;
     color: ${(props) => props.theme.textColor.primary};

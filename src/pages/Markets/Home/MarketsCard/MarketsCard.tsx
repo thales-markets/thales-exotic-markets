@@ -19,11 +19,11 @@ const MarketsCard: React.FC<MarketsCardProps> = ({ market }) => {
     return (
         <Container isClaimAvailable={market.isClaimAvailable}>
             <MarketTitle>{market.title}</MarketTitle>
-            <Options>
-                {market.options.map((option: string) => (
-                    <Option key={option}>{option}</Option>
+            <Positions>
+                {market.positions.map((position: string) => (
+                    <Position key={position}>{position}</Position>
                 ))}
-            </Options>
+            </Positions>
             <MarketStatus market={market} />
             <CardFooter>
                 <Tags tags={market.tags} />
@@ -51,11 +51,11 @@ const Container = styled(FlexDivColumnCentered)<{ isClaimAvailable: boolean }>`
     }
 `;
 
-const Options = styled(FlexDivColumnCentered)`
+const Positions = styled(FlexDivColumnCentered)`
     margin-bottom: 25px;
 `;
 
-const Option = styled.span`
+const Position = styled.span`
     font-style: normal;
     font-weight: bold;
     font-size: 20px;

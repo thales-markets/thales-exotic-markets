@@ -2,100 +2,109 @@
     {
         "address": "1",
         "title": "Who will win the Super Bowl LVI?",
-        "options": ["Rams", "Bengals"],
+        "positions": ["Rams", "Bengals"],
         "maturityDate": 1645534784000,
         "isOpen": false,
         "tags": ["Sports", "NFL"],
         "isClaimAvailable": true,
         "numberOfOpenedDisputes": 2,
-        "hasPosition": false
+        "hasPosition": false,
+        "isTicketType": true
     },
     {
         "address": "2",
         "title": "Will Lakers win the NBA Championship 2022-23??",
-        "options": ["YES", "NO"],
+        "positions": ["YES", "NO"],
         "maturityDate": 1646068442000,
         "isOpen": true,
         "tags": ["Sports", "NBA"],
         "isClaimAvailable": false,
         "numberOfOpenedDisputes": 0,
-        "hasPosition": false
+        "hasPosition": false,
+        "isTicketType": true
     },
     {
         "address": "3",
         "title": "How many goals will be scored in Liverpool vs Manchester United?",
-        "options": ["0-2", "3-4", "5+"],
+        "positions": ["0-2", "3-4", "5+"],
         "maturityDate": 1647937376000,
         "isOpen": true,
         "tags": ["Sports", "Football"],
         "isClaimAvailable": false,
         "numberOfOpenedDisputes": 3,
-        "hasPosition": true
+        "hasPosition": true,
+        "isTicketType": true
     },
     {
         "address": "4",
         "title": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec vel odio quis eros scelerisque laoreet.",
-        "options": ["YES", "NO", "MAYBE", "DUNNO", "NEXT QUESTION"],
+        "positions": ["YES", "NO", "MAYBE", "DUNNO", "NEXT QUESTION"],
         "maturityDate": 1648487642000,
         "isOpen": true,
         "tags": ["Dummy", "Test"],
         "isClaimAvailable": false,
         "numberOfOpenedDisputes": 1,
-        "hasPosition": true
+        "hasPosition": true,
+        "isTicketType": true
     },
     {
         "address": "5",
         "title": "Lorem ipsum dolor sit amet",
-        "options": ["UP", "DOWN"],
+        "positions": ["UP", "DOWN"],
         "maturityDate": 1645809242000,
         "isOpen": true,
         "tags": ["Crypto", "DeFi"],
         "isClaimAvailable": false,
         "numberOfOpenedDisputes": 2,
-        "hasPosition": false
+        "hasPosition": false,
+        "isTicketType": true
     },
     {
         "address": "6",
         "title": "Thales at the end of year?",
-        "options": ["<1$", "1-2$", "2-10$", ">10$"],
+        "positions": ["<1$", "1-2$", "2-10$", ">10$"],
         "maturityDate": 1645614953000,
         "isOpen": false,
         "tags": ["Crypto", "DeFi"],
         "isClaimAvailable": false,
         "numberOfOpenedDisputes": 14,
-        "hasPosition": true
+        "hasPosition": true,
+        "isTicketType": true
     },
     {
         "address": "7",
         "title": "NBA MVP?",
-        "options": ["Nikola Jokic", "Joel Embiid", "Giannis Antetokounmpo", "DeMar DeRozan", "Chris Paul", "Other"],
+        "positions": ["Nikola Jokic", "Joel Embiid", "Giannis Antetokounmpo", "DeMar DeRozan", "Chris Paul", "Other"],
         "maturityDate": 1645577993000,
         "isOpen": false,
         "tags": ["Sports", "NBA"],
         "isClaimAvailable": true,
         "numberOfOpenedDisputes": 0,
-        "hasPosition": false
+        "hasPosition": false,
+        "isTicketType": true
     },
     {
         "address": "8",
         "title": "Lorem ipsum dolor sit amet",
-        "options": ["Yes", "No"],
+        "positions": ["Yes", "No"],
         "maturityDate": 1645576253000,
         "isOpen": false,
         "tags": ["Sports", "NBA", "Crypto", "DeFi", "Football", "Basketball"],
         "isClaimAvailable": true,
         "numberOfOpenedDisputes": 7,
-        "hasPosition": true
+        "hasPosition": true,
+        "isTicketType": true
     },
     {
         "address": "9",
         "title": "Who is the best?",
-        "options": ["Thales", "Thales OP"],
+        "positions": ["Thales", "Thales OP"],
         "maturityDate": 1645533044000,
         "isOpen": false,
         "tags": ["Crypto", "DeFi", "Thales", "ETH", "OP"],
         "isClaimAvailable": false,
         "numberOfOpenedDisputes": 0,
-        "hasPosition": true
+        "hasPosition": true,
+        "isTicketType": true
     }
 ]

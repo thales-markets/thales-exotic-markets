@@ -5,14 +5,15 @@ import { FlexDivCentered, FlexDivStart } from 'styles/common';
 
 type TagsProps = {
     tags: string[];
+    labelFontSize?: number;
 };
 
-const Tags: React.FC<TagsProps> = ({ tags }) => {
+const Tags: React.FC<TagsProps> = ({ tags, labelFontSize }) => {
     const { t } = useTranslation();
 
     return (
         <Container>
-            <TagLabel>{t('market.tags-label')}:</TagLabel>
+            <TagLabel labelFontSize={labelFontSize}>{t('market.tags-label')}:</TagLabel>
             {tags.map((tag: string) => (
                 <Tag key={tag}>{tag}</Tag>
             ))}
@@ -25,10 +26,10 @@ const Container = styled(FlexDivStart)`
     align-items: center;
 `;
 
-export const TagLabel = styled.span`
+export const TagLabel = styled.span<{ labelFontSize?: number }>`
     font-style: normal;
     font-weight: bold;
-    font-size: 15px;
+    font-size: ${(props) => props.labelFontSize || 15}px;
     line-height: 100%;
     text-align: center;
     color: ${(props) => props.theme.textColor.primary};
