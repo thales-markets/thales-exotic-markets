@@ -67,7 +67,7 @@ const App = () => {
                 },
                 network: (networkId) => {
                     if (networkId) {
-                        if (networkId && isNetworkSupported(networkId)) {
+                        if (isNetworkSupported(networkId)) {
                             if (onboardConnector.onboard.getState().wallet.provider) {
                                 const provider = loadProvider({
                                     provider: onboardConnector.onboard.getState().wallet.provider,

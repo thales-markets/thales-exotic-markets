@@ -58,10 +58,17 @@
             "claim-available": "Claim available",
             "maturity": "Maturity"
         },
+        "pool-size-label": "Pool size",
+        "total-pool-size-label": "Total pool size",
+        "roi-label": "ROI",
+        "ticekt-price-label": "Ticket price",
+        "return-label": "Potential max return",
         "button": {
             "claim-label": "Claim",
             "open-dispute-label": "Open dispute",
-            "create-market-label": "Create market"
+            "create-market-label": "Create market",
+            "buy-label": "Buy",
+            "withdraw-label": "Withdraw"
         },
         "filter-label": {
             "global": {

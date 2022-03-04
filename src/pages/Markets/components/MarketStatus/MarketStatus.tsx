@@ -2,16 +2,17 @@ import TimeRemaining from 'components/TimeRemaining';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { FlexDivColumnCentered } from 'styles/common';
+import { FlexDivColumn } from 'styles/common';
 import { Market } from 'types/markets';
 
 type MarketStatusProps = {
     market: Market;
     fontSize?: number;
+    fontWeight?: number;
     labelFontSize?: number;
 };
 
-const MarketStatus: React.FC<MarketStatusProps> = ({ market, fontSize, labelFontSize }) => {
+const MarketStatus: React.FC<MarketStatusProps> = ({ market, fontSize, fontWeight, labelFontSize }) => {
     const { t } = useTranslation();
 
     return (
@@ -20,7 +21,7 @@ const MarketStatus: React.FC<MarketStatusProps> = ({ market, fontSize, labelFont
                 {t(`market.${market.isOpen ? 'time-remaining-label' : 'status-label'}`)}:
             </StatusLabel>
             {market.isOpen ? (
-                <TimeRemaining end={market.maturityDate} fontSize={fontSize || 25} />
+                <TimeRemaining end={market.maturityDate} fontSize={fontSize} fontWeight={fontWeight} />
             ) : (
                 <Status fontSize={fontSize}>
                     {t(`market.status.${market.isClaimAvailable ? 'claim-available' : 'maturity'}`)}
@@ -30,7 +31,7 @@ const MarketStatus: React.FC<MarketStatusProps> = ({ market, fontSize, labelFont
     );
 };
 
-const Container = styled(FlexDivColumnCentered)``;
+const Container = styled(FlexDivColumn)``;
 
 const StatusLabel = styled.span<{ labelFontSize?: number }>`
     font-style: normal;

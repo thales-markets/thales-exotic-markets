@@ -40,7 +40,6 @@ const CheckboxContainer = styled.label`
     display: block;
     position: relative;
     padding-left: 35px;
-    margin-bottom: 10px;
     cursor: pointer;
     font-style: normal;
     font-weight: bold;
@@ -61,6 +60,8 @@ const CheckboxContainer = styled.label`
         opacity: 0.5;
         cursor: default;
     }
+    align-self: center;
+    white-space: nowrap;
 `;
 
 const Checkmark = styled.span`
