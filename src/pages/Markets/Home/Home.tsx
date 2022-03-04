@@ -41,7 +41,7 @@ const Home: React.FC = () => {
 
     const markets: Markets = useMemo(() => {
         if (marketsQuery.isSuccess && marketsQuery.data) {
-            return marketsQuery.data;
+            return marketsQuery.data as Markets;
         }
         return [];
     }, [marketsQuery.isSuccess, marketsQuery.data]);

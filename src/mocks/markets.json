@@ -9,7 +9,8 @@
         "isClaimAvailable": false,
         "numberOfOpenedDisputes": 3,
         "hasPosition": true,
-        "isTicketType": true
+        "isTicketType": true,
+        "winningPosition": null
     },
     {
         "address": "2",
@@ -21,7 +22,8 @@
         "isClaimAvailable": false,
         "numberOfOpenedDisputes": 2,
         "hasPosition": true,
-        "isTicketType": false
+        "isTicketType": false,
+        "winningPosition": null
     },
     {
         "address": "3",
@@ -33,7 +35,8 @@
         "isClaimAvailable": false,
         "numberOfOpenedDisputes": 0,
         "hasPosition": true,
-        "isTicketType": true
+        "isTicketType": true,
+        "winningPosition": null
     },
     {
         "address": "4",
@@ -45,7 +48,8 @@
         "isClaimAvailable": false,
         "numberOfOpenedDisputes": 4,
         "hasPosition": false,
-        "isTicketType": false
+        "isTicketType": false,
+        "winningPosition": null
     },
     {
         "address": "5",
@@ -57,7 +61,8 @@
         "isClaimAvailable": false,
         "numberOfOpenedDisputes": 6,
         "hasPosition": false,
-        "isTicketType": true
+        "isTicketType": true,
+        "winningPosition": null
     },
     {
         "address": "6",
@@ -69,7 +74,8 @@
         "isClaimAvailable": false,
         "numberOfOpenedDisputes": 10,
         "hasPosition": true,
-        "isTicketType": true
+        "isTicketType": true,
+        "winningPosition": ">10$"
     },
     {
         "address": "7",
@@ -81,7 +87,8 @@
         "isClaimAvailable": true,
         "numberOfOpenedDisputes": 0,
         "hasPosition": true,
-        "isTicketType": true
+        "isTicketType": true,
+        "winningPosition": "Nikola Jokic"
     },
     {
         "address": "8",
@@ -93,7 +100,8 @@
         "isClaimAvailable": false,
         "numberOfOpenedDisputes": 1,
         "hasPosition": false,
-        "isTicketType": false
+        "isTicketType": false,
+        "winningPosition": "Yes"
     },
     {
         "address": "9",
@@ -105,6 +113,7 @@
         "isClaimAvailable": true,
         "numberOfOpenedDisputes": 7,
         "hasPosition": false,
-        "isTicketType": false
+        "isTicketType": false,
+        "winningPosition": "Thales"
     }
 ]

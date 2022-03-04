@@ -24,6 +24,7 @@ const TEMP_ROI = 1.2356;
 const TEMP_TOTAL_POOL_SIZE = 568678.65;
 const TEMP_TICKET_PRICE = 30;
 const TEMP_MAX_RETURN = 654;
+const TEMP_CLAIM_WINNINGS = 2389.54;
 
 type MarketProps = RouteComponentProps<{
     marketAddress: string;
@@ -57,18 +58,44 @@ const Market: React.FC<MarketProps> = (props) => {
                 <>
                     <MarketTitle fontSize={40}>{market.title}</MarketTitle>
                     <Positions>
-                        {market.positions.map((position: string, index: number) => (
-                            <Position key={position}>
-                                <Checkbox
-                                    checked={index === 0}
-                                    value={index === 0 ? 'true' : 'false'}
-                                    onChange={() => {}}
-                                    label={position}
-                                />
+                        {market.isOpen ? (
+                            market.positions.map((position: string, index: number) => (
+                                <Position key={position}>
+                                    <Checkbox
+                                        checked={index === 0}
+                                        value={index === 0 ? 'true' : 'false'}
+                                        onChange={() => {}}
+                                        label={position}
+                                    />
+                                    <Info>
+                                        <InfoLabel>{t('market.pool-size-label')}:</InfoLabel>
+                                        <InfoContent>
+                                            {formatCurrencyWithKey(
+                                                CURRENCY_MAP.sUSD,
+                                                TEMP_POOL_SIZE,
+                                                DEFAULT_CURRENCY_DECIMALS,
+                                                true
+                                            )}
+                                        </InfoContent>
+                                    </Info>
+                                    <Info>
+                                        <InfoLabel>{t('market.roi-label')}:</InfoLabel>
+                                        <InfoContent>{formatPercentage(TEMP_ROI)}</InfoContent>
+                                    </Info>
+                                </Position>
+                            ))
+                        ) : (
+                            <Position>
+                                <MainInfo>{market.winningPosition}</MainInfo>{' '}
                                 <Info>
                                     <InfoLabel>{t('market.pool-size-label')}:</InfoLabel>
                                     <InfoContent>
-                                        {formatCurrencyWithKey(CURRENCY_MAP.sUSD, TEMP_POOL_SIZE)}
+                                        {formatCurrencyWithKey(
+                                            CURRENCY_MAP.sUSD,
+                                            TEMP_POOL_SIZE,
+                                            DEFAULT_CURRENCY_DECIMALS,
+                                            true
+                                        )}
                                     </InfoContent>
                                 </Info>
                                 <Info>
@@ -76,38 +103,62 @@ const Market: React.FC<MarketProps> = (props) => {
                                     <InfoContent>{formatPercentage(TEMP_ROI)}</InfoContent>
                                 </Info>
                             </Position>
-                        ))}
+                        )}
                     </Positions>
                     {showTicketInfo && (
-                        <TicketInfo>
-                            {t('market.ticekt-price-label')}{' '}
+                        <MainInfo>
+                            {t('market.ticket-price-label')}{' '}
                             {formatCurrencyWithKey(
                                 CURRENCY_MAP.sUSD,
                                 TEMP_TICKET_PRICE,
                                 DEFAULT_CURRENCY_DECIMALS,
                                 true
                             )}
-                        </TicketInfo>
+                        </MainInfo>
                     )}
-                    <Info fontSize={20}>
-                        <InfoLabel>{t('market.return-label')}:</InfoLabel>
-                        <InfoContent>{formatCurrencyWithKey(CURRENCY_MAP.sUSD, TEMP_MAX_RETURN)}</InfoContent>
-                    </Info>
+                    {market.isClaimAvailable && (
+                        <MainInfo>
+                            {t('market.claim-winnings-label')}{' '}
+                            {formatCurrencyWithKey(CURRENCY_MAP.sUSD, TEMP_CLAIM_WINNINGS)}
+                        </MainInfo>
+                    )}
+                    {market.isOpen && (
+                        <Info fontSize={20}>
+                            <InfoLabel>{t('market.return-label')}:</InfoLabel>
+                            <InfoContent>
+                                {formatCurrencyWithKey(
+                                    CURRENCY_MAP.sUSD,
+                                    TEMP_MAX_RETURN,
+                                    DEFAULT_CURRENCY_DECIMALS,
+                                    true
+                                )}
+                            </InfoContent>
+                        </Info>
+                    )}
                     <ButtonContainer>
                         {showTicketBuy && <BuyButton type="secondary">{t('market.button.buy-label')}</BuyButton>}
                         {showTicketWithdraw && (
                             <MarketButton type="secondary">{t('market.button.withdraw-label')}</MarketButton>
                         )}
+                        {market.isClaimAvailable && <ClaimButton>{t('market.button.claim-label')}</ClaimButton>}
                     </ButtonContainer>
-                    <MarketStatus market={market} fontSize={40} labelFontSize={20} fontWeight={700} />
+                    {market.isOpen && (
+                        <MarketStatus market={market} fontSize={40} labelFontSize={20} fontWeight={700} />
+                    )}
                     <Footer>
                         <Tags tags={market.tags} labelFontSize={20} />
                         <Info fontSize={20}>
                             <InfoLabel>{t('market.total-pool-size-label')}:</InfoLabel>
-                            <InfoContent>{formatCurrencyWithKey(CURRENCY_MAP.sUSD, TEMP_TOTAL_POOL_SIZE)}</InfoContent>
+                            <InfoContent>
+                                {formatCurrencyWithKey(
+                                    CURRENCY_MAP.sUSD,
+                                    TEMP_TOTAL_POOL_SIZE,
+                                    DEFAULT_CURRENCY_DECIMALS,
+                                    true
+                                )}
+                            </InfoContent>
                         </Info>
                         <FooterButtonsContainer>
-                            {market.isClaimAvailable && <Button>{t('market.button.claim-label')}</Button>}
                             <OpenDisputeButton numberOfOpenedDisputes={market.numberOfOpenedDisputes}>
                                 {t('market.button.open-dispute-label')}
                             </OpenDisputeButton>
@@ -158,7 +209,7 @@ const InfoContent = styled.span`
     font-weight: 700;
 `;
 
-const TicketInfo = styled.span`
+const MainInfo = styled.span`
     font-style: normal;
     font-weight: bold;
     font-size: 40px;
@@ -180,6 +231,13 @@ const MarketButton = styled(Button)`
 
 const BuyButton = styled(MarketButton)`
     text-transform: uppercase;
+    margin-top: 15px;
+    margin-bottom: 20px;
+`;
+
+const ClaimButton = styled(MarketButton)`
+    margin-top: 15px;
+    margin-bottom: 20px;
 `;
 
 const Footer = styled(FlexDivRow)`

@@ -9,6 +9,7 @@ export type Market = {
     numberOfOpenedDisputes: number;
     hasPosition: boolean;
     isTicketType: boolean;
+    winningPosition: string | null;
 };
 
 export type Markets = Market[];
