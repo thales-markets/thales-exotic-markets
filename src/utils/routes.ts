@@ -17,4 +17,6 @@ export const buildHref = (route: string) => `${ifIpfsDeployment ? '#' : ''}${rou
 export const buildMarketLink = (marketAddress: string) =>
     `${ifIpfsDeployment ? '#' : ''}${ROUTES.Markets.Home}/${marketAddress}`;
 
+export const buildOpenDisputeLink = (marketAddress: string) => `${buildMarketLink(marketAddress)}/open-dispute`;
+
 export { history };

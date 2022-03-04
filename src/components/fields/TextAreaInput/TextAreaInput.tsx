@@ -1,7 +1,7 @@
 import React from 'react';
-import { FieldContainer, FieldLabel, FieldNote, Input } from '../common';
+import { FieldContainer, FieldLabel, FieldNote, TextArea } from '../common';
 
-type TextInputProps = {
+type TextAreaInputProps = {
     value: string;
     label?: string;
     note?: string;
@@ -10,14 +10,21 @@ type TextInputProps = {
     onChange: (value: string) => void;
 };
 
-const TextInput: React.FC<TextInputProps> = ({ value, label, note, placeholder, disabled, onChange, ...rest }) => {
+const TextAreaInput: React.FC<TextAreaInputProps> = ({
+    value,
+    label,
+    note,
+    placeholder,
+    disabled,
+    onChange,
+    ...rest
+}) => {
     return (
         <FieldContainer>
             {label && <FieldLabel>{label}:</FieldLabel>}
-            <Input
+            <TextArea
                 {...rest}
                 value={value}
-                type="text"
                 onChange={(event) => onChange(event.target.value)}
                 placeholder={placeholder}
                 disabled={disabled}
@@ -27,4 +34,4 @@ const TextInput: React.FC<TextInputProps> = ({ value, label, note, placeholder, 
     );
 };
 
-export default TextInput;
+export default TextAreaInput;

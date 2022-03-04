@@ -24,6 +24,7 @@ const Home = lazy(() => import('pages/Home'));
 const Markets = lazy(() => import('pages/Markets/Home'));
 const CreateMarket = lazy(() => import('pages/Markets/CreateMarket'));
 const Market = lazy(() => import('pages/Markets/Market'));
+const OpenDispute = lazy(() => import('pages/Markets/Market/OpenDispute'));
 
 const App = () => {
     const dispatch = useDispatch();
@@ -131,6 +132,15 @@ const App = () => {
                                     <CreateMarket />
                                 </DappLayout>
                             </Route>
+                            <Route
+                                exact
+                                path={ROUTES.Markets.OpenDispute}
+                                render={(routeProps) => (
+                                    <DappLayout>
+                                        <OpenDispute {...routeProps} />
+                                    </DappLayout>
+                                )}
+                            />
                             <Route
                                 exact
                                 path={ROUTES.Markets.Market}

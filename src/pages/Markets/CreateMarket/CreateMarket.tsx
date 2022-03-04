@@ -1,7 +1,14 @@
 import DatetimePicker from 'components/fields/DatetimePicker';
 import TextInput from 'components/fields/TextInput';
+import TextAreaInput from 'components/fields/TextAreaInput';
 import Toggle from 'components/fields/Toggle';
-import { DEFAULT_POSITIONING_DURATION, MarketType, MAXIMUM_TAGS, TagFilterEnum } from 'constants/markets';
+import {
+    DEFAULT_POSITIONING_DURATION,
+    MarketType,
+    MAXIMUM_INPUT_CHARACTERS,
+    MAXIMUM_TAGS,
+    TagFilterEnum,
+} from 'constants/markets';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
@@ -78,15 +85,17 @@ const CreateMarket: React.FC = () => {
             <Header />
             <ContentWrapper>
                 <Form>
-                    <TextInput
+                    <TextAreaInput
                         value={question}
                         onChange={setQuestion}
                         label={t('market.create-market.question-label')}
+                        note={t('common.max-input-characters-note', { max: MAXIMUM_INPUT_CHARACTERS })}
                     />
                     <TextInput
                         value={dataSource}
                         onChange={setDataSource}
                         label={t('market.create-market.data-source-label')}
+                        note={t('common.max-input-characters-note', { max: MAXIMUM_INPUT_CHARACTERS })}
                     />
                     <Positions
                         positions={positions}
@@ -158,7 +167,7 @@ const CreateMarketButton = styled(Button)`
 `;
 
 const ButtonContainer = styled(FlexDivCentered)`
-    margin: 40px 0;
+    margin: 40px 0 30px 0;
 `;
 
 export default CreateMarket;

@@ -1,8 +1,12 @@
 import Button from 'components/Button';
+import { CURRENCY_MAP, DEFAULT_CURRENCY_DECIMALS } from 'constants/currency';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { FlexDivCentered, FlexDivColumn, FlexDivRow } from 'styles/common';
+import { formatCurrencyWithKey } from 'utils/formatters/number';
+
+const TEMP_BOND_DEPOSIT = 100;
 
 const Header: React.FC = () => {
     const { t } = useTranslation();
@@ -15,10 +19,12 @@ const Header: React.FC = () => {
                 <ButtonContainer>
                     <HeaderButton>{t('market.create-market.header.button.deposit-label')}</HeaderButton>
                 </ButtonContainer>
-                <InfoContainer>
+                <Info>
                     <InfoLabel>{t('market.create-market.header.info.deposit-bond')}</InfoLabel>
-                    <Info>100 THALES</Info>
-                </InfoContainer>
+                    <InfoContent>
+                        {formatCurrencyWithKey(CURRENCY_MAP.THALES, TEMP_BOND_DEPOSIT, DEFAULT_CURRENCY_DECIMALS, true)}
+                    </InfoContent>
+                </Info>
             </Step>
             <Step>
                 <Title>{t('market.create-market.header.step-title.create-market')}</Title>
@@ -89,7 +95,7 @@ const HeaderButton = styled(Button)`
     height: 32px;
 `;
 
-const InfoContainer = styled(FlexDivColumn)`
+const Info = styled(FlexDivColumn)`
     font-style: normal;
     font-weight: normal;
     font-size: 25px;
@@ -101,7 +107,7 @@ const InfoContainer = styled(FlexDivColumn)`
 
 const InfoLabel = styled.span``;
 
-const Info = styled.span`
+const InfoContent = styled.span`
     font-weight: bold;
 `;
 

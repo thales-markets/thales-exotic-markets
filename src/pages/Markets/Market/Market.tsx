@@ -17,6 +17,8 @@ import Tags from '../components/Tags';
 import { Market as MarketInfo } from 'types/markets';
 import { formatCurrencyWithKey, formatPercentage } from 'utils/formatters/number';
 import { CURRENCY_MAP, DEFAULT_CURRENCY_DECIMALS } from 'constants/currency';
+import SPAAnchor from 'components/SPAAnchor';
+import { buildOpenDisputeLink } from 'utils/routes';
 
 // temp constants for mocks
 const TEMP_POOL_SIZE = 15678.65;
@@ -159,9 +161,11 @@ const Market: React.FC<MarketProps> = (props) => {
                             </InfoContent>
                         </Info>
                         <FooterButtonsContainer>
-                            <OpenDisputeButton numberOfOpenedDisputes={market.numberOfOpenedDisputes}>
-                                {t('market.button.open-dispute-label')}
-                            </OpenDisputeButton>
+                            <SPAAnchor href={buildOpenDisputeLink(market.address)}>
+                                <OpenDisputeButton numberOfOpenedDisputes={market.numberOfOpenedDisputes}>
+                                    {t('market.button.open-dispute-label')}
+                                </OpenDisputeButton>
+                            </SPAAnchor>
                         </FooterButtonsContainer>
                     </Footer>
                 </>

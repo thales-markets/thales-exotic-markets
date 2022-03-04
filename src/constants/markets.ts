@@ -48,3 +48,5 @@ export const DATE_PICKER_MIN_DATE = TODAYS_DATE; // today's date
 const maxDate = new Date();
 maxDate.setFullYear(maxDate.getFullYear() + 2);
 export const DATE_PICKER_MAX_DATE = maxDate; // 2 years from now
+
+export const MAXIMUM_INPUT_CHARACTERS = 100;

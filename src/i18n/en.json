@@ -35,7 +35,8 @@
         "dapp": "dapp",
         "select-date": "Select date...",
         "tags-placeholder": "Enter tag...",
-        "remove-tag-tooltip": "Click to remove tag"
+        "remove-tag-tooltip": "Click to remove tag",
+        "max-input-characters-note": "Maximum {{max}} characters"
     },
     "header": {
         "links": {
@@ -134,6 +135,15 @@
             },
             "button": {
                 "create-market-label": "Create market"
+            }
+        },
+        "dispute": {
+            "open-dispute-description": "To open a dispute the wallet raising the dispute needs to put up {{amount}} as a bond",
+            "deposit-bond-label": "Bond deposit",
+            "reason-for-dispute-label": "Reason for dispute",
+            "button": {
+                "deposit-label": "Deposit",
+                "open-dispute-label": "Open dispute"
             }
         }
     }
