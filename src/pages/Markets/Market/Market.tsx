@@ -56,10 +56,10 @@ const Market: React.FC<MarketProps> = (props) => {
     const showTicketInfo = market && market.isOpen && market.isTicketType;
 
     return (
-        <FlexDivColumn>
+        <Container>
             {market ? (
                 <>
-                    <Container>
+                    <MarketContainer>
                         <MarketTitle fontSize={40}>{market.title}</MarketTitle>
                         <Positions>
                             {market.isOpen ? (
@@ -170,17 +170,22 @@ const Market: React.FC<MarketProps> = (props) => {
                                 </SPAAnchor>
                             </FooterButtonsContainer>
                         </Footer>
-                    </Container>
+                    </MarketContainer>
                     {market.disputes && <Disputes disputes={market.disputes} />}
                 </>
             ) : (
                 <SimpleLoader />
             )}
-        </FlexDivColumn>
+        </Container>
     );
 };
 
 const Container = styled(FlexDivColumn)`
+    width: 100%;
+    flex: initial;
+`;
+
+const MarketContainer = styled(FlexDivColumn)`
     margin-top: 40px;
     box-shadow: 0px 20px 40px rgba(0, 0, 0, 0.35);
     border-radius: 25px;
