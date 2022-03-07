@@ -1,15 +1,15 @@
 import React, { FC, createContext, useContext } from 'react';
-import { Market } from 'types/markets';
+import { MarketInfo } from 'types/markets';
 
-const MarketContext = createContext<Market | null>(null);
+const MarketContext = createContext<MarketInfo | null>(null);
 
 type MarketContextProps = {
     children: React.ReactNode;
-    market: Market;
+    market: MarketInfo;
 };
 
 export const MarketProvider: FC<MarketContextProps> = ({ children, market }) => (
     <MarketContext.Provider value={market}>{children}</MarketContext.Provider>
 );
 
-export const useMarketContext = () => useContext(MarketContext) as Market;
+export const useMarketContext = () => useContext(MarketContext) as MarketInfo;

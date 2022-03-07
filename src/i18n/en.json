@@ -144,6 +144,12 @@
             "button": {
                 "deposit-label": "Deposit",
                 "open-dispute-label": "Open dispute"
+            },
+            "status": {
+                "open": "Open",
+                "refused": "Refused",
+                "accepted": "Accepted",
+                "accepted-slashed": "Accepted slashed"
             }
         }
     }

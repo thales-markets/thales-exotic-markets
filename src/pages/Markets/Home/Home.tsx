@@ -12,7 +12,7 @@ import { getNetworkId } from 'redux/modules/wallet';
 import { RootState } from 'redux/rootReducer';
 import styled from 'styled-components';
 import { FlexDivCentered, FlexDivColumn, FlexDivRow, FlexDivStart } from 'styles/common';
-import { Market, Markets, SortOptionType } from 'types/markets';
+import { MarketInfo, Markets, SortOptionType } from 'types/markets';
 import GlobalFilter from '../components/GlobalFilter';
 import TagFilter from '../components/TagFilter';
 import { TagLabel } from '../components/Tags/Tags';
@@ -50,17 +50,17 @@ const Home: React.FC = () => {
         let filteredMarkets = markets;
 
         if (tagFilter !== TagFilterEnum.All) {
-            filteredMarkets = filteredMarkets.filter((market: Market) => market.tags.includes(tagFilter));
+            filteredMarkets = filteredMarkets.filter((market: MarketInfo) => market.tags.includes(tagFilter));
         }
         switch (globalFilter) {
             case GlobalFilterEnum.Disputed:
-                filteredMarkets = filteredMarkets.filter((market: Market) => market.numberOfOpenedDisputes > 0);
+                filteredMarkets = filteredMarkets.filter((market: MarketInfo) => market.numberOfOpenedDisputes > 0);
                 break;
             case GlobalFilterEnum.YourPositions:
-                filteredMarkets = filteredMarkets.filter((market: Market) => market.hasPosition);
+                filteredMarkets = filteredMarkets.filter((market: MarketInfo) => market.hasPosition);
                 break;
             case GlobalFilterEnum.Claim:
-                filteredMarkets = filteredMarkets.filter((market: Market) => market.isClaimAvailable);
+                filteredMarkets = filteredMarkets.filter((market: MarketInfo) => market.isClaimAvailable);
                 break;
         }
 
@@ -79,7 +79,7 @@ const Home: React.FC = () => {
     const searchFilteredMarkets = useDebouncedMemo(
         () => {
             return marketSearch
-                ? filteredMarkets.filter((market: Market) =>
+                ? filteredMarkets.filter((market: MarketInfo) =>
                       market.title.toLowerCase().includes(marketSearch.toLowerCase())
                   )
                 : filteredMarkets;
@@ -175,7 +175,7 @@ const Home: React.FC = () => {
     );
 };
 
-const sortByField = (a: Market, b: Market, direction: SortDirection, field: keyof Market) => {
+const sortByField = (a: MarketInfo, b: MarketInfo, direction: SortDirection, field: keyof MarketInfo) => {
     if (direction === SortDirection.ASC) {
         return (a[field] as any) > (b[field] as any) ? 1 : -1;
     }

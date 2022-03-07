@@ -50,3 +50,10 @@ maxDate.setFullYear(maxDate.getFullYear() + 2);
 export const DATE_PICKER_MAX_DATE = maxDate; // 2 years from now
 
 export const MAXIMUM_INPUT_CHARACTERS = 100;
+
+export enum DisputeStatus {
+    Open = 'open',
+    Refused = 'refused',
+    Accepted = 'accepted',
+    AcceptedSlashed = 'accepted-slashed',
+}

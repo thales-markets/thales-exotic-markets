@@ -3,10 +3,10 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { FlexDivColumn } from 'styles/common';
-import { Market } from 'types/markets';
+import { MarketInfo } from 'types/markets';
 
 type MarketStatusProps = {
-    market: Market;
+    market: MarketInfo;
     fontSize?: number;
     fontWeight?: number;
     labelFontSize?: number;

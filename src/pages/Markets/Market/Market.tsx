@@ -14,11 +14,12 @@ import MarketStatus from '../components/MarketStatus';
 import MarketTitle from '../components/MarketTitle';
 import OpenDisputeButton from '../components/OpenDisputeButton';
 import Tags from '../components/Tags';
-import { Market as MarketInfo } from 'types/markets';
+import { MarketInfo } from 'types/markets';
 import { formatCurrencyWithKey, formatPercentage } from 'utils/formatters/number';
 import { CURRENCY_MAP, DEFAULT_CURRENCY_DECIMALS } from 'constants/currency';
 import SPAAnchor from 'components/SPAAnchor';
 import { buildOpenDisputeLink } from 'utils/routes';
+import Disputes from './Disputes';
 
 // temp constants for mocks
 const TEMP_POOL_SIZE = 15678.65;
@@ -55,20 +56,41 @@ const Market: React.FC<MarketProps> = (props) => {
     const showTicketInfo = market && market.isOpen && market.isTicketType;
 
     return (
-        <Container>
+        <FlexDivColumn>
             {market ? (
                 <>
-                    <MarketTitle fontSize={40}>{market.title}</MarketTitle>
-                    <Positions>
-                        {market.isOpen ? (
-                            market.positions.map((position: string, index: number) => (
-                                <Position key={position}>
-                                    <Checkbox
-                                        checked={index === 0}
-                                        value={index === 0 ? 'true' : 'false'}
-                                        onChange={() => {}}
-                                        label={position}
-                                    />
+                    <Container>
+                        <MarketTitle fontSize={40}>{market.title}</MarketTitle>
+                        <Positions>
+                            {market.isOpen ? (
+                                market.positions.map((position: string, index: number) => (
+                                    <Position key={position}>
+                                        <Checkbox
+                                            checked={index === 0}
+                                            value={index === 0 ? 'true' : 'false'}
+                                            onChange={() => {}}
+                                            label={position}
+                                        />
+                                        <Info>
+                                            <InfoLabel>{t('market.pool-size-label')}:</InfoLabel>
+                                            <InfoContent>
+                                                {formatCurrencyWithKey(
+                                                    CURRENCY_MAP.sUSD,
+                                                    TEMP_POOL_SIZE,
+                                                    DEFAULT_CURRENCY_DECIMALS,
+                                                    true
+                                                )}
+                                            </InfoContent>
+                                        </Info>
+                                        <Info>
+                                            <InfoLabel>{t('market.roi-label')}:</InfoLabel>
+                                            <InfoContent>{formatPercentage(TEMP_ROI)}</InfoContent>
+                                        </Info>
+                                    </Position>
+                                ))
+                            ) : (
+                                <Position>
+                                    <MainInfo>{market.winningPosition}</MainInfo>{' '}
                                     <Info>
                                         <InfoLabel>{t('market.pool-size-label')}:</InfoLabel>
                                         <InfoContent>
@@ -85,94 +107,76 @@ const Market: React.FC<MarketProps> = (props) => {
                                         <InfoContent>{formatPercentage(TEMP_ROI)}</InfoContent>
                                     </Info>
                                 </Position>
-                            ))
-                        ) : (
-                            <Position>
-                                <MainInfo>{market.winningPosition}</MainInfo>{' '}
-                                <Info>
-                                    <InfoLabel>{t('market.pool-size-label')}:</InfoLabel>
-                                    <InfoContent>
-                                        {formatCurrencyWithKey(
-                                            CURRENCY_MAP.sUSD,
-                                            TEMP_POOL_SIZE,
-                                            DEFAULT_CURRENCY_DECIMALS,
-                                            true
-                                        )}
-                                    </InfoContent>
-                                </Info>
-                                <Info>
-                                    <InfoLabel>{t('market.roi-label')}:</InfoLabel>
-                                    <InfoContent>{formatPercentage(TEMP_ROI)}</InfoContent>
-                                </Info>
-                            </Position>
-                        )}
-                    </Positions>
-                    {showTicketInfo && (
-                        <MainInfo>
-                            {t('market.ticket-price-label')}{' '}
-                            {formatCurrencyWithKey(
-                                CURRENCY_MAP.sUSD,
-                                TEMP_TICKET_PRICE,
-                                DEFAULT_CURRENCY_DECIMALS,
-                                true
                             )}
-                        </MainInfo>
-                    )}
-                    {market.isClaimAvailable && (
-                        <MainInfo>
-                            {t('market.claim-winnings-label')}{' '}
-                            {formatCurrencyWithKey(CURRENCY_MAP.sUSD, TEMP_CLAIM_WINNINGS)}
-                        </MainInfo>
-                    )}
-                    {market.isOpen && (
-                        <Info fontSize={20}>
-                            <InfoLabel>{t('market.return-label')}:</InfoLabel>
-                            <InfoContent>
+                        </Positions>
+                        {showTicketInfo && (
+                            <MainInfo>
+                                {t('market.ticket-price-label')}{' '}
                                 {formatCurrencyWithKey(
                                     CURRENCY_MAP.sUSD,
-                                    TEMP_MAX_RETURN,
+                                    TEMP_TICKET_PRICE,
                                     DEFAULT_CURRENCY_DECIMALS,
                                     true
                                 )}
-                            </InfoContent>
-                        </Info>
-                    )}
-                    <ButtonContainer>
-                        {showTicketBuy && <BuyButton type="secondary">{t('market.button.buy-label')}</BuyButton>}
-                        {showTicketWithdraw && (
-                            <MarketButton type="secondary">{t('market.button.withdraw-label')}</MarketButton>
+                            </MainInfo>
                         )}
-                        {market.isClaimAvailable && <ClaimButton>{t('market.button.claim-label')}</ClaimButton>}
-                    </ButtonContainer>
-                    {market.isOpen && (
-                        <MarketStatus market={market} fontSize={40} labelFontSize={20} fontWeight={700} />
-                    )}
-                    <Footer>
-                        <Tags tags={market.tags} labelFontSize={20} />
-                        <Info fontSize={20}>
-                            <InfoLabel>{t('market.total-pool-size-label')}:</InfoLabel>
-                            <InfoContent>
-                                {formatCurrencyWithKey(
-                                    CURRENCY_MAP.sUSD,
-                                    TEMP_TOTAL_POOL_SIZE,
-                                    DEFAULT_CURRENCY_DECIMALS,
-                                    true
-                                )}
-                            </InfoContent>
-                        </Info>
-                        <FooterButtonsContainer>
-                            <SPAAnchor href={buildOpenDisputeLink(market.address)}>
-                                <OpenDisputeButton numberOfOpenedDisputes={market.numberOfOpenedDisputes}>
-                                    {t('market.button.open-dispute-label')}
-                                </OpenDisputeButton>
-                            </SPAAnchor>
-                        </FooterButtonsContainer>
-                    </Footer>
+                        {market.isClaimAvailable && (
+                            <MainInfo>
+                                {t('market.claim-winnings-label')}{' '}
+                                {formatCurrencyWithKey(CURRENCY_MAP.sUSD, TEMP_CLAIM_WINNINGS)}
+                            </MainInfo>
+                        )}
+                        {market.isOpen && (
+                            <Info fontSize={20}>
+                                <InfoLabel>{t('market.return-label')}:</InfoLabel>
+                                <InfoContent>
+                                    {formatCurrencyWithKey(
+                                        CURRENCY_MAP.sUSD,
+                                        TEMP_MAX_RETURN,
+                                        DEFAULT_CURRENCY_DECIMALS,
+                                        true
+                                    )}
+                                </InfoContent>
+                            </Info>
+                        )}
+                        <ButtonContainer>
+                            {showTicketBuy && <BuyButton type="secondary">{t('market.button.buy-label')}</BuyButton>}
+                            {showTicketWithdraw && (
+                                <MarketButton type="secondary">{t('market.button.withdraw-label')}</MarketButton>
+                            )}
+                            {market.isClaimAvailable && <ClaimButton>{t('market.button.claim-label')}</ClaimButton>}
+                        </ButtonContainer>
+                        {market.isOpen && (
+                            <MarketStatus market={market} fontSize={40} labelFontSize={20} fontWeight={700} />
+                        )}
+                        <Footer>
+                            <Tags tags={market.tags} labelFontSize={20} />
+                            <Info fontSize={20}>
+                                <InfoLabel>{t('market.total-pool-size-label')}:</InfoLabel>
+                                <InfoContent>
+                                    {formatCurrencyWithKey(
+                                        CURRENCY_MAP.sUSD,
+                                        TEMP_TOTAL_POOL_SIZE,
+                                        DEFAULT_CURRENCY_DECIMALS,
+                                        true
+                                    )}
+                                </InfoContent>
+                            </Info>
+                            <FooterButtonsContainer>
+                                <SPAAnchor href={buildOpenDisputeLink(market.address)}>
+                                    <OpenDisputeButton numberOfOpenedDisputes={market.numberOfOpenedDisputes}>
+                                        {t('market.button.open-dispute-label')}
+                                    </OpenDisputeButton>
+                                </SPAAnchor>
+                            </FooterButtonsContainer>
+                        </Footer>
+                    </Container>
+                    {market.disputes && <Disputes disputes={market.disputes} />}
                 </>
             ) : (
                 <SimpleLoader />
             )}
-        </Container>
+        </FlexDivColumn>
     );
 };
 

@@ -10,7 +10,24 @@
         "numberOfOpenedDisputes": 3,
         "hasPosition": true,
         "isTicketType": true,
-        "winningPosition": null
+        "winningPosition": null,
+        "disputes": [
+            {
+                "address": "0x9f8e4ee788D9b00A3409584E18034aA7B736C396",
+                "reasonForDispute": "Praesent fringilla venenatis tellus ut commodo. Suspendisse posuere molestie tellus, quis interdum eros. Sed auctor, augue at sollicitudin rutrum.",
+                "status": "open"
+            },
+            {
+                "address": "0x9f8e4ee788D9b00A3409584E18034aA7B736C396",
+                "reasonForDispute": "Sit amet dignissim nisl venenatis id. Etiam eu sem rutrum, finibus lorem quis, iaculis enim. Nam aliquet dolor sed ipsum pellentesque condimentum. Etiam sit amet enim imperdiet, eleifend sapien vel, pellentesque nisl. Pellentesque dignissim euismod magna",
+                "status": "accepted"
+            },
+            {
+                "address": "0x9f8e4ee788D9b00A3409584E18034aA7B736C396",
+                "reasonForDispute": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis et tempus turpis. Interdum et malesuada fames ac ante ipsum primis in faucibus. Aliquam venenatis lobortis orci.sit amet dignissim nisl venenatis id. Etiam eu sem rutrum, finibus lorem quis, iaculis enim. Nam aliquet dolor sed ipsum pellentesque condimentum. Etiam sit amet enim imperdiet, eleifend sapien vel, pellentesque nisl. Pellentesque dignissim euismod magna",
+                "status": "refused"
+            }
+        ]
     },
     {
         "address": "2",

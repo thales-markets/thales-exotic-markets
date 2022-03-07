@@ -8,14 +8,14 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { FlexDivColumnCentered, FlexDivRow, FlexDivColumn } from 'styles/common';
-import { Market } from 'types/markets';
+import { MarketInfo } from 'types/markets';
 import { buildOpenDisputeLink } from 'utils/routes';
 
-type MarketsCardProps = {
-    market: Market;
+type MarketCardProps = {
+    market: MarketInfo;
 };
 
-const MarketsCard: React.FC<MarketsCardProps> = ({ market }) => {
+const MarketCard: React.FC<MarketCardProps> = ({ market }) => {
     const { t } = useTranslation();
 
     return (
@@ -81,4 +81,4 @@ const ButtonsContainer = styled(FlexDivColumn)`
     }
 `;
 
-export default MarketsCard;
+export default MarketCard;

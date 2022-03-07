@@ -1,7 +1,7 @@
 import React, { ChangeEvent } from 'react';
 import styled from 'styled-components';
 
-type CheckboxProps = {
+type RadioButtonProps = {
     value: string | number;
     onChange: (e: ChangeEvent<HTMLInputElement>) => void;
     className?: string;
@@ -10,13 +10,13 @@ type CheckboxProps = {
     label?: string;
 };
 
-const Checkbox: React.FC<CheckboxProps> = ({ value, onChange, className, disabled, checked, label, ...rest }) => {
+const RadioButton: React.FC<RadioButtonProps> = ({ value, onChange, className, disabled, checked, label, ...rest }) => {
     return (
         <Container className={disabled ? 'disabled' : ''}>
             {label}
             <Input
                 {...rest}
-                type="checkbox"
+                type="radio"
                 checked={checked}
                 value={value}
                 onChange={onChange}
@@ -39,12 +39,12 @@ const Input = styled.input`
 const Container = styled.label`
     display: block;
     position: relative;
-    padding-left: 35px;
+    padding-left: 22px;
     cursor: pointer;
     font-style: normal;
-    font-weight: bold;
-    font-size: 40px;
-    line-height: 55px;
+    font-weight: normal;
+    font-size: 15px;
+    line-height: 20px;
     color: ${(props) => props.theme.textColor.primary};
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -60,34 +60,34 @@ const Container = styled.label`
         opacity: 0.5;
         cursor: default;
     }
-    align-self: center;
     white-space: nowrap;
+    margin-bottom: 6px;
 `;
 
 const Checkmark = styled.span`
     position: absolute;
     top: 0;
     left: 0;
-    height: 29px;
-    width: 29px;
+    height: 16px;
+    width: 16px;
     border: 3px solid ${(props) => props.theme.borderColor.primary};
     background-color: transparent;
-    border-radius: 5px;
-    margin-top: 12px;
+    border-radius: 50%;
+    margin-top: 1px;
     :after {
         content: '';
         position: absolute;
         display: none;
-        left: 7px;
-        top: -2px;
+        left: 2px;
+        top: 2px;
         width: 6px;
-        height: 19px;
-        border: solid ${(props) => props.theme.borderColor.primary};
-        border-width: 0 3px 3px 0;
+        height: 6px;
+        border-radius: 50%;
+        background: ${(props) => props.theme.borderColor.primary};
         -webkit-transform: rotate(45deg);
         -ms-transform: rotate(45deg);
         transform: rotate(45deg);
     }
 `;
 
-export default Checkbox;
+export default RadioButton;
