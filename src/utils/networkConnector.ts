@@ -1,11 +1,18 @@
 import { ethers, Signer } from 'ethers';
 import { NetworkSettings } from 'types/network';
+import thalesTokenContract from './contracts/thalesContract';
+import marketManagerContract from 'utils/contracts/exoticPositionalMarketManager';
+import thalesBondsContract from 'utils/contracts/thalesBondsContract';
+import { NetworkIdByName } from './network';
 
 type NetworkConnector = {
     initialized: boolean;
     provider: ethers.providers.Provider | undefined;
     signer: Signer | undefined;
     setNetworkSettings: (networkSettings: NetworkSettings) => void;
+    thalesTokenContract?: ethers.Contract;
+    marketManagerContract?: ethers.Contract;
+    thalesBondsContract?: ethers.Contract;
 };
 
 // @ts-ignore
@@ -16,19 +23,19 @@ const networkConnector: NetworkConnector = {
         this.initialized = true;
         this.signer = networkSettings.signer;
         this.provider = networkSettings.provider;
+        this.thalesTokenContract = initializeContract(thalesTokenContract, networkSettings);
+        this.marketManagerContract = initializeContract(marketManagerContract, networkSettings);
+        this.thalesBondsContract = initializeContract(thalesBondsContract, networkSettings);
     },
 };
 
-// const initializeContract = (contract: any, networkSettings: NetworkSettings) =>
-//     new ethers.Contract(contract.addresses[networkSettings.networkId || 1], contract.abi, networkConnector.provider);
-
-// const conditionalInitializeContract = (contract: any, networkSettings: NetworkSettings) =>
-//     contract.addresses[networkSettings.networkId || 1] !== 'TBD'
-//         ? new ethers.Contract(
-//               contract.addresses[networkSettings.networkId || 1],
-//               contract.abi,
-//               networkConnector.provider
-//           )
-//         : undefined;
+const initializeContract = (contract: any, networkSettings: NetworkSettings) =>
+    contract.addresses[networkSettings.networkId || NetworkIdByName.OptimsimMainne] !== ''
+        ? new ethers.Contract(
+              contract.addresses[networkSettings.networkId || NetworkIdByName.OptimsimMainnet],
+              contract.abi,
+              networkConnector.provider
+          )
+        : undefined;
 
 export default networkConnector;

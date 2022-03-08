@@ -9,7 +9,7 @@ import {
     MAXIMUM_TAGS,
     TagFilterEnum,
 } from 'constants/markets';
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { FlexDivCentered, FlexDivColumn, FlexDivRow } from 'styles/common';
@@ -20,9 +20,29 @@ import Description from './Description';
 import { convertLocalToUTCDate, convertUTCToLocalDate, setDateTimeToUtcNoon } from 'utils/formatters/date';
 import Positions from 'components/fields/Positions/Positions';
 import Button from 'components/Button';
+import useMarketsParametersQuery from 'queries/markets/useMarketsParametersQuery';
+import { useSelector } from 'react-redux';
+import { getIsWalletConnected, getNetworkId, getWalletAddress } from 'redux/modules/wallet';
+import { getIsAppReady } from 'redux/modules/app';
+import { RootState } from 'redux/rootReducer';
+import { MarketsParameters } from 'types/markets';
+import { checkAllowance } from 'utils/network';
+import networkConnector from 'utils/networkConnector';
+import { BigNumber, ethers } from 'ethers';
+import { MAX_GAS_LIMIT } from 'constants/network';
+import onboardConnector from 'utils/onboardConnector';
+import { CURRENCY_MAP } from 'constants/currency';
 
 const CreateMarket: React.FC = () => {
     const { t } = useTranslation();
+    const networkId = useSelector((state: RootState) => getNetworkId(state));
+    const isAppReady = useSelector((state: RootState) => getIsAppReady(state));
+    const walletAddress = useSelector((state: RootState) => getWalletAddress(state)) || '';
+    const isWalletConnected = useSelector((state: RootState) => getIsWalletConnected(state));
+    const [hasAllowance, setAllowance] = useState<boolean>(false);
+    const [isAllowing, setIsAllowing] = useState<boolean>(false);
+    const [txErrorMessage, setTxErrorMessage] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [question, setQuestion] = useState<string>('');
     const [dataSource, setDataSource] = useState<string>('');
     const [marketType, setMarketType] = useState<MarketType>(MarketType.TICKET);
@@ -39,6 +59,147 @@ const CreateMarket: React.FC = () => {
             disabled: false,
         }))
     );
+
+    const marketsParametersQuery = useMarketsParametersQuery(networkId, {
+        enabled: isAppReady,
+    });
+
+    const marketsParameters: MarketsParameters | undefined = useMemo(() => {
+        if (marketsParametersQuery.isSuccess && marketsParametersQuery.data) {
+            return marketsParametersQuery.data as MarketsParameters;
+        }
+        return undefined;
+    }, [marketsParametersQuery.isSuccess, marketsParametersQuery.data]);
+
+    const fixedBondAmount = marketsParameters ? marketsParameters.fixedBondAmount : 0;
+    const isButtonDisabled =
+        isSubmitting || !isWalletConnected || /*!isAmountEntered || insufficientBalance || */ !hasAllowance;
+
+    useEffect(() => {
+        const { thalesTokenContract, thalesBondsContract, signer } = networkConnector;
+        if (thalesTokenContract && thalesBondsContract && signer) {
+            const thalesTokenContractWithSigner = thalesTokenContract.connect(signer);
+            const addressToApprove = thalesBondsContract.address;
+            const getAllowance = async () => {
+                try {
+                    const parsedStakeAmount = ethers.utils.parseEther(Number(fixedBondAmount).toString());
+                    const allowance = await checkAllowance(
+                        parsedStakeAmount,
+                        thalesTokenContractWithSigner,
+                        walletAddress,
+                        addressToApprove
+                    );
+                    setAllowance(allowance);
+                } catch (e) {
+                    console.log(e);
+                }
+            };
+            if (isWalletConnected) {
+                getAllowance();
+            }
+        }
+    }, [walletAddress, isWalletConnected, hasAllowance, fixedBondAmount, isAllowing]);
+
+    const handleAllowance = async (approveAmount: BigNumber) => {
+        const { thalesTokenContract, thalesBondsContract, signer } = networkConnector;
+        if (thalesTokenContract && thalesBondsContract && signer) {
+            const thalesTokenContractWithSigner = thalesTokenContract.connect(signer);
+            const addressToApprove = thalesBondsContract.address;
+            try {
+                setIsAllowing(true);
+                const tx = (await thalesTokenContractWithSigner.approve(addressToApprove, approveAmount, {
+                    gasLimit: MAX_GAS_LIMIT,
+                })) as ethers.ContractTransaction;
+                // setOpenApprovalModal(false);
+                const txResult = await tx.wait();
+                if (txResult && txResult.transactionHash) {
+                    setIsAllowing(false);
+                }
+            } catch (e) {
+                console.log(e);
+                setTxErrorMessage(t('common.errors.unknown-error-try-again'));
+                setIsAllowing(false);
+            }
+        }
+    };
+
+    const handleSubmit = async () => {
+        const { marketManagerContract, signer } = networkConnector;
+        if (marketManagerContract && signer) {
+            setTxErrorMessage(null);
+            setIsSubmitting(true);
+
+            try {
+                const marketManagerContractWithSigner = marketManagerContract.connect(signer);
+
+                const formattedPositioningEnd = Math.round((positioningEndDateTime as Date).getTime() / 1000);
+                const parsedTicketPrice = ethers.utils.parseEther('30');
+                const formmatedTags: BigNumber[] = [];
+
+                const tx = await marketManagerContractWithSigner.createExoticMarket(
+                    question,
+                    dataSource,
+                    formattedPositioningEnd,
+                    parsedTicketPrice,
+                    isWithdrawEnabled,
+                    formmatedTags,
+                    positions.length,
+                    positions
+                );
+                const txResult = await tx.wait();
+
+                if (txResult && txResult.transactionHash) {
+                    // dispatchMarketNotification(t('migration.migrate-button.confirmation-message'));
+                    setIsSubmitting(false);
+                    // setAmount('');
+                }
+            } catch (e) {
+                console.log(e);
+                setTxErrorMessage(t('common.errors.unknown-error-try-again'));
+                setIsSubmitting(false);
+            }
+        }
+    };
+
+    const getSubmitButton = () => {
+        if (!isWalletConnected) {
+            return (
+                <CreateMarketButton onClick={() => onboardConnector.connectWallet()}>
+                    {t('common.wallet.connect-your-wallet')}
+                </CreateMarketButton>
+            );
+        }
+        // if (insufficientBalance) {
+        //     return <CreateMarketButton disabled={true}>{t(`common.errors.insufficient-balance`)}</CreateMarketButton>;
+        // }
+        // if (!isAmountEntered) {
+        //     return <CreateMarketButton disabled={true}>{t(`common.errors.enter-amount`)}</CreateMarketButton>;
+        // }
+        if (!hasAllowance) {
+            return (
+                <CreateMarketButton
+                    disabled={isAllowing}
+                    onClick={() => {
+                        handleAllowance(ethers.constants.MaxUint256);
+                        // setOpenApprovalModal(true);
+                    }}
+                >
+                    {!isAllowing
+                        ? t('common.enable-wallet-access.approve-label', { currencyKey: CURRENCY_MAP.THALES })
+                        : t('common.enable-wallet-access.approve-progress-label', {
+                              currencyKey: CURRENCY_MAP.THALES,
+                          })}
+                </CreateMarketButton>
+            );
+        }
+        return (
+            <CreateMarketButton disabled={isButtonDisabled} onClick={handleSubmit}>
+                {!isSubmitting
+                    ? t('market.create-market.button.create-market-label')
+                    : t('market.create-market.button.create-market-progress-label')}
+            </CreateMarketButton>
+        );
+    };
 
     const addPosition = () => {
         setPositions([...positions, '']);
@@ -134,9 +295,8 @@ const CreateMarket: React.FC = () => {
                         onTagRemove={removeTag}
                         label={t('market.create-market.tags-label', { max: MAXIMUM_TAGS })}
                     />
-                    <ButtonContainer>
-                        <CreateMarketButton>{t('market.create-market.button.create-market-label')}</CreateMarketButton>
-                    </ButtonContainer>
+                    <ButtonContainer>{getSubmitButton()}</ButtonContainer>
+                    {txErrorMessage && <FlexDivCentered>{txErrorMessage}</FlexDivCentered>}
                 </Form>
                 <Description />
             </ContentWrapper>

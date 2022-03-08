@@ -27,3 +27,13 @@ export type SortOptionType = {
     id: number;
     title: string;
 };
+
+export type MarketsParameters = {
+    fixedBondAmount: number;
+    maximumPositionsAllowed: number;
+    minimumPositioningDuration: number;
+    creatorPercentage: number;
+    resolverPercentage: number;
+    safeBoxPercentage: number;
+    withdrawalPercentage: number;
+};
