@@ -15,7 +15,7 @@ import styled from 'styled-components';
 import { FlexDivCentered, FlexDivColumn, FlexDivRow } from 'styles/common';
 import { Tag } from 'react-tag-autocomplete';
 import TagsInput from 'components/fields/TagsInput';
-import Header from './Header';
+// import Header from './Header';
 import Description from './Description';
 import { convertLocalToUTCDate, convertUTCToLocalDate, setDateTimeToUtcNoon } from 'utils/formatters/date';
 import Positions from 'components/fields/Positions/Positions';
@@ -32,6 +32,8 @@ import { BigNumber, ethers } from 'ethers';
 import { MAX_GAS_LIMIT } from 'constants/network';
 import onboardConnector from 'utils/onboardConnector';
 import { CURRENCY_MAP } from 'constants/currency';
+import useThalesBalanceQuery from 'queries/wallet/useThalesBalanceQuery';
+import NumericInput from 'components/fields/NumericInput';
 
 const CreateMarket: React.FC = () => {
     const { t } = useTranslation();
@@ -46,6 +48,7 @@ const CreateMarket: React.FC = () => {
     const [question, setQuestion] = useState<string>('');
     const [dataSource, setDataSource] = useState<string>('');
     const [marketType, setMarketType] = useState<MarketType>(MarketType.TICKET);
+    const [ticketPrice, setTicketPrice] = useState<number | string>('');
     const [isWithdrawEnabled, setIsWithdrawEnabled] = useState<boolean>(true);
     const [positions, setPositions] = useState<string[]>(new Array(2).fill(''));
     const [positioningEndDateTime, setPositioningEndDateTime] = useState<Date>(
@@ -59,6 +62,7 @@ const CreateMarket: React.FC = () => {
             disabled: false,
         }))
     );
+    const [thalesBalance, setThalesBalance] = useState<number | string>('');
 
     const marketsParametersQuery = useMarketsParametersQuery(networkId, {
         enabled: isAppReady,
@@ -72,8 +76,30 @@ const CreateMarket: React.FC = () => {
     }, [marketsParametersQuery.isSuccess, marketsParametersQuery.data]);
 
     const fixedBondAmount = marketsParameters ? marketsParameters.fixedBondAmount : 0;
-    const isButtonDisabled =
-        isSubmitting || !isWalletConnected || /*!isAmountEntered || insufficientBalance || */ !hasAllowance;
+
+    const thalesBalanceQuery = useThalesBalanceQuery(walletAddress, networkId, {
+        enabled: isAppReady && isWalletConnected,
+    });
+
+    useEffect(() => {
+        if (thalesBalanceQuery.isSuccess && thalesBalanceQuery.data) {
+            setThalesBalance(Number(thalesBalanceQuery.data));
+        }
+    }, [thalesBalanceQuery.isSuccess, thalesBalanceQuery.data]);
+
+    const isQuestionEntered = question.trim() !== '';
+    const isDataSourceEntered = dataSource.trim() !== '';
+    const isTicketPriceEntered =
+        (marketType === MarketType.TICKET && Number(ticketPrice) > 0) || marketType === MarketType.OPEN_BID;
+    const arePositionsEntered = positions.every((position) => position.trim() !== '');
+    const areTagsEntered = tags.length > 0;
+    const insufficientBalance = Number(thalesBalance) < Number(fixedBondAmount) || Number(thalesBalance) === 0;
+
+    const areMarketDataEntered =
+        isQuestionEntered && isDataSourceEntered && isTicketPriceEntered && arePositionsEntered && areTagsEntered;
+
+    const isButtonDisabled = isSubmitting || !isWalletConnected || !hasAllowance || !areMarketDataEntered;
+    insufficientBalance;
 
     useEffect(() => {
         const { thalesTokenContract, thalesBondsContract, signer } = networkConnector;
@@ -161,6 +187,24 @@ const CreateMarket: React.FC = () => {
         }
     };
 
+    const getEnterMarketDataMessage = () => {
+        if (!isQuestionEntered) {
+            return t(`common.errors.enter-question`);
+        }
+        if (!isDataSourceEntered) {
+            return t(`common.errors.enter-data-source`);
+        }
+        if (!arePositionsEntered) {
+            return t(`common.errors.enter-positions`);
+        }
+        if (marketType === MarketType.TICKET && !isTicketPriceEntered) {
+            return t(`common.errors.enter-ticket-price`);
+        }
+        if (!areTagsEntered) {
+            return t(`common.errors.enter-tags`);
+        }
+    };
+
     const getSubmitButton = () => {
         if (!isWalletConnected) {
             return (
@@ -169,9 +213,12 @@ const CreateMarket: React.FC = () => {
                 </CreateMarketButton>
             );
         }
-        // if (insufficientBalance) {
-        //     return <CreateMarketButton disabled={true}>{t(`common.errors.insufficient-balance`)}</CreateMarketButton>;
-        // }
+        if (insufficientBalance) {
+            return <CreateMarketButton disabled={true}>{t(`common.errors.insufficient-balance`)}</CreateMarketButton>;
+        }
+        if (!areMarketDataEntered) {
+            return <CreateMarketButton disabled={true}>{getEnterMarketDataMessage()}</CreateMarketButton>;
+        }
         // if (!isAmountEntered) {
         //     return <CreateMarketButton disabled={true}>{t(`common.errors.enter-amount`)}</CreateMarketButton>;
         // }
@@ -243,20 +290,28 @@ const CreateMarket: React.FC = () => {
 
     return (
         <Container>
-            <Header />
+            {/* <Header /> */}
             <ContentWrapper>
                 <Form>
                     <TextAreaInput
                         value={question}
                         onChange={setQuestion}
                         label={t('market.create-market.question-label')}
-                        note={t('common.max-input-characters-note', { max: MAXIMUM_INPUT_CHARACTERS })}
+                        note={t('common.input-characters-note', {
+                            entered: question.length,
+                            max: MAXIMUM_INPUT_CHARACTERS,
+                        })}
+                        maximumCharacters={MAXIMUM_INPUT_CHARACTERS}
                     />
                     <TextInput
                         value={dataSource}
                         onChange={setDataSource}
                         label={t('market.create-market.data-source-label')}
-                        note={t('common.max-input-characters-note', { max: MAXIMUM_INPUT_CHARACTERS })}
+                        note={t('common.input-characters-note', {
+                            entered: dataSource.length,
+                            max: MAXIMUM_INPUT_CHARACTERS,
+                        })}
+                        maximumCharacters={MAXIMUM_INPUT_CHARACTERS}
                     />
                     <Positions
                         positions={positions}
@@ -279,6 +334,15 @@ const CreateMarket: React.FC = () => {
                         leftText={t('market.create-market.type-options.ticket')}
                         rightText={t('market.create-market.type-options.open-bid')}
                     />
+                    {marketType === MarketType.TICKET && (
+                        <NumericInput
+                            value={ticketPrice}
+                            onChange={(_, value) => setTicketPrice(value)}
+                            disabled={isSubmitting}
+                            label={t('market.create-market.ticket-price-label')}
+                            currencyLabel={CURRENCY_MAP.sUSD}
+                        />
+                    )}
                     <Toggle
                         isLeftOptionSelected={isWithdrawEnabled}
                         onClick={() => {

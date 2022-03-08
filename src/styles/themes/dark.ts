@@ -38,7 +38,7 @@ export default {
             primary: Colors.WHITE,
             secondary: Colors.PURPLE,
             focus: {
-                primary: Colors.PINK,
+                primary: Colors.GREEN,
             },
         },
     },

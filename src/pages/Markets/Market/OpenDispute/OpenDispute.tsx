@@ -40,7 +40,11 @@ const OpenDispute: React.FC = () => {
                     value={reasonForDispute}
                     onChange={setReasonForDispute}
                     label={t('market.dispute.reason-for-dispute-label')}
-                    note={t('common.max-input-characters-note', { max: MAXIMUM_INPUT_CHARACTERS })}
+                    note={t('common.input-characters-note', {
+                        entered: reasonForDispute.length,
+                        max: MAXIMUM_INPUT_CHARACTERS,
+                    })}
+                    maximumCharacters={MAXIMUM_INPUT_CHARACTERS}
                 />
                 <ButtonContainer>
                     <DisputeButton>{t('market.dispute.button.open-dispute-label')}</DisputeButton>

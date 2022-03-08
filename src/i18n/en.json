@@ -25,6 +25,12 @@
             "enter-amount": "Enter amount",
             "enter-price": "Enter price",
             "enter-valid-slippage": "Enter a valid slippage percentage",
+            "enter-market-data": "Enter market data",
+            "enter-question": "Enter question",
+            "enter-data-source": "Enter data source",
+            "enter-positions": "Enter positions",
+            "enter-ticket-price": "Enter ticket price",
+            "enter-tags": "Enter tags",
             "invalid-price": "Invalid price",
             "invalid-price-max": "The price cannot be higher than ${{max}}",
             "invalid-amount-max": "The amount cannot be higher than {{max}}",
@@ -57,7 +63,7 @@
         "select-date": "Select date...",
         "tags-placeholder": "Enter tag...",
         "remove-tag-tooltip": "Click to remove tag",
-        "max-input-characters-note": "Maximum {{max}} characters"
+        "input-characters-note": "{{entered }} / {{max}}"
     },
     "header": {
         "links": {
@@ -144,6 +150,7 @@
                 "ticket": "Ticket",
                 "open-bid": "Open bid"
             },
+            "ticket-price-label": "Ticket price",
             "withdraw-label": "Withdraw",
             "withdraw-options": {
                 "enabled": "Enabled",

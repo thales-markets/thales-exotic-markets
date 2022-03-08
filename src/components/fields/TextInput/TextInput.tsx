@@ -1,3 +1,4 @@
+import FieldValidationMessage from 'components/FieldValidationMessage';
 import React from 'react';
 import { FieldContainer, FieldLabel, FieldNote, Input } from '../common';
 
@@ -8,9 +9,23 @@ type TextInputProps = {
     placeholder?: string;
     disabled?: boolean;
     onChange: (value: string) => void;
+    showValidation?: boolean;
+    validationMessage?: string;
+    maximumCharacters?: number;
 };
 
-const TextInput: React.FC<TextInputProps> = ({ value, label, note, placeholder, disabled, onChange, ...rest }) => {
+const TextInput: React.FC<TextInputProps> = ({
+    value,
+    label,
+    note,
+    placeholder,
+    disabled,
+    onChange,
+    showValidation,
+    validationMessage,
+    maximumCharacters,
+    ...rest
+}) => {
     return (
         <FieldContainer>
             {label && <FieldLabel>{label}:</FieldLabel>}
@@ -21,7 +36,10 @@ const TextInput: React.FC<TextInputProps> = ({ value, label, note, placeholder, 
                 onChange={(event) => onChange(event.target.value)}
                 placeholder={placeholder}
                 disabled={disabled}
+                className={showValidation ? 'error' : ''}
+                maxLength={maximumCharacters}
             />
+            <FieldValidationMessage showValidation={showValidation} message={validationMessage} />
             {note && <FieldNote>{note}</FieldNote>}
         </FieldContainer>
     );

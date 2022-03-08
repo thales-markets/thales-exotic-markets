@@ -3,16 +3,33 @@ import { FlexDivColumn, FlexDivEnd } from 'styles/common';
 
 export const FieldContainer = styled(FlexDivColumn)`
     flex: initial;
+    position: relative;
     margin-bottom: 15px;
 `;
 
-export const FieldLabel = styled.span`
+export const FieldLabel = styled.label`
     font-style: normal;
     font-weight: bold;
     font-size: 25px;
     line-height: 34px;
     color: ${(props) => props.theme.textColor.primary};
     margin-bottom: 6px;
+`;
+
+export const CurrencyLabel = styled.label`
+    font-style: normal;
+    font-weight: normal;
+    font-size: 18px;
+    line-height: 25px;
+    color: ${(props) => props.theme.input.textColor.primary};
+    padding: 57px 20px 20px 0;
+    pointer-events: none;
+    position: absolute;
+    right: 0;
+    &.disabled {
+        opacity: 0.4;
+        cursor: default;
+    }
 `;
 
 export const Input = styled.input`
