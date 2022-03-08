@@ -12,10 +12,9 @@ import {
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { FlexDivCentered, FlexDivColumn, FlexDivRow } from 'styles/common';
+import { FlexDivColumn, FlexDivRow } from 'styles/common';
 import { Tag } from 'react-tag-autocomplete';
 import TagsInput from 'components/fields/TagsInput';
-// import Header from './Header';
 import Description from './Description';
 import { convertLocalToUTCDate, convertUTCToLocalDate, setDateTimeToUtcNoon } from 'utils/formatters/date';
 import Positions from 'components/fields/Positions/Positions';
@@ -34,6 +33,8 @@ import onboardConnector from 'utils/onboardConnector';
 import { CURRENCY_MAP } from 'constants/currency';
 import useThalesBalanceQuery from 'queries/wallet/useThalesBalanceQuery';
 import NumericInput from 'components/fields/NumericInput';
+import ApprovalModal from 'components/ApprovalModal';
+import ValidationMessage from 'components/ValidationMessage';
 
 const CreateMarket: React.FC = () => {
     const { t } = useTranslation();
@@ -63,6 +64,7 @@ const CreateMarket: React.FC = () => {
         }))
     );
     const [thalesBalance, setThalesBalance] = useState<number | string>('');
+    const [openApprovalModal, setOpenApprovalModal] = useState<boolean>(false);
 
     const marketsParametersQuery = useMarketsParametersQuery(networkId, {
         enabled: isAppReady,
@@ -136,7 +138,7 @@ const CreateMarket: React.FC = () => {
                 const tx = (await thalesTokenContractWithSigner.approve(addressToApprove, approveAmount, {
                     gasLimit: MAX_GAS_LIMIT,
                 })) as ethers.ContractTransaction;
-                // setOpenApprovalModal(false);
+                setOpenApprovalModal(false);
                 const txResult = await tx.wait();
                 if (txResult && txResult.transactionHash) {
                     setIsAllowing(false);
@@ -224,13 +226,7 @@ const CreateMarket: React.FC = () => {
         // }
         if (!hasAllowance) {
             return (
-                <CreateMarketButton
-                    disabled={isAllowing}
-                    onClick={() => {
-                        handleAllowance(ethers.constants.MaxUint256);
-                        // setOpenApprovalModal(true);
-                    }}
-                >
+                <CreateMarketButton disabled={isAllowing} onClick={() => setOpenApprovalModal(true)}>
                     {!isAllowing
                         ? t('common.enable-wallet-access.approve-label', { currencyKey: CURRENCY_MAP.THALES })
                         : t('common.enable-wallet-access.approve-progress-label', {
@@ -290,7 +286,6 @@ const CreateMarket: React.FC = () => {
 
     return (
         <Container>
-            {/* <Header /> */}
             <ContentWrapper>
                 <Form>
                     <TextAreaInput
@@ -359,11 +354,26 @@ const CreateMarket: React.FC = () => {
                         onTagRemove={removeTag}
                         label={t('market.create-market.tags-label', { max: MAXIMUM_TAGS })}
                     />
-                    <ButtonContainer>{getSubmitButton()}</ButtonContainer>
-                    {txErrorMessage && <FlexDivCentered>{txErrorMessage}</FlexDivCentered>}
+                    <ButtonContainer>
+                        {getSubmitButton()}
+                        <ValidationMessage
+                            showValidation={txErrorMessage !== null}
+                            message={txErrorMessage}
+                            onDismiss={() => setTxErrorMessage(null)}
+                        />
+                    </ButtonContainer>
                 </Form>
                 <Description />
             </ContentWrapper>
+            {openApprovalModal && (
+                <ApprovalModal
+                    defaultAmount={fixedBondAmount}
+                    tokenSymbol={CURRENCY_MAP.THALES}
+                    isAllowing={isAllowing}
+                    onSubmit={handleAllowance}
+                    onClose={() => setOpenApprovalModal(false)}
+                />
+            )}
         </Container>
     );
 };
@@ -390,8 +400,9 @@ const CreateMarketButton = styled(Button)`
     height: 32px;
 `;
 
-const ButtonContainer = styled(FlexDivCentered)`
+const ButtonContainer = styled(FlexDivColumn)`
     margin: 40px 0 30px 0;
+    align-items: center;
 `;
 
 export default CreateMarket;

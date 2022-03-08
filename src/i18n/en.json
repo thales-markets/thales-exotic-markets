@@ -8,7 +8,7 @@
             "approve-label": "Approve {{currencyKey}}",
             "approve-progress-label": "Approving {{currencyKey}}...",
             "approve-all-label": "Approve all",
-            "custom-amount-label": "Custom amount"
+            "custom-amount-label": "Approve amount of"
         },
         "unsupported-network": {
             "title": "Oops! You are on the wrong network!",
@@ -59,6 +59,7 @@
             "minutes-short": "m",
             "seconds-short": "s"
         },
+        "or": "or",
         "dapp": "dapp",
         "select-date": "Select date...",
         "tags-placeholder": "Enter tag...",
