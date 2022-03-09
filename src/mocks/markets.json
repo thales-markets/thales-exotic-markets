@@ -1,0 +1,136 @@
+[
+    {
+        "address": "1",
+        "title": "Who will win the Super Bowl LVI?",
+        "positions": ["Rams", "Bengals"],
+        "maturityDate": 1648459400000,
+        "isOpen": true,
+        "tags": [1],
+        "isClaimAvailable": false,
+        "numberOfOpenedDisputes": 3,
+        "hasPosition": true,
+        "isTicketType": true,
+        "winningPosition": null,
+        "disputes": [
+            {
+                "address": "0x9f8e4ee788D9b00A3409584E18034aA7B736C396",
+                "reasonForDispute": "Praesent fringilla venenatis tellus ut commodo. Suspendisse posuere molestie tellus, quis interdum eros. Sed auctor, augue at sollicitudin rutrum.",
+                "status": "open"
+            },
+            {
+                "address": "0x9f8e4ee788D9b00A3409584E18034aA7B736C396",
+                "reasonForDispute": "Sit amet dignissim nisl venenatis id. Etiam eu sem rutrum, finibus lorem quis, iaculis enim. Nam aliquet dolor sed ipsum pellentesque condimentum. Etiam sit amet enim imperdiet, eleifend sapien vel, pellentesque nisl. Pellentesque dignissim euismod magna",
+                "status": "accepted"
+            },
+            {
+                "address": "0x9f8e4ee788D9b00A3409584E18034aA7B736C396",
+                "reasonForDispute": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis et tempus turpis. Interdum et malesuada fames ac ante ipsum primis in faucibus. Aliquam venenatis lobortis orci.sit amet dignissim nisl venenatis id. Etiam eu sem rutrum, finibus lorem quis, iaculis enim. Nam aliquet dolor sed ipsum pellentesque condimentum. Etiam sit amet enim imperdiet, eleifend sapien vel, pellentesque nisl. Pellentesque dignissim euismod magna",
+                "status": "refused"
+            }
+        ]
+    },
+    {
+        "address": "2",
+        "title": "Will Lakers win the NBA Championship 2022-23??",
+        "positions": ["YES", "NO"],
+        "maturityDate": 1648286600000,
+        "isOpen": true,
+        "tags": [1, 102],
+        "isClaimAvailable": false,
+        "numberOfOpenedDisputes": 2,
+        "hasPosition": true,
+        "isTicketType": false,
+        "winningPosition": null
+    },
+    {
+        "address": "3",
+        "title": "How many goals will be scored in Liverpool vs Manchester United?",
+        "positions": ["0-2", "3-4", "5+"],
+        "maturityDate": 1646904200000,
+        "isOpen": true,
+        "tags": [1, 101],
+        "isClaimAvailable": false,
+        "numberOfOpenedDisputes": 0,
+        "hasPosition": true,
+        "isTicketType": true,
+        "winningPosition": null
+    },
+    {
+        "address": "4",
+        "title": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec vel odio quis eros scelerisque laoreet.",
+        "positions": ["YES", "NO", "MAYBE", "DUNNO", "NEXT QUESTION"],
+        "maturityDate": 1646472200000,
+        "isOpen": true,
+        "tags": [3, 201, 2, 101, 102],
+        "isClaimAvailable": false,
+        "numberOfOpenedDisputes": 4,
+        "hasPosition": false,
+        "isTicketType": false,
+        "winningPosition": null
+    },
+    {
+        "address": "5",
+        "title": "Lorem ipsum dolor sit amet",
+        "positions": ["UP", "DOWN"],
+        "maturityDate": 1646393000000,
+        "isOpen": true,
+        "tags": [2, 201],
+        "isClaimAvailable": false,
+        "numberOfOpenedDisputes": 6,
+        "hasPosition": false,
+        "isTicketType": true,
+        "winningPosition": null
+    },
+    {
+        "address": "6",
+        "title": "Thales at the end of year?",
+        "positions": ["<1$", "1-2$", "2-10$", ">10$"],
+        "maturityDate": 1646126600000,
+        "isOpen": false,
+        "tags": [2],
+        "isClaimAvailable": false,
+        "numberOfOpenedDisputes": 10,
+        "hasPosition": true,
+        "isTicketType": true,
+        "winningPosition": ">10$"
+    },
+    {
+        "address": "7",
+        "title": "NBA MVP?",
+        "positions": ["Nikola Jokic", "Joel Embiid", "Giannis Antetokounmpo", "DeMar DeRozan", "Chris Paul", "Other"],
+        "maturityDate": 1645126600000,
+        "isOpen": false,
+        "tags": [1, 102],
+        "isClaimAvailable": true,
+        "numberOfOpenedDisputes": 0,
+        "hasPosition": true,
+        "isTicketType": true,
+        "winningPosition": "Nikola Jokic"
+    },
+    {
+        "address": "8",
+        "title": "Lorem ipsum dolor sit amet",
+        "positions": ["Yes", "No"],
+        "maturityDate": 1644126600000,
+        "isOpen": false,
+        "tags": [3],
+        "isClaimAvailable": false,
+        "numberOfOpenedDisputes": 1,
+        "hasPosition": false,
+        "isTicketType": false,
+        "winningPosition": "Yes"
+    },
+    {
+        "address": "9",
+        "title": "Who is the best?",
+        "positions": ["Thales", "Thales OP"],
+        "maturityDate": 1643126600000,
+        "isOpen": false,
+        "tags": [2, 201, 3],
+        "isClaimAvailable": true,
+        "numberOfOpenedDisputes": 7,
+        "hasPosition": false,
+        "isTicketType": false,
+        "winningPosition": "Thales"
+    }
+]

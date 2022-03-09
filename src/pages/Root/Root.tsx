@@ -5,9 +5,10 @@ import App from 'pages/Root/App';
 import dotenv from 'dotenv';
 
 dotenv.config();
-interface RootProps {
+
+type RootProps = {
     store: Store;
-}
+};
 
 const Root: React.FC<RootProps> = ({ store }) => {
     return (

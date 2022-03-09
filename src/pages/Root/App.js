@@ -1,5 +1,5 @@
 import { loadProvider } from '@synthetixio/providers';
-// import Loader from 'components/Loader';
+import Loader from 'components/Loader';
 import { initOnboard } from 'config/onboard';
 import { LOCAL_STORAGE_KEYS } from 'constants/storage';
 import useLocalStorage from 'hooks/useLocalStorage';
@@ -18,8 +18,13 @@ import networkConnector from 'utils/networkConnector';
 import ROUTES from 'constants/routes';
 import Theme from 'layouts/Theme';
 import DappLayout from 'layouts/DappLayout';
+import HomeLayout from 'layouts/HomeLayout';
 
 const Home = lazy(() => import('pages/Home'));
+const Markets = lazy(() => import('pages/Markets/Home'));
+const CreateMarket = lazy(() => import('pages/Markets/CreateMarket'));
+const Market = lazy(() => import('pages/Markets/Market'));
+const OpenDispute = lazy(() => import('pages/Markets/Market/OpenDispute'));
 
 const App = () => {
     const dispatch = useDispatch();
@@ -63,7 +68,7 @@ const App = () => {
                 },
                 network: (networkId) => {
                     if (networkId) {
-                        if (networkId && isNetworkSupported(networkId)) {
+                        if (isNetworkSupported(networkId)) {
                             if (onboardConnector.onboard.getState().wallet.provider) {
                                 const provider = loadProvider({
                                     provider: onboardConnector.onboard.getState().wallet.provider,
@@ -119,13 +124,41 @@ const App = () => {
     return (
         <Theme>
             <QueryClientProvider client={queryConnector.queryClient}>
-                <Suspense fallback={<div>Loading...</div>}>
+                <Suspense fallback={<Loader />}>
                     <Router history={history}>
                         <Switch>
-                            <Route exact path={ROUTES.Home}>
+                            <Route exact path={ROUTES.Markets.CreateMarket}>
                                 <DappLayout>
-                                    <Home />
+                                    <CreateMarket />
                                 </DappLayout>
+                            </Route>
+                            <Route
+                                exact
+                                path={ROUTES.Markets.OpenDispute}
+                                render={(routeProps) => (
+                                    <DappLayout>
+                                        <OpenDispute {...routeProps} />
+                                    </DappLayout>
+                                )}
+                            />
+                            <Route
+                                exact
+                                path={ROUTES.Markets.Market}
+                                render={(routeProps) => (
+                                    <DappLayout>
+                                        <Market {...routeProps} />
+                                    </DappLayout>
+                                )}
+                            />
+                            <Route exact path={ROUTES.Markets.Home}>
+                                <DappLayout hideFooter>
+                                    <Markets />
+                                </DappLayout>
+                            </Route>
+                            <Route exact path={ROUTES.Home}>
+                                <HomeLayout>
+                                    <Home />
+                                </HomeLayout>
                             </Route>
                         </Switch>
                     </Router>

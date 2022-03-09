@@ -53,3 +53,5 @@ export const OPTIMISM_OPTIONS = [
         link: 'https://www.optimism.io/',
     },
 ];
+
+export const MAX_GAS_LIMIT = 15000000;

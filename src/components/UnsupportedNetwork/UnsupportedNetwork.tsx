@@ -64,7 +64,7 @@ const Container = styled(FlexDivCentered)`
     position: fixed;
     height: 100%;
     width: 100%;
-    background: linear-gradient(180deg, #5e2167 1.04%, #7760a8 100%);
+    background: ${(props) => props.theme.background.primary};
 `;
 
 const Wrapper = styled(FlexDivColumnCentered)`
@@ -74,14 +74,14 @@ const Wrapper = styled(FlexDivColumnCentered)`
 `;
 
 const Title = styled.p`
-    color: #f6f6fe;
+    color: ${(props) => props.theme.textColor.primary};
     letter-spacing: 0.25px;
     font-size: 32px;
     line-height: 48px;
 `;
 
 const Description = styled.p`
-    color: #f6f6fe;
+    color: ${(props) => props.theme.textColor.primary};
     letter-spacing: 0.25px;
     font-size: 16px;
     line-height: 32px;
@@ -93,14 +93,14 @@ const ButtonContainer = styled.div`
 `;
 
 const Button = styled.button`
-    background: #28d4b4;
+    background: ${(props) => props.theme.button.background.primary};
     padding: 4px 35px;
     border-radius: 30px;
     font-style: normal;
     font-weight: bold;
     font-size: 20px;
     line-height: 27px;
-    color: #6c438a;
+    color: ${(props) => props.theme.button.textColor.primary};
     text-align: center;
     border: none;
     outline: none;
