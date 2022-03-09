@@ -302,6 +302,7 @@ const CreateMarket: React.FC = () => {
                             max: MAXIMUM_INPUT_CHARACTERS,
                         })}
                         maximumCharacters={MAXIMUM_INPUT_CHARACTERS}
+                        disabled={isSubmitting}
                     />
                     <TextInput
                         value={dataSource}
@@ -312,6 +313,7 @@ const CreateMarket: React.FC = () => {
                             max: MAXIMUM_INPUT_CHARACTERS,
                         })}
                         maximumCharacters={MAXIMUM_INPUT_CHARACTERS}
+                        disabled={isSubmitting}
                     />
                     <Positions
                         positions={positions}
@@ -319,11 +321,13 @@ const CreateMarket: React.FC = () => {
                         onPositionRemove={removePosition}
                         onPositionChange={setPositionText}
                         label={t('market.create-market.positions-label')}
+                        disabled={isSubmitting}
                     />
                     <DatetimePicker
                         selected={convertUTCToLocalDate(positioningEndDateTime)}
                         onChange={(date: Date) => setPositioningEndDateTime(convertLocalToUTCDate(date))}
                         label={t('market.create-market.positioning-end-label')}
+                        readOnly={isSubmitting}
                     />
                     <Toggle
                         isLeftOptionSelected={marketType === MarketType.TICKET}
@@ -333,14 +337,15 @@ const CreateMarket: React.FC = () => {
                         label={t('market.create-market.type-label')}
                         leftText={t('market.create-market.type-options.ticket')}
                         rightText={t('market.create-market.type-options.open-bid')}
+                        disabled={isSubmitting}
                     />
                     {marketType === MarketType.TICKET && (
                         <NumericInput
                             value={ticketPrice}
                             onChange={(_, value) => setTicketPrice(value)}
-                            disabled={isSubmitting}
                             label={t('market.create-market.ticket-price-label')}
                             currencyLabel={CURRENCY_MAP.sUSD}
+                            disabled={isSubmitting}
                         />
                     )}
                     <Toggle
@@ -351,6 +356,7 @@ const CreateMarket: React.FC = () => {
                         label={t('market.create-market.withdraw-label')}
                         leftText={t('market.create-market.withdraw-options.enabled')}
                         rightText={t('market.create-market.withdraw-options.disabled')}
+                        disabled={isSubmitting}
                     />
                     <TagsInput
                         tags={tags}
@@ -358,15 +364,14 @@ const CreateMarket: React.FC = () => {
                         onTagAdd={addTag}
                         onTagRemove={removeTag}
                         label={t('market.create-market.tags-label', { max: MAXIMUM_TAGS })}
+                        disabled={isSubmitting}
                     />
-                    <ButtonContainer>
-                        {getSubmitButton()}
-                        <ValidationMessage
-                            showValidation={txErrorMessage !== null}
-                            message={txErrorMessage}
-                            onDismiss={() => setTxErrorMessage(null)}
-                        />
-                    </ButtonContainer>
+                    <ButtonContainer>{getSubmitButton()}</ButtonContainer>
+                    <ValidationMessage
+                        showValidation={txErrorMessage !== null}
+                        message={txErrorMessage}
+                        onDismiss={() => setTxErrorMessage(null)}
+                    />
                 </Form>
                 <Description />
             </ContentWrapper>
@@ -397,7 +402,7 @@ const ContentWrapper = styled(FlexDivRow)`
 const Form = styled(FlexDivColumn)`
     border: 1px solid ${(props) => props.theme.borderColor.primary};
     border-radius: 25px;
-    padding: 20px;
+    padding: 20px 20px 50px 20px;
     height: fit-content;
 `;
 
@@ -406,7 +411,7 @@ const CreateMarketButton = styled(Button)`
 `;
 
 const ButtonContainer = styled(FlexDivColumn)`
-    margin: 40px 0 30px 0;
+    margin: 40px 0 0 0;
     align-items: center;
 `;
 

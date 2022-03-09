@@ -1,6 +1,4 @@
 import React from 'react';
-// import { ReactComponent as ValidationErrorIcon } from 'assets/images/validation-error-triangle.svg';
-// import { ReactComponent as CloseIcon } from 'assets/images/close-red.svg';
 import styled from 'styled-components';
 import { FlexDiv, FlexDivRow } from 'styles/common';
 
@@ -16,12 +14,8 @@ export const ValidationMessage: React.FC<ValidationMessageProps> = ({ showValida
             {showValidation && (
                 <Container>
                     <Message>
-                        <FlexDiv>
-                            {/* <StyledValidationErrorIcon />  */}
-                            {message}
-                        </FlexDiv>
-                        {/* <CloseIconContainer onClick={onDismiss} /> */}
-                        <div onClick={onDismiss}>close</div>
+                        <FlexDiv>{message}</FlexDiv>
+                        <CloseIcon onClick={onDismiss} />
                     </Message>
                 </Container>
             )}
@@ -43,23 +37,19 @@ const Message = styled(FlexDivRow)`
     color: #e53720;
     background: #e9bcbc;
     box-sizing: border-box;
-    border-radius: 5px;
+    border-radius: 6px;
     padding: 5px 10px;
 `;
 
-// export const StyledValidationErrorIcon = styled(ValidationErrorIcon)`
-//     margin-right: 8px;
-//     min-width: 18px;
-//     min-height: 16px;
-// `;
-
-// const CloseIconContainer = styled(CloseIcon)`
-//     min-width: 10px;
-//     min-height: 10px;
-//     margin-top: 4px;
-//     :hover {
-//         cursor: pointer;
-//     }
-// `;
+const CloseIcon = styled.i`
+    font-size: 10px;
+    cursor: pointer;
+    margin-bottom: -2px;
+    &:before {
+        font-family: Icons !important;
+        content: '\\0076';
+        color: #e53720;
+    }
+`;
 
 export default ValidationMessage;

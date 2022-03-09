@@ -16,7 +16,7 @@ type TagsInputProps = {
     onTagRemove: (i: number) => void;
 };
 
-const TagsInput: React.FC<TagsInputProps> = ({ tags, suggestions, label, onTagAdd, onTagRemove }) => {
+const TagsInput: React.FC<TagsInputProps> = ({ tags, suggestions, label, disabled, onTagAdd, onTagRemove }) => {
     const { t } = useTranslation();
 
     const findTagIndexInSelectedTags = (tag: Tag) => tags.findIndex((tagItem: Tag) => tag.id === tagItem.id);
@@ -38,7 +38,7 @@ const TagsInput: React.FC<TagsInputProps> = ({ tags, suggestions, label, onTagAd
                 {suggestions.map((suggestion: Tag) => {
                     return (
                         <TagButton
-                            disabled={false}
+                            disabled={disabled}
                             selected={findTagIndexInSelectedTags(suggestion) > -1}
                             onClick={() => {
                                 const tagIndex = findTagIndexInSelectedTags(suggestion);

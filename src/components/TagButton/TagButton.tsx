@@ -5,12 +5,20 @@ import { FlexDivCentered } from 'styles/common';
 type TagButtonProps = {
     disabled?: boolean;
     selected?: boolean;
-    onClick?: (param: any) => void;
+    onClick: () => void;
 };
 
 const TagButton: React.FC<TagButtonProps> = ({ disabled, selected, onClick, children }) => {
     return (
-        <Container className={`${disabled ? 'disabled' : ''} ${selected ? 'selected' : ''}`} onClick={onClick}>
+        <Container
+            className={`${disabled ? 'disabled' : ''} ${selected ? 'selected' : ''}`}
+            onClick={() => {
+                if (disabled) {
+                    return;
+                }
+                onClick();
+            }}
+        >
             {children}
         </Container>
     );
@@ -33,7 +41,7 @@ const Container = styled(FlexDivCentered)`
         background: ${(props) => props.theme.button.background.secondary};
         color: ${(props) => props.theme.button.textColor.primary};
     }
-    &:hover {
+    &:hover:not(.disabled) {
         background: ${(props) => props.theme.button.background.secondary};
         color: ${(props) => props.theme.button.textColor.primary};
         opacity: 0.8;

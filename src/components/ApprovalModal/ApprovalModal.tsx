@@ -7,11 +7,11 @@ import { BigNumber, ethers } from 'ethers';
 import { bigNumberFormatter } from 'utils/formatters/ethers';
 import onboardConnector from 'utils/onboardConnector';
 import styled from 'styled-components';
-import { FlexDiv, FlexDivCentered, FlexDivColumnCentered, FlexDivRow } from 'styles/common';
+import { FlexDivCentered, FlexDivColumnCentered } from 'styles/common';
 import Checkbox from 'components/fields/Checkbox';
 import NumericInput from 'components/fields/NumericInput';
-import Modal from 'react-modal';
 import Button from 'components/Button';
+import Modal from 'components/Modal';
 
 type ApprovalModalProps = {
     defaultAmount: number | string;
@@ -20,8 +20,6 @@ type ApprovalModalProps = {
     onSubmit: (approveAmount: BigNumber) => void;
     onClose: () => void;
 };
-
-Modal.setAppElement('#root');
 
 export const ApprovalModal: React.FC<ApprovalModalProps> = ({
     defaultAmount,
@@ -74,83 +72,34 @@ export const ApprovalModal: React.FC<ApprovalModalProps> = ({
     }, [amount]);
 
     return (
-        <Modal
-            isOpen
-            onRequestClose={onClose}
-            style={{
-                overlay: {
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                },
-                content: {
-                    padding: '0px',
-                    maxWidth: '500px',
-                    top: 'calc(50% - 250px)',
-                    left: 'calc(50% - 250px)',
-                    height: 'fit-content',
-                    border: 'none',
-                    background: 'transparent',
-                },
-            }}
-        >
-            <ModalContainer>
-                <ModalHeader>
-                    <ModalTitle>
-                        {t('common.enable-wallet-access.approve-label', { currencyKey: tokenSymbol })}
-                    </ModalTitle>
-                    <FlexDivRow>{<CloseIcon onClick={onClose} />}</FlexDivRow>
-                </ModalHeader>
-                <FlexDivColumnCentered>
-                    <CheckboxContainer>
-                        <Checkbox
-                            disabled={isAllowing}
-                            checked={approveAll}
-                            value={approveAll.toString()}
-                            onChange={(e: any) => setApproveAll(e.target.checked || false)}
-                            label={t('common.enable-wallet-access.approve-all-label')}
-                        />
-                    </CheckboxContainer>
-                    <OrText>{t('common.or')}</OrText>
-                    <NumericInput
-                        value={amount}
-                        onChange={(_, value) => setAmount(value)}
-                        disabled={approveAll || isAllowing}
-                        label={t('common.enable-wallet-access.custom-amount-label')}
-                        currencyLabel={tokenSymbol}
-                        showValidation={!approveAll && !isAmountValid}
-                        validationMessage={t('common.errors.invalid-amount-max', { max: maxApproveAmount })}
+        <Modal title={t('common.enable-wallet-access.approve-label', { currencyKey: tokenSymbol })} onClose={onClose}>
+            <FlexDivColumnCentered>
+                <CheckboxContainer>
+                    <Checkbox
+                        disabled={isAllowing}
+                        checked={approveAll}
+                        value={approveAll.toString()}
+                        onChange={(e: any) => setApproveAll(e.target.checked || false)}
+                        label={t('common.enable-wallet-access.approve-all-label')}
                     />
-                </FlexDivColumnCentered>
-                <ModalButtonContainer>{getSubmitButton()}</ModalButtonContainer>
-            </ModalContainer>
+                </CheckboxContainer>
+                <OrText>{t('common.or')}</OrText>
+                <NumericInput
+                    value={amount}
+                    onChange={(_, value) => setAmount(value)}
+                    disabled={approveAll || isAllowing}
+                    label={t('common.enable-wallet-access.custom-amount-label')}
+                    currencyLabel={tokenSymbol}
+                    showValidation={!approveAll && !isAmountValid}
+                    validationMessage={t('common.errors.invalid-amount-max', { max: maxApproveAmount })}
+                />
+                <ButtonContainer>{getSubmitButton()}</ButtonContainer>
+            </FlexDivColumnCentered>
         </Modal>
     );
 };
 
-const ModalContainer = styled.div`
-    border: 1px solid ${(props) => props.theme.borderColor.primary};
-    background: ${(props) => props.theme.background.primary};
-    padding: 25px 30px 35px 30px;
-    overflow: auto;
-    border-radius: 23px;
-    @media (max-width: 512px) {
-        padding: 10px;
-    }
-`;
-
-const ModalHeader = styled(FlexDivRow)`
-    margin-bottom: 20px;
-`;
-
-const ModalTitle = styled(FlexDiv)`
-    font-style: normal;
-    font-weight: bold;
-    font-size: 25px;
-    line-height: 100%;
-    text-align: center;
-    color: ${(props) => props.theme.textColor.primary};
-`;
-
-const ModalButtonContainer = styled(FlexDivCentered)`
+const ButtonContainer = styled(FlexDivCentered)`
     margin: 30px 0 10px 0;
 `;
 
@@ -158,17 +107,7 @@ const ModalButton = styled(Button)`
     height: 32px;
 `;
 
-const CloseIcon = styled.i`
-    font-size: 20px;
-    cursor: pointer;
-    &:before {
-        font-family: Icons !important;
-        content: '\\0076';
-        color: ${(props) => props.theme.textColor.primary};
-    }
-`;
-
-export const CheckboxContainer = styled(FlexDivCentered)`
+const CheckboxContainer = styled(FlexDivCentered)`
     margin: 40px 0 5px 0;
     label {
         font-size: 25px;

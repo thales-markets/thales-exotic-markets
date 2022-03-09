@@ -11,6 +11,7 @@ type PositionsProps = {
     onPositionChange: (index: number, text: string) => void;
     onPositionRemove: (index: number) => void;
     onPositionAdd: () => void;
+    disabled?: boolean;
 };
 
 const Positions: React.FC<PositionsProps> = ({
@@ -19,6 +20,7 @@ const Positions: React.FC<PositionsProps> = ({
     onPositionChange,
     onPositionRemove,
     onPositionAdd,
+    disabled,
 }) => {
     const { t } = useTranslation();
 
@@ -36,6 +38,7 @@ const Positions: React.FC<PositionsProps> = ({
                         onChange={(text: string) => onPositionChange(index, text)}
                         onRemove={() => onPositionRemove(index)}
                         showRemoveButton={enableRemovePosition}
+                        disabled={disabled}
                     />
                 );
             })}

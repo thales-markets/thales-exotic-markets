@@ -16,7 +16,15 @@ const Toggle: React.FC<ToggleProps> = ({ isLeftOptionSelected, label, disabled, 
     return (
         <FieldContainer>
             {label && <FieldLabel>{label}:</FieldLabel>}
-            <ToggleContainer onClick={onClick} className={disabled ? 'disabled' : ''}>
+            <ToggleContainer
+                onClick={() => {
+                    if (disabled) {
+                        return;
+                    }
+                    onClick();
+                }}
+                className={disabled ? 'disabled' : ''}
+            >
                 {leftText && <ToggleText>{leftText}</ToggleText>}
                 <ToggleIcon isLeftOptionSelected={isLeftOptionSelected} />
                 {rightText && <ToggleText>{rightText}</ToggleText>}
