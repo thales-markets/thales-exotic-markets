@@ -108,22 +108,7 @@
                 "claim": "Claim",
                 "history": "History"
             },
-            "tag": {
-                "all": "All",
-                "sports": "Sports",
-                "nfl": "NFL",
-                "nba": "NBA",
-                "football": "Football",
-                "dummy": "Dummy",
-                "test": "Test",
-                "crypto": "Crypto",
-                "defi": "DeFi",
-                "basketball": "Basketball",
-                "eth": "ETH",
-                "op": "OP",
-                "thales": "Thales",
-                "thalesop": "Thales OP"
-            }
+            "all": "All"
         },
         "back-to-markets": "Back to markets",
         "create-market": {

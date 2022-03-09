@@ -1,22 +1,42 @@
-import React from 'react';
+import useTagsQuery from 'queries/markets/useTagsQuery';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
+import { getIsAppReady } from 'redux/modules/app';
+import { getNetworkId } from 'redux/modules/wallet';
+import { RootState } from 'redux/rootReducer';
 import styled from 'styled-components';
 import { FlexDivCentered, FlexDivStart } from 'styles/common';
+import { Tags as TagList } from 'types/markets';
 
 type TagsProps = {
-    tags: string[];
+    tags: number[];
     labelFontSize?: number;
 };
 
 const Tags: React.FC<TagsProps> = ({ tags, labelFontSize }) => {
     const { t } = useTranslation();
+    const isAppReady = useSelector((state: RootState) => getIsAppReady(state));
+    const networkId = useSelector((state: RootState) => getNetworkId(state));
+
+    const tagsQuery = useTagsQuery(networkId, {
+        enabled: isAppReady,
+    });
+
+    const availableTags: TagList = useMemo(() => {
+        if (tagsQuery.isSuccess && tagsQuery.data) {
+            return tagsQuery.data as TagList;
+        }
+        return [];
+    }, [tagsQuery.isSuccess, tagsQuery.data]);
 
     return (
         <Container>
             <TagLabel labelFontSize={labelFontSize}>{t('market.tags-label')}:</TagLabel>
-            {tags.map((tag: string) => (
-                <Tag key={tag}>{tag}</Tag>
-            ))}
+            {tags.map((tag: number) => {
+                const findTagItem = availableTags.find((t) => t.id == tag);
+                return findTagItem ? <Tag key={findTagItem.label}>{findTagItem.label}</Tag> : null;
+            })}
         </Container>
     );
 };

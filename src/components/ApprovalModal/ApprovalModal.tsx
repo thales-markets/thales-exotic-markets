@@ -5,7 +5,6 @@ import { RootState } from 'redux/rootReducer';
 import { getIsWalletConnected } from 'redux/modules/wallet';
 import { BigNumber, ethers } from 'ethers';
 import { bigNumberFormatter } from 'utils/formatters/ethers';
-import ValidationMessage from 'components/ValidationMessage';
 import onboardConnector from 'utils/onboardConnector';
 import styled from 'styled-components';
 import { FlexDiv, FlexDivCentered, FlexDivColumnCentered, FlexDivRow } from 'styles/common';
@@ -35,7 +34,6 @@ export const ApprovalModal: React.FC<ApprovalModalProps> = ({
     const isWalletConnected = useSelector((state: RootState) => getIsWalletConnected(state));
     const [amount, setAmount] = useState<number | string>(defaultAmount);
     const [approveAll, setApproveAll] = useState<boolean>(true);
-    const [txErrorMessage, setTxErrorMessage] = useState<string | null>(null);
     const [isAmountValid, setIsAmountValid] = useState<boolean>(true);
 
     const maxApproveAmount = bigNumberFormatter(ethers.constants.MaxUint256);
@@ -123,11 +121,6 @@ export const ApprovalModal: React.FC<ApprovalModalProps> = ({
                     />
                 </FlexDivColumnCentered>
                 <ModalButtonContainer>{getSubmitButton()}</ModalButtonContainer>
-                <ValidationMessage
-                    showValidation={txErrorMessage !== null}
-                    message={txErrorMessage}
-                    onDismiss={() => setTxErrorMessage(null)}
-                />
             </ModalContainer>
         </Modal>
     );

@@ -1,8 +1,9 @@
 import { ethers, Signer } from 'ethers';
 import { NetworkSettings } from 'types/network';
 import thalesTokenContract from './contracts/thalesContract';
-import marketManagerContract from 'utils/contracts/exoticPositionalMarketManager';
+import marketManagerContract from 'utils/contracts/exoticPositionalMarketManagerContract';
 import thalesBondsContract from 'utils/contracts/thalesBondsContract';
+import tagsContract from 'utils/contracts/exoticPositionalTagsContract';
 import { NetworkIdByName } from './network';
 
 type NetworkConnector = {
@@ -13,6 +14,7 @@ type NetworkConnector = {
     thalesTokenContract?: ethers.Contract;
     marketManagerContract?: ethers.Contract;
     thalesBondsContract?: ethers.Contract;
+    tagsContract?: ethers.Contract;
 };
 
 // @ts-ignore
@@ -26,6 +28,7 @@ const networkConnector: NetworkConnector = {
         this.thalesTokenContract = initializeContract(thalesTokenContract, networkSettings);
         this.marketManagerContract = initializeContract(marketManagerContract, networkSettings);
         this.thalesBondsContract = initializeContract(thalesBondsContract, networkSettings);
+        this.tagsContract = initializeContract(tagsContract, networkSettings);
     },
 };
 

@@ -2,13 +2,7 @@ import DatetimePicker from 'components/fields/DatetimePicker';
 import TextInput from 'components/fields/TextInput';
 import TextAreaInput from 'components/fields/TextAreaInput';
 import Toggle from 'components/fields/Toggle';
-import {
-    DEFAULT_POSITIONING_DURATION,
-    MarketType,
-    MAXIMUM_INPUT_CHARACTERS,
-    MAXIMUM_TAGS,
-    TagFilterEnum,
-} from 'constants/markets';
+import { DEFAULT_POSITIONING_DURATION, MarketType, MAXIMUM_INPUT_CHARACTERS, MAXIMUM_TAGS } from 'constants/markets';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
@@ -24,7 +18,7 @@ import { useSelector } from 'react-redux';
 import { getIsWalletConnected, getNetworkId, getWalletAddress } from 'redux/modules/wallet';
 import { getIsAppReady } from 'redux/modules/app';
 import { RootState } from 'redux/rootReducer';
-import { MarketsParameters } from 'types/markets';
+import { MarketsParameters, Tags } from 'types/markets';
 import { checkAllowance } from 'utils/network';
 import networkConnector from 'utils/networkConnector';
 import { BigNumber, ethers } from 'ethers';
@@ -35,6 +29,7 @@ import useThalesBalanceQuery from 'queries/wallet/useThalesBalanceQuery';
 import NumericInput from 'components/fields/NumericInput';
 import ApprovalModal from 'components/ApprovalModal';
 import ValidationMessage from 'components/ValidationMessage';
+import useTagsQuery from 'queries/markets/useTagsQuery';
 
 const CreateMarket: React.FC = () => {
     const { t } = useTranslation();
@@ -56,13 +51,7 @@ const CreateMarket: React.FC = () => {
         setDateTimeToUtcNoon(new Date(new Date().getTime() + DEFAULT_POSITIONING_DURATION))
     );
     const [tags, setTags] = useState<Tag[]>([]);
-    const [suggestions, setSuggestions] = useState<Tag[]>(
-        Object.values(TagFilterEnum).map((filterItem, index) => ({
-            id: index + 1,
-            name: t(`market.filter-label.tag.${filterItem.toLowerCase()}`),
-            disabled: false,
-        }))
-    );
+    const [suggestions, setSuggestions] = useState<Tag[]>([]);
     const [thalesBalance, setThalesBalance] = useState<number | string>('');
     const [openApprovalModal, setOpenApprovalModal] = useState<boolean>(false);
 
@@ -77,7 +66,22 @@ const CreateMarket: React.FC = () => {
         return undefined;
     }, [marketsParametersQuery.isSuccess, marketsParametersQuery.data]);
 
-    const fixedBondAmount = marketsParameters ? marketsParameters.fixedBondAmount : 0;
+    const tagsQuery = useTagsQuery(networkId, {
+        enabled: isAppReady,
+    });
+
+    useEffect(() => {
+        if (tagsQuery.isSuccess && tagsQuery.data) {
+            const availableTags = tagsQuery.data as Tags;
+            setSuggestions(
+                availableTags.map((tag) => ({
+                    id: tag.id,
+                    name: tag.label,
+                    disabled: false,
+                }))
+            );
+        }
+    }, [tagsQuery.isSuccess, tagsQuery.data]);
 
     const thalesBalanceQuery = useThalesBalanceQuery(walletAddress, networkId, {
         enabled: isAppReady && isWalletConnected,
@@ -88,6 +92,8 @@ const CreateMarket: React.FC = () => {
             setThalesBalance(Number(thalesBalanceQuery.data));
         }
     }, [thalesBalanceQuery.isSuccess, thalesBalanceQuery.data]);
+
+    const fixedBondAmount = marketsParameters ? marketsParameters.fixedBondAmount : 0;
 
     const isQuestionEntered = question.trim() !== '';
     const isDataSourceEntered = dataSource.trim() !== '';
@@ -161,8 +167,10 @@ const CreateMarket: React.FC = () => {
                 const marketManagerContractWithSigner = marketManagerContract.connect(signer);
 
                 const formattedPositioningEnd = Math.round((positioningEndDateTime as Date).getTime() / 1000);
-                const parsedTicketPrice = ethers.utils.parseEther('30');
-                const formmatedTags: BigNumber[] = [];
+                const parsedTicketPrice = ethers.utils.parseEther(
+                    (marketType === MarketType.TICKET ? ticketPrice : 0).toString()
+                );
+                const formmatedTags = tags.map((tag) => tag.id);
 
                 const tx = await marketManagerContractWithSigner.createExoticMarket(
                     question,
@@ -221,9 +229,6 @@ const CreateMarket: React.FC = () => {
         if (!areMarketDataEntered) {
             return <CreateMarketButton disabled={true}>{getEnterMarketDataMessage()}</CreateMarketButton>;
         }
-        // if (!isAmountEntered) {
-        //     return <CreateMarketButton disabled={true}>{t(`common.errors.enter-amount`)}</CreateMarketButton>;
-        // }
         if (!hasAllowance) {
             return (
                 <CreateMarketButton disabled={isAllowing} onClick={() => setOpenApprovalModal(true)}>

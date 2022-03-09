@@ -1,4 +1,4 @@
-export const exoticPositionalMarketManager = {
+export const exoticPositionalMarketManagerContract = {
     addresses: {
         10: '',
         69: '0x4eA42C9bD934e38C646a66512B1bc783BA81D812',
@@ -628,4 +628,4 @@ export const exoticPositionalMarketManager = {
     ],
 };
 
-export default exoticPositionalMarketManager;
+export default exoticPositionalMarketManagerContract;

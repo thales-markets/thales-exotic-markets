@@ -12,7 +12,7 @@ export type MarketInfo = {
     maturityDate: number;
     positions: string[];
     isOpen: boolean;
-    tags: string[];
+    tags: number[];
     isClaimAvailable: boolean;
     numberOfOpenedDisputes: number;
     hasPosition: boolean;
@@ -37,3 +37,10 @@ export type MarketsParameters = {
     safeBoxPercentage: number;
     withdrawalPercentage: number;
 };
+
+export type TagInfo = {
+    id: number;
+    label: string;
+};
+
+export type Tags = TagInfo[];

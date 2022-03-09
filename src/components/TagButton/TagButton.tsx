@@ -2,13 +2,13 @@ import React from 'react';
 import styled from 'styled-components';
 import { FlexDivCentered } from 'styles/common';
 
-type TagFilterProps = {
+type TagButtonProps = {
     disabled?: boolean;
     selected?: boolean;
     onClick?: (param: any) => void;
 };
 
-const TagFilter: React.FC<TagFilterProps> = ({ disabled, selected, onClick, children }) => {
+const TagButton: React.FC<TagButtonProps> = ({ disabled, selected, onClick, children }) => {
     return (
         <Container className={`${disabled ? 'disabled' : ''} ${selected ? 'selected' : ''}`} onClick={onClick}>
             {children}
@@ -49,4 +49,4 @@ const Container = styled(FlexDivCentered)`
     user-select: none;
 `;
 
-export default TagFilter;
+export default TagButton;

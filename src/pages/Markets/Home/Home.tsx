@@ -12,22 +12,22 @@ import { getNetworkId } from 'redux/modules/wallet';
 import { RootState } from 'redux/rootReducer';
 import styled from 'styled-components';
 import { FlexDivCentered, FlexDivColumn, FlexDivRow, FlexDivStart } from 'styles/common';
-import { MarketInfo, Markets, SortOptionType } from 'types/markets';
+import { MarketInfo, Markets, SortOptionType, TagInfo, Tags } from 'types/markets';
 import GlobalFilter from '../components/GlobalFilter';
-import TagFilter from '../components/TagFilter';
+import TagButton from '../../../components/TagButton';
 import { TagLabel } from '../components/Tags/Tags';
 import MarketsGrid from './MarketsGrid';
 import { navigateTo } from 'utils/routes';
 import ROUTES from 'constants/routes';
-import { TagFilterEnum, GlobalFilterEnum, SortDirection, DEFAULT_SORT_BY } from 'constants/markets';
+import { GlobalFilterEnum, SortDirection, DEFAULT_SORT_BY } from 'constants/markets';
 import SortOption from '../components/SortOption';
+import useTagsQuery from 'queries/markets/useTagsQuery';
 
 const Home: React.FC = () => {
     const { t } = useTranslation();
     const isAppReady = useSelector((state: RootState) => getIsAppReady(state));
     const networkId = useSelector((state: RootState) => getNetworkId(state));
     const [globalFilter, setGlobalFilter] = useState<GlobalFilterEnum>(GlobalFilterEnum.All);
-    const [tagFilter, setTagFilter] = useState<TagFilterEnum>(TagFilterEnum.All);
     const [sortDirection, setSortDirection] = useState(SortDirection.DESC);
     const [sortBy, setSortBy] = useState(DEFAULT_SORT_BY);
     const [marketSearch, setMarketSearch] = useState<string>('');
@@ -36,6 +36,12 @@ const Home: React.FC = () => {
         { id: 1, title: t('market.time-remaining-label') },
         { id: 2, title: t('market.title-label') },
     ];
+
+    const allTagsFilterItem: TagInfo = {
+        id: 0,
+        label: t('market.filter-label.all'),
+    };
+    const [tagFilter, setTagFilter] = useState<TagInfo>(allTagsFilterItem);
 
     const marketsQuery = useMarketsQuery(networkId, { enabled: isAppReady });
 
@@ -46,11 +52,22 @@ const Home: React.FC = () => {
         return [];
     }, [marketsQuery.isSuccess, marketsQuery.data]);
 
+    const tagsQuery = useTagsQuery(networkId, {
+        enabled: isAppReady,
+    });
+
+    const availableTags: Tags = useMemo(() => {
+        if (tagsQuery.isSuccess && tagsQuery.data) {
+            return [allTagsFilterItem, ...(tagsQuery.data as Tags)];
+        }
+        return [allTagsFilterItem];
+    }, [tagsQuery.isSuccess, tagsQuery.data]);
+
     const filteredMarkets = useMemo(() => {
         let filteredMarkets = markets;
 
-        if (tagFilter !== TagFilterEnum.All) {
-            filteredMarkets = filteredMarkets.filter((market: MarketInfo) => market.tags.includes(tagFilter));
+        if (tagFilter.id !== allTagsFilterItem.id) {
+            filteredMarkets = filteredMarkets.filter((market: MarketInfo) => market.tags.includes(tagFilter.id));
         }
         switch (globalFilter) {
             case GlobalFilterEnum.Disputed:
@@ -153,16 +170,16 @@ const Home: React.FC = () => {
             </FiltersContainer>
             <TagsContainer>
                 <TagLabel>{t('market.tags-label')}:</TagLabel>
-                {Object.values(TagFilterEnum).map((filterItem) => {
+                {availableTags.map((tag: TagInfo) => {
                     return (
-                        <TagFilter
+                        <TagButton
                             disabled={false}
-                            selected={tagFilter === filterItem}
-                            onClick={() => setTagFilter(tagFilter === filterItem ? TagFilterEnum.All : filterItem)}
-                            key={filterItem}
+                            selected={tagFilter.id === tag.id}
+                            onClick={() => setTagFilter(tagFilter.id === tag.id ? allTagsFilterItem : tag)}
+                            key={tag.label}
                         >
-                            {t(`market.filter-label.tag.${filterItem.toLowerCase()}`)}
-                        </TagFilter>
+                            {tag.label}
+                        </TagButton>
                     );
                 })}
             </TagsContainer>

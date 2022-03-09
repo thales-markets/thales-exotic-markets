@@ -3,8 +3,8 @@ import { FieldContainer, FieldLabel } from '../common';
 import ReactTags, { Tag } from 'react-tag-autocomplete';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import TagFilter from 'pages/Markets/components/TagFilter';
-import { MAXIMUM_TAGS, TagFilterEnum } from 'constants/markets';
+import TagButton from 'components/TagButton';
+import { MAXIMUM_TAGS } from 'constants/markets';
 import { FlexDivStart } from 'styles/common';
 
 type TagsInputProps = {
@@ -34,32 +34,27 @@ const TagsInput: React.FC<TagsInputProps> = ({ tags, suggestions, label, onTagAd
                 autoresize={false}
                 allowBackspace={false}
             />
-            <TagsListContainer>
-                {Object.values(TagFilterEnum).map((filterItem, index) => {
-                    if (filterItem === TagFilterEnum.All) return;
-                    const tag: Tag = {
-                        id: index + 1,
-                        name: t(`market.filter-label.tag.${filterItem.toLowerCase()}`),
-                    };
+            <SuggestionsContainer>
+                {suggestions.map((suggestion: Tag) => {
                     return (
-                        <TagFilter
+                        <TagButton
                             disabled={false}
-                            selected={findTagIndexInSelectedTags(tag) > -1}
+                            selected={findTagIndexInSelectedTags(suggestion) > -1}
                             onClick={() => {
-                                const tagIndex = findTagIndexInSelectedTags(tag);
+                                const tagIndex = findTagIndexInSelectedTags(suggestion);
                                 if (tagIndex > -1) {
                                     onTagRemove(tagIndex);
                                 } else {
-                                    onTagAdd(tag);
+                                    onTagAdd(suggestion);
                                 }
                             }}
-                            key={filterItem}
+                            key={suggestion.name}
                         >
-                            {t(`market.filter-label.tag.${filterItem.toLowerCase()}`)}
-                        </TagFilter>
+                            {suggestion.name}
+                        </TagButton>
                     );
                 })}
-            </TagsListContainer>
+            </SuggestionsContainer>
         </TagsContainer>
     );
 };
@@ -236,7 +231,7 @@ const TagsContainer = styled(FieldContainer)<{ isInputDisabled: boolean }>`
     }
 `;
 
-const TagsListContainer = styled(FlexDivStart)`
+const SuggestionsContainer = styled(FlexDivStart)`
     flex-wrap: wrap;
     align-items: center;
     margin-top: 15px;

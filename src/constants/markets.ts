@@ -1,20 +1,3 @@
-export enum TagFilterEnum {
-    All = 'All',
-    Sports = 'Sports',
-    NFL = 'NFL',
-    NBA = 'NBA',
-    Football = 'Football',
-    Dummy = 'Dummy',
-    Test = 'Test',
-    Crypto = 'Crypto',
-    DeFi = 'DeFi',
-    Basketball = 'Basketball',
-    ETH = 'ETH',
-    OP = 'OP',
-    Thales = 'Thales',
-    ThalesOp = 'ThalesOp',
-}
-
 export enum GlobalFilterEnum {
     All = 'All',
     Disputed = 'Disputed',
