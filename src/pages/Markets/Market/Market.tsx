@@ -19,7 +19,7 @@ import { formatCurrencyWithKey, formatPercentage } from 'utils/formatters/number
 import { CURRENCY_MAP, DEFAULT_CURRENCY_DECIMALS } from 'constants/currency';
 import SPAAnchor from 'components/SPAAnchor';
 import { buildOpenDisputeLink } from 'utils/routes';
-import Disputes from './Disputes';
+// import Disputes from './Disputes';
 
 // temp constants for mocks
 const TEMP_POOL_SIZE = 15678.65;
@@ -51,16 +51,19 @@ const Market: React.FC<MarketProps> = (props) => {
         return undefined;
     }, [marketQuery.isSuccess, marketQuery.data]);
 
-    const showTicketBuy = market && market.isOpen && market.isTicketType && !market.hasPosition;
-    const showTicketWithdraw = market && market.isOpen && market.isTicketType && market.hasPosition;
-    const showTicketInfo = market && market.isOpen && market.isTicketType;
+    // const showTicketBuy = market && market.isOpen && market.isTicketType && !market.hasPosition;
+    // const showTicketWithdraw = market && market.isOpen && market.isTicketType && market.hasPosition;
+    // const showTicketInfo = market && market.isOpen && market.isTicketType;
+    const showTicketBuy = market && market.isOpen;
+    const showTicketWithdraw = market && market.isOpen;
+    const showTicketInfo = market && market.isOpen;
 
     return (
         <Container>
             {market ? (
                 <>
                     <MarketContainer>
-                        <MarketTitle fontSize={40}>{market.title}</MarketTitle>
+                        <MarketTitle fontSize={40}>{market.question}</MarketTitle>
                         <Positions>
                             {market.isOpen ? (
                                 market.positions.map((position: string, index: number) => (
@@ -90,7 +93,7 @@ const Market: React.FC<MarketProps> = (props) => {
                                 ))
                             ) : (
                                 <Position>
-                                    <MainInfo>{market.winningPosition}</MainInfo>{' '}
+                                    <MainInfo>{market.positions[0]}</MainInfo>{' '}
                                     <Info>
                                         <InfoLabel>{t('market.pool-size-label')}:</InfoLabel>
                                         <InfoContent>
@@ -164,14 +167,14 @@ const Market: React.FC<MarketProps> = (props) => {
                             </Info>
                             <FooterButtonsContainer>
                                 <SPAAnchor href={buildOpenDisputeLink(market.address)}>
-                                    <OpenDisputeButton numberOfOpenedDisputes={market.numberOfOpenedDisputes}>
+                                    <OpenDisputeButton numberOfOpenedDisputes={0}>
                                         {t('market.button.open-dispute-label')}
                                     </OpenDisputeButton>
                                 </SPAAnchor>
                             </FooterButtonsContainer>
                         </Footer>
                     </MarketContainer>
-                    {market.disputes && <Disputes disputes={market.disputes} />}
+                    {/* {market.disputes && <Disputes disputes={market.disputes} />} */}
                 </>
             ) : (
                 <SimpleLoader />

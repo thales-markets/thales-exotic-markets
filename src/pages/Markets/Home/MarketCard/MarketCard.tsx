@@ -20,7 +20,7 @@ const MarketCard: React.FC<MarketCardProps> = ({ market }) => {
 
     return (
         <Container isClaimAvailable={market.isClaimAvailable}>
-            <MarketTitle>{market.title}</MarketTitle>
+            <MarketTitle>{market.question}</MarketTitle>
             <Positions>
                 {market.positions.map((position: string) => (
                     <Position key={position}>{position}</Position>
@@ -32,7 +32,7 @@ const MarketCard: React.FC<MarketCardProps> = ({ market }) => {
                 <ButtonsContainer>
                     {market.isClaimAvailable && <Button>{t('market.button.claim-label')}</Button>}
                     <SPAAnchor href={buildOpenDisputeLink(market.address)}>
-                        <OpenDisputeButton numberOfOpenedDisputes={market.numberOfOpenedDisputes}>
+                        <OpenDisputeButton numberOfOpenedDisputes={0}>
                             {t('market.button.open-dispute-label')}
                         </OpenDisputeButton>
                     </SPAAnchor>

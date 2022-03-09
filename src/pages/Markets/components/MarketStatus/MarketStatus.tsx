@@ -21,10 +21,11 @@ const MarketStatus: React.FC<MarketStatusProps> = ({ market, fontSize, fontWeigh
                 {t(`market.${market.isOpen ? 'time-remaining-label' : 'status-label'}`)}:
             </StatusLabel>
             {market.isOpen ? (
-                <TimeRemaining end={market.maturityDate} fontSize={fontSize} fontWeight={fontWeight} />
+                <TimeRemaining end={market.endOfPositioning} fontSize={fontSize} fontWeight={fontWeight} />
             ) : (
                 <Status fontSize={fontSize}>
-                    {t(`market.status.${market.isClaimAvailable ? 'claim-available' : 'maturity'}`)}
+                    {/* {t(`market.status.${market.isClaimAvailable ? 'claim-available' : 'maturity'}`)} */}
+                    {t(`market.status.maturity'}`)}
                 </Status>
             )}
         </Container>

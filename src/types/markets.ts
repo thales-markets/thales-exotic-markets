@@ -8,17 +8,20 @@ export type Disputes = DisputeInfo[];
 
 export type MarketInfo = {
     address: string;
-    title: string;
-    maturityDate: number;
+    question: string;
+    dataSource: string;
+    endOfPositioning: number;
+    ticketPrice: number;
+    isWithdrawalAllowed: boolean;
     positions: string[];
-    isOpen: boolean;
     tags: number[];
+    isOpen: boolean;
     isClaimAvailable: boolean;
-    numberOfOpenedDisputes: number;
-    hasPosition: boolean;
-    isTicketType: boolean;
-    winningPosition: string | null;
-    disputes?: Disputes;
+    // numberOfOpenedDisputes: number;
+    // hasPosition: boolean;
+    // isTicketType: boolean;
+    // winningPosition: string | null;
+    // disputes?: Disputes;
 };
 
 export type Markets = MarketInfo[];

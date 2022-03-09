@@ -78,7 +78,7 @@
         "all-rights-reserved": "© {{year}} THALES DAO All rights reserved."
     },
     "market": {
-        "title-label": "Title",
+        "question-label": "Question",
         "time-remaining-label": "Time remaining",
         "status-label": "Status",
         "tags-label": "Tags",

@@ -34,7 +34,7 @@ const Home: React.FC = () => {
 
     const sortOptions: SortOptionType[] = [
         { id: 1, title: t('market.time-remaining-label') },
-        { id: 2, title: t('market.title-label') },
+        { id: 2, title: t('market.question-label') },
     ];
 
     const allTagsFilterItem: TagInfo = {
@@ -70,23 +70,25 @@ const Home: React.FC = () => {
             filteredMarkets = filteredMarkets.filter((market: MarketInfo) => market.tags.includes(tagFilter.id));
         }
         switch (globalFilter) {
-            case GlobalFilterEnum.Disputed:
-                filteredMarkets = filteredMarkets.filter((market: MarketInfo) => market.numberOfOpenedDisputes > 0);
-                break;
-            case GlobalFilterEnum.YourPositions:
-                filteredMarkets = filteredMarkets.filter((market: MarketInfo) => market.hasPosition);
-                break;
-            case GlobalFilterEnum.Claim:
-                filteredMarkets = filteredMarkets.filter((market: MarketInfo) => market.isClaimAvailable);
+            // case GlobalFilterEnum.Disputed:
+            //     filteredMarkets = filteredMarkets.filter((market: MarketInfo) => market.numberOfOpenedDisputes > 0);
+            //     break;
+            // case GlobalFilterEnum.YourPositions:
+            //     filteredMarkets = filteredMarkets.filter((market: MarketInfo) => market.hasPosition);
+            //     break;
+            // case GlobalFilterEnum.Claim:
+            //     filteredMarkets = filteredMarkets.filter((market: MarketInfo) => market.isClaimAvailable);
+            //     break;
+            default:
                 break;
         }
 
         return filteredMarkets.sort((a, b) => {
             switch (sortBy) {
                 case 1:
-                    return sortByField(a, b, sortDirection, 'maturityDate');
+                    return sortByField(a, b, sortDirection, 'endOfPositioning');
                 case 2:
-                    return sortByField(a, b, sortDirection, 'title');
+                    return sortByField(a, b, sortDirection, 'question');
                 default:
                     return 0;
             }
@@ -97,7 +99,7 @@ const Home: React.FC = () => {
         () => {
             return marketSearch
                 ? filteredMarkets.filter((market: MarketInfo) =>
-                      market.title.toLowerCase().includes(marketSearch.toLowerCase())
+                      market.question.toLowerCase().includes(marketSearch.toLowerCase())
                   )
                 : filteredMarkets;
         },

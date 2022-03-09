@@ -33,6 +33,13 @@ export const exoticPositionalMarketManagerContract = {
             inputs: [
                 { indexed: false, internalType: 'address', name: 'marketAddress', type: 'address' },
                 { indexed: false, internalType: 'string', name: 'marketQuestion', type: 'string' },
+                { indexed: false, internalType: 'string', name: 'marketSource', type: 'string' },
+                { indexed: false, internalType: 'uint256', name: 'endOfPositioning', type: 'uint256' },
+                { indexed: false, internalType: 'uint256', name: 'fixedTicketPrice', type: 'uint256' },
+                { indexed: false, internalType: 'bool', name: 'withdrawalAllowed', type: 'bool' },
+                { indexed: false, internalType: 'uint256[]', name: 'tags', type: 'uint256[]' },
+                { indexed: false, internalType: 'uint256', name: 'positionCount', type: 'uint256' },
+                { indexed: false, internalType: 'string[]', name: 'positionPhrases', type: 'string[]' },
                 { indexed: false, internalType: 'address', name: 'marketOwner', type: 'address' },
             ],
             name: 'MarketCreated',

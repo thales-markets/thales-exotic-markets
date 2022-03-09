@@ -45,9 +45,9 @@ const CreateMarket: React.FC = () => {
     const [dataSource, setDataSource] = useState<string>('');
     const [marketType, setMarketType] = useState<MarketType>(MarketType.TICKET);
     const [ticketPrice, setTicketPrice] = useState<number | string>('');
-    const [isWithdrawEnabled, setIsWithdrawEnabled] = useState<boolean>(true);
+    const [isWithdrawalAllowed, setIsWithdrawalAllowed] = useState<boolean>(true);
     const [positions, setPositions] = useState<string[]>(new Array(2).fill(''));
-    const [positioningEndDateTime, setPositioningEndDateTime] = useState<Date>(
+    const [endOfPositioning, setEndOfPositioning] = useState<Date>(
         setDateTimeToUtcNoon(new Date(new Date().getTime() + DEFAULT_POSITIONING_DURATION))
     );
     const [tags, setTags] = useState<Tag[]>([]);
@@ -166,7 +166,7 @@ const CreateMarket: React.FC = () => {
             try {
                 const marketManagerContractWithSigner = marketManagerContract.connect(signer);
 
-                const formattedPositioningEnd = Math.round((positioningEndDateTime as Date).getTime() / 1000);
+                const formattedEndOfPositioning = Math.round((endOfPositioning as Date).getTime() / 1000);
                 const parsedTicketPrice = ethers.utils.parseEther(
                     (marketType === MarketType.TICKET ? ticketPrice : 0).toString()
                 );
@@ -175,9 +175,9 @@ const CreateMarket: React.FC = () => {
                 const tx = await marketManagerContractWithSigner.createExoticMarket(
                     question,
                     dataSource,
-                    formattedPositioningEnd,
+                    formattedEndOfPositioning,
                     parsedTicketPrice,
-                    isWithdrawEnabled,
+                    isWithdrawalAllowed,
                     formmatedTags,
                     positions.length,
                     positions
@@ -324,8 +324,8 @@ const CreateMarket: React.FC = () => {
                         disabled={isSubmitting}
                     />
                     <DatetimePicker
-                        selected={convertUTCToLocalDate(positioningEndDateTime)}
-                        onChange={(date: Date) => setPositioningEndDateTime(convertLocalToUTCDate(date))}
+                        selected={convertUTCToLocalDate(endOfPositioning)}
+                        onChange={(date: Date) => setEndOfPositioning(convertLocalToUTCDate(date))}
                         label={t('market.create-market.positioning-end-label')}
                         disabled={isSubmitting}
                     />
@@ -349,9 +349,9 @@ const CreateMarket: React.FC = () => {
                         />
                     )}
                     <Toggle
-                        isLeftOptionSelected={isWithdrawEnabled}
+                        isLeftOptionSelected={isWithdrawalAllowed}
                         onClick={() => {
-                            setIsWithdrawEnabled(!isWithdrawEnabled);
+                            setIsWithdrawalAllowed(!isWithdrawalAllowed);
                         }}
                         label={t('market.create-market.withdraw-label')}
                         leftText={t('market.create-market.withdraw-options.enabled')}
