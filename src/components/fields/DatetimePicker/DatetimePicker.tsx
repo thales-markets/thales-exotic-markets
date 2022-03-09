@@ -5,34 +5,43 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { FieldContainer, FieldLabel } from '../common';
 import styled from 'styled-components';
 import { DATE_PICKER_MAX_DATE, DATE_PICKER_MIN_DATE } from 'constants/markets';
+import { FlexDivColumn } from 'styles/common';
 
 type DatetimePickerProps = ReactDatePickerProps & {
     label?: string;
+    disabled?: boolean;
 };
 
-export const DatetimePicker: React.FC<DatetimePickerProps> = ({ label, ...rest }) => {
+export const DatetimePicker: React.FC<DatetimePickerProps> = ({ label, disabled, ...rest }) => {
     const { t } = useTranslation();
 
     return (
-        <DatePickerContainer>
+        <FieldContainer>
             {label && <FieldLabel>{label}:</FieldLabel>}
-            <ReactDatePicker
-                dateFormat="MMM d, yyyy | HH:mm"
-                timeFormat="HH:mm"
-                minDate={DATE_PICKER_MIN_DATE}
-                maxDate={DATE_PICKER_MAX_DATE}
-                placeholderText={t('common.select-date')}
-                autoComplete="off"
-                popperPlacement="bottom-start"
-                showTimeSelect
-                {...rest}
-            />
-        </DatePickerContainer>
+            <DatePickerContainer className={disabled ? 'disabled' : ''}>
+                <ReactDatePicker
+                    dateFormat="MMM d, yyyy | HH:mm"
+                    timeFormat="HH:mm"
+                    minDate={DATE_PICKER_MIN_DATE}
+                    maxDate={DATE_PICKER_MAX_DATE}
+                    placeholderText={t('common.select-date')}
+                    autoComplete="off"
+                    popperPlacement="bottom-start"
+                    showTimeSelect
+                    readOnly={disabled}
+                    {...rest}
+                />
+            </DatePickerContainer>
+        </FieldContainer>
     );
 };
 
-const DatePickerContainer = styled(FieldContainer)`
-    width: fit-content;
+const DatePickerContainer = styled(FlexDivColumn)`
+    &.disabled {
+        opacity: 0.4;
+        cursor: default;
+        pointer-events: none;
+    }
 
     .react-datepicker__input-container {
         input {

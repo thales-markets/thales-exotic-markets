@@ -43,7 +43,7 @@ const Message = styled(FlexDiv)<{ arrowPosition: string }>`
     letter-spacing: 0.25px;
     color: #e53720;
     margin: 6px 2px 0 2px;
-    padding: 4px 6px;
+    padding: 4px 8px;
     :before {
         content: '';
         position: absolute;

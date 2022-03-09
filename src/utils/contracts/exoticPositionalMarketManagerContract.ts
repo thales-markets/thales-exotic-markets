@@ -76,6 +76,12 @@ export const exoticPositionalMarketManagerContract = {
         },
         {
             anonymous: false,
+            inputs: [{ indexed: false, internalType: 'uint256', name: 'maxNumberOfTags', type: 'uint256' }],
+            name: 'NewMaxNumberOfTags',
+            type: 'event',
+        },
+        {
+            anonymous: false,
             inputs: [{ indexed: false, internalType: 'uint256', name: 'maxOracleCouncilMembers', type: 'uint256' }],
             name: 'NewMaxOracleCouncilMembers',
             type: 'event',
@@ -102,6 +108,12 @@ export const exoticPositionalMarketManagerContract = {
             anonymous: false,
             inputs: [{ indexed: false, internalType: 'address', name: 'safeBox', type: 'address' }],
             name: 'NewSafeBoxAddress',
+            type: 'event',
+        },
+        {
+            anonymous: false,
+            inputs: [{ indexed: false, internalType: 'address', name: 'tagsAddress', type: 'address' }],
+            name: 'NewTagsAddress',
             type: 'event',
         },
         {
@@ -326,6 +338,13 @@ export const exoticPositionalMarketManagerContract = {
         },
         {
             inputs: [],
+            name: 'maxNumberOfTags',
+            outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+            stateMutability: 'view',
+            type: 'function',
+        },
+        {
+            inputs: [],
             name: 'maxOracleCouncilMembers',
             outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
             stateMutability: 'view',
@@ -521,6 +540,13 @@ export const exoticPositionalMarketManagerContract = {
             type: 'function',
         },
         {
+            inputs: [{ internalType: 'uint256', name: '_maxNumberOfTags', type: 'uint256' }],
+            name: 'setMaxNumberOfTags',
+            outputs: [],
+            stateMutability: 'nonpayable',
+            type: 'function',
+        },
+        {
             inputs: [{ internalType: 'uint256', name: '_maxOracleCouncilMembers', type: 'uint256' }],
             name: 'setMaxOracleCouncilMembers',
             outputs: [],
@@ -591,6 +617,13 @@ export const exoticPositionalMarketManagerContract = {
             type: 'function',
         },
         {
+            inputs: [{ internalType: 'address', name: '_tagsAddress', type: 'address' }],
+            name: 'setTagsAddress',
+            outputs: [],
+            stateMutability: 'nonpayable',
+            type: 'function',
+        },
+        {
             inputs: [{ internalType: 'address', name: '_thalesBonds', type: 'address' }],
             name: 'setThalesBonds',
             outputs: [],
@@ -602,6 +635,13 @@ export const exoticPositionalMarketManagerContract = {
             name: 'setWithdrawalPercentage',
             outputs: [],
             stateMutability: 'nonpayable',
+            type: 'function',
+        },
+        {
+            inputs: [],
+            name: 'tagsAddress',
+            outputs: [{ internalType: 'address', name: '', type: 'address' }],
+            stateMutability: 'view',
             type: 'function',
         },
         {

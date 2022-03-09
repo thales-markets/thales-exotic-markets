@@ -22,7 +22,7 @@ const PositionInput: React.FC<PositionInputProps> = ({
     ...rest
 }) => {
     return (
-        <Container>
+        <Container className={disabled ? 'disabled' : ''}>
             <StyledInput
                 {...rest}
                 value={value}
@@ -38,12 +38,13 @@ const PositionInput: React.FC<PositionInputProps> = ({
 
 const Container = styled(FlexDivStart)`
     color: ${(props) => props.theme.textColor.primary};
+    margin-bottom: 15px;
+    align-items: center;
     &.disabled {
         opacity: 0.4;
         cursor: default;
+        pointer-events: none;
     }
-    margin-bottom: 15px;
-    align-items: center;
 `;
 
 const StyledInput = styled(Input)`

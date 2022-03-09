@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import TagButton from 'components/TagButton';
 import { MAXIMUM_TAGS } from 'constants/markets';
-import { FlexDivStart } from 'styles/common';
+import { FlexDivColumn, FlexDivStart } from 'styles/common';
 
 type TagsInputProps = {
     tags: Tag[];
@@ -22,18 +22,20 @@ const TagsInput: React.FC<TagsInputProps> = ({ tags, suggestions, label, disable
     const findTagIndexInSelectedTags = (tag: Tag) => tags.findIndex((tagItem: Tag) => tag.id === tagItem.id);
 
     return (
-        <TagsContainer isInputDisabled={tags.length >= MAXIMUM_TAGS}>
+        <FieldContainer>
             {label && <FieldLabel>{label}:</FieldLabel>}
-            <ReactTags
-                tags={tags}
-                suggestions={suggestions.filter((suggestion: Tag) => !suggestion.disabled)}
-                onAddition={onTagAdd}
-                onDelete={onTagRemove}
-                placeholderText={t('common.tags-placeholder')}
-                removeButtonText={t('common.remove-tag-tooltip')}
-                autoresize={false}
-                allowBackspace={false}
-            />
+            <TagsContainer isInputDisabled={tags.length >= MAXIMUM_TAGS} className={disabled ? 'disabled' : ''}>
+                <ReactTags
+                    tags={tags}
+                    suggestions={suggestions.filter((suggestion: Tag) => !suggestion.disabled)}
+                    onAddition={onTagAdd}
+                    onDelete={onTagRemove}
+                    placeholderText={t('common.tags-placeholder')}
+                    removeButtonText={t('common.remove-tag-tooltip')}
+                    autoresize={false}
+                    allowBackspace={false}
+                />
+            </TagsContainer>
             <SuggestionsContainer>
                 {suggestions.map((suggestion: Tag) => {
                     return (
@@ -55,11 +57,17 @@ const TagsInput: React.FC<TagsInputProps> = ({ tags, suggestions, label, disable
                     );
                 })}
             </SuggestionsContainer>
-        </TagsContainer>
+        </FieldContainer>
     );
 };
 
-const TagsContainer = styled(FieldContainer)<{ isInputDisabled: boolean }>`
+const TagsContainer = styled(FlexDivColumn)<{ isInputDisabled: boolean }>`
+    &.disabled {
+        opacity: 0.4;
+        cursor: default;
+        pointer-events: none;
+    }
+
     .react-tags {
         position: relative;
         padding: 0 0 0 8px;

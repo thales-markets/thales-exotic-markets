@@ -327,7 +327,7 @@ const CreateMarket: React.FC = () => {
                         selected={convertUTCToLocalDate(positioningEndDateTime)}
                         onChange={(date: Date) => setPositioningEndDateTime(convertLocalToUTCDate(date))}
                         label={t('market.create-market.positioning-end-label')}
-                        readOnly={isSubmitting}
+                        disabled={isSubmitting}
                     />
                     <Toggle
                         isLeftOptionSelected={marketType === MarketType.TICKET}
