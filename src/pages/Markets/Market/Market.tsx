@@ -14,7 +14,7 @@ import MarketTitle from '../components/MarketTitle';
 import OpenDisputeButton from '../components/OpenDisputeButton';
 import Tags from '../components/Tags';
 import { MarketDetails } from 'types/markets';
-import { formatCurrencyWithKey, formatPercentage } from 'utils/formatters/number';
+import { formatCurrencyWithKey } from 'utils/formatters/number';
 import { CURRENCY_MAP, DEFAULT_CURRENCY_DECIMALS } from 'constants/currency';
 import SPAAnchor from 'components/SPAAnchor';
 import { buildOpenDisputeLink } from 'utils/routes';
@@ -30,13 +30,6 @@ import useThalesBalanceQuery from 'queries/wallet/useThalesBalanceQuery';
 import onboardConnector from 'utils/onboardConnector';
 import RadioButton from 'components/fields/RadioButton';
 // import Disputes from './Disputes';
-
-// temp constants for mocks
-const TEMP_POOL_SIZE = 15678.65;
-const TEMP_ROI = 1.2356;
-const TEMP_TOTAL_POOL_SIZE = 568678.65;
-const TEMP_MAX_RETURN = 654;
-const TEMP_CLAIM_WINNINGS = 2389.54;
 
 type MarketProps = RouteComponentProps<{
     marketAddress: string;
@@ -91,8 +84,12 @@ const Market: React.FC<MarketProps> = (props) => {
     }, [marketQuery.isSuccess]);
 
     const showTicketBuy = market && market.isOpen && market.isTicketType && !market.hasPosition;
+    const showTicketWithdraw =
+        market && market.isOpen && market.isTicketType && market.isWithdrawalAllowed && market.hasPosition;
     const showTicketInfo = market && market.isOpen && market.isTicketType;
     const ticketPrice = market ? market.ticketPrice : 0;
+    const poolSize = market ? market.poolSize : 0;
+    const poolSizePerPosition = market ? market.poolSizePerPosition : [];
 
     const insufficientBalance = Number(thalesBalance) < Number(ticketPrice) || Number(thalesBalance) === 0;
     const isPositionSelected = selectedPosition > 0;
@@ -249,9 +246,13 @@ const Market: React.FC<MarketProps> = (props) => {
                             : t('market.button.change-position-progress-label')}
                     </MarketButton>
                 )}
-                <MarketButton type="secondary" disabled={isWithdrawButtonDisabled} onClick={handleWithdraw}>
-                    {!isWithdrawing ? t('market.button.withdraw-label') : t('market.button.withdraw-progress-label')}
-                </MarketButton>
+                {showTicketWithdraw && (
+                    <MarketButton type="secondary" disabled={isWithdrawButtonDisabled} onClick={handleWithdraw}>
+                        {!isWithdrawing
+                            ? t('market.button.withdraw-label')
+                            : t('market.button.withdraw-progress-label')}
+                    </MarketButton>
+                )}
             </>
         );
     };
@@ -277,22 +278,22 @@ const Market: React.FC<MarketProps> = (props) => {
                                             <InfoContent>
                                                 {formatCurrencyWithKey(
                                                     CURRENCY_MAP.sUSD,
-                                                    TEMP_POOL_SIZE,
+                                                    poolSizePerPosition[index],
                                                     DEFAULT_CURRENCY_DECIMALS,
                                                     true
                                                 )}
                                             </InfoContent>
                                         </Info>
-                                        <Info>
+                                        {/* <Info>
                                             <InfoLabel>{t('market.roi-label')}:</InfoLabel>
                                             <InfoContent>{formatPercentage(TEMP_ROI)}</InfoContent>
-                                        </Info>
+                                        </Info> */}
                                     </Position>
                                 ))
                             ) : (
                                 <Position>
                                     <MainInfo>{market.positions[0]}</MainInfo>{' '}
-                                    <Info>
+                                    {/* <Info>
                                         <InfoLabel>{t('market.pool-size-label')}:</InfoLabel>
                                         <InfoContent>
                                             {formatCurrencyWithKey(
@@ -306,7 +307,7 @@ const Market: React.FC<MarketProps> = (props) => {
                                     <Info>
                                         <InfoLabel>{t('market.roi-label')}:</InfoLabel>
                                         <InfoContent>{formatPercentage(TEMP_ROI)}</InfoContent>
-                                    </Info>
+                                    </Info> */}
                                 </Position>
                             )}
                         </Positions>
@@ -321,7 +322,7 @@ const Market: React.FC<MarketProps> = (props) => {
                                 )}
                             </MainInfo>
                         )}
-                        {market.isClaimAvailable && (
+                        {/* {market.isClaimAvailable && (
                             <MainInfo>
                                 {t('market.claim-winnings-label')}{' '}
                                 {formatCurrencyWithKey(CURRENCY_MAP.sUSD, TEMP_CLAIM_WINNINGS)}
@@ -339,7 +340,7 @@ const Market: React.FC<MarketProps> = (props) => {
                                     )}
                                 </InfoContent>
                             </Info>
-                        )}
+                        )} */}
                         <ButtonContainer>
                             {getButtons()}
                             {market.isClaimAvailable && <ClaimButton>{t('market.button.claim-label')}</ClaimButton>}
@@ -359,7 +360,7 @@ const Market: React.FC<MarketProps> = (props) => {
                                 <InfoContent>
                                     {formatCurrencyWithKey(
                                         CURRENCY_MAP.sUSD,
-                                        TEMP_TOTAL_POOL_SIZE,
+                                        poolSize,
                                         DEFAULT_CURRENCY_DECIMALS,
                                         true
                                     )}

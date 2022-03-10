@@ -25,7 +25,14 @@ export type MarketInfo = {
 };
 
 export type MarketDetails = MarketInfo & {
+    creationTime: number;
+    resolvedTime: number;
+    hasOpenDisputes: boolean;
+    isResolved: boolean;
     hasPosition: boolean;
+    poolSize: number;
+    claimablePoolSize: number;
+    poolSizePerPosition: number[];
     position: number;
     isTicketType: boolean;
 };
