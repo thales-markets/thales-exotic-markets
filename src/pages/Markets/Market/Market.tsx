@@ -469,10 +469,21 @@ const Footer = styled(FlexDivRow)`
     > div {
         width: 33%;
     }
+    @media (max-width: 767px) {
+        > div {
+            width: 100%;
+            margin-top: 10px;
+        }
+        flex-direction: column;
+        justify-content: center;
+    }
 `;
 
 const FooterButtonsContainer = styled(FlexDivEnd)`
     align-items: center;
+    @media (max-width: 767px) {
+        justify-content: center;
+    }
 `;
 
 export default Market;

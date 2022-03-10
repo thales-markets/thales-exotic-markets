@@ -18,6 +18,9 @@ const Description: React.FC = () => {
 
 const Container = styled(FlexDivColumn)`
     margin: 20px 0 20px 40px;
+    @media (max-width: 767px) {
+        margin-left: 0px;
+    }
 `;
 
 const Title = styled.span`

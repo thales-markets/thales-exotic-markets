@@ -47,7 +47,7 @@ const Container = styled.div`
     padding: 25px 30px 35px 30px;
     overflow: auto;
     border-radius: 23px;
-    @media (max-width: 512px) {
+    @media (max-width: 575px) {
         padding: 10px;
     }
 `;

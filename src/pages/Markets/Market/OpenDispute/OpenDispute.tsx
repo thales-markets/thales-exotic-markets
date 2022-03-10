@@ -37,6 +37,9 @@ const Container = styled(FlexDivColumn)`
     align-items: center;
     width: 690px;
     flex: initial;
+    @media (max-width: 767px) {
+        width: 100%;
+    }
 `;
 
 const Title = styled(FlexDivColumn)`
