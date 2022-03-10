@@ -473,9 +473,9 @@ const Footer = styled(FlexDivRow)`
         > div {
             width: 100%;
             margin-top: 10px;
+            justify-content: center;
         }
         flex-direction: column;
-        justify-content: center;
     }
 `;
 

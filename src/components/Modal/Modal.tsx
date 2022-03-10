@@ -22,6 +22,7 @@ export const Modal: React.FC<ModalProps> = ({ title, onClose, children }) => {
                 content: {
                     padding: '0px',
                     maxWidth: '500px',
+                    width: '100%',
                     top: 'calc(50% - 250px)',
                     left: 'calc(50% - 250px)',
                     height: 'fit-content',
@@ -47,9 +48,6 @@ const Container = styled.div`
     padding: 25px 30px 35px 30px;
     overflow: auto;
     border-radius: 23px;
-    @media (max-width: 575px) {
-        padding: 10px;
-    }
 `;
 
 const Header = styled(FlexDivRow)`
