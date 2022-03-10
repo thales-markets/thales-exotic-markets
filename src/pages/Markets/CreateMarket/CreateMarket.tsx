@@ -106,8 +106,8 @@ const CreateMarket: React.FC = () => {
     const areMarketDataEntered =
         isQuestionEntered && isDataSourceEntered && isTicketPriceEntered && arePositionsEntered && areTagsEntered;
 
-    const isButtonDisabled = isSubmitting || !isWalletConnected || !hasAllowance || !areMarketDataEntered;
-    insufficientBalance;
+    const isButtonDisabled =
+        isSubmitting || !isWalletConnected || !hasAllowance || !areMarketDataEntered || insufficientBalance;
 
     useEffect(() => {
         const { thalesTokenContract, thalesBondsContract, signer } = networkConnector;
@@ -116,9 +116,9 @@ const CreateMarket: React.FC = () => {
             const addressToApprove = thalesBondsContract.address;
             const getAllowance = async () => {
                 try {
-                    const parsedStakeAmount = ethers.utils.parseEther(Number(fixedBondAmount).toString());
+                    const parsedAmount = ethers.utils.parseEther(Number(fixedBondAmount).toString());
                     const allowance = await checkAllowance(
-                        parsedStakeAmount,
+                        parsedAmount,
                         thalesTokenContractWithSigner,
                         walletAddress,
                         addressToApprove

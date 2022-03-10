@@ -24,6 +24,12 @@ export type MarketInfo = {
     // disputes?: Disputes;
 };
 
+export type MarketDetails = MarketInfo & {
+    hasPosition: boolean;
+    position?: number;
+    isTicketType: boolean;
+};
+
 export type Markets = MarketInfo[];
 
 export type SortOptionType = {

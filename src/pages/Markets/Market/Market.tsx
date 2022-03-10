@@ -2,7 +2,7 @@ import Button from 'components/Button';
 import Checkbox from 'components/fields/Checkbox';
 import SimpleLoader from 'components/SimpleLoader';
 import useMarketQuery from 'queries/markets/useMarketQuery';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
@@ -14,18 +14,27 @@ import MarketStatus from '../components/MarketStatus';
 import MarketTitle from '../components/MarketTitle';
 import OpenDisputeButton from '../components/OpenDisputeButton';
 import Tags from '../components/Tags';
-import { MarketInfo } from 'types/markets';
+import { MarketDetails } from 'types/markets';
 import { formatCurrencyWithKey, formatPercentage } from 'utils/formatters/number';
 import { CURRENCY_MAP, DEFAULT_CURRENCY_DECIMALS } from 'constants/currency';
 import SPAAnchor from 'components/SPAAnchor';
 import { buildOpenDisputeLink } from 'utils/routes';
+import { getIsWalletConnected, getNetworkId, getWalletAddress } from 'redux/modules/wallet';
+import { checkAllowance } from 'utils/network';
+import { BigNumber, ethers } from 'ethers';
+import networkConnector from 'utils/networkConnector';
+import { MAX_GAS_LIMIT } from 'constants/network';
+import ApprovalModal from 'components/ApprovalModal';
+import ValidationMessage from 'components/ValidationMessage';
+import marketContract from 'utils/contracts/exoticPositionalMarketContract';
+import useThalesBalanceQuery from 'queries/wallet/useThalesBalanceQuery';
+import onboardConnector from 'utils/onboardConnector';
 // import Disputes from './Disputes';
 
 // temp constants for mocks
 const TEMP_POOL_SIZE = 15678.65;
 const TEMP_ROI = 1.2356;
 const TEMP_TOTAL_POOL_SIZE = 568678.65;
-const TEMP_TICKET_PRICE = 30;
 const TEMP_MAX_RETURN = 654;
 const TEMP_CLAIM_WINNINGS = 2389.54;
 
@@ -35,28 +44,153 @@ type MarketProps = RouteComponentProps<{
 
 const Market: React.FC<MarketProps> = (props) => {
     const { t } = useTranslation();
+    const networkId = useSelector((state: RootState) => getNetworkId(state));
     const isAppReady = useSelector((state: RootState) => getIsAppReady(state));
+    const walletAddress = useSelector((state: RootState) => getWalletAddress(state)) || '';
+    const isWalletConnected = useSelector((state: RootState) => getIsWalletConnected(state));
+    const [hasAllowance, setAllowance] = useState<boolean>(false);
+    const [isAllowing, setIsAllowing] = useState<boolean>(false);
+    const [txErrorMessage, setTxErrorMessage] = useState<string | null>(null);
+    const [isBuying, setIsBuying] = useState<boolean>(false);
+    const [openApprovalModal, setOpenApprovalModal] = useState<boolean>(false);
+    const [thalesBalance, setThalesBalance] = useState<number | string>('');
 
     const { params } = props.match;
-    const address = params && params.marketAddress ? params.marketAddress : '';
+    const marketAddress = params && params.marketAddress ? params.marketAddress : '';
 
-    const marketQuery = useMarketQuery(address, {
-        enabled: isAppReady && address !== '',
+    const marketQuery = useMarketQuery(marketAddress, walletAddress, {
+        enabled: isAppReady && marketAddress !== '',
     });
 
-    const market: MarketInfo | undefined = useMemo(() => {
+    const market: MarketDetails | undefined = useMemo(() => {
         if (marketQuery.isSuccess && marketQuery.data) {
-            return marketQuery.data as MarketInfo;
+            return marketQuery.data as MarketDetails;
         }
         return undefined;
     }, [marketQuery.isSuccess, marketQuery.data]);
 
-    // const showTicketBuy = market && market.isOpen && market.isTicketType && !market.hasPosition;
-    // const showTicketWithdraw = market && market.isOpen && market.isTicketType && market.hasPosition;
-    // const showTicketInfo = market && market.isOpen && market.isTicketType;
-    const showTicketBuy = market && market.isOpen;
-    const showTicketWithdraw = market && market.isOpen;
-    const showTicketInfo = market && market.isOpen;
+    const thalesBalanceQuery = useThalesBalanceQuery(walletAddress, networkId, {
+        enabled: isAppReady && isWalletConnected,
+    });
+
+    useEffect(() => {
+        if (thalesBalanceQuery.isSuccess && thalesBalanceQuery.data) {
+            setThalesBalance(Number(thalesBalanceQuery.data));
+        }
+    }, [thalesBalanceQuery.isSuccess, thalesBalanceQuery.data]);
+
+    const showTicketBuy = market && market.isOpen && market.isTicketType && !market.hasPosition;
+    const showTicketWithdraw = market && market.isOpen && market.isTicketType && market.hasPosition;
+    const showTicketInfo = market && market.isOpen && market.isTicketType;
+    const ticketPrice = market ? market.ticketPrice : 0;
+
+    const insufficientBalance = Number(thalesBalance) < Number(ticketPrice) || Number(thalesBalance) === 0;
+
+    const isBuyButtonDisabled = isBuying || !isWalletConnected || !hasAllowance || insufficientBalance;
+
+    useEffect(() => {
+        const { thalesTokenContract, signer } = networkConnector;
+        if (thalesTokenContract && signer) {
+            const thalesTokenContractWithSigner = thalesTokenContract.connect(signer);
+            const addressToApprove = marketAddress;
+            const getAllowance = async () => {
+                try {
+                    const parsedTicketPrice = ethers.utils.parseEther(Number(ticketPrice).toString());
+                    const allowance = await checkAllowance(
+                        parsedTicketPrice,
+                        thalesTokenContractWithSigner,
+                        walletAddress,
+                        addressToApprove
+                    );
+                    setAllowance(allowance);
+                } catch (e) {
+                    console.log(e);
+                }
+            };
+            if (isWalletConnected) {
+                getAllowance();
+            }
+        }
+    }, [walletAddress, isWalletConnected, hasAllowance, ticketPrice, isAllowing]);
+
+    const handleAllowance = async (approveAmount: BigNumber) => {
+        const { thalesTokenContract, signer } = networkConnector;
+        if (thalesTokenContract && signer) {
+            const thalesTokenContractWithSigner = thalesTokenContract.connect(signer);
+            const addressToApprove = marketAddress;
+            try {
+                setIsAllowing(true);
+                const tx = (await thalesTokenContractWithSigner.approve(addressToApprove, approveAmount, {
+                    gasLimit: MAX_GAS_LIMIT,
+                })) as ethers.ContractTransaction;
+                setOpenApprovalModal(false);
+                const txResult = await tx.wait();
+                if (txResult && txResult.transactionHash) {
+                    setIsAllowing(false);
+                }
+            } catch (e) {
+                console.log(e);
+                setTxErrorMessage(t('common.errors.unknown-error-try-again'));
+                setIsAllowing(false);
+            }
+        }
+    };
+
+    const handleBuy = async () => {
+        const { signer } = networkConnector;
+        if (signer) {
+            setTxErrorMessage(null);
+            setIsBuying(true);
+
+            try {
+                const marketContractWithSigner = new ethers.Contract(marketAddress, marketContract.abi, signer);
+
+                const tx = await marketContractWithSigner.takeAPosition(1);
+                const txResult = await tx.wait();
+
+                if (txResult && txResult.transactionHash) {
+                    // dispatchMarketNotification(t('migration.migrate-button.confirmation-message'));
+                    setIsBuying(false);
+                }
+            } catch (e) {
+                console.log(e);
+                setTxErrorMessage(t('common.errors.unknown-error-try-again'));
+                setIsBuying(false);
+            }
+        }
+    };
+
+    const getBuyButton = () => {
+        if (!isWalletConnected) {
+            return (
+                <BuyButton type="secondary" onClick={() => onboardConnector.connectWallet()}>
+                    {t('common.wallet.connect-your-wallet')}
+                </BuyButton>
+            );
+        }
+        // if (insufficientBalance) {
+        //     return <CreateMarketButton disabled={true}>{t(`common.errors.insufficient-balance`)}</CreateMarketButton>;
+        // }
+        // if (!areMarketDataEntered) {
+        //     return <CreateMarketButton disabled={true}>{getEnterMarketDataMessage()}</CreateMarketButton>;
+        // }
+        if (!hasAllowance) {
+            return (
+                <BuyButton type="secondary" disabled={isAllowing} onClick={() => setOpenApprovalModal(true)}>
+                    {!isAllowing
+                        ? t('common.enable-wallet-access.approve-label', { currencyKey: CURRENCY_MAP.THALES })
+                        : t('common.enable-wallet-access.approve-progress-label', {
+                              currencyKey: CURRENCY_MAP.THALES,
+                          })}
+                </BuyButton>
+            );
+        }
+        return (
+            <BuyButton type="secondary" disabled={isBuyButtonDisabled} onClick={handleBuy}>
+                {!isBuying ? t('market.button.buy-label') : t('market.button.buy-progress-label')}
+            </BuyButton>
+        );
+    };
 
     return (
         <Container>
@@ -117,7 +251,7 @@ const Market: React.FC<MarketProps> = (props) => {
                                 {t('market.ticket-price-label')}{' '}
                                 {formatCurrencyWithKey(
                                     CURRENCY_MAP.sUSD,
-                                    TEMP_TICKET_PRICE,
+                                    market.ticketPrice,
                                     DEFAULT_CURRENCY_DECIMALS,
                                     true
                                 )}
@@ -143,11 +277,16 @@ const Market: React.FC<MarketProps> = (props) => {
                             </Info>
                         )}
                         <ButtonContainer>
-                            {showTicketBuy && <BuyButton type="secondary">{t('market.button.buy-label')}</BuyButton>}
+                            {showTicketBuy && getBuyButton()}
                             {showTicketWithdraw && (
                                 <MarketButton type="secondary">{t('market.button.withdraw-label')}</MarketButton>
                             )}
                             {market.isClaimAvailable && <ClaimButton>{t('market.button.claim-label')}</ClaimButton>}
+                            <ValidationMessage
+                                showValidation={txErrorMessage !== null}
+                                message={txErrorMessage}
+                                onDismiss={() => setTxErrorMessage(null)}
+                            />
                         </ButtonContainer>
                         {market.isOpen && (
                             <MarketStatus market={market} fontSize={40} labelFontSize={20} fontWeight={700} />
@@ -173,6 +312,15 @@ const Market: React.FC<MarketProps> = (props) => {
                                 </SPAAnchor>
                             </FooterButtonsContainer>
                         </Footer>
+                        {openApprovalModal && (
+                            <ApprovalModal
+                                defaultAmount={ticketPrice}
+                                tokenSymbol={CURRENCY_MAP.THALES}
+                                isAllowing={isAllowing}
+                                onSubmit={handleAllowance}
+                                onClose={() => setOpenApprovalModal(false)}
+                            />
+                        )}
                     </MarketContainer>
                     {/* {market.disputes && <Disputes disputes={market.disputes} />} */}
                 </>

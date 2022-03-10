@@ -98,6 +98,7 @@
             "open-dispute-label": "Open dispute",
             "create-market-label": "Create market",
             "buy-label": "Buy",
+            "buy-progress-label": "Buying in progress...",
             "withdraw-label": "Withdraw"
         },
         "filter-label": {
