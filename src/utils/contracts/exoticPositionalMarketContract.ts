@@ -54,6 +54,16 @@ export const exoticPositionalMarketContract = {
             anonymous: false,
             inputs: [
                 { indexed: false, internalType: 'address', name: 'account', type: 'address' },
+                { indexed: false, internalType: 'uint256[]', name: 'openBidPositions', type: 'uint256[]' },
+                { indexed: false, internalType: 'uint256[]', name: 'openBidAmounts', type: 'uint256[]' },
+            ],
+            name: 'NewOpenBidsForPositions',
+            type: 'event',
+        },
+        {
+            anonymous: false,
+            inputs: [
+                { indexed: false, internalType: 'address', name: 'account', type: 'address' },
                 { indexed: false, internalType: 'uint256', name: 'position', type: 'uint256' },
                 { indexed: false, internalType: 'uint256', name: 'fixedTicketAmount', type: 'uint256' },
             ],
@@ -143,13 +153,6 @@ export const exoticPositionalMarketContract = {
             type: 'function',
         },
         { inputs: [], name: 'cancelMarket', outputs: [], stateMutability: 'nonpayable', type: 'function' },
-        {
-            inputs: [],
-            name: 'claimTimeoutPeriod',
-            outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
-            stateMutability: 'view',
-            type: 'function',
-        },
         { inputs: [], name: 'claimWinningTicket', outputs: [], stateMutability: 'nonpayable', type: 'function' },
         {
             inputs: [{ internalType: 'address', name: '_user', type: 'address' }],
@@ -160,19 +163,19 @@ export const exoticPositionalMarketContract = {
         },
         {
             inputs: [],
+            name: 'claimableOpenBidAmount',
+            outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+            stateMutability: 'view',
+            type: 'function',
+        },
+        {
+            inputs: [],
             name: 'claimableTicketsCount',
             outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
             stateMutability: 'view',
             type: 'function',
         },
         { inputs: [], name: 'closeDispute', outputs: [], stateMutability: 'nonpayable', type: 'function' },
-        {
-            inputs: [],
-            name: 'councilAddress',
-            outputs: [{ internalType: 'address', name: '', type: 'address' }],
-            stateMutability: 'view',
-            type: 'function',
-        },
         {
             inputs: [],
             name: 'creationTime',
@@ -217,7 +220,40 @@ export const exoticPositionalMarketContract = {
         },
         {
             inputs: [],
+            name: 'getAllMarketData',
+            outputs: [
+                { internalType: 'string', name: '', type: 'string' },
+                { internalType: 'string', name: '', type: 'string' },
+                { internalType: 'uint256', name: '', type: 'uint256' },
+                { internalType: 'bool', name: '', type: 'bool' },
+                { internalType: 'bool', name: '', type: 'bool' },
+                { internalType: 'uint256', name: '', type: 'uint256' },
+                { internalType: 'string[]', name: '', type: 'string[]' },
+                { internalType: 'uint256[]', name: '', type: 'uint256[]' },
+                { internalType: 'uint256', name: '', type: 'uint256' },
+                { internalType: 'uint256', name: '', type: 'uint256' },
+                { internalType: 'uint256[]', name: '', type: 'uint256[]' },
+            ],
+            stateMutability: 'view',
+            type: 'function',
+        },
+        {
+            inputs: [{ internalType: 'address', name: '_account', type: 'address' }],
+            name: 'getAllUserPositions',
+            outputs: [{ internalType: 'uint256[]', name: '', type: 'uint256[]' }],
+            stateMutability: 'view',
+            type: 'function',
+        },
+        {
+            inputs: [],
             name: 'getAlreadyClaimedTickets',
+            outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+            stateMutability: 'view',
+            type: 'function',
+        },
+        {
+            inputs: [{ internalType: 'uint256', name: '_position', type: 'uint256' }],
+            name: 'getPlacedAmountPerPosition',
             outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
             stateMutability: 'view',
             type: 'function',
@@ -267,6 +303,40 @@ export const exoticPositionalMarketContract = {
         {
             inputs: [{ internalType: 'address', name: '_account', type: 'address' }],
             name: 'getUserClaimableAmount',
+            outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+            stateMutability: 'view',
+            type: 'function',
+        },
+        {
+            inputs: [
+                { internalType: 'address', name: '_account', type: 'address' },
+                { internalType: 'uint256', name: '_position', type: 'uint256' },
+            ],
+            name: 'getUserOpenBidPositionPlacedAmount',
+            outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+            stateMutability: 'view',
+            type: 'function',
+        },
+        {
+            inputs: [
+                { internalType: 'address', name: '_account', type: 'address' },
+                { internalType: 'uint256', name: '_position', type: 'uint256' },
+            ],
+            name: 'getUserOpenBidPotentialWinningForPosition',
+            outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+            stateMutability: 'view',
+            type: 'function',
+        },
+        {
+            inputs: [{ internalType: 'address', name: '_account', type: 'address' }],
+            name: 'getUserOpenBidTotalClaimableAmount',
+            outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+            stateMutability: 'view',
+            type: 'function',
+        },
+        {
+            inputs: [{ internalType: 'address', name: '_account', type: 'address' }],
+            name: 'getUserOpenBidTotalPlacedAmount',
             outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
             stateMutability: 'view',
             type: 'function',
@@ -375,13 +445,6 @@ export const exoticPositionalMarketContract = {
         { inputs: [], name: 'openDispute', outputs: [], stateMutability: 'nonpayable', type: 'function' },
         {
             inputs: [],
-            name: 'outcomeUpdated',
-            outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
-            stateMutability: 'view',
-            type: 'function',
-        },
-        {
-            inputs: [],
             name: 'owner',
             outputs: [{ internalType: 'address', name: '', type: 'address' }],
             stateMutability: 'view',
@@ -476,6 +539,16 @@ export const exoticPositionalMarketContract = {
             type: 'function',
         },
         {
+            inputs: [
+                { internalType: 'uint256[]', name: '_positions', type: 'uint256[]' },
+                { internalType: 'uint256[]', name: '_amounts', type: 'uint256[]' },
+            ],
+            name: 'takeOpenBidPositions',
+            outputs: [],
+            stateMutability: 'nonpayable',
+            type: 'function',
+        },
+        {
             inputs: [],
             name: 'ticketType',
             outputs: [{ internalType: 'enum ExoticPositionalMarket.TicketType', name: '', type: 'uint8' }],
@@ -492,6 +565,20 @@ export const exoticPositionalMarketContract = {
         {
             inputs: [],
             name: 'totalBondAmount',
+            outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+            stateMutability: 'view',
+            type: 'function',
+        },
+        {
+            inputs: [],
+            name: 'totalOpenBidAmount',
+            outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+            stateMutability: 'view',
+            type: 'function',
+        },
+        {
+            inputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+            name: 'totalOpenBidAmountPerPosition',
             outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
             stateMutability: 'view',
             type: 'function',
@@ -538,6 +625,16 @@ export const exoticPositionalMarketContract = {
             name: 'transferToMarket',
             outputs: [],
             stateMutability: 'nonpayable',
+            type: 'function',
+        },
+        {
+            inputs: [
+                { internalType: 'address', name: '', type: 'address' },
+                { internalType: 'uint256', name: '', type: 'uint256' },
+            ],
+            name: 'userOpenBidPosition',
+            outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+            stateMutability: 'view',
             type: 'function',
         },
         {

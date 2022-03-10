@@ -45,6 +45,7 @@ const CloseIcon = styled.i`
     font-size: 10px;
     cursor: pointer;
     margin-bottom: -2px;
+    margin-left: 20px;
     &:before {
         font-family: Icons !important;
         content: '\\0076';

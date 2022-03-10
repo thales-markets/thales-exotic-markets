@@ -25,6 +25,8 @@ const useMarketQuery = (
             market.hasPosition = false;
 
             const contract = new ethers.Contract(marketAddress, marketContract.abi, networkConnector.provider);
+
+            console.log(await contract.getAllMarketData());
             const { signer } = networkConnector;
             if (signer && walletAddress !== '') {
                 const contractWithSigner = contract.connect(signer);

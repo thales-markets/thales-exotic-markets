@@ -26,7 +26,7 @@ export type MarketInfo = {
 
 export type MarketDetails = MarketInfo & {
     hasPosition: boolean;
-    position?: number;
+    position: number;
     isTicketType: boolean;
 };
 

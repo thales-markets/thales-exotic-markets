@@ -39,12 +39,12 @@ const Input = styled.input`
 const Container = styled.label`
     display: block;
     position: relative;
-    padding-left: 22px;
+    padding-left: 35px;
     cursor: pointer;
     font-style: normal;
     font-weight: normal;
-    font-size: 15px;
-    line-height: 20px;
+    font-size: 40px;
+    line-height: 55px;
     color: ${(props) => props.theme.textColor.primary};
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -60,28 +60,28 @@ const Container = styled.label`
         opacity: 0.5;
         cursor: default;
     }
+    align-self: center;
     white-space: nowrap;
-    margin-bottom: 6px;
 `;
 
 const Checkmark = styled.span`
     position: absolute;
     top: 0;
     left: 0;
-    height: 16px;
-    width: 16px;
-    border: 3px solid ${(props) => props.theme.borderColor.primary};
+    height: 29px;
+    width: 29px;
+    border: 4px solid ${(props) => props.theme.borderColor.primary};
     background-color: transparent;
     border-radius: 50%;
-    margin-top: 1px;
+    margin-top: 12px;
     :after {
         content: '';
         position: absolute;
         display: none;
-        left: 2px;
-        top: 2px;
-        width: 6px;
-        height: 6px;
+        left: 3px;
+        top: 3px;
+        width: 15px;
+        height: 15px;
         border-radius: 50%;
         background: ${(props) => props.theme.borderColor.primary};
         -webkit-transform: rotate(45deg);

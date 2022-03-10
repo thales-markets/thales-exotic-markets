@@ -31,6 +31,7 @@
             "enter-positions": "Enter positions",
             "enter-ticket-price": "Enter ticket price",
             "enter-tags": "Enter tags",
+            "select-position": "Select position",
             "invalid-price": "Invalid price",
             "invalid-price-max": "The price cannot be higher than ${{max}}",
             "invalid-amount-max": "The amount cannot be higher than {{max}}",
@@ -99,7 +100,10 @@
             "create-market-label": "Create market",
             "buy-label": "Buy",
             "buy-progress-label": "Buying in progress...",
-            "withdraw-label": "Withdraw"
+            "change-position-label": "Change position",
+            "change-position-progress-label": "Changing in progress...",
+            "withdraw-label": "Withdraw",
+            "withdraw-progress-label": "Withdraw in progress..."
         },
         "filter-label": {
             "global": {
