@@ -395,7 +395,7 @@ const Market: React.FC<MarketProps> = (props) => {
 
 const Container = styled(FlexDivColumn)`
     width: 100%;
-    flex: initial;
+    position: relative;
 `;
 
 const MarketContainer = styled(FlexDivColumn)`
