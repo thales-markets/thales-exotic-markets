@@ -67,7 +67,9 @@ const Home: React.FC = () => {
         let filteredMarkets = markets;
 
         if (tagFilter.id !== allTagsFilterItem.id) {
-            filteredMarkets = filteredMarkets.filter((market: MarketInfo) => market.tags.includes(tagFilter.id));
+            filteredMarkets = filteredMarkets.filter((market: MarketInfo) =>
+                market.tags.map((tag) => Number(tag)).includes(tagFilter.id)
+            );
         }
         switch (globalFilter) {
             // case GlobalFilterEnum.Disputed:

@@ -29,8 +29,8 @@ export const TODAYS_DATE = new Date();
 export const DATE_PICKER_MIN_DATE = TODAYS_DATE; // today's date
 
 const maxDate = new Date();
-maxDate.setFullYear(maxDate.getFullYear() + 2);
-export const DATE_PICKER_MAX_DATE = maxDate; // 2 years from now
+maxDate.setMonth(maxDate.getMonth() + 1);
+export const DATE_PICKER_MAX_DATE = maxDate; // 1 month from now
 
 export const MAXIMUM_INPUT_CHARACTERS = 100;
 
