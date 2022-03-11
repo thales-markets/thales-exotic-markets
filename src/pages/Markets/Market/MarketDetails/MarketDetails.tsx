@@ -58,9 +58,15 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
             const data = accountMarketDataQuery.data as AccountMarketData;
             setAccountMarketData(data);
             setCurrentPositionOnContract(data.position);
-            setSelectedPosition(data.position);
         }
     }, [accountMarketDataQuery.isSuccess, accountMarketDataQuery.data]);
+
+    useEffect(() => {
+        if (accountMarketDataQuery.isSuccess && accountMarketDataQuery.data) {
+            const data = accountMarketDataQuery.data as AccountMarketData;
+            setSelectedPosition(data.position);
+        }
+    }, [accountMarketDataQuery.isSuccess]);
 
     const thalesBalanceQuery = useThalesBalanceQuery(walletAddress, networkId, {
         enabled: isAppReady && isWalletConnected,
@@ -176,6 +182,7 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
                 if (txResult && txResult.transactionHash) {
                     // dispatchMarketNotification(t('migration.migrate-button.confirmation-message'));
                     setIsWithdrawing(false);
+                    setCurrentPositionOnContract(0);
                     setSelectedPosition(0);
                 }
             } catch (e) {
