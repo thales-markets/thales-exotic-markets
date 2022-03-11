@@ -10,7 +10,7 @@ import MarketStatus from 'pages/Markets/components/MarketStatus';
 import MarketTitle from 'pages/Markets/components/MarketTitle';
 import OpenDisputeButton from 'pages/Markets/components/OpenDisputeButton';
 import Tags from 'pages/Markets/components/Tags';
-import { MarketDetails as MarketData } from 'types/markets';
+import { AccountMarketData, MarketData } from 'types/markets';
 import { formatCurrencyWithKey } from 'utils/formatters/number';
 import { PAYMENT_CURRENCY, DEFAULT_CURRENCY_DECIMALS } from 'constants/currency';
 import SPAAnchor from 'components/SPAAnchor';
@@ -26,6 +26,7 @@ import marketContract from 'utils/contracts/exoticPositionalMarketContract';
 import useThalesBalanceQuery from 'queries/wallet/useThalesBalanceQuery';
 import onboardConnector from 'utils/onboardConnector';
 import RadioButton from 'components/fields/RadioButton';
+import useAccountMarketDataQuery from 'queries/markets/useAccountMarketDataQuery';
 
 type MarketDetailsProps = {
     market: MarketData;
@@ -44,8 +45,22 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
     const [isWithdrawing, setIsWithdrawing] = useState<boolean>(false);
     const [openApprovalModal, setOpenApprovalModal] = useState<boolean>(false);
     const [thalesBalance, setThalesBalance] = useState<number | string>('');
-    const [currentPositionOnContract, setCurrentPositionOnContract] = useState<number>(market.position);
-    const [selectedPosition, setSelectedPosition] = useState<number>(market.position);
+    const [accountMarketData, setAccountMarketData] = useState<AccountMarketData | undefined>(undefined);
+    const [currentPositionOnContract, setCurrentPositionOnContract] = useState<number>(0);
+    const [selectedPosition, setSelectedPosition] = useState<number>(0);
+
+    const accountMarketDataQuery = useAccountMarketDataQuery(market.address, walletAddress, {
+        enabled: isAppReady,
+    });
+
+    useEffect(() => {
+        if (accountMarketDataQuery.isSuccess && accountMarketDataQuery.data) {
+            const data = accountMarketDataQuery.data as AccountMarketData;
+            setAccountMarketData(data);
+            setCurrentPositionOnContract(data.position);
+            setSelectedPosition(data.position);
+        }
+    }, [accountMarketDataQuery.isSuccess, accountMarketDataQuery.data]);
 
     const thalesBalanceQuery = useThalesBalanceQuery(walletAddress, networkId, {
         enabled: isAppReady && isWalletConnected,
@@ -57,8 +72,13 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
         }
     }, [thalesBalanceQuery.isSuccess, thalesBalanceQuery.data]);
 
-    const showTicketBuy = market.isOpen && market.isTicketType && !market.hasPosition;
-    const showTicketWithdraw = market.isOpen && market.isTicketType && market.isWithdrawalAllowed && market.hasPosition;
+    const showTicketBuy = market.isOpen && market.isTicketType && accountMarketData && !accountMarketData.hasPosition;
+    const showTicketWithdraw =
+        market.isOpen &&
+        market.isTicketType &&
+        market.isWithdrawalAllowed &&
+        accountMarketData &&
+        accountMarketData.hasPosition;
     const showTicketInfo = market.isOpen && market.isTicketType;
 
     const insufficientBalance = Number(thalesBalance) < Number(market.ticketPrice) || Number(thalesBalance) === 0;

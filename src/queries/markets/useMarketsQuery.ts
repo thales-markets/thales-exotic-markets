@@ -13,7 +13,10 @@ const useMarketsQuery = (networkId: NetworkId, options?: UseQueryOptions<Markets
             });
             return markets;
         },
-        options
+        {
+            refetchInterval: 5000,
+            ...options,
+        }
     );
 };
 

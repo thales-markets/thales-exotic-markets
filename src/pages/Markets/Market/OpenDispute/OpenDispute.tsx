@@ -11,7 +11,7 @@ import useMarketQuery from 'queries/markets/useMarketQuery';
 import { getIsWalletConnected, getNetworkId, getWalletAddress } from 'redux/modules/wallet';
 import { getIsAppReady } from 'redux/modules/app';
 import { RouteComponentProps } from 'react-router-dom';
-import { MarketDetails, MarketsParameters } from 'types/markets';
+import { MarketData, MarketsParameters } from 'types/markets';
 import useMarketsParametersQuery from 'queries/markets/useMarketsParametersQuery';
 import networkConnector from 'utils/networkConnector';
 import { BigNumber, ethers } from 'ethers';
@@ -44,13 +44,13 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
     const { params } = props.match;
     const marketAddress = params && params.marketAddress ? params.marketAddress : '';
 
-    const marketQuery = useMarketQuery(marketAddress, walletAddress, {
-        enabled: isAppReady && marketAddress !== '',
+    const marketQuery = useMarketQuery(marketAddress, {
+        enabled: isAppReady,
     });
 
     const marketQuestion: string = useMemo(() => {
         if (marketQuery.isSuccess && marketQuery.data) {
-            return (marketQuery.data as MarketDetails).question;
+            return (marketQuery.data as MarketData).question;
         }
         return '';
     }, [marketQuery.isSuccess, marketQuery.data]);

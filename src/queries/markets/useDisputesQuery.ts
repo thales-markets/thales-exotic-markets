@@ -14,7 +14,10 @@ const useDisputesQuery = (marketAddress: string, networkId: NetworkId, options?:
             });
             return disputes;
         },
-        options
+        {
+            refetchInterval: 5000,
+            ...options,
+        }
     );
 };
 

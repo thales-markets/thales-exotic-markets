@@ -20,28 +20,28 @@ export type MarketInfo = {
     positions: string[];
     tags: number[];
     isOpen: boolean;
+    numberOfDisputes: number;
+    numberOfOpenDisputes: number;
     isClaimAvailable: boolean;
-    // numberOfOpenedDisputes: number;
-    // hasPosition: boolean;
-    // isTicketType: boolean;
-    // winningPosition: string | null;
-    // disputes?: Disputes;
 };
 
-export type MarketDetails = MarketInfo & {
+export type MarketData = MarketInfo & {
     creationTime: number;
     resolvedTime: number;
     hasOpenDisputes: boolean;
     isResolved: boolean;
-    hasPosition: boolean;
     poolSize: number;
     claimablePoolSize: number;
     poolSizePerPosition: number[];
-    position: number;
     isTicketType: boolean;
 };
 
 export type Markets = MarketInfo[];
+
+export type AccountMarketData = {
+    hasPosition: boolean;
+    position: number;
+};
 
 export type SortOptionType = {
     id: number;

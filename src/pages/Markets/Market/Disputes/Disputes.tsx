@@ -16,8 +16,6 @@ type DisputesProps = {
 const Disputes: React.FC<DisputesProps> = ({ marketAddress }) => {
     const isAppReady = useSelector((state: RootState) => getIsAppReady(state));
     const networkId = useSelector((state: RootState) => getNetworkId(state));
-    // const walletAddress = useSelector((state: RootState) => getWalletAddress(state)) || '';
-    // const isWalletConnected = useSelector((state: RootState) => getIsWalletConnected(state));
 
     const disputesQuery = useDisputesQuery(marketAddress, networkId, { enabled: isAppReady });
 

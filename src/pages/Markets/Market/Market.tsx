@@ -7,8 +7,7 @@ import { getIsAppReady } from 'redux/modules/app';
 import { RootState } from 'redux/rootReducer';
 import styled from 'styled-components';
 import { FlexDivColumn } from 'styles/common';
-import { MarketDetails as MarketData } from 'types/markets';
-import { getWalletAddress } from 'redux/modules/wallet';
+import { MarketData } from 'types/markets';
 import Disputes from './Disputes';
 import MarketDetails from './MarketDetails';
 
@@ -18,13 +17,12 @@ type MarketProps = RouteComponentProps<{
 
 const Market: React.FC<MarketProps> = (props) => {
     const isAppReady = useSelector((state: RootState) => getIsAppReady(state));
-    const walletAddress = useSelector((state: RootState) => getWalletAddress(state)) || '';
 
     const { params } = props.match;
     const marketAddress = params && params.marketAddress ? params.marketAddress : '';
 
-    const marketQuery = useMarketQuery(marketAddress, walletAddress, {
-        enabled: isAppReady && marketAddress !== '',
+    const marketQuery = useMarketQuery(marketAddress, {
+        enabled: isAppReady,
     });
 
     const market: MarketData | undefined = useMemo(() => {

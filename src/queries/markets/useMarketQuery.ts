@@ -1,18 +1,14 @@
 import { useQuery, UseQueryOptions } from 'react-query';
 import QUERY_KEYS from 'constants/queryKeys';
-import { MarketDetails } from 'types/markets';
+import { MarketData } from 'types/markets';
 import { BigNumberish, ethers } from 'ethers';
 import marketContract from 'utils/contracts/exoticPositionalMarketContract';
 import networkConnector from 'utils/networkConnector';
 import { bigNumberFormatter } from 'utils/formatters/ethers';
 
-const useMarketQuery = (
-    marketAddress: string,
-    walletAddress: string,
-    options?: UseQueryOptions<MarketDetails | undefined>
-) => {
-    return useQuery<MarketDetails | undefined>(
-        QUERY_KEYS.Market(marketAddress, walletAddress),
+const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketData>) => {
+    return useQuery<MarketData>(
+        QUERY_KEYS.Market(marketAddress),
         async () => {
             const contract = new ethers.Contract(marketAddress, marketContract.abi, networkConnector.provider);
             const [
@@ -33,7 +29,7 @@ const useMarketQuery = (
                 poolSizePerPosition,
             ] = await contract.getAllMarketData();
 
-            const market: MarketDetails = {
+            const market: MarketData = {
                 address: marketAddress,
                 question,
                 dataSource,
@@ -52,21 +48,16 @@ const useMarketQuery = (
                 poolSizePerPosition: poolSizePerPosition.map((item: BigNumberish) => bigNumberFormatter(item)),
                 isOpen: !isResolved,
                 isClaimAvailable: false,
-                position: 0,
-                hasPosition: false,
+                numberOfDisputes: 0,
+                numberOfOpenDisputes: 0,
             };
-
-            const { signer } = networkConnector;
-            if (signer && walletAddress !== '') {
-                const contractWithSigner = contract.connect(signer);
-                const [userPosition] = await Promise.all([contractWithSigner.userPosition(walletAddress)]);
-                market.position = Number(userPosition);
-                market.hasPosition = Number(userPosition) > 0;
-            }
 
             return market;
         },
-        options
+        {
+            refetchInterval: 5000,
+            ...options,
+        }
     );
 };
 
