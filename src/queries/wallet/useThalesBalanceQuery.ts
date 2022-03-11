@@ -9,9 +9,9 @@ const useThalesBalanceQuery = (walletAddress: string, networkId: NetworkId, opti
     return useQuery<number>(
         QUERY_KEYS.Wallet.ThalesBalance(walletAddress, networkId),
         async () => {
-            const { thalesTokenContract } = networkConnector;
-            if (thalesTokenContract) {
-                const balance = bigNumberFormatter(await thalesTokenContract.balanceOf(walletAddress));
+            const { paymentTokenContract } = networkConnector;
+            if (paymentTokenContract) {
+                const balance = bigNumberFormatter(await paymentTokenContract.balanceOf(walletAddress));
                 return balance < BALANCE_THRESHOLD ? 0 : balance;
             }
             return 0;

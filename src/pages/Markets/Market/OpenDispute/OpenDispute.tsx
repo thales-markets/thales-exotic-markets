@@ -17,7 +17,7 @@ import networkConnector from 'utils/networkConnector';
 import { BigNumber, ethers } from 'ethers';
 import { checkAllowance } from 'utils/network';
 import onboardConnector from 'utils/onboardConnector';
-import { CURRENCY_MAP } from 'constants/currency';
+import { PAYMENT_CURRENCY } from 'constants/currency';
 import ValidationMessage from 'components/ValidationMessage';
 import ApprovalModal from 'components/ApprovalModal';
 import useThalesBalanceQuery from 'queries/wallet/useThalesBalanceQuery';
@@ -85,16 +85,16 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
         isSubmitting || !isWalletConnected || !hasAllowance || !isReasonForDisputeEntered || insufficientBalance;
 
     useEffect(() => {
-        const { thalesTokenContract, thalesBondsContract, signer } = networkConnector;
-        if (thalesTokenContract && thalesBondsContract && signer) {
-            const thalesTokenContractWithSigner = thalesTokenContract.connect(signer);
+        const { paymentTokenContract, thalesBondsContract, signer } = networkConnector;
+        if (paymentTokenContract && thalesBondsContract && signer) {
+            const paymentTokenContractWithSigner = paymentTokenContract.connect(signer);
             const addressToApprove = thalesBondsContract.address;
             const getAllowance = async () => {
                 try {
                     const parsedAmount = ethers.utils.parseEther(Number(disputePrice).toString());
                     const allowance = await checkAllowance(
                         parsedAmount,
-                        thalesTokenContractWithSigner,
+                        paymentTokenContractWithSigner,
                         walletAddress,
                         addressToApprove
                     );
@@ -110,13 +110,13 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
     }, [walletAddress, isWalletConnected, hasAllowance, disputePrice, isAllowing]);
 
     const handleAllowance = async (approveAmount: BigNumber) => {
-        const { thalesTokenContract, thalesBondsContract, signer } = networkConnector;
-        if (thalesTokenContract && thalesBondsContract && signer) {
-            const thalesTokenContractWithSigner = thalesTokenContract.connect(signer);
+        const { paymentTokenContract, thalesBondsContract, signer } = networkConnector;
+        if (paymentTokenContract && thalesBondsContract && signer) {
+            const paymentTokenContractWithSigner = paymentTokenContract.connect(signer);
             const addressToApprove = thalesBondsContract.address;
             try {
                 setIsAllowing(true);
-                const tx = (await thalesTokenContractWithSigner.approve(addressToApprove, approveAmount, {
+                const tx = (await paymentTokenContractWithSigner.approve(addressToApprove, approveAmount, {
                     gasLimit: MAX_GAS_LIMIT,
                 })) as ethers.ContractTransaction;
                 setOpenApprovalModal(false);
@@ -175,9 +175,9 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
             return (
                 <DisputeButton disabled={isAllowing} onClick={() => setOpenApprovalModal(true)}>
                     {!isAllowing
-                        ? t('common.enable-wallet-access.approve-label', { currencyKey: CURRENCY_MAP.THALES })
+                        ? t('common.enable-wallet-access.approve-label', { currencyKey: PAYMENT_CURRENCY })
                         : t('common.enable-wallet-access.approve-progress-label', {
-                              currencyKey: CURRENCY_MAP.THALES,
+                              currencyKey: PAYMENT_CURRENCY,
                           })}
                 </DisputeButton>
             );
@@ -216,7 +216,7 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
             {openApprovalModal && (
                 <ApprovalModal
                     defaultAmount={disputePrice}
-                    tokenSymbol={CURRENCY_MAP.THALES}
+                    tokenSymbol={PAYMENT_CURRENCY}
                     isAllowing={isAllowing}
                     onSubmit={handleAllowance}
                     onClose={() => setOpenApprovalModal(false)}

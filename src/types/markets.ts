@@ -57,6 +57,7 @@ export type MarketsParameters = {
     safeBoxPercentage: number;
     withdrawalPercentage: number;
     disputePrice: number;
+    paymentToken: string;
 };
 
 export type TagInfo = {
