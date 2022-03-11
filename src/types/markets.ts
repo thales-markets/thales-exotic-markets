@@ -39,7 +39,6 @@ export type MarketData = MarketInfo & {
 export type Markets = MarketInfo[];
 
 export type AccountMarketData = {
-    hasPosition: boolean;
     position: number;
 };
 

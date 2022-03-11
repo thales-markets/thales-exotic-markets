@@ -76,7 +76,7 @@ const Home: React.FC = () => {
             //     filteredMarkets = filteredMarkets.filter((market: MarketInfo) => market.numberOfOpenedDisputes > 0);
             //     break;
             // case GlobalFilterEnum.YourPositions:
-            //     filteredMarkets = filteredMarkets.filter((market: MarketInfo) => market.hasPosition);
+            //     filteredMarkets = filteredMarkets.filter((market: MarketInfo) => market.position > 0);
             //     break;
             // case GlobalFilterEnum.Claim:
             //     filteredMarkets = filteredMarkets.filter((market: MarketInfo) => market.isClaimAvailable);

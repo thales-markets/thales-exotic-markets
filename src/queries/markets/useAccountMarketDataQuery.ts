@@ -15,7 +15,6 @@ const useAccountMarketDataQuery = (
         async () => {
             const marketData: AccountMarketData = {
                 position: 0,
-                hasPosition: false,
             };
 
             const { signer } = networkConnector;
@@ -23,7 +22,6 @@ const useAccountMarketDataQuery = (
                 const contractWithSigner = new ethers.Contract(marketAddress, marketContract.abi, signer);
                 const [userPosition] = await Promise.all([contractWithSigner.userPosition(walletAddress)]);
                 marketData.position = Number(userPosition);
-                marketData.hasPosition = Number(userPosition) > 0;
             }
 
             return marketData;

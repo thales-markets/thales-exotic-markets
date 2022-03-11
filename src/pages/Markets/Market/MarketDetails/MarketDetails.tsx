@@ -45,7 +45,6 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
     const [isWithdrawing, setIsWithdrawing] = useState<boolean>(false);
     const [openApprovalModal, setOpenApprovalModal] = useState<boolean>(false);
     const [thalesBalance, setThalesBalance] = useState<number | string>('');
-    const [accountMarketData, setAccountMarketData] = useState<AccountMarketData | undefined>(undefined);
     const [currentPositionOnContract, setCurrentPositionOnContract] = useState<number>(0);
     const [selectedPosition, setSelectedPosition] = useState<number>(0);
 
@@ -55,16 +54,14 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
 
     useEffect(() => {
         if (accountMarketDataQuery.isSuccess && accountMarketDataQuery.data) {
-            const data = accountMarketDataQuery.data as AccountMarketData;
-            setAccountMarketData(data);
-            setCurrentPositionOnContract(data.position);
+            setCurrentPositionOnContract((accountMarketDataQuery.data as AccountMarketData).position);
         }
     }, [accountMarketDataQuery.isSuccess, accountMarketDataQuery.data]);
 
+    // set only on the first load, that is why isSuccess is the only dependency
     useEffect(() => {
         if (accountMarketDataQuery.isSuccess && accountMarketDataQuery.data) {
-            const data = accountMarketDataQuery.data as AccountMarketData;
-            setSelectedPosition(data.position);
+            setSelectedPosition((accountMarketDataQuery.data as AccountMarketData).position);
         }
     }, [accountMarketDataQuery.isSuccess]);
 
@@ -78,13 +75,9 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
         }
     }, [thalesBalanceQuery.isSuccess, thalesBalanceQuery.data]);
 
-    const showTicketBuy = market.isOpen && market.isTicketType && accountMarketData && !accountMarketData.hasPosition;
+    const showTicketBuy = market.isOpen && market.isTicketType && currentPositionOnContract === 0;
     const showTicketWithdraw =
-        market.isOpen &&
-        market.isTicketType &&
-        market.isWithdrawalAllowed &&
-        accountMarketData &&
-        accountMarketData.hasPosition;
+        market.isOpen && market.isTicketType && market.isWithdrawalAllowed && currentPositionOnContract > 0;
     const showTicketInfo = market.isOpen && market.isTicketType;
 
     const insufficientBalance = Number(thalesBalance) < Number(market.ticketPrice) || Number(thalesBalance) === 0;
@@ -266,6 +259,7 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
                                 value={index + 1}
                                 onChange={() => setSelectedPosition(index + 1)}
                                 label={position}
+                                disabled={isBuying || isWithdrawing}
                             />
                             <Info>
                                 <InfoLabel>{t('market.pool-size-label')}:</InfoLabel>
