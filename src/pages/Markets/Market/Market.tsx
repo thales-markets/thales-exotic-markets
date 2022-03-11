@@ -29,7 +29,7 @@ import marketContract from 'utils/contracts/exoticPositionalMarketContract';
 import useThalesBalanceQuery from 'queries/wallet/useThalesBalanceQuery';
 import onboardConnector from 'utils/onboardConnector';
 import RadioButton from 'components/fields/RadioButton';
-// import Disputes from './Disputes';
+import Disputes from './Disputes';
 
 type MarketProps = RouteComponentProps<{
     marketAddress: string;
@@ -384,7 +384,7 @@ const Market: React.FC<MarketProps> = (props) => {
                             />
                         )}
                     </MarketContainer>
-                    {/* {market.disputes && <Disputes disputes={market.disputes} />} */}
+                    <Disputes marketAddress={marketAddress} />
                 </>
             ) : (
                 <SimpleLoader />

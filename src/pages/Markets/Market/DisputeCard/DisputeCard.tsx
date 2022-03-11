@@ -17,7 +17,7 @@ const DisputeCard: React.FC<DisputeCardProps> = ({ dispute }) => {
     return (
         <Container>
             <Info>
-                <Address>{dispute.address}</Address>
+                <Disputor>{dispute.disputor}</Disputor>
                 <ReasonForDisputeLabel>{t('market.dispute.reason-for-dispute-label')}:</ReasonForDisputeLabel>
                 <ReasonForDispute>{dispute.reasonForDispute}</ReasonForDispute>
             </Info>
@@ -27,20 +27,24 @@ const DisputeCard: React.FC<DisputeCardProps> = ({ dispute }) => {
                     <ActionButton type="secondary">Refuse</ActionButton>
                 </RefuseContainer>
                 <AcceptContainer>
-                    <RadioButtonContainer>
-                        <RadioButton
-                            checked={slashCreator}
-                            value={'true'}
-                            onChange={() => setSlashCreator(true)}
-                            label={'Slash the creator'}
-                        />
-                        <RadioButton
-                            checked={!slashCreator}
-                            value={'false'}
-                            onChange={() => setSlashCreator(false)}
-                            label={'Do not slash the creator'}
-                        />
-                    </RadioButtonContainer>
+                    <RadioButtonsContainer>
+                        <RadioButtonContainer>
+                            <RadioButton
+                                checked={slashCreator}
+                                value={'true'}
+                                onChange={() => setSlashCreator(true)}
+                                label={'Slash the creator'}
+                            />
+                        </RadioButtonContainer>
+                        <RadioButtonContainer>
+                            <RadioButton
+                                checked={!slashCreator}
+                                value={'false'}
+                                onChange={() => setSlashCreator(false)}
+                                label={'Do not slash the creator'}
+                            />
+                        </RadioButtonContainer>
+                    </RadioButtonsContainer>
                     <ActionButton type="secondary">Accept the dispute</ActionButton>
                 </AcceptContainer>
             </Status>
@@ -63,7 +67,7 @@ const Info = styled(FlexDivColumn)`
     border-right: 2px solid ${(props) => props.theme.borderColor.primary};
 `;
 
-const Address = styled.span`
+const Disputor = styled.span`
     font-weight: bold;
     font-size: 25px;
     line-height: 100%;
@@ -107,8 +111,29 @@ const AcceptContainer = styled(FlexDivColumn)`
     padding-top: 10px;
 `;
 
-const RadioButtonContainer = styled(FlexDivColumn)`
+const RadioButtonsContainer = styled(FlexDivColumn)`
     margin: 0 0 6px 4px;
+`;
+
+const RadioButtonContainer = styled.div`
+    label {
+        padding-left: 22px;
+        font-size: 15px;
+        line-height: 20px;
+        margin-bottom: 6px;
+    }
+    span {
+        :after {
+            left: 2px;
+            top: 2px;
+            width: 6px;
+            height: 6px;
+        }
+        height: 16px;
+        width: 16px;
+        border: 3px solid ${(props) => props.theme.borderColor.primary};
+        margin-top: 1px;
+    }
 `;
 
 const ActionButton = styled(Button)`

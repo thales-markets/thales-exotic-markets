@@ -31,6 +31,7 @@
             "enter-positions": "Enter positions",
             "enter-ticket-price": "Enter ticket price",
             "enter-tags": "Enter tags",
+            "enter-reason-for-dispute": "Enter reason for dispute",
             "select-position": "Select position",
             "invalid-price": "Invalid price",
             "invalid-price-max": "The price cannot be higher than ${{max}}",
@@ -158,12 +159,12 @@
             }
         },
         "dispute": {
-            "open-dispute-description": "To open a dispute the wallet raising the dispute needs to put up {{amount}} as a bond",
+            "open-dispute-title": "Open dispute for \"{{question}}\"",
             "deposit-bond-label": "Bond deposit",
             "reason-for-dispute-label": "Reason for dispute",
             "button": {
-                "deposit-label": "Deposit",
-                "open-dispute-label": "Open dispute"
+                "open-dispute-label": "Open dispute",
+                "open-dispute-progress-label": "Opening dispute in progress..."
             },
             "status": {
                 "open": "Open",

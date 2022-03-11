@@ -1,5 +1,9 @@
 export type DisputeInfo = {
-    address: string;
+    id: string;
+    timestamp: number;
+    creationDate: number;
+    market: string;
+    disputor: string;
     reasonForDispute: string;
     status: string;
 };
@@ -52,6 +56,7 @@ export type MarketsParameters = {
     resolverPercentage: number;
     safeBoxPercentage: number;
     withdrawalPercentage: number;
+    disputePrice: number;
 };
 
 export type TagInfo = {

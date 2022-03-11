@@ -17,6 +17,7 @@ const useMarketsParametersQuery = (networkId: NetworkId, options?: UseQueryOptio
                 resolverPercentage: 0,
                 safeBoxPercentage: 0,
                 withdrawalPercentage: 0,
+                disputePrice: 0,
             };
             const marketManagerContract = networkConnector.marketManagerContract;
             if (marketManagerContract) {
@@ -36,6 +37,7 @@ const useMarketsParametersQuery = (networkId: NetworkId, options?: UseQueryOptio
                     marketManagerContract.resolverPercentage(),
                     marketManagerContract.safeBoxPercentage(),
                     marketManagerContract.withdrawalPercentage(),
+                    marketManagerContract.disputePrice(),
                 ]);
 
                 marketsParameters.fixedBondAmount = bigNumberFormatter(fixedBondAmount);

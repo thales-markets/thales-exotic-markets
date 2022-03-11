@@ -1,19 +1,200 @@
 import TextAreaInput from 'components/fields/TextAreaInput';
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { FlexDivCentered, FlexDivColumn } from 'styles/common';
 import Button from 'components/Button';
 import { MAXIMUM_INPUT_CHARACTERS } from 'constants/markets';
+import { useSelector } from 'react-redux';
+import { RootState } from 'redux/rootReducer';
+import useMarketQuery from 'queries/markets/useMarketQuery';
+import { getIsWalletConnected, getNetworkId, getWalletAddress } from 'redux/modules/wallet';
+import { getIsAppReady } from 'redux/modules/app';
+import { RouteComponentProps } from 'react-router-dom';
+import { MarketDetails, MarketsParameters } from 'types/markets';
+import useMarketsParametersQuery from 'queries/markets/useMarketsParametersQuery';
+import networkConnector from 'utils/networkConnector';
+import { BigNumber, ethers } from 'ethers';
+import { checkAllowance } from 'utils/network';
+import onboardConnector from 'utils/onboardConnector';
+import { CURRENCY_MAP } from 'constants/currency';
+import ValidationMessage from 'components/ValidationMessage';
+import ApprovalModal from 'components/ApprovalModal';
+import useThalesBalanceQuery from 'queries/wallet/useThalesBalanceQuery';
+import { MAX_GAS_LIMIT } from 'constants/network';
 
-const OpenDispute: React.FC = () => {
+type OpenDisputeProps = RouteComponentProps<{
+    marketAddress: string;
+}>;
+
+const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
     const { t } = useTranslation();
+    const isAppReady = useSelector((state: RootState) => getIsAppReady(state));
+    const walletAddress = useSelector((state: RootState) => getWalletAddress(state)) || '';
+    const networkId = useSelector((state: RootState) => getNetworkId(state));
+    const isWalletConnected = useSelector((state: RootState) => getIsWalletConnected(state));
+    const [hasAllowance, setAllowance] = useState<boolean>(false);
+    const [isAllowing, setIsAllowing] = useState<boolean>(false);
+    const [txErrorMessage, setTxErrorMessage] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [reasonForDispute, setReasonForDispute] = useState<string>('');
+    const [thalesBalance, setThalesBalance] = useState<number | string>('');
+    const [openApprovalModal, setOpenApprovalModal] = useState<boolean>(false);
+
+    const { params } = props.match;
+    const marketAddress = params && params.marketAddress ? params.marketAddress : '';
+
+    const marketQuery = useMarketQuery(marketAddress, walletAddress, {
+        enabled: isAppReady && marketAddress !== '',
+    });
+
+    const marketQuestion: string = useMemo(() => {
+        if (marketQuery.isSuccess && marketQuery.data) {
+            return (marketQuery.data as MarketDetails).question;
+        }
+        return '';
+    }, [marketQuery.isSuccess, marketQuery.data]);
+
+    const marketsParametersQuery = useMarketsParametersQuery(networkId, {
+        enabled: isAppReady,
+    });
+
+    const marketsParameters: MarketsParameters | undefined = useMemo(() => {
+        if (marketsParametersQuery.isSuccess && marketsParametersQuery.data) {
+            return marketsParametersQuery.data as MarketsParameters;
+        }
+        return undefined;
+    }, [marketsParametersQuery.isSuccess, marketsParametersQuery.data]);
+
+    const thalesBalanceQuery = useThalesBalanceQuery(walletAddress, networkId, {
+        enabled: isAppReady && isWalletConnected,
+    });
+
+    useEffect(() => {
+        if (thalesBalanceQuery.isSuccess && thalesBalanceQuery.data) {
+            setThalesBalance(Number(thalesBalanceQuery.data));
+        }
+    }, [thalesBalanceQuery.isSuccess, thalesBalanceQuery.data]);
+
+    const disputePrice = marketsParameters ? marketsParameters.disputePrice : 0;
+
+    const isReasonForDisputeEntered = reasonForDispute.trim() !== '';
+    const insufficientBalance = Number(thalesBalance) < Number(disputePrice) || Number(thalesBalance) === 0;
+
+    const isButtonDisabled =
+        isSubmitting || !isWalletConnected || !hasAllowance || !isReasonForDisputeEntered || insufficientBalance;
+
+    useEffect(() => {
+        const { thalesTokenContract, thalesBondsContract, signer } = networkConnector;
+        if (thalesTokenContract && thalesBondsContract && signer) {
+            const thalesTokenContractWithSigner = thalesTokenContract.connect(signer);
+            const addressToApprove = thalesBondsContract.address;
+            const getAllowance = async () => {
+                try {
+                    const parsedAmount = ethers.utils.parseEther(Number(disputePrice).toString());
+                    const allowance = await checkAllowance(
+                        parsedAmount,
+                        thalesTokenContractWithSigner,
+                        walletAddress,
+                        addressToApprove
+                    );
+                    setAllowance(allowance);
+                } catch (e) {
+                    console.log(e);
+                }
+            };
+            if (isWalletConnected) {
+                getAllowance();
+            }
+        }
+    }, [walletAddress, isWalletConnected, hasAllowance, disputePrice, isAllowing]);
+
+    const handleAllowance = async (approveAmount: BigNumber) => {
+        const { thalesTokenContract, thalesBondsContract, signer } = networkConnector;
+        if (thalesTokenContract && thalesBondsContract && signer) {
+            const thalesTokenContractWithSigner = thalesTokenContract.connect(signer);
+            const addressToApprove = thalesBondsContract.address;
+            try {
+                setIsAllowing(true);
+                const tx = (await thalesTokenContractWithSigner.approve(addressToApprove, approveAmount, {
+                    gasLimit: MAX_GAS_LIMIT,
+                })) as ethers.ContractTransaction;
+                setOpenApprovalModal(false);
+                const txResult = await tx.wait();
+                if (txResult && txResult.transactionHash) {
+                    setIsAllowing(false);
+                }
+            } catch (e) {
+                console.log(e);
+                setTxErrorMessage(t('common.errors.unknown-error-try-again'));
+                setIsAllowing(false);
+            }
+        }
+    };
+
+    const handleSubmit = async () => {
+        const { thalesOracleCouncilContract, signer } = networkConnector;
+        if (thalesOracleCouncilContract && signer) {
+            setTxErrorMessage(null);
+            setIsSubmitting(true);
+
+            try {
+                const thalesOracleCouncilContractWithSigner = thalesOracleCouncilContract.connect(signer);
+
+                const tx = await thalesOracleCouncilContractWithSigner.openDispute(marketAddress, reasonForDispute);
+                const txResult = await tx.wait();
+
+                if (txResult && txResult.transactionHash) {
+                    // dispatchMarketNotification(t('migration.migrate-button.confirmation-message'));
+                    setIsSubmitting(false);
+                    // setAmount('');
+                }
+            } catch (e) {
+                console.log(e);
+                setTxErrorMessage(t('common.errors.unknown-error-try-again'));
+                setIsSubmitting(false);
+            }
+        }
+    };
+
+    const getSubmitButton = () => {
+        if (!isWalletConnected) {
+            return (
+                <DisputeButton onClick={() => onboardConnector.connectWallet()}>
+                    {t('common.wallet.connect-your-wallet')}
+                </DisputeButton>
+            );
+        }
+        if (insufficientBalance) {
+            return <DisputeButton disabled={true}>{t(`common.errors.insufficient-balance`)}</DisputeButton>;
+        }
+        if (!isReasonForDisputeEntered) {
+            return <DisputeButton disabled={true}>{t(`common.errors.enter-reason-for-dispute`)}</DisputeButton>;
+        }
+        if (!hasAllowance) {
+            return (
+                <DisputeButton disabled={isAllowing} onClick={() => setOpenApprovalModal(true)}>
+                    {!isAllowing
+                        ? t('common.enable-wallet-access.approve-label', { currencyKey: CURRENCY_MAP.THALES })
+                        : t('common.enable-wallet-access.approve-progress-label', {
+                              currencyKey: CURRENCY_MAP.THALES,
+                          })}
+                </DisputeButton>
+            );
+        }
+        return (
+            <DisputeButton disabled={isButtonDisabled} onClick={handleSubmit}>
+                {!isSubmitting
+                    ? t('market.dispute.button.open-dispute-label')
+                    : t('market.dispute.button.open-dispute-progress-label')}
+            </DisputeButton>
+        );
+    };
 
     return (
         <Container>
             <Form>
-                <Title>Open dispute for Will Thales be the best?</Title>
+                <Title>{t('market.dispute.open-dispute-title', { question: marketQuestion })}</Title>
                 <TextAreaInput
                     value={reasonForDispute}
                     onChange={setReasonForDispute}
@@ -23,11 +204,24 @@ const OpenDispute: React.FC = () => {
                         max: MAXIMUM_INPUT_CHARACTERS,
                     })}
                     maximumCharacters={MAXIMUM_INPUT_CHARACTERS}
+                    disabled={isSubmitting}
                 />
-                <ButtonContainer>
-                    <DisputeButton>{t('market.dispute.button.open-dispute-label')}</DisputeButton>
-                </ButtonContainer>
+                <ButtonContainer>{getSubmitButton()}</ButtonContainer>
+                <ValidationMessage
+                    showValidation={txErrorMessage !== null}
+                    message={txErrorMessage}
+                    onDismiss={() => setTxErrorMessage(null)}
+                />
             </Form>
+            {openApprovalModal && (
+                <ApprovalModal
+                    defaultAmount={disputePrice}
+                    tokenSymbol={CURRENCY_MAP.THALES}
+                    isAllowing={isAllowing}
+                    onSubmit={handleAllowance}
+                    onClose={() => setOpenApprovalModal(false)}
+                />
+            )}
         </Container>
     );
 };

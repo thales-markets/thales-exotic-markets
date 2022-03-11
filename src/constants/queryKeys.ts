@@ -5,6 +5,7 @@ export const QUERY_KEYS = {
     Market: (marketAddress: string, walletAddress: string) => ['market', marketAddress, walletAddress],
     MarketsParameters: (networkId: NetworkId) => ['markets', 'parameters', networkId],
     Tags: (networkId: NetworkId) => ['tags', networkId],
+    Disputes: (marketAddress: string, networkId: NetworkId) => ['disputes', marketAddress, networkId],
     Wallet: {
         ThalesBalance: (walletAddress: string, networkId: NetworkId) => [
             'wallet',

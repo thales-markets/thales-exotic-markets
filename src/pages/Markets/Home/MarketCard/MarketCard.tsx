@@ -1,5 +1,4 @@
 import Button from 'components/Button';
-import SPAAnchor from 'components/SPAAnchor';
 import MarketStatus from 'pages/Markets/components/MarketStatus';
 import MarketTitle from 'pages/Markets/components/MarketTitle';
 import OpenDisputeButton from 'pages/Markets/components/OpenDisputeButton';
@@ -9,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { FlexDivColumnCentered, FlexDivRow, FlexDivColumn } from 'styles/common';
 import { MarketInfo } from 'types/markets';
-import { buildOpenDisputeLink } from 'utils/routes';
+import { buildOpenDisputeLink, navigateTo } from 'utils/routes';
 
 type MarketCardProps = {
     market: MarketInfo;
@@ -31,11 +30,15 @@ const MarketCard: React.FC<MarketCardProps> = ({ market }) => {
                 <Tags tags={market.tags} />
                 <ButtonsContainer>
                     {market.isClaimAvailable && <Button>{t('market.button.claim-label')}</Button>}
-                    <SPAAnchor href={buildOpenDisputeLink(market.address)}>
-                        <OpenDisputeButton numberOfOpenedDisputes={0}>
-                            {t('market.button.open-dispute-label')}
-                        </OpenDisputeButton>
-                    </SPAAnchor>
+                    <OpenDisputeButton
+                        numberOfOpenedDisputes={0}
+                        onClick={(e: any) => {
+                            e.preventDefault();
+                            navigateTo(buildOpenDisputeLink(market.address));
+                        }}
+                    >
+                        {t('market.button.open-dispute-label')}
+                    </OpenDisputeButton>
                 </ButtonsContainer>
             </CardFooter>
         </Container>
