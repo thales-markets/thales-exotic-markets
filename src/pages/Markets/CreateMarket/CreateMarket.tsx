@@ -25,7 +25,7 @@ import { BigNumber, ethers } from 'ethers';
 import { MAX_GAS_LIMIT } from 'constants/network';
 import onboardConnector from 'utils/onboardConnector';
 import { PAYMENT_CURRENCY } from 'constants/currency';
-import useThalesBalanceQuery from 'queries/wallet/useThalesBalanceQuery';
+import usePaymentTokenBalanceQuery from 'queries/wallet/usePaymentTokenBalanceQuery';
 import NumericInput from 'components/fields/NumericInput';
 import ApprovalModal from 'components/ApprovalModal';
 import ValidationMessage from 'components/ValidationMessage';
@@ -53,7 +53,7 @@ const CreateMarket: React.FC = () => {
     );
     const [tags, setTags] = useState<Tag[]>([]);
     const [suggestions, setSuggestions] = useState<Tag[]>([]);
-    const [thalesBalance, setThalesBalance] = useState<number | string>('');
+    const [paymentTokenBalance, setPaymentTokenBalance] = useState<number | string>('');
     const [openApprovalModal, setOpenApprovalModal] = useState<boolean>(false);
 
     const marketsParametersQuery = useMarketsParametersQuery(networkId, {
@@ -84,15 +84,15 @@ const CreateMarket: React.FC = () => {
         }
     }, [tagsQuery.isSuccess, tagsQuery.data]);
 
-    const thalesBalanceQuery = useThalesBalanceQuery(walletAddress, networkId, {
+    const paymentTokenBalanceQuery = usePaymentTokenBalanceQuery(walletAddress, networkId, {
         enabled: isAppReady && isWalletConnected,
     });
 
     useEffect(() => {
-        if (thalesBalanceQuery.isSuccess && thalesBalanceQuery.data) {
-            setThalesBalance(Number(thalesBalanceQuery.data));
+        if (paymentTokenBalanceQuery.isSuccess && paymentTokenBalanceQuery.data) {
+            setPaymentTokenBalance(Number(paymentTokenBalanceQuery.data));
         }
-    }, [thalesBalanceQuery.isSuccess, thalesBalanceQuery.data]);
+    }, [paymentTokenBalanceQuery.isSuccess, paymentTokenBalanceQuery.data]);
 
     const fixedBondAmount = marketsParameters ? marketsParameters.fixedBondAmount : 0;
 
@@ -102,7 +102,8 @@ const CreateMarket: React.FC = () => {
         (marketType === MarketType.TICKET && Number(ticketPrice) > 0) || marketType === MarketType.OPEN_BID;
     const arePositionsEntered = positions.every((position) => position.trim() !== '');
     const areTagsEntered = tags.length > 0;
-    const insufficientBalance = Number(thalesBalance) < Number(fixedBondAmount) || Number(thalesBalance) === 0;
+    const insufficientBalance =
+        Number(paymentTokenBalance) < Number(fixedBondAmount) || Number(paymentTokenBalance) === 0;
 
     const areMarketDataEntered =
         isQuestionEntered && isDataSourceEntered && isTicketPriceEntered && arePositionsEntered && areTagsEntered;

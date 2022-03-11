@@ -23,7 +23,7 @@ import { MAX_GAS_LIMIT } from 'constants/network';
 import ApprovalModal from 'components/ApprovalModal';
 import ValidationMessage from 'components/ValidationMessage';
 import marketContract from 'utils/contracts/exoticPositionalMarketContract';
-import useThalesBalanceQuery from 'queries/wallet/useThalesBalanceQuery';
+import usePaymentTokenBalanceQuery from 'queries/wallet/usePaymentTokenBalanceQuery';
 import onboardConnector from 'utils/onboardConnector';
 import RadioButton from 'components/fields/RadioButton';
 import useAccountMarketDataQuery from 'queries/markets/useAccountMarketDataQuery';
@@ -44,7 +44,7 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
     const [isBuying, setIsBuying] = useState<boolean>(false);
     const [isWithdrawing, setIsWithdrawing] = useState<boolean>(false);
     const [openApprovalModal, setOpenApprovalModal] = useState<boolean>(false);
-    const [thalesBalance, setThalesBalance] = useState<number | string>('');
+    const [paymentTokenBalance, setPaymentTokenBalance] = useState<number | string>('');
     const [currentPositionOnContract, setCurrentPositionOnContract] = useState<number>(0);
     const [selectedPosition, setSelectedPosition] = useState<number>(0);
 
@@ -65,22 +65,23 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
         }
     }, [accountMarketDataQuery.isSuccess]);
 
-    const thalesBalanceQuery = useThalesBalanceQuery(walletAddress, networkId, {
+    const paymentTokenBalanceQuery = usePaymentTokenBalanceQuery(walletAddress, networkId, {
         enabled: isAppReady && isWalletConnected,
     });
 
     useEffect(() => {
-        if (thalesBalanceQuery.isSuccess && thalesBalanceQuery.data) {
-            setThalesBalance(thalesBalanceQuery.data);
+        if (paymentTokenBalanceQuery.isSuccess && paymentTokenBalanceQuery.data) {
+            setPaymentTokenBalance(paymentTokenBalanceQuery.data);
         }
-    }, [thalesBalanceQuery.isSuccess, thalesBalanceQuery.data]);
+    }, [paymentTokenBalanceQuery.isSuccess, paymentTokenBalanceQuery.data]);
 
     const showTicketBuy = market.isOpen && market.isTicketType && currentPositionOnContract === 0;
     const showTicketWithdraw =
         market.isOpen && market.isTicketType && market.isWithdrawalAllowed && currentPositionOnContract > 0;
     const showTicketInfo = market.isOpen && market.isTicketType;
 
-    const insufficientBalance = Number(thalesBalance) < Number(market.ticketPrice) || Number(thalesBalance) === 0;
+    const insufficientBalance =
+        Number(paymentTokenBalance) < Number(market.ticketPrice) || Number(paymentTokenBalance) === 0;
     const isPositionSelected = selectedPosition > 0;
 
     const isBuyButtonDisabled =

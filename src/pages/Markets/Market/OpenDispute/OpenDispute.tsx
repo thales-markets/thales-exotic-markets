@@ -20,7 +20,7 @@ import onboardConnector from 'utils/onboardConnector';
 import { PAYMENT_CURRENCY } from 'constants/currency';
 import ValidationMessage from 'components/ValidationMessage';
 import ApprovalModal from 'components/ApprovalModal';
-import useThalesBalanceQuery from 'queries/wallet/useThalesBalanceQuery';
+import usePaymentTokenBalanceQuery from 'queries/wallet/usePaymentTokenBalanceQuery';
 import { MAX_GAS_LIMIT } from 'constants/network';
 
 type OpenDisputeProps = RouteComponentProps<{
@@ -38,7 +38,7 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
     const [txErrorMessage, setTxErrorMessage] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [reasonForDispute, setReasonForDispute] = useState<string>('');
-    const [thalesBalance, setThalesBalance] = useState<number | string>('');
+    const [paymentTokenBalance, setPaymentTokenBalance] = useState<number | string>('');
     const [openApprovalModal, setOpenApprovalModal] = useState<boolean>(false);
 
     const { params } = props.match;
@@ -66,20 +66,20 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
         return undefined;
     }, [marketsParametersQuery.isSuccess, marketsParametersQuery.data]);
 
-    const thalesBalanceQuery = useThalesBalanceQuery(walletAddress, networkId, {
+    const paymentTokenBalanceQuery = usePaymentTokenBalanceQuery(walletAddress, networkId, {
         enabled: isAppReady && isWalletConnected,
     });
 
     useEffect(() => {
-        if (thalesBalanceQuery.isSuccess && thalesBalanceQuery.data) {
-            setThalesBalance(Number(thalesBalanceQuery.data));
+        if (paymentTokenBalanceQuery.isSuccess && paymentTokenBalanceQuery.data) {
+            setPaymentTokenBalance(Number(paymentTokenBalanceQuery.data));
         }
-    }, [thalesBalanceQuery.isSuccess, thalesBalanceQuery.data]);
+    }, [paymentTokenBalanceQuery.isSuccess, paymentTokenBalanceQuery.data]);
 
     const disputePrice = marketsParameters ? marketsParameters.disputePrice : 0;
 
     const isReasonForDisputeEntered = reasonForDispute.trim() !== '';
-    const insufficientBalance = Number(thalesBalance) < Number(disputePrice) || Number(thalesBalance) === 0;
+    const insufficientBalance = Number(paymentTokenBalance) < Number(disputePrice) || Number(paymentTokenBalance) === 0;
 
     const isButtonDisabled =
         isSubmitting || !isWalletConnected || !hasAllowance || !isReasonForDisputeEntered || insufficientBalance;

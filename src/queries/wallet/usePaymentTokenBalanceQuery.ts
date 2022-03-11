@@ -5,9 +5,13 @@ import { BALANCE_THRESHOLD } from 'constants/wallet';
 import networkConnector from 'utils/networkConnector';
 import { NetworkId } from 'types/network';
 
-const useThalesBalanceQuery = (walletAddress: string, networkId: NetworkId, options?: UseQueryOptions<number>) => {
+const usePaymentTokenBalanceQuery = (
+    walletAddress: string,
+    networkId: NetworkId,
+    options?: UseQueryOptions<number>
+) => {
     return useQuery<number>(
-        QUERY_KEYS.Wallet.ThalesBalance(walletAddress, networkId),
+        QUERY_KEYS.Wallet.PaymentTokenBalance(walletAddress, networkId),
         async () => {
             const { paymentTokenContract } = networkConnector;
             if (paymentTokenContract) {
@@ -23,4 +27,4 @@ const useThalesBalanceQuery = (walletAddress: string, networkId: NetworkId, opti
     );
 };
 
-export default useThalesBalanceQuery;
+export default usePaymentTokenBalanceQuery;

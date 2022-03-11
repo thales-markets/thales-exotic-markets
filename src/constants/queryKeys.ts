@@ -8,9 +8,9 @@ export const QUERY_KEYS = {
     Tags: (networkId: NetworkId) => ['tags', networkId],
     Disputes: (marketAddress: string, networkId: NetworkId) => ['disputes', marketAddress, networkId],
     Wallet: {
-        ThalesBalance: (walletAddress: string, networkId: NetworkId) => [
+        PaymentTokenBalance: (walletAddress: string, networkId: NetworkId) => [
             'wallet',
-            'thalesBalance',
+            'paymentTokenBalance',
             walletAddress,
             networkId,
         ],
