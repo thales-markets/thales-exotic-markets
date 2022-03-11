@@ -230,7 +230,6 @@ const Container = styled(FlexDivColumn)`
     margin-top: 50px;
     align-items: center;
     width: 690px;
-    flex: initial;
     @media (max-width: 767px) {
         width: 100%;
     }
@@ -249,6 +248,7 @@ const Title = styled(FlexDivColumn)`
 const Form = styled(FlexDivColumn)`
     border: 1px solid ${(props) => props.theme.borderColor.primary};
     border-radius: 25px;
+    flex: initial;
     padding: 30px 20px 40px 20px;
     width: 100%;
 `;
