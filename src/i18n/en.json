@@ -33,6 +33,7 @@
             "enter-tags": "Enter tags",
             "enter-reason-for-dispute": "Enter reason for dispute",
             "select-position": "Select position",
+            "select-outcome": "Select outcome",
             "invalid-price": "Invalid price",
             "invalid-price-max": "The price cannot be higher than ${{max}}",
             "invalid-amount-max": "The amount cannot be higher than {{max}}",
@@ -63,6 +64,7 @@
         },
         "or": "or",
         "dapp": "dapp",
+        "cancel": "Cancel",
         "select-date": "Select date...",
         "tags-placeholder": "Enter tag...",
         "remove-tag-tooltip": "Click to remove tag",
@@ -104,7 +106,9 @@
             "change-position-label": "Change position",
             "change-position-progress-label": "Changing in progress...",
             "withdraw-label": "Withdraw",
-            "withdraw-progress-label": "Withdraw in progress..."
+            "withdraw-progress-label": "Withdraw in progress...",
+            "resolve-market-label": "Resolve market",
+            "resolve-market-progress-label": "Resolving in progress..."
         },
         "filter-label": {
             "global": {
@@ -157,6 +161,9 @@
                 "create-market-label": "Create market",
                 "create-market-progress-label": "Creating in progress..."
             }
+        },
+        "resolve-market": {
+            "title": "Resolve market"
         },
         "dispute": {
             "open-dispute-title": "Open dispute for \"{{question}}\"",

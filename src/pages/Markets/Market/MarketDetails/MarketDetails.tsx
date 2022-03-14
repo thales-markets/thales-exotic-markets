@@ -75,10 +75,10 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
         }
     }, [paymentTokenBalanceQuery.isSuccess, paymentTokenBalanceQuery.data]);
 
-    const showTicketBuy = market.isOpen && market.isTicketType && currentPositionOnContract === 0;
-    const showTicketWithdraw =
-        market.isOpen && market.isTicketType && market.isWithdrawalAllowed && currentPositionOnContract > 0;
-    const showTicketInfo = market.isOpen && market.isTicketType;
+    const showTicketInfo = market.isOpen && market.isTicketType && market.canUsersPlacePosition;
+    const showTicketBuy = showTicketInfo && currentPositionOnContract === 0;
+    const showTicketChangePosition = showTicketInfo && currentPositionOnContract !== selectedPosition;
+    const showTicketWithdraw = showTicketInfo && market.isWithdrawalAllowed && currentPositionOnContract > 0;
 
     const insufficientBalance =
         Number(paymentTokenBalance) < Number(market.ticketPrice) || Number(paymentTokenBalance) === 0;
@@ -230,7 +230,7 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
         }
         return (
             <>
-                {currentPositionOnContract !== selectedPosition && (
+                {showTicketChangePosition && (
                     <MarketButton type="secondary" disabled={isBuyButtonDisabled} onClick={handleBuy}>
                         {!isBuying
                             ? t('market.button.change-position-label')
@@ -380,7 +380,7 @@ const Positions = styled(FlexDivRowCentered)`
     flex-wrap: wrap;
 `;
 
-const Position = styled(FlexDivColumn)<{ fontSize?: number }>`
+const Position = styled(FlexDivColumn)`
     margin-bottom: 20px;
 `;
 

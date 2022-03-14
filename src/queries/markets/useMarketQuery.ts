@@ -12,6 +12,20 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
         async () => {
             const contract = new ethers.Contract(marketAddress, marketContract.abi, networkConnector.provider);
             const [
+                allMarketData,
+                canUsersPlacePosition,
+                canMarketBeResolved,
+                canMarketBeResolvedByPDAO,
+                canUsersClaim,
+            ] = await Promise.all([
+                contract.getAllMarketData(),
+                contract.canUsersPlacePosition(),
+                contract.canMarketBeResolved(),
+                contract.canMarketBeResolvedByPDAO(),
+                contract.canUsersClaim(),
+            ]);
+
+            const [
                 question,
                 dataSource,
                 ticketType,
@@ -27,7 +41,7 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                 poolSize,
                 claimablePoolSize,
                 poolSizePerPosition,
-            ] = await contract.getAllMarketData();
+            ] = allMarketData;
 
             const market: MarketData = {
                 address: marketAddress,
@@ -50,6 +64,10 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                 isClaimAvailable: false,
                 numberOfDisputes: 0,
                 numberOfOpenDisputes: 0,
+                canUsersPlacePosition,
+                canMarketBeResolved,
+                canMarketBeResolvedByPDAO,
+                canUsersClaim,
             };
 
             return market;

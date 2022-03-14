@@ -34,6 +34,10 @@ export type MarketData = MarketInfo & {
     claimablePoolSize: number;
     poolSizePerPosition: number[];
     isTicketType: boolean;
+    canUsersPlacePosition: boolean;
+    canMarketBeResolved: boolean;
+    canMarketBeResolvedByPDAO: boolean;
+    canUsersClaim: boolean;
 };
 
 export type Markets = MarketInfo[];

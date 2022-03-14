@@ -10,6 +10,7 @@ import { FlexDivColumn } from 'styles/common';
 import { MarketData } from 'types/markets';
 import Disputes from './Disputes';
 import MarketDetails from './MarketDetails';
+import ResolveMarket from './ResolveMarket';
 
 type MarketProps = RouteComponentProps<{
     marketAddress: string;
@@ -37,6 +38,9 @@ const Market: React.FC<MarketProps> = (props) => {
             {market ? (
                 <>
                     <MarketDetails market={market} />
+                    {market.canMarketBeResolved && (
+                        <ResolveMarket marketAddress={market.address} marketCreator="" positions={market.positions} />
+                    )}
                     <Disputes marketAddress={marketAddress} />
                 </>
             ) : (
