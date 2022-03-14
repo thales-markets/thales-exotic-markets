@@ -1,6 +1,6 @@
 import { useQuery, UseQueryOptions } from 'react-query';
 import QUERY_KEYS from 'constants/queryKeys';
-import { MarketData } from 'types/markets';
+import { MarketData, MarketStatus } from 'types/markets';
 import { BigNumberish, ethers } from 'ethers';
 import marketContract from 'utils/contracts/exoticPositionalMarketContract';
 import networkConnector from 'utils/networkConnector';
@@ -11,19 +11,7 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
         QUERY_KEYS.Market(marketAddress),
         async () => {
             const contract = new ethers.Contract(marketAddress, marketContract.abi, networkConnector.provider);
-            const [
-                allMarketData,
-                canUsersPlacePosition,
-                canMarketBeResolved,
-                canMarketBeResolvedByPDAO,
-                canUsersClaim,
-            ] = await Promise.all([
-                contract.getAllMarketData(),
-                contract.canUsersPlacePosition(),
-                contract.canMarketBeResolved(),
-                contract.canMarketBeResolvedByPDAO(),
-                contract.canUsersClaim(),
-            ]);
+            const [allMarketData] = await Promise.all([contract.getAllMarketData()]);
 
             const [
                 question,
@@ -41,6 +29,15 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                 poolSize,
                 claimablePoolSize,
                 poolSizePerPosition,
+                canUsersPlacePosition,
+                canMarketBeResolved,
+                canMarketBeResolvedByPDAO,
+                canUsersClaim,
+                isCancelled,
+                paused,
+                winningPosition,
+                creator,
+                resolver,
             ] = allMarketData;
 
             const market: MarketData = {
@@ -61,14 +58,50 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                 claimablePoolSize: bigNumberFormatter(claimablePoolSize),
                 poolSizePerPosition: poolSizePerPosition.map((item: BigNumberish) => bigNumberFormatter(item)),
                 isOpen: !isResolved,
-                isClaimAvailable: false,
                 numberOfDisputes: 0,
                 numberOfOpenDisputes: 0,
                 canUsersPlacePosition,
                 canMarketBeResolved,
                 canMarketBeResolvedByPDAO,
                 canUsersClaim,
+                isCancelled,
+                paused,
+                winningPosition: Number(winningPosition),
+                creator,
+                resolver,
+                status: MarketStatus.Open,
             };
+
+            if (market.paused) {
+                market.status = MarketStatus.Paused;
+            } else {
+                if (market.isResolved) {
+                    if (market.winningPosition === 0) {
+                        market.status = MarketStatus.Cancelled;
+                    } else {
+                        if (market.hasOpenDisputes) {
+                            market.status = MarketStatus.ResolvedDisputed;
+                        } else {
+                            if (market.canUsersClaim) {
+                                market.status = MarketStatus.ResolvedConfirmed;
+                            } else {
+                                market.status = MarketStatus.ResolvePendingConfirmation;
+                            }
+                        }
+                    }
+                } else {
+                    if (market.hasOpenDisputes) {
+                        market.status = MarketStatus.OpenDisputed;
+                    } else {
+                        if (market.canMarketBeResolved) {
+                            market.status = MarketStatus.ResolvePending;
+                        } else {
+                            market.status = MarketStatus.Open;
+                        }
+                    }
+                }
+            }
+            market.isOpen = market.status === MarketStatus.Open || market.status === MarketStatus.OpenDisputed;
 
             return market;
         },

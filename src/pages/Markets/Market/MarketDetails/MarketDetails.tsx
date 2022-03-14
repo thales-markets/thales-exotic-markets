@@ -195,21 +195,21 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
                 </MarketButton>
             );
         }
-        if (insufficientBalance) {
+        if (insufficientBalance && market.isOpen) {
             return (
                 <MarketButton type="secondary" disabled={true}>
                     {t(`common.errors.insufficient-balance`)}
                 </MarketButton>
             );
         }
-        if (!isPositionSelected) {
+        if (!isPositionSelected && market.isOpen) {
             return (
                 <MarketButton type="secondary" disabled={true}>
                     {t(`common.errors.select-position`)}
                 </MarketButton>
             );
         }
-        if (!hasAllowance) {
+        if (!hasAllowance && market.isOpen) {
             return (
                 <MarketButton type="secondary" disabled={isAllowing} onClick={() => setOpenApprovalModal(true)}>
                     {!isAllowing
@@ -327,14 +327,14 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
                         )} */}
             <ButtonContainer>
                 {getButtons()}
-                {market.isClaimAvailable && <ClaimButton>{t('market.button.claim-label')}</ClaimButton>}
+                {/* {market.isClaimAvailable && <ClaimButton>{t('market.button.claim-label')}</ClaimButton>} */}
                 <ValidationMessage
                     showValidation={txErrorMessage !== null}
                     message={txErrorMessage}
                     onDismiss={() => setTxErrorMessage(null)}
                 />
             </ButtonContainer>
-            {market.isOpen && <MarketStatus market={market} fontSize={40} labelFontSize={20} fontWeight={700} />}
+            <MarketStatus market={market} fontSize={40} labelFontSize={20} fontWeight={700} status={market.status} />
             <Footer>
                 <Tags tags={market.tags} labelFontSize={20} />
                 <Info fontSize={20}>
@@ -425,10 +425,10 @@ const MarketButton = styled(Button)`
     }
 `;
 
-const ClaimButton = styled(MarketButton)`
-    margin-top: 15px;
-    margin-bottom: 20px;
-`;
+// const ClaimButton = styled(MarketButton)`
+//     margin-top: 15px;
+//     margin-bottom: 20px;
+// `;
 
 const Footer = styled(FlexDivRow)`
     margin-top: 10px;

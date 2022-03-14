@@ -3,16 +3,17 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { FlexDivColumn } from 'styles/common';
-import { MarketInfo } from 'types/markets';
+import { MarketInfo, MarketStatus as MarketStatusEnum } from 'types/markets';
 
 type MarketStatusProps = {
     market: MarketInfo;
     fontSize?: number;
     fontWeight?: number;
     labelFontSize?: number;
+    status?: MarketStatusEnum;
 };
 
-const MarketStatus: React.FC<MarketStatusProps> = ({ market, fontSize, fontWeight, labelFontSize }) => {
+const MarketStatus: React.FC<MarketStatusProps> = ({ market, fontSize, fontWeight, labelFontSize, status }) => {
     const { t } = useTranslation();
 
     return (
@@ -25,7 +26,7 @@ const MarketStatus: React.FC<MarketStatusProps> = ({ market, fontSize, fontWeigh
             ) : (
                 <Status fontSize={fontSize}>
                     {/* {t(`market.status.${market.isClaimAvailable ? 'claim-available' : 'maturity'}`)} */}
-                    {t(`market.status.maturity'}`)}
+                    {status ? t(`market.status.${status.toString()}`) : 'N/A'}
                 </Status>
             )}
         </Container>

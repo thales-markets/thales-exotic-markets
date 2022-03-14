@@ -10,8 +10,20 @@ export type DisputeInfo = {
 
 export type Disputes = DisputeInfo[];
 
+export enum MarketStatus {
+    Open = 'open',
+    OpenDisputed = 'open-disputed',
+    Cancelled = 'cancelled',
+    Paused = 'paused',
+    ResolvePending = 'resolve-pending',
+    ResolvePendingConfirmation = 'resolved-pending-confirmation',
+    ResolvedDisputed = 'resolved-disputed',
+    ResolvedConfirmed = 'resolved-confirmed',
+}
+
 export type MarketInfo = {
     address: string;
+    creator: string;
     question: string;
     dataSource: string;
     endOfPositioning: number;
@@ -22,7 +34,6 @@ export type MarketInfo = {
     isOpen: boolean;
     numberOfDisputes: number;
     numberOfOpenDisputes: number;
-    isClaimAvailable: boolean;
 };
 
 export type MarketData = MarketInfo & {
@@ -38,12 +49,19 @@ export type MarketData = MarketInfo & {
     canMarketBeResolved: boolean;
     canMarketBeResolvedByPDAO: boolean;
     canUsersClaim: boolean;
+    isCancelled: boolean;
+    paused: boolean;
+    winningPosition: number;
+    resolver: boolean;
+    status: MarketStatus;
 };
 
 export type Markets = MarketInfo[];
 
 export type AccountMarketData = {
     position: number;
+    claimAmount: number;
+    canClaim: boolean;
 };
 
 export type SortOptionType = {

@@ -1,4 +1,4 @@
-import Button from 'components/Button';
+// import Button from 'components/Button';
 import MarketStatus from 'pages/Markets/components/MarketStatus';
 import MarketTitle from 'pages/Markets/components/MarketTitle';
 import OpenDisputeButton from 'pages/Markets/components/OpenDisputeButton';
@@ -18,7 +18,7 @@ const MarketCard: React.FC<MarketCardProps> = ({ market }) => {
     const { t } = useTranslation();
 
     return (
-        <Container isClaimAvailable={market.isClaimAvailable}>
+        <Container isClaimAvailable={false}>
             <MarketTitle>{market.question}</MarketTitle>
             <Positions>
                 {market.positions.map((position: string) => (
@@ -29,7 +29,7 @@ const MarketCard: React.FC<MarketCardProps> = ({ market }) => {
             <CardFooter>
                 <Tags tags={market.tags} />
                 <ButtonsContainer>
-                    {market.isClaimAvailable && <Button>{t('market.button.claim-label')}</Button>}
+                    {/* {market.isClaimAvailable && <Button>{t('market.button.claim-label')}</Button>} */}
                     <OpenDisputeButton
                         numberOfOpenedDisputes={0}
                         onClick={(e: any) => {
