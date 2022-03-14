@@ -173,7 +173,8 @@
         },
         "dispute": {
             "open-dispute-title": "Open dispute for \"{{question}}\"",
-            "deposit-bond-label": "Bond deposit",
+            "disputer-label": "Disputer",
+            "status-label": "Status",
             "reason-for-dispute-label": "Reason for dispute",
             "button": {
                 "open-dispute-label": "Open dispute",
@@ -184,6 +185,18 @@
                 "refused": "Refused",
                 "accepted": "Accepted",
                 "accepted-slashed": "Accepted slashed"
+            },
+            "voting-option": {
+                "market-open": {
+                    "accept-slash": "Accept the dispute and slash the creator",
+                    "accept-no-slash": "Accept the dispute but do not slash the creator",
+                    "refuse": "Refuse the dispute and slash the wallet that raised it"
+                },
+                "market-resolved": {
+                    "accept-set-result": "Accept the dispute and set a result",
+                    "accept-reset": "Accept the dispute and reset market result",
+                    "refuse": "Refuse the dispute"
+                }
             }
         }
     }

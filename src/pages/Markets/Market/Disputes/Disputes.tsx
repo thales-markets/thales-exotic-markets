@@ -11,9 +11,10 @@ import DisputeCard from '../DisputeCard';
 
 type DisputesProps = {
     marketAddress: string;
+    isMarketOpen: boolean;
 };
 
-const Disputes: React.FC<DisputesProps> = ({ marketAddress }) => {
+const Disputes: React.FC<DisputesProps> = ({ marketAddress, isMarketOpen }) => {
     const isAppReady = useSelector((state: RootState) => getIsAppReady(state));
     const networkId = useSelector((state: RootState) => getNetworkId(state));
 
@@ -29,7 +30,7 @@ const Disputes: React.FC<DisputesProps> = ({ marketAddress }) => {
     return (
         <Container>
             {disputes.map((dispute: DisputeInfo) => (
-                <DisputeCard key={dispute.id} dispute={dispute}>
+                <DisputeCard key={dispute.id} dispute={dispute} isMarketOpen={isMarketOpen}>
                     {dispute}
                 </DisputeCard>
             ))}
