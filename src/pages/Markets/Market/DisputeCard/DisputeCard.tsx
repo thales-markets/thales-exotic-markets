@@ -1,58 +1,57 @@
-import useDisputeVotingInfoQuery from 'queries/markets/useDisputeVotingInfoQuery';
+import useDisputeQuery from 'queries/markets/useDisputeQuery';
 import React, { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { getIsAppReady } from 'redux/modules/app';
-import { getNetworkId } from 'redux/modules/wallet';
+import { getIsWalletConnected, getNetworkId, getWalletAddress } from 'redux/modules/wallet';
 import { RootState } from 'redux/rootReducer';
 import styled from 'styled-components';
-import { FlexDivColumn, FlexDivRow } from 'styles/common';
-import { DisputeInfo, DisputeVotingInfo } from 'types/markets';
+import { FlexDivRow } from 'styles/common';
+import { DisputeInfo, DisputeData } from 'types/markets';
+import DisputeOverview from './DisputeOverview';
 import DisputeVoting from './DisputeVoting';
 import DisputeVotingResults from './DisputeVotingResults';
 
 type DisputeCardProps = {
-    dispute: DisputeInfo;
-    isMarketOpen: boolean;
+    disputeInfo: DisputeInfo;
     isOracleCouncilMember: boolean;
 };
 
-const DisputeCard: React.FC<DisputeCardProps> = ({ dispute, isMarketOpen, isOracleCouncilMember }) => {
-    const { t } = useTranslation();
+const DisputeCard: React.FC<DisputeCardProps> = ({ disputeInfo, isOracleCouncilMember }) => {
     const isAppReady = useSelector((state: RootState) => getIsAppReady(state));
     const networkId = useSelector((state: RootState) => getNetworkId(state));
+    const walletAddress = useSelector((state: RootState) => getWalletAddress(state)) || '';
+    const isWalletConnected = useSelector((state: RootState) => getIsWalletConnected(state));
 
-    const disputeVotingInfoQuery = useDisputeVotingInfoQuery(
-        dispute.market,
-        dispute.disputeNumber,
-        isMarketOpen,
-        networkId,
-        {
-            enabled: isAppReady,
-        }
-    );
+    const disputeQuery = useDisputeQuery(disputeInfo.market, disputeInfo.disputeNumber, networkId, {
+        enabled: isAppReady,
+    });
 
-    const disputeVotingInfo: DisputeVotingInfo | undefined = useMemo(() => {
-        if (disputeVotingInfoQuery.isSuccess && disputeVotingInfoQuery.data) {
-            return disputeVotingInfoQuery.data as DisputeVotingInfo;
+    const disputeData: DisputeData | undefined = useMemo(() => {
+        if (disputeQuery.isSuccess && disputeQuery.data) {
+            return disputeQuery.data as DisputeData | undefined;
         }
         return undefined;
-    }, [disputeVotingInfoQuery.isSuccess, disputeVotingInfoQuery.data]);
+    }, [disputeQuery.isSuccess, disputeQuery.data]);
 
-    console.log(disputeVotingInfo);
+    const voteOnContract: number = useMemo(() => {
+        if (isOracleCouncilMember && disputeData && isWalletConnected) {
+            const walletVote = disputeData.disputeVotes.find(
+                (vote) => vote.voter.toLowerCase() === walletAddress.toLowerCase()
+            );
+            if (walletVote) {
+                return walletVote.vote;
+            }
+        }
+        return 0;
+    }, [isOracleCouncilMember, disputeData, isWalletConnected]);
 
     return (
         <Container>
-            <Info>
-                <InfoLabel>{t('market.dispute.disputer-label')}:</InfoLabel>
-                <InfoConent>{dispute.disputor}</InfoConent>
-                <InfoLabel>{t('market.dispute.status-label')}:</InfoLabel>
-                <InfoConent>{'Open'}</InfoConent>
-                <InfoLabel>{t('market.dispute.reason-for-dispute-label')}:</InfoLabel>
-                <InfoConent>{dispute.reasonForDispute}</InfoConent>
-            </Info>
-            {isOracleCouncilMember && disputeVotingInfo && <DisputeVoting isInPositioningPhase={isMarketOpen} />}
-            {disputeVotingInfo && <DisputeVotingResults votingResults={disputeVotingInfo.disputeVotingResults} />}
+            <DisputeOverview disputeInfo={disputeInfo} status={disputeData ? disputeData.status : ''} />
+            {isOracleCouncilMember && disputeData && (
+                <DisputeVoting voteOnContract={voteOnContract} disputeInfo={disputeInfo} />
+            )}
+            {disputeData && <DisputeVotingResults votingResults={disputeData.disputeVotingResults} />}
         </Container>
     );
 };
@@ -72,22 +71,6 @@ const Container = styled(FlexDivRow)`
             border-right: 2px solid ${(props) => props.theme.borderColor.primary};
         }
     }
-`;
-
-const Info = styled(FlexDivColumn)``;
-
-const InfoLabel = styled.span`
-    font-weight: bold;
-    font-size: 25px;
-    line-height: 100%;
-    margin-bottom: 10px;
-`;
-
-const InfoConent = styled.span`
-    font-size: 18px;
-    line-height: 25px;
-    text-align: justify;
-    margin-bottom: 20px;
 `;
 
 export default DisputeCard;

@@ -1,15 +1,4 @@
-import { DisputeVotingOption } from 'constants/markets';
-
-export enum MarketStatus {
-    Open = 'open',
-    OpenDisputed = 'open-disputed',
-    Cancelled = 'cancelled',
-    Paused = 'paused',
-    ResolvePending = 'resolve-pending',
-    ResolvePendingConfirmation = 'resolved-pending-confirmation',
-    ResolvedDisputed = 'resolved-disputed',
-    ResolvedConfirmed = 'resolved-confirmed',
-}
+import { DisputeStatus, DisputeVotingOption, MarketStatus } from 'constants/markets';
 
 export type MarketInfo = {
     address: string;
@@ -84,12 +73,22 @@ export type DisputeInfo = {
     creationDate: number;
     disputeNumber: number;
     market: string;
-    disputor: string;
+    disputer: string;
     reasonForDispute: string;
-    status: string;
+    isInPositioningPhase: boolean;
 };
 
 export type Disputes = DisputeInfo[];
+
+export type DisputeContractData = {
+    timestamp: number;
+    disputer: string;
+    votedOption: number;
+    reasonForDispute: string;
+    isInPositioningPhase: boolean;
+    canMarketBeDisputed: boolean;
+    isOpenDisputeCancelled: boolean;
+};
 
 export type DisputeVoteInfo = {
     id: string;
@@ -109,7 +108,9 @@ export type DisputeVotingResultInfo = {
 
 export type DisputeVotingResults = DisputeVotingResultInfo[];
 
-export type DisputeVotingInfo = {
+export type DisputeData = {
+    disputeContractData: DisputeContractData;
     disputeVotes: DisputeVotes;
     disputeVotingResults: DisputeVotingResults;
+    status: DisputeStatus;
 };

@@ -7,9 +7,8 @@ export const QUERY_KEYS = {
     MarketsParameters: (networkId: NetworkId) => ['markets', 'parameters', networkId],
     Tags: (networkId: NetworkId) => ['tags', networkId],
     Disputes: (marketAddress: string, networkId: NetworkId) => ['disputes', marketAddress, networkId],
-    DisputeVotingInfo: (marketAddress: string, dispute: number, networkId: NetworkId) => [
-        'disputes',
-        'votingInfo',
+    Dispute: (marketAddress: string, dispute: number, networkId: NetworkId) => [
+        'dispute',
         marketAddress,
         dispute,
         networkId,

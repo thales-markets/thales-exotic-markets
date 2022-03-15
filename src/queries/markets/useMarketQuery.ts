@@ -1,10 +1,11 @@
 import { useQuery, UseQueryOptions } from 'react-query';
 import QUERY_KEYS from 'constants/queryKeys';
-import { MarketData, MarketStatus } from 'types/markets';
+import { MarketData } from 'types/markets';
 import { BigNumberish, ethers } from 'ethers';
 import marketContract from 'utils/contracts/exoticPositionalMarketContract';
 import networkConnector from 'utils/networkConnector';
 import { bigNumberFormatter } from 'utils/formatters/ethers';
+import { MarketStatus } from 'constants/markets';
 
 const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketData>) => {
     return useQuery<MarketData>(
@@ -72,6 +73,7 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                 status: MarketStatus.Open,
             };
 
+            // TODO - needs refactoring
             if (market.paused) {
                 market.status = MarketStatus.Paused;
             } else {

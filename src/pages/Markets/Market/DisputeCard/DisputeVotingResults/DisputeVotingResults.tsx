@@ -14,7 +14,7 @@ const DisputeVotingResults: React.FC<DisputeVotingResultsProps> = ({ votingResul
 
     return (
         <Container>
-            <Title>Results</Title>
+            <Title>{t('market.dispute.results-label')}</Title>
             {votingResults.map((result: DisputeVotingResultInfo) => {
                 return (
                     <Result key={result.votingOption}>
@@ -55,6 +55,7 @@ const VotingOption = styled.span``;
 const NumberOfVotes = styled.span`
     font-size: 18px;
     font-weight: bold;
+    margin-left: 10px;
 `;
 
 export default DisputeVotingResults;

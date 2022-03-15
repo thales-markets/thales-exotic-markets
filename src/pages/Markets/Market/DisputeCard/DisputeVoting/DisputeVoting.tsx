@@ -1,5 +1,6 @@
 import Button from 'components/Button';
 import RadioButton from 'components/fields/RadioButton';
+import ValidationMessage from 'components/ValidationMessage';
 import {
     DISPUTE_VOTING_OPTIONS_MARKET_OPEN,
     DISPUTE_VOTING_OPTIONS_MARKET_RESOLVED,
@@ -9,22 +10,95 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { FlexDivColumn } from 'styles/common';
+import { DisputeInfo } from 'types/markets';
+import networkConnector from 'utils/networkConnector';
 
 type DisputeVotingProps = {
-    isInPositioningPhase: boolean;
+    voteOnContract: number;
+    disputeInfo: DisputeInfo;
+    // myPosition: boolean;
 };
 
-const DisputeVoting: React.FC<DisputeVotingProps> = ({ isInPositioningPhase }) => {
+const DisputeVoting: React.FC<DisputeVotingProps> = ({ voteOnContract, disputeInfo }) => {
     const { t } = useTranslation();
-    const [vote, setVote] = useState<number>(0);
+    const [vote, setVote] = useState<number>(voteOnContract);
+    const [currentVoteOnContract, setCurrentVoteOnContract] = useState<number>(voteOnContract);
+    const [txErrorMessage, setTxErrorMessage] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-    const disputeVotingOptions = isInPositioningPhase
+    const disputeVotingOptions = disputeInfo.isInPositioningPhase
         ? DISPUTE_VOTING_OPTIONS_MARKET_OPEN
         : DISPUTE_VOTING_OPTIONS_MARKET_RESOLVED;
 
+    const showVoteButton = currentVoteOnContract === 0;
+    const showChangeVoteButton = currentVoteOnContract !== vote;
+    const isVoteSelected = vote > 0;
+    const isButtonDisabled = isSubmitting || !isVoteSelected;
+
+    const handleVote = async () => {
+        const { thalesOracleCouncilContract, signer } = networkConnector;
+        if (thalesOracleCouncilContract && signer) {
+            setTxErrorMessage(null);
+            setIsSubmitting(true);
+
+            try {
+                const thalesOracleCouncilContractWithSigner = thalesOracleCouncilContract.connect(signer);
+
+                const tx = await thalesOracleCouncilContractWithSigner.voteForDispute(
+                    disputeInfo.market,
+                    disputeInfo.disputeNumber,
+                    vote,
+                    0
+                );
+                const txResult = await tx.wait();
+
+                if (txResult && txResult.transactionHash) {
+                    // dispatchMarketNotification(t('migration.migrate-button.confirmation-message'));
+                    setIsSubmitting(false);
+                    setCurrentVoteOnContract(vote);
+                }
+            } catch (e) {
+                console.log(e);
+                setTxErrorMessage(t('common.errors.unknown-error-try-again'));
+                setIsSubmitting(false);
+            }
+        }
+    };
+
+    const getSubmitButton = () => {
+        if (!isVoteSelected) {
+            return (
+                <VoteButton type="secondary" disabled={true}>
+                    {t(`common.errors.select-position`)}
+                </VoteButton>
+            );
+        }
+
+        if (showVoteButton) {
+            return (
+                <VoteButton type="secondary" disabled={isButtonDisabled} onClick={handleVote}>
+                    {!isSubmitting
+                        ? t('market.dispute.button.vote-label')
+                        : t('market.dispute.button.vote-progress-label')}
+                </VoteButton>
+            );
+        }
+        return (
+            <>
+                {showChangeVoteButton && (
+                    <VoteButton type="secondary" disabled={isButtonDisabled} onClick={handleVote}>
+                        {!isSubmitting
+                            ? t('market.dispute.button.change-vote-label')
+                            : t('market.dispute.button.change-vote-progress-label')}
+                    </VoteButton>
+                )}
+            </>
+        );
+    };
+
     return (
         <Container>
-            <Title>Vote</Title>
+            <Title>{t('market.dispute.vote-label')}</Title>
             {disputeVotingOptions.map((votingOption) => {
                 return (
                     <RadioButtonContainer key={votingOption}>
@@ -37,7 +111,12 @@ const DisputeVoting: React.FC<DisputeVotingProps> = ({ isInPositioningPhase }) =
                     </RadioButtonContainer>
                 );
             })}
-            <VoteButton type="secondary">Vote</VoteButton>
+            {getSubmitButton()}
+            <ValidationMessage
+                showValidation={txErrorMessage !== null}
+                message={txErrorMessage}
+                onDismiss={() => setTxErrorMessage(null)}
+            />
         </Container>
     );
 };

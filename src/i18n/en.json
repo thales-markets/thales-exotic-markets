@@ -33,6 +33,7 @@
             "enter-tags": "Enter tags",
             "enter-reason-for-dispute": "Enter reason for dispute",
             "select-position": "Select position",
+            "select-vote": "Select vote",
             "select-outcome": "Select outcome",
             "invalid-price": "Invalid price",
             "invalid-price-max": "The price cannot be higher than ${{max}}",
@@ -182,7 +183,9 @@
                 "open-dispute-label": "Open dispute",
                 "open-dispute-progress-label": "Opening dispute in progress...",
                 "vote-label": "Vote",
-                "vote-progress-label": "Voting in progress..."
+                "vote-progress-label": "Voting in progress...",
+                "change-vote-label": "Change vote",
+                "change-vote-progress-label": "Voting in progress..."
             },
             "status": {
                 "open": "Open",

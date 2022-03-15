@@ -34,6 +34,17 @@ export const DATE_PICKER_MAX_DATE = maxDate; // 1 month from now
 
 export const MAXIMUM_INPUT_CHARACTERS = 100;
 
+export enum MarketStatus {
+    Open = 'open',
+    OpenDisputed = 'open-disputed',
+    Cancelled = 'cancelled',
+    Paused = 'paused',
+    ResolvePending = 'resolve-pending',
+    ResolvePendingConfirmation = 'resolved-pending-confirmation',
+    ResolvedDisputed = 'resolved-disputed',
+    ResolvedConfirmed = 'resolved-confirmed',
+}
+
 export enum DisputeVotingOption {
     ACCEPT_SLASH = 1,
     ACCEPT_NO_SLASH = 2,
@@ -62,4 +73,24 @@ export const DISPUTE_VOTING_OPTIONS_TRANSLATION_KEYS = {
     [DisputeVotingOption.ACCEPT_RESULT]: 'market.dispute.voting-option.accept-result',
     [DisputeVotingOption.ACCEPT_RESET]: 'market.dispute.voting-option.accept-reset',
     [DisputeVotingOption.REFUSE_MATURE]: 'market.dispute.voting-option.refuse-mature',
+};
+
+export enum DisputeStatus {
+    Open = 'open',
+    AcceptedSlash = 'accepted-slash',
+    AcceptedNoSlash = 'accepted-no-slash',
+    RefusedOnPositioning = 'refused-on-positioning',
+    AcceptedResult = 'accepted-result',
+    AcceptedReset = 'accepted-reset',
+    RefusedMature = 'refused-mature',
+    Cancelled = 'cancelled',
+}
+
+export const DISPUTE_VOTED_OPTION_STATUS_MAP = {
+    [DisputeVotingOption.ACCEPT_SLASH]: DisputeStatus.AcceptedSlash,
+    [DisputeVotingOption.ACCEPT_NO_SLASH]: DisputeStatus.AcceptedNoSlash,
+    [DisputeVotingOption.REFUSE_ON_POSITIONING]: DisputeStatus.RefusedOnPositioning,
+    [DisputeVotingOption.ACCEPT_RESULT]: DisputeStatus.AcceptedResult,
+    [DisputeVotingOption.ACCEPT_RESET]: DisputeStatus.AcceptedReset,
+    [DisputeVotingOption.REFUSE_MATURE]: DisputeStatus.RefusedMature,
 };

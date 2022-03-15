@@ -12,10 +12,9 @@ import DisputeCard from '../DisputeCard';
 
 type DisputesProps = {
     marketAddress: string;
-    isMarketOpen: boolean;
 };
 
-const Disputes: React.FC<DisputesProps> = ({ marketAddress, isMarketOpen }) => {
+const Disputes: React.FC<DisputesProps> = ({ marketAddress }) => {
     const isAppReady = useSelector((state: RootState) => getIsAppReady(state));
     const networkId = useSelector((state: RootState) => getNetworkId(state));
     const walletAddress = useSelector((state: RootState) => getWalletAddress(state)) || '';
@@ -44,12 +43,7 @@ const Disputes: React.FC<DisputesProps> = ({ marketAddress, isMarketOpen }) => {
     return (
         <Container>
             {disputes.map((dispute: DisputeInfo) => (
-                <DisputeCard
-                    key={dispute.id}
-                    dispute={dispute}
-                    isMarketOpen={isMarketOpen}
-                    isOracleCouncilMember={isOracleCouncilMember}
-                >
+                <DisputeCard key={dispute.id} disputeInfo={dispute} isOracleCouncilMember={isOracleCouncilMember}>
                     {dispute}
                 </DisputeCard>
             ))}

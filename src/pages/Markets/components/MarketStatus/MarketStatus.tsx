@@ -3,7 +3,8 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { FlexDivColumn } from 'styles/common';
-import { MarketInfo, MarketStatus as MarketStatusEnum } from 'types/markets';
+import { MarketInfo } from 'types/markets';
+import { MarketStatus as MarketStatusEnum } from 'constants/markets';
 
 type MarketStatusProps = {
     market: MarketInfo;
