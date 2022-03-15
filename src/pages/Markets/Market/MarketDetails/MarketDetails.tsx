@@ -49,7 +49,7 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
     const [selectedPosition, setSelectedPosition] = useState<number>(0);
 
     const accountMarketDataQuery = useAccountMarketDataQuery(market.address, walletAddress, {
-        enabled: isAppReady,
+        enabled: isAppReady && isWalletConnected,
     });
 
     useEffect(() => {

@@ -34,9 +34,32 @@ export const DATE_PICKER_MAX_DATE = maxDate; // 1 month from now
 
 export const MAXIMUM_INPUT_CHARACTERS = 100;
 
-export enum DisputeStatus {
-    Open = 'open',
-    Refused = 'refused',
-    Accepted = 'accepted',
-    AcceptedSlashed = 'accepted-slashed',
+export enum DisputeVotingOption {
+    ACCEPT_SLASH = 1,
+    ACCEPT_NO_SLASH = 2,
+    REFUSE_ON_POSITIONING = 3,
+    ACCEPT_RESULT = 4,
+    ACCEPT_RESET = 5,
+    REFUSE_MATURE = 6,
 }
+
+export const DISPUTE_VOTING_OPTIONS_MARKET_OPEN = [
+    DisputeVotingOption.ACCEPT_SLASH,
+    DisputeVotingOption.ACCEPT_NO_SLASH,
+    DisputeVotingOption.REFUSE_ON_POSITIONING,
+];
+
+export const DISPUTE_VOTING_OPTIONS_MARKET_RESOLVED = [
+    DisputeVotingOption.ACCEPT_RESULT,
+    DisputeVotingOption.ACCEPT_RESET,
+    DisputeVotingOption.REFUSE_MATURE,
+];
+
+export const DISPUTE_VOTING_OPTIONS_TRANSLATION_KEYS = {
+    [DisputeVotingOption.ACCEPT_SLASH]: 'market.dispute.voting-option.accept-slash',
+    [DisputeVotingOption.ACCEPT_NO_SLASH]: 'market.dispute.voting-option.accept-no-slash',
+    [DisputeVotingOption.REFUSE_ON_POSITIONING]: 'market.dispute.voting-option.refuse-on-positioning',
+    [DisputeVotingOption.ACCEPT_RESULT]: 'market.dispute.voting-option.accept-result',
+    [DisputeVotingOption.ACCEPT_RESET]: 'market.dispute.voting-option.accept-reset',
+    [DisputeVotingOption.REFUSE_MATURE]: 'market.dispute.voting-option.refuse-mature',
+};

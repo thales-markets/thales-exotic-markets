@@ -176,9 +176,13 @@
             "disputer-label": "Disputer",
             "status-label": "Status",
             "reason-for-dispute-label": "Reason for dispute",
+            "vote-label": "Vote",
+            "results-label": "Results",
             "button": {
                 "open-dispute-label": "Open dispute",
-                "open-dispute-progress-label": "Opening dispute in progress..."
+                "open-dispute-progress-label": "Opening dispute in progress...",
+                "vote-label": "Vote",
+                "vote-progress-label": "Voting in progress..."
             },
             "status": {
                 "open": "Open",
@@ -187,16 +191,12 @@
                 "accepted-slashed": "Accepted slashed"
             },
             "voting-option": {
-                "market-open": {
-                    "accept-slash": "Accept the dispute and slash the creator",
-                    "accept-no-slash": "Accept the dispute but do not slash the creator",
-                    "refuse": "Refuse the dispute and slash the wallet that raised it"
-                },
-                "market-resolved": {
-                    "accept-set-result": "Accept the dispute and set a result",
-                    "accept-reset": "Accept the dispute and reset market result",
-                    "refuse": "Refuse the dispute"
-                }
+                "accept-slash": "Accept the dispute and slash the creator",
+                "accept-no-slash": "Accept the dispute but do not slash the creator",
+                "refuse-on-positioning": "Refuse the dispute and slash the wallet that raised it",
+                "accept-result": "Accept the dispute and set a result",
+                "accept-reset": "Accept the dispute and reset market result",
+                "refuse-mature": "Refuse the dispute"
             }
         }
     }

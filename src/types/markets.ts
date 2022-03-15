@@ -1,14 +1,4 @@
-export type DisputeInfo = {
-    id: string;
-    timestamp: number;
-    creationDate: number;
-    market: string;
-    disputor: string;
-    reasonForDispute: string;
-    status: string;
-};
-
-export type Disputes = DisputeInfo[];
+import { DisputeVotingOption } from 'constants/markets';
 
 export enum MarketStatus {
     Open = 'open',
@@ -87,3 +77,39 @@ export type TagInfo = {
 };
 
 export type Tags = TagInfo[];
+
+export type DisputeInfo = {
+    id: string;
+    timestamp: number;
+    creationDate: number;
+    disputeNumber: number;
+    market: string;
+    disputor: string;
+    reasonForDispute: string;
+    status: string;
+};
+
+export type Disputes = DisputeInfo[];
+
+export type DisputeVoteInfo = {
+    id: string;
+    timestamp: number;
+    market: string;
+    dispute: number;
+    voter: string;
+    vote: number;
+};
+
+export type DisputeVotes = DisputeVoteInfo[];
+
+export type DisputeVotingResultInfo = {
+    votingOption: DisputeVotingOption;
+    numberOfVotes: number;
+};
+
+export type DisputeVotingResults = DisputeVotingResultInfo[];
+
+export type DisputeVotingInfo = {
+    disputeVotes: DisputeVotes;
+    disputeVotingResults: DisputeVotingResults;
+};

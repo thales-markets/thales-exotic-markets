@@ -7,6 +7,13 @@ export const QUERY_KEYS = {
     MarketsParameters: (networkId: NetworkId) => ['markets', 'parameters', networkId],
     Tags: (networkId: NetworkId) => ['tags', networkId],
     Disputes: (marketAddress: string, networkId: NetworkId) => ['disputes', marketAddress, networkId],
+    DisputeVotingInfo: (marketAddress: string, dispute: number, networkId: NetworkId) => [
+        'disputes',
+        'votingInfo',
+        marketAddress,
+        dispute,
+        networkId,
+    ],
     Wallet: {
         PaymentTokenBalance: (walletAddress: string, networkId: NetworkId) => [
             'wallet',
@@ -15,6 +22,11 @@ export const QUERY_KEYS = {
             networkId,
         ],
     },
+    OracleCouncilMember: (walletAddress: string, networkId: NetworkId) => [
+        'oracleCouncilMember',
+        walletAddress,
+        networkId,
+    ],
 };
 
 export default QUERY_KEYS;
