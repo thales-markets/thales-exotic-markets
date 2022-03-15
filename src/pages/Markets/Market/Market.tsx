@@ -39,7 +39,11 @@ const Market: React.FC<MarketProps> = (props) => {
                 <>
                     <MarketDetails market={market} />
                     {market.canMarketBeResolved && (
-                        <ResolveMarket marketAddress={market.address} marketCreator="" positions={market.positions} />
+                        <ResolveMarket
+                            marketAddress={market.address}
+                            marketCreator={market.creator}
+                            positions={market.positions}
+                        />
                     )}
                     <Disputes marketAddress={marketAddress} />
                 </>

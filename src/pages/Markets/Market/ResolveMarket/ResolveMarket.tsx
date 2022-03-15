@@ -190,7 +190,6 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ marketAddress, positions,
             <Positions>
                 {outcomePositions.map((position: string, index: number) => {
                     const positionIndex = (index + 1) % outcomePositions.length;
-                    console.log(positionIndex);
                     return (
                         <RadioButton
                             checked={positionIndex === outcomePosition}

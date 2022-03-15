@@ -526,6 +526,16 @@ export const exoticPositionalMarketManagerContract = {
             type: 'function',
         },
         {
+            inputs: [
+                { internalType: 'address', name: '_market', type: 'address' },
+                { internalType: 'uint256', name: '_timeout', type: 'uint256' },
+            ],
+            name: 'setCustomBackstopTimeout',
+            outputs: [],
+            stateMutability: 'nonpayable',
+            type: 'function',
+        },
+        {
             inputs: [{ internalType: 'uint256', name: '_disputePrice', type: 'uint256' }],
             name: 'setDisputePrice',
             outputs: [],
