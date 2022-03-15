@@ -77,20 +77,20 @@ export const DISPUTE_VOTING_OPTIONS_TRANSLATION_KEYS = {
 
 export enum DisputeStatus {
     Open = 'open',
-    AcceptedSlash = 'accepted-slash',
-    AcceptedNoSlash = 'accepted-no-slash',
+    AcceptedSlashed = 'accepted-slashed',
+    AcceptedNotSlashed = 'accepted-not-slashed',
     RefusedOnPositioning = 'refused-on-positioning',
-    AcceptedResult = 'accepted-result',
+    AcceptedSetResult = 'accepted-set-result',
     AcceptedReset = 'accepted-reset',
     RefusedMature = 'refused-mature',
     Cancelled = 'cancelled',
 }
 
 export const DISPUTE_VOTED_OPTION_STATUS_MAP = {
-    [DisputeVotingOption.ACCEPT_SLASH]: DisputeStatus.AcceptedSlash,
-    [DisputeVotingOption.ACCEPT_NO_SLASH]: DisputeStatus.AcceptedNoSlash,
+    [DisputeVotingOption.ACCEPT_SLASH]: DisputeStatus.AcceptedSlashed,
+    [DisputeVotingOption.ACCEPT_NO_SLASH]: DisputeStatus.AcceptedNotSlashed,
     [DisputeVotingOption.REFUSE_ON_POSITIONING]: DisputeStatus.RefusedOnPositioning,
-    [DisputeVotingOption.ACCEPT_RESULT]: DisputeStatus.AcceptedResult,
+    [DisputeVotingOption.ACCEPT_RESULT]: DisputeStatus.AcceptedSetResult,
     [DisputeVotingOption.ACCEPT_RESET]: DisputeStatus.AcceptedReset,
     [DisputeVotingOption.REFUSE_MATURE]: DisputeStatus.RefusedMature,
 };

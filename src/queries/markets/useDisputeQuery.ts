@@ -75,6 +75,8 @@ const useDisputeQuery = (
                     ? DisputeStatus.Open
                     : DISPUTE_VOTED_OPTION_STATUS_MAP[disputeContractData.votedOption as DisputeVotingOption];
 
+                const isOpenForVoting = canMarketBeDisputed && isDisputeOpen && !isOpenDisputeCancelled;
+
                 return {
                     disputeContractData,
                     disputeVotes,
@@ -84,6 +86,7 @@ const useDisputeQuery = (
                         ['desc', 'asc']
                     ),
                     status,
+                    isOpenForVoting,
                 };
             }
             return undefined;

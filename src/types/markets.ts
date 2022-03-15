@@ -113,4 +113,5 @@ export type DisputeData = {
     disputeVotes: DisputeVotes;
     disputeVotingResults: DisputeVotingResults;
     status: DisputeStatus;
+    isOpenForVoting: boolean;
 };

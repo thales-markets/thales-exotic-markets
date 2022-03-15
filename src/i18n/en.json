@@ -189,9 +189,13 @@
             },
             "status": {
                 "open": "Open",
-                "refused": "Refused",
-                "accepted": "Accepted",
-                "accepted-slashed": "Accepted slashed"
+                "accepted-slashed": "Accepted - market creator slashed",
+                "accepted-not-slashed": "Accepted - market creator not slashed",
+                "refused-on-positioning": "Refused",
+                "accepted-set-result": "Accepted - new result set",
+                "accepted-reset": "Accepted - market result reset",
+                "refused-mature": "Refused",
+                "cancelled": "Cancelled"
             },
             "voting-option": {
                 "accept-slash": "Accept the dispute and slash the creator",

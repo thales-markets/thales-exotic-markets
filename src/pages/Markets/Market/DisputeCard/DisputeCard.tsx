@@ -48,7 +48,7 @@ const DisputeCard: React.FC<DisputeCardProps> = ({ disputeInfo, isOracleCouncilM
     return (
         <Container>
             <DisputeOverview disputeInfo={disputeInfo} status={disputeData ? disputeData.status : ''} />
-            {isOracleCouncilMember && disputeData && (
+            {isOracleCouncilMember && disputeData && disputeData.isOpenForVoting && (
                 <DisputeVoting voteOnContract={voteOnContract} disputeInfo={disputeInfo} />
             )}
             {disputeData && <DisputeVotingResults votingResults={disputeData.disputeVotingResults} />}

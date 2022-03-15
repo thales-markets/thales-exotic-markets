@@ -17,7 +17,7 @@ const DisputeOverview: React.FC<DisputeOverviewProps> = ({ disputeInfo, status }
             <Label>{t('market.dispute.disputer-label')}:</Label>
             <Content>{disputeInfo.disputer}</Content>
             <Label>{t('market.dispute.status-label')}:</Label>
-            <Content>{status}</Content>
+            <Content>{t(`market.dispute.status.${status}`)}</Content>
             <Label>{t('market.dispute.reason-for-dispute-label')}:</Label>
             <Content>{disputeInfo.reasonForDispute}</Content>
         </Container>
