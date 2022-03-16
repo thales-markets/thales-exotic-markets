@@ -72,9 +72,9 @@ const Home: React.FC = () => {
             );
         }
         switch (globalFilter) {
-            // case GlobalFilterEnum.Disputed:
-            //     filteredMarkets = filteredMarkets.filter((market: MarketInfo) => market.numberOfOpenedDisputes > 0);
-            //     break;
+            case GlobalFilterEnum.Disputed:
+                filteredMarkets = filteredMarkets.filter((market: MarketInfo) => market.numberOfOpenDisputes > 0);
+                break;
             // case GlobalFilterEnum.YourPositions:
             //     filteredMarkets = filteredMarkets.filter((market: MarketInfo) => market.position > 0);
             //     break;

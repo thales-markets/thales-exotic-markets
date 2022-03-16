@@ -31,7 +31,7 @@ const MarketCard: React.FC<MarketCardProps> = ({ market }) => {
                 <ButtonsContainer>
                     {/* {market.isClaimAvailable && <Button>{t('market.button.claim-label')}</Button>} */}
                     <OpenDisputeButton
-                        numberOfOpenedDisputes={0}
+                        numberOfOpenDisputes={market.numberOfOpenDisputes}
                         onClick={(e: any) => {
                             e.preventDefault();
                             navigateTo(buildOpenDisputeLink(market.address));
@@ -50,7 +50,6 @@ const Container = styled(FlexDivColumnCentered)<{ isClaimAvailable: boolean }>`
         ${(props) => (props.isClaimAvailable ? props.theme.borderColor.secondary : props.theme.borderColor.primary)};
     box-sizing: border-box;
     border-radius: 25px;
-    width: 390px;
     padding: 20px;
     margin: 7.5px;
     &:hover {

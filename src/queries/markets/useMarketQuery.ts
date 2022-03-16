@@ -92,11 +92,11 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                         }
                     }
                 } else {
-                    if (market.hasOpenDisputes) {
-                        market.status = MarketStatus.OpenDisputed;
+                    if (market.canMarketBeResolved) {
+                        market.status = MarketStatus.ResolvePending;
                     } else {
-                        if (market.canMarketBeResolved) {
-                            market.status = MarketStatus.ResolvePending;
+                        if (market.hasOpenDisputes) {
+                            market.status = MarketStatus.OpenDisputed;
                         } else {
                             market.status = MarketStatus.Open;
                         }

@@ -37,7 +37,7 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
                 </Info>
                 <FooterButtonsContainer>
                     <SPAAnchor href={buildOpenDisputeLink(market.address)}>
-                        <OpenDisputeButton numberOfOpenedDisputes={0}>
+                        <OpenDisputeButton numberOfOpenDisputes={0}>
                             {t('market.button.open-dispute-label')}
                         </OpenDisputeButton>
                     </SPAAnchor>
@@ -75,7 +75,7 @@ const InfoContent = styled.span`
 `;
 
 const Footer = styled(FlexDivRow)`
-    margin-top: 10px;
+    margin-top: 25px;
     > div {
         width: 33%;
     }

@@ -22,6 +22,7 @@ import ValidationMessage from 'components/ValidationMessage';
 import ApprovalModal from 'components/ApprovalModal';
 import usePaymentTokenBalanceQuery from 'queries/wallet/usePaymentTokenBalanceQuery';
 import { MAX_GAS_LIMIT } from 'constants/network';
+import { buildMarketLink, navigateTo } from 'utils/routes';
 
 type OpenDisputeProps = RouteComponentProps<{
     marketAddress: string;
@@ -147,6 +148,7 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
                 if (txResult && txResult.transactionHash) {
                     // dispatchMarketNotification(t('migration.migrate-button.confirmation-message'));
                     setIsSubmitting(false);
+                    navigateTo(buildMarketLink(marketAddress));
                     // setAmount('');
                 }
             } catch (e) {

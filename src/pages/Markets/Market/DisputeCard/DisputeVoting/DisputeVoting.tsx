@@ -69,7 +69,7 @@ const DisputeVoting: React.FC<DisputeVotingProps> = ({ voteOnContract, disputeIn
         if (!isVoteSelected) {
             return (
                 <VoteButton type="secondary" disabled={true}>
-                    {t(`common.errors.select-position`)}
+                    {t(`common.errors.select-vote`)}
                 </VoteButton>
             );
         }

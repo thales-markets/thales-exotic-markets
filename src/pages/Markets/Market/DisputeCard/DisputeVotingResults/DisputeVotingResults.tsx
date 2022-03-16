@@ -45,6 +45,9 @@ const Result = styled(FlexDivRow)`
     margin-top: 10px;
     padding-bottom: 10px;
     align-items: center;
+    :not(:first-child) {
+        margin-top: 10px;
+    }
     :not(:last-child) {
         border-bottom: 1px solid ${(props) => props.theme.borderColor.primary};
     }
