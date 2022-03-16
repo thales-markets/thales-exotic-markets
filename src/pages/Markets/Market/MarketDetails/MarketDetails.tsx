@@ -26,7 +26,7 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
             <MarketTitle fontSize={40}>{market.question}</MarketTitle>
             {market.isOpen && <PositioningPhase market={market} />}
             {!market.isOpen && <MaturityPhase market={market} />}
-            <MarketStatus market={market} fontSize={40} labelFontSize={20} fontWeight={700} status={market.status} />
+            <MarketStatus market={market} fontSize={40} labelFontSize={20} fontWeight={700} />
             <Footer>
                 <Tags tags={market.tags} labelFontSize={20} />
                 <Info fontSize={20}>

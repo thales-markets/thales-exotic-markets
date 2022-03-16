@@ -11,10 +11,9 @@ type MarketStatusProps = {
     fontSize?: number;
     fontWeight?: number;
     labelFontSize?: number;
-    status?: MarketStatusEnum;
 };
 
-const MarketStatus: React.FC<MarketStatusProps> = ({ market, fontSize, fontWeight, labelFontSize, status }) => {
+const MarketStatus: React.FC<MarketStatusProps> = ({ market, fontSize, fontWeight, labelFontSize }) => {
     const { t } = useTranslation();
 
     return (
@@ -22,12 +21,12 @@ const MarketStatus: React.FC<MarketStatusProps> = ({ market, fontSize, fontWeigh
             <StatusLabel labelFontSize={labelFontSize}>
                 {t(`market.${status === MarketStatusEnum.Open ? 'time-remaining-label' : 'status-label'}`)}:
             </StatusLabel>
-            {status === MarketStatusEnum.Open ? (
+            {market.status === MarketStatusEnum.Open ? (
                 <TimeRemaining end={market.endOfPositioning} fontSize={fontSize} fontWeight={fontWeight} />
             ) : (
                 <Status fontSize={fontSize}>
                     {/* {t(`market.status.${market.isClaimAvailable ? 'claim-available' : 'maturity'}`)} */}
-                    {status ? t(`market.status.${status.toString()}`) : ''}
+                    {t(`market.status.${market.status.toString()}`)}
                 </Status>
             )}
         </Container>

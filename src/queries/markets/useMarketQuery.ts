@@ -71,6 +71,7 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                 creator,
                 resolver,
                 status: MarketStatus.Open,
+                marketClosedForDisputes: false,
             };
 
             // TODO - needs refactoring

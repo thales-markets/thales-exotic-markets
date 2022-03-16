@@ -13,13 +13,17 @@ export type MarketInfo = {
     isOpen: boolean;
     numberOfDisputes: number;
     numberOfOpenDisputes: number;
+    status: MarketStatus;
+    marketClosedForDisputes: boolean;
+    isResolved: boolean;
+    isCancelled: boolean;
+    winningPosition: number;
 };
 
 export type MarketData = MarketInfo & {
     creationTime: number;
     resolvedTime: number;
     hasOpenDisputes: boolean;
-    isResolved: boolean;
     poolSize: number;
     claimablePoolSize: number;
     poolSizePerPosition: number[];
@@ -28,11 +32,8 @@ export type MarketData = MarketInfo & {
     canMarketBeResolved: boolean;
     canMarketBeResolvedByPDAO: boolean;
     canUsersClaim: boolean;
-    isCancelled: boolean;
     paused: boolean;
-    winningPosition: number;
-    resolver: boolean;
-    status: MarketStatus;
+    resolver: string;
 };
 
 export type Markets = MarketInfo[];
