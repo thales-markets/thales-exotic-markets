@@ -90,10 +90,12 @@
         "search-placeholder": "Search markets",
         "status": {
             "open": "Open",
-            "open-disputed": "Open - under dispute",
-            "cancelled": "Cancelled",
+            "cancelled-pending-confirmation": "Cancelled - pending confirmation",
+            "cancelled-disputed": "Cancelled - disputed",
+            "cancelled-confirmed": "Cancelled - confirmed",
             "paused": "Paused",
             "resolve-pending": "Resolve pending",
+            "resolve-pending-disputed": "Resolve pending - under dispute",
             "resolved-pending-confirmation": "Resolved - pending confirmation",
             "resolved-disputed": "Resolved - under dispute",
             "resolved-confirmed": "Resolved - confirmed"
@@ -104,8 +106,9 @@
         "ticket-price-label": "Ticket price",
         "return-label": "Potential max return",
         "claim-winnings-label": "Claim winnings",
+        "claim-refund-label": "Claim refund",
+        "nothing-to-claim-label": "Nothing to claim",
         "button": {
-            "claim-label": "Claim",
             "open-dispute-label": "Open dispute",
             "create-market-label": "Create market",
             "buy-label": "Buy",
@@ -115,7 +118,9 @@
             "withdraw-label": "Withdraw",
             "withdraw-progress-label": "Withdraw in progress...",
             "resolve-market-label": "Resolve market",
-            "resolve-market-progress-label": "Resolving in progress..."
+            "resolve-market-progress-label": "Resolving in progress...",
+            "claim-label": "Claim",
+            "claim-progress-label": "Claiming in progress..."
         },
         "filter-label": {
             "global": {
@@ -179,6 +184,11 @@
             "reason-for-dispute-label": "Reason for dispute",
             "vote-label": "Vote",
             "results-label": "Results",
+            "disputes-disabled-message": {
+                "market-closed": "The market is closed for disputes.",
+                "creator": "The creator of the market doesn't have the right to open disputes.",
+                "council-members": "Council members don't have the right to open disputes."
+            },
             "button": {
                 "open-dispute-label": "Open dispute",
                 "open-dispute-progress-label": "Opening dispute in progress...",

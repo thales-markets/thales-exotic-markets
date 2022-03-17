@@ -1,4 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
+import { useSelector } from 'react-redux';
+import { getIsAppReady } from 'redux/modules/app';
+import { getIsWalletConnected, getNetworkId, getWalletAddress } from 'redux/modules/wallet';
+import { RootState } from 'redux/rootReducer';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { FlexDivCentered, FlexDivColumn, FlexDivRow, FlexDivEnd } from 'styles/common';
@@ -13,6 +17,7 @@ import SPAAnchor from 'components/SPAAnchor';
 import { buildOpenDisputeLink } from 'utils/routes';
 import MaturityPhase from './MaturityPhase';
 import PositioningPhase from './PositioningPhase';
+import useOracleCouncilMemberQuery from 'queries/oracleCouncil/useOracleCouncilMemberQuery';
 
 type MarketDetailsProps = {
     market: MarketData;
@@ -20,6 +25,26 @@ type MarketDetailsProps = {
 
 const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
     const { t } = useTranslation();
+    const isAppReady = useSelector((state: RootState) => getIsAppReady(state));
+    const networkId = useSelector((state: RootState) => getNetworkId(state));
+    const walletAddress = useSelector((state: RootState) => getWalletAddress(state)) || '';
+    const isWalletConnected = useSelector((state: RootState) => getIsWalletConnected(state));
+
+    const oracleCouncilMemberQuery = useOracleCouncilMemberQuery(walletAddress, networkId, {
+        enabled: isAppReady && isWalletConnected,
+    });
+
+    const isOracleCouncilMember: boolean = useMemo(() => {
+        if (oracleCouncilMemberQuery.isSuccess && oracleCouncilMemberQuery.data) {
+            return oracleCouncilMemberQuery.data as boolean;
+        }
+        return false;
+    }, [oracleCouncilMemberQuery.isSuccess, oracleCouncilMemberQuery.data]);
+
+    const canOpenDispute =
+        !market.isMarketClosedForDisputes &&
+        !isOracleCouncilMember &&
+        walletAddress.toLowerCase() !== market.creator.toLowerCase();
 
     return (
         <MarketContainer>
@@ -36,11 +61,13 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
                     </InfoContent>
                 </Info>
                 <FooterButtonsContainer>
-                    <SPAAnchor href={buildOpenDisputeLink(market.address)}>
-                        <OpenDisputeButton numberOfOpenDisputes={0}>
-                            {t('market.button.open-dispute-label')}
-                        </OpenDisputeButton>
-                    </SPAAnchor>
+                    {canOpenDispute && (
+                        <SPAAnchor href={buildOpenDisputeLink(market.address)}>
+                            <OpenDisputeButton numberOfOpenDisputes={0}>
+                                {t('market.button.open-dispute-label')}
+                            </OpenDisputeButton>
+                        </SPAAnchor>
+                    )}
                 </FooterButtonsContainer>
             </Footer>
         </MarketContainer>

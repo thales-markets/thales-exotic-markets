@@ -12,7 +12,13 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
         QUERY_KEYS.Market(marketAddress),
         async () => {
             const contract = new ethers.Contract(marketAddress, marketContract.abi, networkConnector.provider);
-            const [allMarketData] = await Promise.all([contract.getAllMarketData()]);
+            const { thalesOracleCouncilContract } = networkConnector;
+            const [allMarketData, backstopTimeout, disputeClosedTime, isMarketClosedForDisputes] = await Promise.all([
+                contract.getAllMarketData(),
+                contract.backstopTimeout(),
+                contract.disputeClosedTime(),
+                thalesOracleCouncilContract?.isMarketClosedForDisputes(marketAddress),
+            ]);
 
             const [
                 question,
@@ -22,7 +28,7 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                 ticketPrice,
                 creationTime,
                 isWithdrawalAllowed,
-                hasOpenDisputes,
+                isDisputed,
                 isResolved,
                 resolvedTime,
                 positions,
@@ -35,7 +41,7 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                 canMarketBeResolvedByPDAO,
                 canUsersClaim,
                 isCancelled,
-                paused,
+                isPaused,
                 winningPosition,
                 creator,
                 resolver,
@@ -50,7 +56,7 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                 ticketPrice: bigNumberFormatter(ticketPrice),
                 creationTime: Number(creationTime) * 1000,
                 isWithdrawalAllowed,
-                hasOpenDisputes,
+                isDisputed,
                 isResolved,
                 resolvedTime: Number(resolvedTime) * 1000,
                 positions,
@@ -66,29 +72,40 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                 canMarketBeResolvedByPDAO,
                 canUsersClaim,
                 isCancelled,
-                paused,
+                isPaused,
                 winningPosition: Number(winningPosition),
                 creator,
                 resolver,
                 status: MarketStatus.Open,
-                marketClosedForDisputes: false,
+                marketClosedForDisputes: isMarketClosedForDisputes,
+                isMarketClosedForDisputes,
+                backstopTimeout: Number(backstopTimeout) * 1000,
+                disputeClosedTime: Number(disputeClosedTime) * 1000,
             };
 
             // TODO - needs refactoring
-            if (market.paused) {
+            if (market.isPaused) {
                 market.status = MarketStatus.Paused;
             } else {
                 if (market.isResolved) {
                     if (market.winningPosition === 0) {
-                        market.status = MarketStatus.Cancelled;
+                        if (market.isDisputed) {
+                            market.status = MarketStatus.CancelledDisputed;
+                        } else {
+                            if (market.canUsersClaim) {
+                                market.status = MarketStatus.CancelledConfirmed;
+                            } else {
+                                market.status = MarketStatus.CancelledPendingConfirmation;
+                            }
+                        }
                     } else {
-                        if (market.hasOpenDisputes) {
+                        if (market.isDisputed) {
                             market.status = MarketStatus.ResolvedDisputed;
                         } else {
                             if (market.canUsersClaim) {
                                 market.status = MarketStatus.ResolvedConfirmed;
                             } else {
-                                market.status = MarketStatus.ResolvePendingConfirmation;
+                                market.status = MarketStatus.ResolvedPendingConfirmation;
                             }
                         }
                     }
@@ -96,15 +113,15 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                     if (market.canMarketBeResolved) {
                         market.status = MarketStatus.ResolvePending;
                     } else {
-                        if (market.hasOpenDisputes) {
-                            market.status = MarketStatus.OpenDisputed;
+                        if (market.isDisputed && Date.now() > market.endOfPositioning) {
+                            market.status = MarketStatus.ResolvePendingDisputed;
                         } else {
                             market.status = MarketStatus.Open;
                         }
                     }
                 }
             }
-            market.isOpen = market.status === MarketStatus.Open || market.status === MarketStatus.OpenDisputed;
+            market.isOpen = market.status === MarketStatus.Open;
 
             return market;
         },

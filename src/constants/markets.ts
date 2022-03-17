@@ -36,11 +36,13 @@ export const MAXIMUM_INPUT_CHARACTERS = 100;
 
 export enum MarketStatus {
     Open = 'open',
-    OpenDisputed = 'open-disputed',
-    Cancelled = 'cancelled',
+    CancelledPendingConfirmation = 'cancelled-pending-confirmation',
+    CancelledDisputed = 'cancelled-disputed',
+    CancelledConfirmed = 'cancelled-confirmed',
     Paused = 'paused',
     ResolvePending = 'resolve-pending',
-    ResolvePendingConfirmation = 'resolved-pending-confirmation',
+    ResolvePendingDisputed = 'resolve-pending-disputed',
+    ResolvedPendingConfirmation = 'resolved-pending-confirmation',
     ResolvedDisputed = 'resolved-disputed',
     ResolvedConfirmed = 'resolved-confirmed',
 }

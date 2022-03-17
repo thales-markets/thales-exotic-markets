@@ -377,6 +377,13 @@ export const thalesOracleCouncilContract = {
             type: 'function',
         },
         {
+            inputs: [{ internalType: 'address', name: '_market', type: 'address' }],
+            name: 'isMarketClosedForDisputes',
+            outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
+            stateMutability: 'view',
+            type: 'function',
+        },
+        {
             inputs: [
                 { internalType: 'address', name: '_market', type: 'address' },
                 { internalType: 'uint256', name: '_disputeIndex', type: 'uint256' },

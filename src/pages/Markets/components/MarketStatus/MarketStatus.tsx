@@ -19,7 +19,7 @@ const MarketStatus: React.FC<MarketStatusProps> = ({ market, fontSize, fontWeigh
     return (
         <Container>
             <StatusLabel labelFontSize={labelFontSize}>
-                {t(`market.${status === MarketStatusEnum.Open ? 'time-remaining-label' : 'status-label'}`)}:
+                {t(`market.${market.status === MarketStatusEnum.Open ? 'time-remaining-label' : 'status-label'}`)}:
             </StatusLabel>
             {market.status === MarketStatusEnum.Open ? (
                 <TimeRemaining end={market.endOfPositioning} fontSize={fontSize} fontWeight={fontWeight} />

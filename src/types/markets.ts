@@ -3,8 +3,12 @@ import { DisputeStatus, DisputeVotingOption, MarketStatus } from 'constants/mark
 export type MarketInfo = {
     address: string;
     creator: string;
+    creationTime: number;
+    resolver: string;
+    resolvedTime: number;
     question: string;
     dataSource: string;
+    isTicketType: boolean;
     endOfPositioning: number;
     ticketPrice: number;
     isWithdrawalAllowed: boolean;
@@ -18,22 +22,21 @@ export type MarketInfo = {
     isResolved: boolean;
     isCancelled: boolean;
     winningPosition: number;
+    backstopTimeout: number;
+    isPaused: boolean;
+    isDisputed: boolean;
+    isMarketClosedForDisputes: boolean;
+    canMarketBeResolved: boolean;
+    canUsersClaim: boolean;
+    disputeClosedTime: number;
 };
 
 export type MarketData = MarketInfo & {
-    creationTime: number;
-    resolvedTime: number;
-    hasOpenDisputes: boolean;
     poolSize: number;
     claimablePoolSize: number;
     poolSizePerPosition: number[];
-    isTicketType: boolean;
     canUsersPlacePosition: boolean;
-    canMarketBeResolved: boolean;
     canMarketBeResolvedByPDAO: boolean;
-    canUsersClaim: boolean;
-    paused: boolean;
-    resolver: string;
 };
 
 export type Markets = MarketInfo[];

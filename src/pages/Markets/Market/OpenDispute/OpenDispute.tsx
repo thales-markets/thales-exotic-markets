@@ -23,6 +23,9 @@ import ApprovalModal from 'components/ApprovalModal';
 import usePaymentTokenBalanceQuery from 'queries/wallet/usePaymentTokenBalanceQuery';
 import { MAX_GAS_LIMIT } from 'constants/network';
 import { buildMarketLink, navigateTo } from 'utils/routes';
+import useOracleCouncilMemberQuery from 'queries/oracleCouncil/useOracleCouncilMemberQuery';
+import SimpleLoader from 'components/SimpleLoader';
+import WarningMessage from 'components/WarningMessage';
 
 type OpenDisputeProps = RouteComponentProps<{
     marketAddress: string;
@@ -49,11 +52,11 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
         enabled: isAppReady,
     });
 
-    const marketQuestion: string = useMemo(() => {
+    const market: MarketData | undefined = useMemo(() => {
         if (marketQuery.isSuccess && marketQuery.data) {
-            return (marketQuery.data as MarketData).question;
+            return marketQuery.data as MarketData;
         }
-        return '';
+        return undefined;
     }, [marketQuery.isSuccess, marketQuery.data]);
 
     const marketsParametersQuery = useMarketsParametersQuery(networkId, {
@@ -77,13 +80,35 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
         }
     }, [paymentTokenBalanceQuery.isSuccess, paymentTokenBalanceQuery.data]);
 
+    const oracleCouncilMemberQuery = useOracleCouncilMemberQuery(walletAddress, networkId, {
+        enabled: isAppReady && isWalletConnected,
+    });
+
+    const isOracleCouncilMember: boolean = useMemo(() => {
+        if (oracleCouncilMemberQuery.isSuccess && oracleCouncilMemberQuery.data) {
+            return oracleCouncilMemberQuery.data as boolean;
+        }
+        return false;
+    }, [oracleCouncilMemberQuery.isSuccess, oracleCouncilMemberQuery.data]);
+
+    const canOpenDispute =
+        market &&
+        !market.isMarketClosedForDisputes &&
+        !isOracleCouncilMember &&
+        walletAddress.toLowerCase() !== market.creator.toLowerCase();
+
     const disputePrice = marketsParameters ? marketsParameters.disputePrice : 0;
 
     const isReasonForDisputeEntered = reasonForDispute.trim() !== '';
     const insufficientBalance = Number(paymentTokenBalance) < Number(disputePrice) || Number(paymentTokenBalance) === 0;
 
     const isButtonDisabled =
-        isSubmitting || !isWalletConnected || !hasAllowance || !isReasonForDisputeEntered || insufficientBalance;
+        isSubmitting ||
+        !isWalletConnected ||
+        !hasAllowance ||
+        !isReasonForDisputeEntered ||
+        insufficientBalance ||
+        !canOpenDispute;
 
     useEffect(() => {
         const { paymentTokenContract, thalesBondsContract, signer } = networkConnector;
@@ -167,6 +192,9 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
                 </DisputeButton>
             );
         }
+        if (!canOpenDispute) {
+            return <DisputeButton disabled={true}>{t(`market.dispute.button.open-dispute-label`)}</DisputeButton>;
+        }
         if (insufficientBalance) {
             return <DisputeButton disabled={true}>{t(`common.errors.insufficient-balance`)}</DisputeButton>;
         }
@@ -193,36 +221,56 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
         );
     };
 
+    const getDisputesDisabledMessage = () => {
+        if (market && market.isMarketClosedForDisputes) {
+            return t('market.dispute.disputes-disabled-message.market-closed');
+        }
+        if (isOracleCouncilMember) {
+            return t('market.dispute.disputes-disabled-message.council-members');
+        }
+        if (market && walletAddress.toLowerCase() === market.creator.toLowerCase()) {
+            return t('market.dispute.disputes-disabled-message.creator');
+        }
+        return '';
+    };
+
     return (
         <Container>
-            <Form>
-                <Title>{t('market.dispute.open-dispute-title', { question: marketQuestion })}</Title>
-                <TextAreaInput
-                    value={reasonForDispute}
-                    onChange={setReasonForDispute}
-                    label={t('market.dispute.reason-for-dispute-label')}
-                    note={t('common.input-characters-note', {
-                        entered: reasonForDispute.length,
-                        max: MAXIMUM_INPUT_CHARACTERS,
-                    })}
-                    maximumCharacters={MAXIMUM_INPUT_CHARACTERS}
-                    disabled={isSubmitting}
-                />
-                <ButtonContainer>{getSubmitButton()}</ButtonContainer>
-                <ValidationMessage
-                    showValidation={txErrorMessage !== null}
-                    message={txErrorMessage}
-                    onDismiss={() => setTxErrorMessage(null)}
-                />
-            </Form>
-            {openApprovalModal && (
-                <ApprovalModal
-                    defaultAmount={disputePrice}
-                    tokenSymbol={PAYMENT_CURRENCY}
-                    isAllowing={isAllowing}
-                    onSubmit={handleAllowance}
-                    onClose={() => setOpenApprovalModal(false)}
-                />
+            {market ? (
+                <>
+                    <Form>
+                        <Title>{t('market.dispute.open-dispute-title', { question: market.question })}</Title>
+                        <TextAreaInput
+                            value={reasonForDispute}
+                            onChange={setReasonForDispute}
+                            label={t('market.dispute.reason-for-dispute-label')}
+                            note={t('common.input-characters-note', {
+                                entered: reasonForDispute.length,
+                                max: MAXIMUM_INPUT_CHARACTERS,
+                            })}
+                            maximumCharacters={MAXIMUM_INPUT_CHARACTERS}
+                            disabled={isSubmitting || !canOpenDispute}
+                        />
+                        <ButtonContainer>{getSubmitButton()}</ButtonContainer>
+                        <ValidationMessage
+                            showValidation={txErrorMessage !== null}
+                            message={txErrorMessage}
+                            onDismiss={() => setTxErrorMessage(null)}
+                        />
+                        {!canOpenDispute && <WarningMessage message={getDisputesDisabledMessage()} />}
+                    </Form>
+                    {openApprovalModal && (
+                        <ApprovalModal
+                            defaultAmount={disputePrice}
+                            tokenSymbol={PAYMENT_CURRENCY}
+                            isAllowing={isAllowing}
+                            onSubmit={handleAllowance}
+                            onClose={() => setOpenApprovalModal(false)}
+                        />
+                    )}
+                </>
+            ) : (
+                <SimpleLoader />
             )}
         </Container>
     );

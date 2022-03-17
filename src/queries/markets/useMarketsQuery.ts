@@ -4,52 +4,76 @@ import { MarketInfo, Markets } from 'types/markets';
 import { NetworkId } from 'types/network';
 import thalesData from 'thales-data';
 import { MarketStatus } from 'constants/markets';
+import networkConnector from 'utils/networkConnector';
 
 const useMarketsQuery = (networkId: NetworkId, options?: UseQueryOptions<Markets>) => {
     return useQuery<Markets>(
         QUERY_KEYS.Markets(networkId),
         async () => {
-            let markets: Markets = await thalesData.exoticMarkets.markets({
-                network: networkId,
-            });
+            const { marketManagerContract } = networkConnector;
+            const [markets, claimTimeoutDefaultPeriod] = await Promise.all([
+                thalesData.exoticMarkets.markets({
+                    network: networkId,
+                }),
+                marketManagerContract?.claimTimeoutDefaultPeriod(),
+            ]);
 
-            markets = markets.map((market: MarketInfo) => {
-                // if (market.paused) {
-                //     market.status = MarketStatus.Paused;
-                // } else {
-                if (market.isResolved) {
-                    if (market.winningPosition === 0) {
-                        market.status = MarketStatus.Cancelled;
-                    } else {
-                        if (!market.marketClosedForDisputes && market.numberOfOpenDisputes > 0) {
-                            market.status = MarketStatus.ResolvedDisputed;
-                        } else {
-                            if (Date.now() > market.endOfPositioning) {
-                                // if (market.canUsersClaim) {
-                                market.status = MarketStatus.ResolvedConfirmed;
+            const mappedMarkets = markets.map((market: MarketInfo) => {
+                market.canMarketBeResolved =
+                    Date.now() > market.endOfPositioning && !market.isDisputed && !market.isResolved;
+                market.canUsersClaim =
+                    market.isResolved &&
+                    !market.isDisputed &&
+                    ((market.resolvedTime > 0 &&
+                        Date.now() > market.resolvedTime + Number(claimTimeoutDefaultPeriod) * 1000) ||
+                        (market.backstopTimeout > 0 &&
+                            market.resolvedTime > 0 &&
+                            market.disputeClosedTime > 0 &&
+                            Date.now() > market.disputeClosedTime + market.backstopTimeout));
+                market.isMarketClosedForDisputes = market.marketClosedForDisputes && market.canUsersClaim;
+
+                if (market.isPaused) {
+                    market.status = MarketStatus.Paused;
+                } else {
+                    if (market.isResolved) {
+                        if (market.winningPosition === 0) {
+                            if (market.isDisputed) {
+                                market.status = MarketStatus.CancelledDisputed;
                             } else {
-                                market.status = MarketStatus.ResolvePendingConfirmation;
+                                if (market.canUsersClaim) {
+                                    market.status = MarketStatus.CancelledConfirmed;
+                                } else {
+                                    market.status = MarketStatus.CancelledPendingConfirmation;
+                                }
+                            }
+                        } else {
+                            if (market.isDisputed) {
+                                market.status = MarketStatus.ResolvedDisputed;
+                            } else {
+                                if (market.canUsersClaim) {
+                                    market.status = MarketStatus.ResolvedConfirmed;
+                                } else {
+                                    market.status = MarketStatus.ResolvedPendingConfirmation;
+                                }
+                            }
+                        }
+                    } else {
+                        if (market.canMarketBeResolved) {
+                            market.status = MarketStatus.ResolvePending;
+                        } else {
+                            if (market.isDisputed && Date.now() > market.endOfPositioning) {
+                                market.status = MarketStatus.ResolvePendingDisputed;
+                            } else {
+                                market.status = MarketStatus.Open;
                             }
                         }
                     }
-                } else {
-                    if (Date.now() > market.endOfPositioning && market.numberOfOpenDisputes === 0) {
-                        market.status = MarketStatus.ResolvePending;
-                    } else {
-                        if (!market.marketClosedForDisputes && market.numberOfOpenDisputes > 0) {
-                            market.status = MarketStatus.OpenDisputed;
-                        } else {
-                            market.status = MarketStatus.Open;
-                        }
-                    }
                 }
-                // }
+                market.isOpen = market.status === MarketStatus.Open;
+
                 return market;
             });
-
-            console.log(markets);
-
-            return markets;
+            return mappedMarkets;
         },
         {
             refetchInterval: 5000,
