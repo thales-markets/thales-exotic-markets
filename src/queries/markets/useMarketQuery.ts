@@ -1,8 +1,7 @@
 import { useQuery, UseQueryOptions } from 'react-query';
 import QUERY_KEYS from 'constants/queryKeys';
 import { MarketData } from 'types/markets';
-import { BigNumberish, ethers } from 'ethers';
-import marketContract from 'utils/contracts/exoticPositionalMarketContract';
+import { BigNumberish } from 'ethers';
 import networkConnector from 'utils/networkConnector';
 import { bigNumberFormatter } from 'utils/formatters/ethers';
 import { MarketStatus } from 'constants/markets';
@@ -11,22 +10,9 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
     return useQuery<MarketData>(
         QUERY_KEYS.Market(marketAddress),
         async () => {
-            const contract = new ethers.Contract(marketAddress, marketContract.abi, networkConnector.provider);
-            const { thalesOracleCouncilContract, marketManagerContract } = networkConnector;
-            const [
-                allMarketData,
-                backstopTimeout,
-                disputeClosedTime,
-                disputePrice,
-                canCreatorCancelMarket,
-                isMarketClosedForDisputes,
-                claimTimeoutDefaultPeriod,
-            ] = await Promise.all([
-                contract.getAllMarketData(),
-                contract.backstopTimeout(),
-                contract.disputeClosedTime(),
-                contract.disputePrice(),
-                contract.canCreatorCancelMarket(),
+            const { marketDataContract, thalesOracleCouncilContract, marketManagerContract } = networkConnector;
+            const [allMarketData, isMarketClosedForDisputes, claimTimeoutDefaultPeriod] = await Promise.all([
+                marketDataContract?.getAllMarketData(marketAddress),
                 thalesOracleCouncilContract?.isMarketClosedForDisputes(marketAddress),
                 marketManagerContract?.claimTimeoutDefaultPeriod(),
             ]);
@@ -56,6 +42,13 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                 winningPosition,
                 creator,
                 resolver,
+                fixedBondAmount,
+                disputePrice,
+                safeBoxLowAmount,
+                arbitraryRewardForDisputor,
+                backstopTimeout,
+                disputeClosedTime,
+                canCreatorCancelMarket,
             ] = allMarketData;
 
             const market: MarketData = {
@@ -95,6 +88,9 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                 claimTimeoutDefaultPeriod: Number(claimTimeoutDefaultPeriod) * 1000,
                 disputePrice: bigNumberFormatter(disputePrice),
                 canCreatorCancelMarket,
+                fixedBondAmount: bigNumberFormatter(fixedBondAmount),
+                safeBoxLowAmount: bigNumberFormatter(safeBoxLowAmount),
+                arbitraryRewardForDisputor: bigNumberFormatter(arbitraryRewardForDisputor),
             };
 
             // TODO - needs refactoring

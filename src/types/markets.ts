@@ -40,6 +40,9 @@ export type MarketData = MarketInfo & {
     canMarketBeResolvedByPDAO: boolean;
     disputePrice: number;
     canCreatorCancelMarket: boolean;
+    fixedBondAmount: number;
+    safeBoxLowAmount: number;
+    arbitraryRewardForDisputor: number;
 };
 
 export type Markets = MarketInfo[];

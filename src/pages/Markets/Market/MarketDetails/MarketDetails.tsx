@@ -76,7 +76,7 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
 };
 
 const MarketContainer = styled(FlexDivColumn)`
-    margin-top: 40px;
+    margin-top: 60px;
     box-shadow: 0px 20px 40px rgba(0, 0, 0, 0.35);
     border-radius: 25px;
     width: 100%;
