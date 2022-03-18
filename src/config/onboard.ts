@@ -3,10 +3,6 @@ import { Subscriptions } from 'bnc-onboard/dist/src/interfaces';
 import { NetworkId } from 'types/network';
 import { getInfuraRpcURL, NetworkIdByName } from 'utils/network';
 import browserWalletIcon from 'assets/images/browser-wallet.svg';
-import privacyPolicy from 'assets/docs/thales-privacy-policy.pdf';
-import termsOfUse from 'assets/docs/thales-terms-of-use.pdf';
-import disclaimer from 'assets/docs/thales-protocol-disclaimer.pdf';
-import i18n from 'i18n';
 
 export const initOnboard = (networkId: NetworkId, subscriptions: Subscriptions) => {
     const infuraRpc = getInfuraRpcURL(networkId);
@@ -17,8 +13,6 @@ export const initOnboard = (networkId: NetworkId, subscriptions: Subscriptions) 
         subscriptions,
         darkMode: true,
         walletSelect: {
-            description: i18n.t('common.wallet.disclaimer-info', { link: disclaimer }),
-            agreement: { version: '1.0', termsUrl: termsOfUse, privacyUrl: privacyPolicy },
             wallets: [
                 {
                     name: 'Browser Wallet',

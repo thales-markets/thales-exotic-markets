@@ -39,6 +39,7 @@ const Container = styled(FlexDivRowCentered)`
     -ms-user-select: none;
     -o-user-select: none;
     user-select: none;
+    margin-bottom: 10px;
 `;
 
 const SortText = styled.span`

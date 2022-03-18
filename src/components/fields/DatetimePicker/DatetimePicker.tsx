@@ -78,8 +78,8 @@ const DatePickerContainer = styled(FlexDivColumn)`
     .react-datepicker {
         display: flex !important;
         box-sizing: border-box;
-        border: 1px solid ${(props) => props.theme.borderColor.tertiary} !important;
-        background: ${(props) => props.theme.background.tertiary} !important;
+        border: 1px solid ${(props) => props.theme.borderColor.primary} !important;
+        background: ${(props) => props.theme.background.primary} !important;
         border-radius: 10px;
     }
 
@@ -246,12 +246,21 @@ const DatePickerContainer = styled(FlexDivColumn)`
         }
     }
 
+    .react-datepicker-popper[data-placement^='bottom'] {
+        padding-top: 2px !important;
+    }
+
+    .react-datepicker-popper[data-placement^='top'] {
+        padding-bottom: 2px !important;
+    }
+
     .react-datepicker-popper[data-placement^='bottom'] .react-datepicker__triangle {
         :before,
         :after {
             border-bottom-color: ${(props) => props.theme.background.tertiary} !important;
             border-top-color: ${(props) => props.theme.background.tertiary} !important;
             top: 0px !important;
+            display: none;
         }
     }
 
@@ -261,6 +270,7 @@ const DatePickerContainer = styled(FlexDivColumn)`
             border-bottom-color: ${(props) => props.theme.background.tertiary} !important;
             border-top-color: ${(props) => props.theme.background.tertiary} !important;
             top: -8px !important;
+            display: none;
         }
     }
 `;

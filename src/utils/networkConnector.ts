@@ -1,8 +1,10 @@
 import { ethers, Signer } from 'ethers';
 import { NetworkSettings } from 'types/network';
-import thalesTokenContract from './contracts/thalesContract';
+import paymentTokenContract from './contracts/paymentTokenContract';
 import marketManagerContract from 'utils/contracts/exoticPositionalMarketManagerContract';
+import marketDataContract from 'utils/contracts/exoticPositionalMarketDataContract';
 import thalesBondsContract from 'utils/contracts/thalesBondsContract';
+import thalesOracleCouncilContract from 'utils/contracts/thalesOracleCouncilContract';
 import tagsContract from 'utils/contracts/exoticPositionalTagsContract';
 import { NetworkIdByName } from './network';
 
@@ -11,9 +13,11 @@ type NetworkConnector = {
     provider: ethers.providers.Provider | undefined;
     signer: Signer | undefined;
     setNetworkSettings: (networkSettings: NetworkSettings) => void;
-    thalesTokenContract?: ethers.Contract;
+    paymentTokenContract?: ethers.Contract;
     marketManagerContract?: ethers.Contract;
+    marketDataContract?: ethers.Contract;
     thalesBondsContract?: ethers.Contract;
+    thalesOracleCouncilContract?: ethers.Contract;
     tagsContract?: ethers.Contract;
 };
 
@@ -25,9 +29,11 @@ const networkConnector: NetworkConnector = {
         this.initialized = true;
         this.signer = networkSettings.signer;
         this.provider = networkSettings.provider;
-        this.thalesTokenContract = initializeContract(thalesTokenContract, networkSettings);
+        this.paymentTokenContract = initializeContract(paymentTokenContract, networkSettings);
         this.marketManagerContract = initializeContract(marketManagerContract, networkSettings);
+        this.marketDataContract = initializeContract(marketDataContract, networkSettings);
         this.thalesBondsContract = initializeContract(thalesBondsContract, networkSettings);
+        this.thalesOracleCouncilContract = initializeContract(thalesOracleCouncilContract, networkSettings);
         this.tagsContract = initializeContract(tagsContract, networkSettings);
     },
 };

@@ -2,7 +2,7 @@ import Logo from 'components/Logo';
 import WalletInfo from 'components/WalletInfo';
 import React from 'react';
 import styled from 'styled-components';
-import { FlexDivRow } from 'styles/common';
+import { FlexDivRowCentered } from 'styles/common';
 
 const DappHeader: React.FC = () => {
     return (
@@ -13,7 +13,7 @@ const DappHeader: React.FC = () => {
     );
 };
 
-const Container = styled(FlexDivRow)`
+const Container = styled(FlexDivRowCentered)`
     width: 100%;
 `;
 

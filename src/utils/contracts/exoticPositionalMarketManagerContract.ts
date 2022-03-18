@@ -12,12 +12,6 @@ export const exoticPositionalMarketManagerContract = {
         },
         {
             anonymous: false,
-            inputs: [{ indexed: false, internalType: 'uint256', name: 'disputePrice', type: 'uint256' }],
-            name: 'DisputePriceChanged',
-            type: 'event',
-        },
-        {
-            anonymous: false,
             inputs: [{ indexed: false, internalType: 'address', name: '_exoticMastercopy', type: 'address' }],
             name: 'ExoticMarketMastercopyChanged',
             type: 'event',
@@ -59,7 +53,10 @@ export const exoticPositionalMarketManagerContract = {
         },
         {
             anonymous: false,
-            inputs: [{ indexed: false, internalType: 'address', name: 'marketAddress', type: 'address' }],
+            inputs: [
+                { indexed: false, internalType: 'address', name: 'marketAddress', type: 'address' },
+                { indexed: false, internalType: 'uint256', name: 'outcomePosition', type: 'uint256' },
+            ],
             name: 'MarketResolved',
             type: 'event',
         },
@@ -73,6 +70,30 @@ export const exoticPositionalMarketManagerContract = {
             anonymous: false,
             inputs: [{ indexed: false, internalType: 'uint256', name: 'duration', type: 'uint256' }],
             name: 'MinimumPositionDurationChanged',
+            type: 'event',
+        },
+        {
+            anonymous: false,
+            inputs: [{ indexed: false, internalType: 'uint256', name: 'arbitraryRewardForDisputor', type: 'uint256' }],
+            name: 'NewArbitraryRewardForDisputor',
+            type: 'event',
+        },
+        {
+            anonymous: false,
+            inputs: [{ indexed: false, internalType: 'uint256', name: 'claimTimeout', type: 'uint256' }],
+            name: 'NewClaimTimeoutDefaultPeriod',
+            type: 'event',
+        },
+        {
+            anonymous: false,
+            inputs: [{ indexed: false, internalType: 'uint256', name: 'timeout', type: 'uint256' }],
+            name: 'NewDefaultBackstopTimeout',
+            type: 'event',
+        },
+        {
+            anonymous: false,
+            inputs: [{ indexed: false, internalType: 'uint256', name: 'disputePrice', type: 'uint256' }],
+            name: 'NewDisputePrice',
             type: 'event',
         },
         {
@@ -115,6 +136,12 @@ export const exoticPositionalMarketManagerContract = {
             anonymous: false,
             inputs: [{ indexed: false, internalType: 'address', name: 'safeBox', type: 'address' }],
             name: 'NewSafeBoxAddress',
+            type: 'event',
+        },
+        {
+            anonymous: false,
+            inputs: [{ indexed: false, internalType: 'uint256', name: 'safeBoxLowAmount', type: 'uint256' }],
+            name: 'NewSafeBoxLowAmount',
             type: 'event',
         },
         {
@@ -170,6 +197,16 @@ export const exoticPositionalMarketManagerContract = {
         },
         {
             anonymous: false,
+            inputs: [
+                { indexed: false, internalType: 'address', name: 'market', type: 'address' },
+                { indexed: false, internalType: 'address', name: 'disputorAddress', type: 'address' },
+                { indexed: false, internalType: 'uint256', name: 'amount', type: 'uint256' },
+            ],
+            name: 'RewardSentToDisputorForMarket',
+            type: 'event',
+        },
+        {
+            anonymous: false,
             inputs: [{ indexed: false, internalType: 'uint256', name: 'safeBoxPercentage', type: 'uint256' }],
             name: 'SafeBoxPercentageChanged',
             type: 'event',
@@ -209,7 +246,21 @@ export const exoticPositionalMarketManagerContract = {
         },
         {
             inputs: [],
+            name: 'arbitraryRewardForDisputor',
+            outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+            stateMutability: 'view',
+            type: 'function',
+        },
+        {
+            inputs: [],
             name: 'backstopTimeout',
+            outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+            stateMutability: 'view',
+            type: 'function',
+        },
+        {
+            inputs: [],
+            name: 'backstopTimeoutGeneral',
             outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
             stateMutability: 'view',
             type: 'function',
@@ -495,6 +546,13 @@ export const exoticPositionalMarketManagerContract = {
         },
         {
             inputs: [],
+            name: 'safeBoxLowAmount',
+            outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+            stateMutability: 'view',
+            type: 'function',
+        },
+        {
+            inputs: [],
             name: 'safeBoxPercentage',
             outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
             stateMutability: 'view',
@@ -512,6 +570,24 @@ export const exoticPositionalMarketManagerContract = {
             type: 'function',
         },
         {
+            inputs: [
+                { internalType: 'address', name: '_market', type: 'address' },
+                { internalType: 'address', name: '_disputorAddress', type: 'address' },
+                { internalType: 'uint256', name: '_amount', type: 'uint256' },
+            ],
+            name: 'sendRewardToDisputor',
+            outputs: [],
+            stateMutability: 'nonpayable',
+            type: 'function',
+        },
+        {
+            inputs: [{ internalType: 'uint256', name: '_arbitraryRewardForDisputor', type: 'uint256' }],
+            name: 'setArbitraryRewardForDisputor',
+            outputs: [],
+            stateMutability: 'nonpayable',
+            type: 'function',
+        },
+        {
             inputs: [{ internalType: 'address', name: '_market', type: 'address' }],
             name: 'setBackstopTimeout',
             outputs: [],
@@ -519,8 +595,32 @@ export const exoticPositionalMarketManagerContract = {
             type: 'function',
         },
         {
+            inputs: [{ internalType: 'uint256', name: '_claimTimeout', type: 'uint256' }],
+            name: 'setClaimTimeoutDefaultPeriod',
+            outputs: [],
+            stateMutability: 'nonpayable',
+            type: 'function',
+        },
+        {
             inputs: [{ internalType: 'uint256', name: '_creatorPercentage', type: 'uint256' }],
             name: 'setCreatorPercentage',
+            outputs: [],
+            stateMutability: 'nonpayable',
+            type: 'function',
+        },
+        {
+            inputs: [
+                { internalType: 'address', name: '_market', type: 'address' },
+                { internalType: 'uint256', name: '_timeout', type: 'uint256' },
+            ],
+            name: 'setCustomBackstopTimeout',
+            outputs: [],
+            stateMutability: 'nonpayable',
+            type: 'function',
+        },
+        {
+            inputs: [{ internalType: 'uint256', name: '_timeout', type: 'uint256' }],
+            name: 'setDefaultBackstopTimeout',
             outputs: [],
             stateMutability: 'nonpayable',
             type: 'function',
@@ -540,7 +640,7 @@ export const exoticPositionalMarketManagerContract = {
             type: 'function',
         },
         {
-            inputs: [{ internalType: 'uint256', name: '_fixedBond', type: 'uint256' }],
+            inputs: [{ internalType: 'uint256', name: '_bond', type: 'uint256' }],
             name: 'setFixedBondAmount',
             outputs: [],
             stateMutability: 'nonpayable',
@@ -612,6 +712,13 @@ export const exoticPositionalMarketManagerContract = {
         {
             inputs: [{ internalType: 'address', name: '_safeBoxAddress', type: 'address' }],
             name: 'setSafeBoxAddress',
+            outputs: [],
+            stateMutability: 'nonpayable',
+            type: 'function',
+        },
+        {
+            inputs: [{ internalType: 'uint256', name: '_safeBoxLowAmount', type: 'uint256' }],
+            name: 'setSafeBoxLowAmount',
             outputs: [],
             stateMutability: 'nonpayable',
             type: 'function',

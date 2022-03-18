@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { FlexDivColumn } from 'styles/common';
 import { MarketInfo } from 'types/markets';
+import { MarketStatus as MarketStatusEnum } from 'constants/markets';
 
 type MarketStatusProps = {
     market: MarketInfo;
@@ -15,18 +16,40 @@ type MarketStatusProps = {
 const MarketStatus: React.FC<MarketStatusProps> = ({ market, fontSize, fontWeight, labelFontSize }) => {
     const { t } = useTranslation();
 
+    const endOfDefaultClaimingTimeout =
+        market.isResolved && !market.isDisputed && market.resolvedTime > 0
+            ? market.resolvedTime + market.claimTimeoutDefaultPeriod
+            : 0;
+
+    const endOfDisputedClaimingTimeout =
+        market.backstopTimeout > 0 && market.resolvedTime > 0 && market.disputeClosedTime > 0
+            ? market.disputeClosedTime + market.backstopTimeout
+            : 0;
+
+    const endOfClaimingTimeout =
+        endOfDefaultClaimingTimeout < endOfDisputedClaimingTimeout || endOfDisputedClaimingTimeout === 0
+            ? endOfDefaultClaimingTimeout
+            : endOfDisputedClaimingTimeout;
+
     return (
         <Container>
             <StatusLabel labelFontSize={labelFontSize}>
-                {t(`market.${market.isOpen ? 'time-remaining-label' : 'status-label'}`)}:
+                {t(`market.${market.status === MarketStatusEnum.Open ? 'time-remaining-label' : 'status-label'}`)}:
             </StatusLabel>
-            {market.isOpen ? (
+            {market.status === MarketStatusEnum.Open ? (
                 <TimeRemaining end={market.endOfPositioning} fontSize={fontSize} fontWeight={fontWeight} />
             ) : (
-                <Status fontSize={fontSize}>
-                    {/* {t(`market.status.${market.isClaimAvailable ? 'claim-available' : 'maturity'}`)} */}
-                    {t(`market.status.maturity'}`)}
-                </Status>
+                <>
+                    <Status fontSize={fontSize}>
+                        {/* {t(`market.status.${market.isClaimAvailable ? 'claim-available' : 'maturity'}`)} */}
+                        {t(`market.status.${market.status.toString()}`)}
+                    </Status>
+                    {(market.status === MarketStatusEnum.ResolvedPendingConfirmation ||
+                        market.status === MarketStatusEnum.CancelledPendingConfirmation) &&
+                        endOfClaimingTimeout > 0 && (
+                            <TimeRemaining end={endOfClaimingTimeout} fontSize={fontSize} fontWeight={fontWeight} />
+                        )}
+                </>
             )}
         </Container>
     );

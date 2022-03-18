@@ -24,7 +24,6 @@ const RightsReserved = styled(FlexDivColumnCentered)`
     font-size: 16px;
     line-height: 102.6%;
     letter-spacing: 0.035em;
-    text-transform: uppercase;
     color: ${(props) => props.theme.textColor.primary};
 `;
 

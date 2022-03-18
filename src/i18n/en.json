@@ -2,7 +2,9 @@
     "common": {
         "wallet": {
             "connect-your-wallet": "Connect wallet",
-            "disclaimer-info": "By connecting a wallet you agree to Thales DAO Terms Of Use and Privacy Policy and acknowledge that you have read and understand the Thales DAO protocol <a target=\"_blank\" href={{link}}>disclaimer</a>."
+            "switch-wallet": "Switch wallet",
+            "disconnect-wallet": "Disconnect wallet",
+            "wallet-options": "wallet options"
         },
         "enable-wallet-access": {
             "approve-label": "Approve {{currencyKey}}",
@@ -31,6 +33,11 @@
             "enter-positions": "Enter positions",
             "enter-ticket-price": "Enter ticket price",
             "enter-tags": "Enter tags",
+            "enter-reason-for-dispute": "Enter reason for dispute",
+            "select-position": "Select position",
+            "select-vote": "Select vote",
+            "select-outcome": "Select outcome",
+            "select-result": "Select result",
             "invalid-price": "Invalid price",
             "invalid-price-max": "The price cannot be higher than ${{max}}",
             "invalid-amount-max": "The amount cannot be higher than {{max}}",
@@ -61,21 +68,15 @@
         },
         "or": "or",
         "dapp": "dapp",
+        "launch-dapp": "launch dapp",
+        "cancel": "Cancel",
         "select-date": "Select date...",
         "tags-placeholder": "Enter tag...",
         "remove-tag-tooltip": "Click to remove tag",
         "input-characters-note": "{{entered }} / {{max}}"
     },
-    "header": {
-        "links": {
-            "community": "Community",
-            "blog": "Blog"
-        }
-    },
     "footer": {
-        "privacy-policy": "Privacy Policy",
-        "terms-of-use": "Terms of Use",
-        "all-rights-reserved": "© {{year}} THALES DAO All rights reserved."
+        "all-rights-reserved": "© {{year}} eXoticV ALL RIGHTS RESERVED."
     },
     "market": {
         "question-label": "Question",
@@ -84,8 +85,16 @@
         "tags-label": "Tags",
         "search-placeholder": "Search markets",
         "status": {
-            "claim-available": "Claim available",
-            "maturity": "Maturity"
+            "open": "Open",
+            "cancelled-pending-confirmation": "Cancelled - pending confirmation",
+            "cancelled-disputed": "Cancelled - under dispute",
+            "cancelled-confirmed": "Cancelled",
+            "paused": "Paused",
+            "resolve-pending": "Resolve pending",
+            "resolve-pending-disputed": "Resolve pending - under dispute",
+            "resolved-pending-confirmation": "Resolved - pending confirmation",
+            "resolved-disputed": "Resolved - under dispute",
+            "resolved-confirmed": "Resolved"
         },
         "pool-size-label": "Pool size",
         "total-pool-size-label": "Total pool size",
@@ -93,12 +102,24 @@
         "ticket-price-label": "Ticket price",
         "return-label": "Potential max return",
         "claim-winnings-label": "Claim winnings",
+        "claim-refund-label": "Claim refund",
+        "nothing-to-claim-label": "Nothing to claim",
         "button": {
-            "claim-label": "Claim",
             "open-dispute-label": "Open dispute",
             "create-market-label": "Create market",
             "buy-label": "Buy",
-            "withdraw-label": "Withdraw"
+            "buy-progress-label": "Buying in progress...",
+            "change-position-label": "Change position",
+            "change-position-progress-label": "Changing in progress...",
+            "withdraw-label": "Withdraw",
+            "withdraw-progress-label": "Withdraw in progress...",
+            "resolve-market-label": "Resolve market",
+            "resolve-market-progress-label": "Resolving in progress...",
+            "claim-label": "Claim",
+            "claim-progress-label": "Claiming in progress...",
+            "cancel-label": "Cancel",
+            "cancel-market-label": "Cancel market",
+            "cancel-progress-label": "Canceling in progress..."
         },
         "filter-label": {
             "global": {
@@ -152,19 +173,46 @@
                 "create-market-progress-label": "Creating in progress..."
             }
         },
+        "resolve-market": {
+            "title": "Resolve market"
+        },
         "dispute": {
-            "open-dispute-description": "To open a dispute the wallet raising the dispute needs to put up {{amount}} as a bond",
-            "deposit-bond-label": "Bond deposit",
+            "open-dispute-title": "Open dispute for \"{{question}}\"",
+            "disputer-label": "Disputer",
+            "status-label": "Status",
             "reason-for-dispute-label": "Reason for dispute",
+            "vote-label": "Vote",
+            "results-label": "Results",
+            "disputes-disabled-message": {
+                "market-closed": "The market is closed for disputes.",
+                "creator": "The creator of the market doesn't have the right to open disputes.",
+                "council-members": "Council members don't have the right to open disputes."
+            },
             "button": {
-                "deposit-label": "Deposit",
-                "open-dispute-label": "Open dispute"
+                "open-dispute-label": "Open dispute",
+                "open-dispute-progress-label": "Opening dispute in progress...",
+                "vote-label": "Vote",
+                "vote-progress-label": "Voting in progress...",
+                "change-vote-label": "Change vote",
+                "change-vote-progress-label": "Voting in progress..."
             },
             "status": {
                 "open": "Open",
-                "refused": "Refused",
-                "accepted": "Accepted",
-                "accepted-slashed": "Accepted slashed"
+                "accepted-slashed": "Accepted - market creator slashed",
+                "accepted-not-slashed": "Accepted - market creator not slashed",
+                "refused-on-positioning": "Refused",
+                "accepted-set-result": "Accepted - new result set",
+                "accepted-reset": "Accepted - market result reset",
+                "refused-mature": "Refused",
+                "cancelled": "Cancelled"
+            },
+            "voting-option": {
+                "accept-slash": "Accept the dispute and slash the creator",
+                "accept-no-slash": "Accept the dispute but do not slash the creator",
+                "refuse-on-positioning": "Refuse the dispute and slash the wallet that raised it",
+                "accept-result": "Accept the dispute and set a result",
+                "accept-reset": "Accept the dispute and reset market result",
+                "refuse-mature": "Refuse the dispute"
             }
         }
     }

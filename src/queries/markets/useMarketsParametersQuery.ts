@@ -17,6 +17,8 @@ const useMarketsParametersQuery = (networkId: NetworkId, options?: UseQueryOptio
                 resolverPercentage: 0,
                 safeBoxPercentage: 0,
                 withdrawalPercentage: 0,
+                disputePrice: 0,
+                paymentToken: '',
             };
             const marketManagerContract = networkConnector.marketManagerContract;
             if (marketManagerContract) {
@@ -28,6 +30,7 @@ const useMarketsParametersQuery = (networkId: NetworkId, options?: UseQueryOptio
                     resolverPercentage,
                     safeBoxPercentage,
                     withdrawalPercentage,
+                    paymentToken,
                 ] = await Promise.all([
                     marketManagerContract.fixedBondAmount(),
                     marketManagerContract.maximumPositionsAllowed(),
@@ -36,6 +39,8 @@ const useMarketsParametersQuery = (networkId: NetworkId, options?: UseQueryOptio
                     marketManagerContract.resolverPercentage(),
                     marketManagerContract.safeBoxPercentage(),
                     marketManagerContract.withdrawalPercentage(),
+                    marketManagerContract.disputePrice(),
+                    marketManagerContract.paymentToken(),
                 ]);
 
                 marketsParameters.fixedBondAmount = bigNumberFormatter(fixedBondAmount);
@@ -45,6 +50,7 @@ const useMarketsParametersQuery = (networkId: NetworkId, options?: UseQueryOptio
                 marketsParameters.resolverPercentage = Number(resolverPercentage);
                 marketsParameters.safeBoxPercentage = Number(safeBoxPercentage);
                 marketsParameters.withdrawalPercentage = Number(withdrawalPercentage);
+                marketsParameters.paymentToken = paymentToken;
             }
 
             return marketsParameters;

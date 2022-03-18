@@ -24,12 +24,13 @@ import networkConnector from 'utils/networkConnector';
 import { BigNumber, ethers } from 'ethers';
 import { MAX_GAS_LIMIT } from 'constants/network';
 import onboardConnector from 'utils/onboardConnector';
-import { CURRENCY_MAP } from 'constants/currency';
-import useThalesBalanceQuery from 'queries/wallet/useThalesBalanceQuery';
+import { PAYMENT_CURRENCY } from 'constants/currency';
+import usePaymentTokenBalanceQuery from 'queries/wallet/usePaymentTokenBalanceQuery';
 import NumericInput from 'components/fields/NumericInput';
 import ApprovalModal from 'components/ApprovalModal';
 import ValidationMessage from 'components/ValidationMessage';
 import useTagsQuery from 'queries/markets/useTagsQuery';
+import { buildMarketLink, navigateTo } from 'utils/routes';
 
 const CreateMarket: React.FC = () => {
     const { t } = useTranslation();
@@ -52,7 +53,7 @@ const CreateMarket: React.FC = () => {
     );
     const [tags, setTags] = useState<Tag[]>([]);
     const [suggestions, setSuggestions] = useState<Tag[]>([]);
-    const [thalesBalance, setThalesBalance] = useState<number | string>('');
+    const [paymentTokenBalance, setPaymentTokenBalance] = useState<number | string>('');
     const [openApprovalModal, setOpenApprovalModal] = useState<boolean>(false);
 
     const marketsParametersQuery = useMarketsParametersQuery(networkId, {
@@ -83,15 +84,15 @@ const CreateMarket: React.FC = () => {
         }
     }, [tagsQuery.isSuccess, tagsQuery.data]);
 
-    const thalesBalanceQuery = useThalesBalanceQuery(walletAddress, networkId, {
+    const paymentTokenBalanceQuery = usePaymentTokenBalanceQuery(walletAddress, networkId, {
         enabled: isAppReady && isWalletConnected,
     });
 
     useEffect(() => {
-        if (thalesBalanceQuery.isSuccess && thalesBalanceQuery.data) {
-            setThalesBalance(Number(thalesBalanceQuery.data));
+        if (paymentTokenBalanceQuery.isSuccess && paymentTokenBalanceQuery.data) {
+            setPaymentTokenBalance(Number(paymentTokenBalanceQuery.data));
         }
-    }, [thalesBalanceQuery.isSuccess, thalesBalanceQuery.data]);
+    }, [paymentTokenBalanceQuery.isSuccess, paymentTokenBalanceQuery.data]);
 
     const fixedBondAmount = marketsParameters ? marketsParameters.fixedBondAmount : 0;
 
@@ -101,25 +102,26 @@ const CreateMarket: React.FC = () => {
         (marketType === MarketType.TICKET && Number(ticketPrice) > 0) || marketType === MarketType.OPEN_BID;
     const arePositionsEntered = positions.every((position) => position.trim() !== '');
     const areTagsEntered = tags.length > 0;
-    const insufficientBalance = Number(thalesBalance) < Number(fixedBondAmount) || Number(thalesBalance) === 0;
+    const insufficientBalance =
+        Number(paymentTokenBalance) < Number(fixedBondAmount) || Number(paymentTokenBalance) === 0;
 
     const areMarketDataEntered =
         isQuestionEntered && isDataSourceEntered && isTicketPriceEntered && arePositionsEntered && areTagsEntered;
 
-    const isButtonDisabled = isSubmitting || !isWalletConnected || !hasAllowance || !areMarketDataEntered;
-    insufficientBalance;
+    const isButtonDisabled =
+        isSubmitting || !isWalletConnected || !hasAllowance || !areMarketDataEntered || insufficientBalance;
 
     useEffect(() => {
-        const { thalesTokenContract, thalesBondsContract, signer } = networkConnector;
-        if (thalesTokenContract && thalesBondsContract && signer) {
-            const thalesTokenContractWithSigner = thalesTokenContract.connect(signer);
+        const { paymentTokenContract, thalesBondsContract, signer } = networkConnector;
+        if (paymentTokenContract && thalesBondsContract && signer) {
+            const paymentTokenContractWithSigner = paymentTokenContract.connect(signer);
             const addressToApprove = thalesBondsContract.address;
             const getAllowance = async () => {
                 try {
-                    const parsedStakeAmount = ethers.utils.parseEther(Number(fixedBondAmount).toString());
+                    const parsedAmount = ethers.utils.parseEther(Number(fixedBondAmount).toString());
                     const allowance = await checkAllowance(
-                        parsedStakeAmount,
-                        thalesTokenContractWithSigner,
+                        parsedAmount,
+                        paymentTokenContractWithSigner,
                         walletAddress,
                         addressToApprove
                     );
@@ -135,13 +137,13 @@ const CreateMarket: React.FC = () => {
     }, [walletAddress, isWalletConnected, hasAllowance, fixedBondAmount, isAllowing]);
 
     const handleAllowance = async (approveAmount: BigNumber) => {
-        const { thalesTokenContract, thalesBondsContract, signer } = networkConnector;
-        if (thalesTokenContract && thalesBondsContract && signer) {
-            const thalesTokenContractWithSigner = thalesTokenContract.connect(signer);
+        const { paymentTokenContract, thalesBondsContract, signer } = networkConnector;
+        if (paymentTokenContract && thalesBondsContract && signer) {
+            const paymentTokenContractWithSigner = paymentTokenContract.connect(signer);
             const addressToApprove = thalesBondsContract.address;
             try {
                 setIsAllowing(true);
-                const tx = (await thalesTokenContractWithSigner.approve(addressToApprove, approveAmount, {
+                const tx = (await paymentTokenContractWithSigner.approve(addressToApprove, approveAmount, {
                     gasLimit: MAX_GAS_LIMIT,
                 })) as ethers.ContractTransaction;
                 setOpenApprovalModal(false);
@@ -184,10 +186,15 @@ const CreateMarket: React.FC = () => {
                 );
                 const txResult = await tx.wait();
 
-                if (txResult && txResult.transactionHash) {
+                if (txResult && txResult.events) {
                     // dispatchMarketNotification(t('migration.migrate-button.confirmation-message'));
                     setIsSubmitting(false);
                     // setAmount('');
+                    const rawData = txResult.events[txResult.events.length - 1];
+                    if (rawData && rawData.decode) {
+                        const marketData = rawData.decode(rawData.data);
+                        navigateTo(buildMarketLink(marketData.marketAddress));
+                    }
                 }
             } catch (e) {
                 console.log(e);
@@ -233,9 +240,9 @@ const CreateMarket: React.FC = () => {
             return (
                 <CreateMarketButton disabled={isAllowing} onClick={() => setOpenApprovalModal(true)}>
                     {!isAllowing
-                        ? t('common.enable-wallet-access.approve-label', { currencyKey: CURRENCY_MAP.THALES })
+                        ? t('common.enable-wallet-access.approve-label', { currencyKey: PAYMENT_CURRENCY })
                         : t('common.enable-wallet-access.approve-progress-label', {
-                              currencyKey: CURRENCY_MAP.THALES,
+                              currencyKey: PAYMENT_CURRENCY,
                           })}
                 </CreateMarketButton>
             );
@@ -344,7 +351,7 @@ const CreateMarket: React.FC = () => {
                             value={ticketPrice}
                             onChange={(_, value) => setTicketPrice(value)}
                             label={t('market.create-market.ticket-price-label')}
-                            currencyLabel={CURRENCY_MAP.sUSD}
+                            currencyLabel={PAYMENT_CURRENCY}
                             disabled={isSubmitting}
                         />
                     )}
@@ -378,7 +385,7 @@ const CreateMarket: React.FC = () => {
             {openApprovalModal && (
                 <ApprovalModal
                     defaultAmount={fixedBondAmount}
-                    tokenSymbol={CURRENCY_MAP.THALES}
+                    tokenSymbol={PAYMENT_CURRENCY}
                     isAllowing={isAllowing}
                     onSubmit={handleAllowance}
                     onClose={() => setOpenApprovalModal(false)}

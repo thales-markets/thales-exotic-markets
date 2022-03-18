@@ -90,6 +90,7 @@ export const TextArea = styled.textarea`
     &.error {
         border: 2px solid #e53720;
     }
+    resize: none;
 `;
 
 export const FieldNote = styled(FlexDivEnd)`
