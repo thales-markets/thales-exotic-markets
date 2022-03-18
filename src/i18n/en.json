@@ -116,6 +116,7 @@
             "claim-label": "Claim",
             "claim-progress-label": "Claiming in progress...",
             "cancel-label": "Cancel",
+            "cancel-market-label": "Cancel market",
             "cancel-progress-label": "Canceling in progress..."
         },
         "filter-label": {

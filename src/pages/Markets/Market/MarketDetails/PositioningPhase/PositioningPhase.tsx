@@ -308,12 +308,14 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
                 </MainInfo>
             )}
             <ButtonContainer>
+                {getButtons()}
                 {showCancel && (
                     <MarketButton type="secondary" disabled={isCancelButtonDisabled} onClick={handleCancel}>
-                        {!isCanceling ? t('market.button.cancel-label') : t('market.button.cancel-progress-label')}
+                        {!isCanceling
+                            ? t('market.button.cancel-market-label')
+                            : t('market.button.cancel-progress-label')}
                     </MarketButton>
                 )}
-                {getButtons()}
                 <ValidationMessage
                     showValidation={txErrorMessage !== null}
                     message={txErrorMessage}

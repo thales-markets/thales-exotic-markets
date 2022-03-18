@@ -1,5 +1,3 @@
-// import Button from 'components/Button';
-import Button from 'components/Button';
 import MarketStatus from 'pages/Markets/components/MarketStatus';
 import MarketTitle from 'pages/Markets/components/MarketTitle';
 import OpenDisputeButton from 'pages/Markets/components/OpenDisputeButton';
@@ -33,7 +31,11 @@ const MarketCard: React.FC<MarketCardProps> = ({ market, accountPosition }) => {
                 {market.positions.map((position: string, index: number) => (
                     <Position
                         key={`${position}${index}`}
-                        className={market.winningPosition === index + 1 ? '' : 'disabled'}
+                        className={
+                            market.status === MarketStatusEnum.Open || market.winningPosition === index + 1
+                                ? ''
+                                : 'disabled'
+                        }
                     >
                         {!!accountPosition && accountPosition.position === index + 1 && <Checkmark />}
                         <PositionLabel>{position}</PositionLabel>
@@ -44,7 +46,6 @@ const MarketCard: React.FC<MarketCardProps> = ({ market, accountPosition }) => {
             <CardFooter>
                 <Tags tags={market.tags} />
                 <ButtonsContainer>
-                    {isClaimAvailable && <Button>{t('market.button.claim-label')}</Button>}
                     <OpenDisputeButton
                         numberOfOpenDisputes={market.numberOfOpenDisputes}
                         onClick={(e: any) => {
