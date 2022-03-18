@@ -37,6 +37,7 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
     const [txErrorMessage, setTxErrorMessage] = useState<string | null>(null);
     const [isBuying, setIsBuying] = useState<boolean>(false);
     const [isWithdrawing, setIsWithdrawing] = useState<boolean>(false);
+    const [isCanceling, setIsCanceling] = useState<boolean>(false);
     const [openApprovalModal, setOpenApprovalModal] = useState<boolean>(false);
     const [paymentTokenBalance, setPaymentTokenBalance] = useState<number | string>('');
     const [currentPositionOnContract, setCurrentPositionOnContract] = useState<number>(0);
@@ -73,14 +74,22 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
     const showTicketBuy = showTicketInfo && currentPositionOnContract === 0;
     const showTicketChangePosition = showTicketInfo && currentPositionOnContract !== selectedPosition;
     const showTicketWithdraw = showTicketInfo && market.isWithdrawalAllowed && currentPositionOnContract > 0;
+    const showCancel = market.canCreatorCancelMarket && walletAddress.toLowerCase() === market.creator.toLowerCase();
 
     const insufficientBalance =
         Number(paymentTokenBalance) < Number(market.ticketPrice) || Number(paymentTokenBalance) === 0;
     const isPositionSelected = selectedPosition > 0;
 
     const isBuyButtonDisabled =
-        isBuying || isWithdrawing || !isWalletConnected || !hasAllowance || insufficientBalance || !isPositionSelected;
-    const isWithdrawButtonDisabled = isBuying || isWithdrawing || !isWalletConnected;
+        isBuying ||
+        isWithdrawing ||
+        isCanceling ||
+        !isWalletConnected ||
+        !hasAllowance ||
+        insufficientBalance ||
+        !isPositionSelected;
+    const isWithdrawButtonDisabled = isBuying || isWithdrawing || isCanceling || !isWalletConnected;
+    const isCancelButtonDisabled = isBuying || isWithdrawing || isCanceling || !isWalletConnected;
 
     useEffect(() => {
         const { paymentTokenContract, signer } = networkConnector;
@@ -181,6 +190,31 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
         }
     };
 
+    const handleCancel = async () => {
+        const { marketManagerContract, signer } = networkConnector;
+        if (marketManagerContract && signer) {
+            setTxErrorMessage(null);
+            setIsCanceling(true);
+
+            try {
+                const marketManagerContractWithSigner = marketManagerContract.connect(signer);
+
+                const tx = await marketManagerContractWithSigner.cancelMarket(market.address);
+                const txResult = await tx.wait();
+
+                if (txResult && txResult.transactionHash) {
+                    // dispatchMarketNotification(t('migration.migrate-button.confirmation-message'));
+                    setIsCanceling(false);
+                    // setAmount('');
+                }
+            } catch (e) {
+                console.log(e);
+                setTxErrorMessage(t('common.errors.unknown-error-try-again'));
+                setIsCanceling(false);
+            }
+        }
+    };
+
     const getButtons = () => {
         if (!isWalletConnected) {
             return (
@@ -214,7 +248,6 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
                 </MarketButton>
             );
         }
-
         if (showTicketBuy) {
             return (
                 <MarketButton type="secondary" disabled={isBuyButtonDisabled} onClick={handleBuy}>
@@ -275,6 +308,11 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
                 </MainInfo>
             )}
             <ButtonContainer>
+                {showCancel && (
+                    <MarketButton type="secondary" disabled={isCancelButtonDisabled} onClick={handleCancel}>
+                        {!isCanceling ? t('market.button.cancel-label') : t('market.button.cancel-progress-label')}
+                    </MarketButton>
+                )}
                 {getButtons()}
                 <ValidationMessage
                     showValidation={txErrorMessage !== null}

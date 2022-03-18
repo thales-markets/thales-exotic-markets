@@ -57,7 +57,7 @@ const Container = styled.label`
         display: block;
     }
     &.disabled {
-        opacity: 0.5;
+        opacity: 0.4;
         cursor: default;
     }
     align-self: center;

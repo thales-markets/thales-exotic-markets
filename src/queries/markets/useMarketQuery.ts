@@ -17,12 +17,16 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                 allMarketData,
                 backstopTimeout,
                 disputeClosedTime,
+                disputePrice,
+                canCreatorCancelMarket,
                 isMarketClosedForDisputes,
                 claimTimeoutDefaultPeriod,
             ] = await Promise.all([
                 contract.getAllMarketData(),
                 contract.backstopTimeout(),
                 contract.disputeClosedTime(),
+                contract.disputePrice(),
+                contract.canCreatorCancelMarket(),
                 thalesOracleCouncilContract?.isMarketClosedForDisputes(marketAddress),
                 marketManagerContract?.claimTimeoutDefaultPeriod(),
             ]);
@@ -89,6 +93,8 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                 backstopTimeout: Number(backstopTimeout) * 1000,
                 disputeClosedTime: Number(disputeClosedTime) * 1000,
                 claimTimeoutDefaultPeriod: Number(claimTimeoutDefaultPeriod) * 1000,
+                disputePrice: bigNumberFormatter(disputePrice),
+                canCreatorCancelMarket,
             };
 
             // TODO - needs refactoring
@@ -129,7 +135,6 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                     }
                 }
             }
-            market.isOpen = market.status === MarketStatus.Open;
 
             return market;
         },

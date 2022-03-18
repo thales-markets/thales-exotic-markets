@@ -18,6 +18,7 @@ import { buildOpenDisputeLink } from 'utils/routes';
 import MaturityPhase from './MaturityPhase';
 import PositioningPhase from './PositioningPhase';
 import useOracleCouncilMemberQuery from 'queries/oracleCouncil/useOracleCouncilMemberQuery';
+import { MarketStatus as MarketStatusEnum } from 'constants/markets';
 
 type MarketDetailsProps = {
     market: MarketData;
@@ -49,8 +50,8 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
     return (
         <MarketContainer>
             <MarketTitle fontSize={40}>{market.question}</MarketTitle>
-            {market.isOpen && <PositioningPhase market={market} />}
-            {!market.isOpen && <MaturityPhase market={market} />}
+            {market.status === MarketStatusEnum.Open && <PositioningPhase market={market} />}
+            {market.status !== MarketStatusEnum.Open && <MaturityPhase market={market} />}
             <MarketStatus market={market} fontSize={40} labelFontSize={20} fontWeight={700} />
             <Footer>
                 <Tags tags={market.tags} labelFontSize={20} />

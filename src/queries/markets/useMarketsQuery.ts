@@ -71,7 +71,6 @@ const useMarketsQuery = (networkId: NetworkId, options?: UseQueryOptions<Markets
                         }
                     }
                 }
-                market.isOpen = market.status === MarketStatus.Open;
 
                 return market;
             });

@@ -156,7 +156,7 @@ const Positions = styled(FlexDivRowCentered)`
 const PositionContainer = styled(FlexDivColumn)`
     margin-bottom: 20px;
     &.disabled {
-        opacity: 0.5;
+        opacity: 0.4;
         cursor: default;
     }
 `;

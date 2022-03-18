@@ -85,6 +85,25 @@ const Home: React.FC = () => {
         return {};
     }, [accountPositionsQuery.isSuccess, accountPositionsQuery.data]);
 
+    const accountPositionsCount = useMemo(() => {
+        return markets.filter((market: MarketInfo) => {
+            const accountPosition: AccountPosition = accountPositions[market.address];
+            return !!accountPosition && accountPosition.position > 0;
+        }).length;
+    }, [markets, accountPositions]);
+
+    const accountClaimsCount = useMemo(() => {
+        return markets.filter((market: MarketInfo) => {
+            const accountPosition: AccountPosition = accountPositions[market.address];
+            return (
+                !!accountPosition &&
+                market.canUsersClaim &&
+                (accountPosition.position === market.winningPosition ||
+                    (accountPosition.position > 0 && market.status === MarketStatus.CancelledConfirmed))
+            );
+        }).length;
+    }, [markets, accountPositions]);
+
     const filteredMarkets = useMemo(() => {
         let filteredMarkets = markets;
 
@@ -141,25 +160,6 @@ const Home: React.FC = () => {
         [filteredMarkets, marketSearch],
         DEFAULT_SEARCH_DEBOUNCE_MS
     );
-
-    const accountPositionsCount = useMemo(() => {
-        return searchFilteredMarkets.filter((market: MarketInfo) => {
-            const accountPosition: AccountPosition = accountPositions[market.address];
-            return !!accountPosition && accountPosition.position > 0;
-        }).length;
-    }, [searchFilteredMarkets, accountPositions]);
-
-    const accountClaimsCount = useMemo(() => {
-        return searchFilteredMarkets.filter((market: MarketInfo) => {
-            const accountPosition: AccountPosition = accountPositions[market.address];
-            return (
-                !!accountPosition &&
-                market.canUsersClaim &&
-                (accountPosition.position === market.winningPosition ||
-                    (accountPosition.position > 0 && market.status === MarketStatus.CancelledConfirmed))
-            );
-        }).length;
-    }, [searchFilteredMarkets, accountPositions]);
 
     const setSort = (sortOption: SortOptionType) => {
         if (sortBy === sortOption.id) {

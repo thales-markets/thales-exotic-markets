@@ -15,10 +15,12 @@ const Home: React.FC = () => {
         <>
             <ContentContainer>
                 <StyledHomepageExotic />
-                <DappButtonContainer>
-                    <SPAAnchor href={buildHref(ROUTES.Markets.Home)}>{t('common.launch-dapp')}</SPAAnchor>
-                    <RightIcon />
-                </DappButtonContainer>
+                <SPAAnchor href={buildHref(ROUTES.Markets.Home)}>
+                    <DappButtonContainer>
+                        {t('common.launch-dapp')}
+                        <RightIcon />
+                    </DappButtonContainer>
+                </SPAAnchor>
             </ContentContainer>
             <Footer />
         </>
@@ -31,6 +33,7 @@ const ContentContainer = styled(FlexDivColumnCentered)`
 `;
 
 const StyledHomepageExotic = styled(HomepageExotic)`
+    margin-bottom: 60px;
     @media (max-width: 991px) {
         width: 100%;
         height: 100%;
@@ -46,7 +49,6 @@ const DappButtonContainer = styled(FlexDivRow)`
     border-radius: 10px;
     height: 54px;
     padding: 11px 15px 11px 18px;
-    margin-top: 60px;
     background: ${(props) => props.theme.button.background.secondary};
     color: ${(props) => props.theme.button.textColor.primary};
     a {

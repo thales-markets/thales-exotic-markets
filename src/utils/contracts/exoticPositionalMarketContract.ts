@@ -73,6 +73,16 @@ export const exoticPositionalMarketContract = {
         {
             anonymous: false,
             inputs: [
+                { indexed: false, internalType: 'address', name: 'account', type: 'address' },
+                { indexed: false, internalType: 'uint256', name: 'withdrawnAmount', type: 'uint256' },
+                { indexed: false, internalType: 'uint256', name: 'totalOpenBidAmountLeft', type: 'uint256' },
+            ],
+            name: 'OpenBidUserWithdrawn',
+            type: 'event',
+        },
+        {
+            anonymous: false,
+            inputs: [
                 { indexed: false, internalType: 'address', name: 'oldOwner', type: 'address' },
                 { indexed: false, internalType: 'address', name: 'newOwner', type: 'address' },
             ],
@@ -112,7 +122,7 @@ export const exoticPositionalMarketContract = {
         { inputs: [], name: 'acceptOwnership', outputs: [], stateMutability: 'nonpayable', type: 'function' },
         {
             inputs: [],
-            name: 'arbitraryDisputorReward',
+            name: 'arbitraryRewardForDisputor',
             outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
             stateMutability: 'view',
             type: 'function',
@@ -126,7 +136,21 @@ export const exoticPositionalMarketContract = {
         },
         {
             inputs: [],
+            name: 'canCreatorCancelMarket',
+            outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
+            stateMutability: 'view',
+            type: 'function',
+        },
+        {
+            inputs: [],
             name: 'canMarketBeResolved',
+            outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
+            stateMutability: 'view',
+            type: 'function',
+        },
+        {
+            inputs: [],
+            name: 'canMarketBeResolvedByOwner',
             outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
             stateMutability: 'view',
             type: 'function',
@@ -298,7 +322,7 @@ export const exoticPositionalMarketContract = {
                         { internalType: 'uint256', name: 'fixedBondAmount', type: 'uint256' },
                         { internalType: 'uint256', name: 'disputePrice', type: 'uint256' },
                         { internalType: 'uint256', name: 'safeBoxLowAmount', type: 'uint256' },
-                        { internalType: 'uint256', name: 'arbitraryDisputorReward', type: 'uint256' },
+                        { internalType: 'uint256', name: 'arbitraryRewardForDisputor', type: 'uint256' },
                     ],
                     internalType: 'struct ExoticPositionalMarket.MarketData',
                     name: '',
@@ -737,6 +761,13 @@ export const exoticPositionalMarketContract = {
             type: 'function',
         },
         { inputs: [], name: 'withdraw', outputs: [], stateMutability: 'nonpayable', type: 'function' },
+        {
+            inputs: [{ internalType: 'uint256', name: '_openBidPosition', type: 'uint256' }],
+            name: 'withdrawFromOpenBidPosition',
+            outputs: [],
+            stateMutability: 'nonpayable',
+            type: 'function',
+        },
         {
             inputs: [],
             name: 'withdrawalAllowed',

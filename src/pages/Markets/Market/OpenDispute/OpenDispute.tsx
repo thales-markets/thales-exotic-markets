@@ -11,8 +11,7 @@ import useMarketQuery from 'queries/markets/useMarketQuery';
 import { getIsWalletConnected, getNetworkId, getWalletAddress } from 'redux/modules/wallet';
 import { getIsAppReady } from 'redux/modules/app';
 import { RouteComponentProps } from 'react-router-dom';
-import { MarketData, MarketsParameters } from 'types/markets';
-import useMarketsParametersQuery from 'queries/markets/useMarketsParametersQuery';
+import { MarketData } from 'types/markets';
 import networkConnector from 'utils/networkConnector';
 import { BigNumber, ethers } from 'ethers';
 import { checkAllowance } from 'utils/network';
@@ -59,17 +58,6 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
         return undefined;
     }, [marketQuery.isSuccess, marketQuery.data]);
 
-    const marketsParametersQuery = useMarketsParametersQuery(networkId, {
-        enabled: isAppReady,
-    });
-
-    const marketsParameters: MarketsParameters | undefined = useMemo(() => {
-        if (marketsParametersQuery.isSuccess && marketsParametersQuery.data) {
-            return marketsParametersQuery.data as MarketsParameters;
-        }
-        return undefined;
-    }, [marketsParametersQuery.isSuccess, marketsParametersQuery.data]);
-
     const paymentTokenBalanceQuery = usePaymentTokenBalanceQuery(walletAddress, networkId, {
         enabled: isAppReady && isWalletConnected,
     });
@@ -97,7 +85,7 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
         !isOracleCouncilMember &&
         walletAddress.toLowerCase() !== market.creator.toLowerCase();
 
-    const disputePrice = marketsParameters ? marketsParameters.disputePrice : 0;
+    const disputePrice = market ? market.disputePrice : 0;
 
     const isReasonForDisputeEntered = reasonForDispute.trim() !== '';
     const insufficientBalance = Number(paymentTokenBalance) < Number(disputePrice) || Number(paymentTokenBalance) === 0;

@@ -26,6 +26,7 @@ const Container = styled(FlexDivRowCentered)`
     letter-spacing: 0.035em;
     text-transform: uppercase;
     cursor: pointer;
+    height: 36px;
     border-bottom: 5px solid transparent;
     &.selected,
     &:hover {
@@ -38,6 +39,7 @@ const Container = styled(FlexDivRowCentered)`
     color: ${(props) => props.theme.textColor.primary};
     margin-right: 40px;
     padding-bottom: 5px;
+    margin-bottom: 10px;
 `;
 
 const Label = styled.div`

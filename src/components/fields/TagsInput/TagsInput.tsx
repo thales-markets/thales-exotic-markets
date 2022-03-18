@@ -234,7 +234,7 @@ const TagsContainer = styled(FlexDivColumn)<{ isInputDisabled: boolean }>`
     }
 
     .react-tags__suggestions li.is-disabled {
-        opacity: 0.5;
+        opacity: 0.4;
         cursor: auto;
     }
 `;

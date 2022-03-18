@@ -114,7 +114,9 @@
             "resolve-market-label": "Resolve market",
             "resolve-market-progress-label": "Resolving in progress...",
             "claim-label": "Claim",
-            "claim-progress-label": "Claiming in progress..."
+            "claim-progress-label": "Claiming in progress...",
+            "cancel-label": "Cancel",
+            "cancel-progress-label": "Canceling in progress..."
         },
         "filter-label": {
             "global": {

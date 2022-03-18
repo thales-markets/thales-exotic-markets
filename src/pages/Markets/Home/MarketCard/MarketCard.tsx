@@ -83,7 +83,7 @@ const Position = styled.label`
     display: block;
     position: relative;
     &.disabled {
-        opacity: 0.5;
+        opacity: 0.4;
         cursor: default;
     }
 `;
