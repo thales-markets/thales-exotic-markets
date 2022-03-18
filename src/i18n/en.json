@@ -66,22 +66,15 @@
         },
         "or": "or",
         "dapp": "dapp",
+        "launch-dapp": "launch dapp",
         "cancel": "Cancel",
         "select-date": "Select date...",
         "tags-placeholder": "Enter tag...",
         "remove-tag-tooltip": "Click to remove tag",
         "input-characters-note": "{{entered }} / {{max}}"
     },
-    "header": {
-        "links": {
-            "community": "Community",
-            "blog": "Blog"
-        }
-    },
     "footer": {
-        "privacy-policy": "Privacy Policy",
-        "terms-of-use": "Terms of Use",
-        "all-rights-reserved": "© {{year}} THALES DAO All rights reserved."
+        "all-rights-reserved": "© {{year}} eXoticV ALL RIGHTS RESERVED."
     },
     "market": {
         "question-label": "Question",

@@ -2,13 +2,14 @@ import SPAAnchor from 'components/SPAAnchor';
 import React from 'react';
 import styled from 'styled-components';
 import { FlexDiv } from 'styles/common';
-import { Markets } from 'types/markets';
+import { AccountPositionsMap, Markets } from 'types/markets';
 import { buildMarketLink } from 'utils/routes';
 import MarketCard from '../MarketCard';
 import Masonry from 'react-masonry-css';
 
 type MarketsGridProps = {
     markets: Markets;
+    accountPositions: AccountPositionsMap;
 };
 
 const breakpointColumnsObj = {
@@ -17,14 +18,14 @@ const breakpointColumnsObj = {
     850: 1,
 };
 
-const MarketsGrid: React.FC<MarketsGridProps> = ({ markets }) => {
+const MarketsGrid: React.FC<MarketsGridProps> = ({ markets, accountPositions }) => {
     return (
         <Container>
             <Masonry breakpointCols={breakpointColumnsObj} className="">
                 {markets.map((market, index) => {
                     return (
                         <SPAAnchor key={index} href={buildMarketLink(market.address)}>
-                            <MarketCard market={market} />
+                            <MarketCard market={market} accountPosition={accountPositions[market.address]} />
                         </SPAAnchor>
                     );
                 })}

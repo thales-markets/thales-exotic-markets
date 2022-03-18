@@ -13,6 +13,7 @@ export const QUERY_KEYS = {
         dispute,
         networkId,
     ],
+    AccountPositions: (walletAddress: string, networkId: NetworkId) => ['positions', walletAddress, networkId],
     Wallet: {
         PaymentTokenBalance: (walletAddress: string, networkId: NetworkId) => [
             'wallet',

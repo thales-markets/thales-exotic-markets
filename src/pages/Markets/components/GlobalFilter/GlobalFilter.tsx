@@ -1,21 +1,24 @@
 import React from 'react';
 import styled from 'styled-components';
+import { FlexDivCentered, FlexDivRowCentered } from 'styles/common';
 
 type GlobalFilterProps = {
     disabled?: boolean;
     selected?: boolean;
+    count?: number;
     onClick?: (param: any) => void;
 };
 
-const GlobalFilter: React.FC<GlobalFilterProps> = ({ disabled, selected, onClick, children }) => {
+const GlobalFilter: React.FC<GlobalFilterProps> = ({ disabled, selected, onClick, children, count }) => {
     return (
         <Container className={`${disabled ? 'disabled' : ''} ${selected ? 'selected' : ''}`} onClick={onClick}>
-            {children}
+            <Label>{children}</Label>
+            {count !== undefined && <Count>{count}</Count>}
         </Container>
     );
 };
 
-const Container = styled.div`
+const Container = styled(FlexDivRowCentered)`
     font-style: normal;
     font-weight: bold;
     font-size: 15px;
@@ -35,11 +38,25 @@ const Container = styled.div`
     color: ${(props) => props.theme.textColor.primary};
     margin-right: 40px;
     padding-bottom: 5px;
+`;
+
+const Label = styled.div`
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     -o-user-select: none;
     user-select: none;
+`;
+
+const Count = styled(FlexDivCentered)`
+    min-width: 26px;
+    height: 26px;
+    background: ${(props) => props.theme.button.background.secondary};
+    color: ${(props) => props.theme.button.textColor.primary};
+    border-radius: 15px;
+    margin-left: 4px;
+    padding-left: 4px;
+    padding-right: 4px;
 `;
 
 export default GlobalFilter;

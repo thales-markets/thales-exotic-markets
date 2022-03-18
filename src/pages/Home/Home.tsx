@@ -1,16 +1,24 @@
 import React from 'react';
 import styled from 'styled-components';
-import { FlexDivColumnCentered } from 'styles/common';
+import { FlexDivColumnCentered, FlexDivRow } from 'styles/common';
 import Footer from './Footer';
-import Header from './Header';
+import { ReactComponent as HomepageExotic } from 'assets/images/home-exotic.svg';
+import SPAAnchor from 'components/SPAAnchor';
+import { buildHref } from 'utils/routes';
+import ROUTES from 'constants/routes';
+import { useTranslation } from 'react-i18next';
 
 const Home: React.FC = () => {
+    const { t } = useTranslation();
+
     return (
         <>
-            <Header />
             <ContentContainer>
-                <Content>Thales: Exotic Positional Markets Homepage</Content>
-                <Content>Coming soon...</Content>
+                <StyledHomepageExotic />
+                <DappButtonContainer>
+                    <SPAAnchor href={buildHref(ROUTES.Markets.Home)}>{t('common.launch-dapp')}</SPAAnchor>
+                    <RightIcon />
+                </DappButtonContainer>
             </ContentContainer>
             <Footer />
         </>
@@ -18,17 +26,44 @@ const Home: React.FC = () => {
 };
 
 const ContentContainer = styled(FlexDivColumnCentered)`
-    jusify-content: space-between;
+    margin-bottom: 60px;
     align-items: center;
-    margin-bottom: 80px;
 `;
 
-const Content = styled.div`
+const StyledHomepageExotic = styled(HomepageExotic)`
+    @media (max-width: 991px) {
+        width: 100%;
+        height: 100%;
+    }
+`;
+
+const DappButtonContainer = styled(FlexDivRow)`
     font-style: normal;
-    font-weight: bold;
-    font-size: 44px;
-    line-height: 130%;
-    color: ${(props) => props.theme.textColor.primary};
+    font-weight: 400;
+    font-size: 25px;
+    line-height: 34px;
+    text-transform: uppercase;
+    border-radius: 10px;
+    height: 54px;
+    padding: 11px 15px 11px 18px;
+    margin-top: 60px;
+    background: ${(props) => props.theme.button.background.secondary};
+    color: ${(props) => props.theme.button.textColor.primary};
+    a {
+        color: ${(props) => props.theme.button.textColor.primary};
+    }
+`;
+
+const RightIcon = styled.i`
+    font-size: 25px;
+    font-weight: 700;
+    margin-left: 10px;
+    margin-top: -1px;
+    &:before {
+        font-family: HomepageIcons !important;
+        content: '\\004a';
+        color: ${(props) => props.theme.button.textColor.primary};
+    }
 `;
 
 export default Home;

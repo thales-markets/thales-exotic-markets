@@ -160,6 +160,21 @@ const PositionContainer = styled(FlexDivColumn)`
         cursor: default;
     }
 `;
+const Position = styled.label`
+    align-self: center;
+    display: block;
+    position: relative;
+`;
+
+const PositionLabel = styled.span<{ hasPaddingLeft: boolean }>`
+    font-style: normal;
+    font-weight: normal;
+    font-size: 40px;
+    line-height: 55px;
+    text-align: center;
+    padding-left: ${(props) => (props.hasPaddingLeft ? 35 : 0)}px;
+    color: ${(props) => props.theme.textColor.primary};
+`;
 
 const Info = styled(FlexDivCentered)<{ fontSize?: number }>`
     font-style: normal;
@@ -176,22 +191,6 @@ const InfoLabel = styled.span`
 
 const InfoContent = styled.span`
     font-weight: 700;
-`;
-
-const Position = styled.label`
-    align-self: center;
-    display: block;
-    position: relative;
-`;
-
-const PositionLabel = styled.span<{ hasPaddingLeft: boolean }>`
-    font-style: normal;
-    font-weight: normal;
-    font-size: 40px;
-    line-height: 55px;
-    text-align: center;
-    padding-left: ${(props) => (props.hasPaddingLeft ? 35 : 0)}px;
-    color: ${(props) => props.theme.textColor.primary};
 `;
 
 const Checkmark = styled.span`

@@ -120,3 +120,16 @@ export type DisputeData = {
     status: DisputeStatus;
     isOpenForVoting: boolean;
 };
+
+export type AccountPosition = {
+    market: string;
+    position: number;
+    isWithdrawn: boolean;
+    isClaimed: boolean;
+};
+
+export type AccountPositions = AccountPosition[];
+
+export type AccountPositionsMap = {
+    [market: string]: AccountPosition;
+};
