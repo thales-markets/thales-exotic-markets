@@ -396,13 +396,17 @@ const CreateMarket: React.FC = () => {
 };
 
 const Container = styled(FlexDivColumn)`
-    margin-top: 50px;
+    margin-top: 60px;
     align-items: center;
+    @media (max-width: 767px) {
+        width: 100%;
+    }
 `;
 
 const ContentWrapper = styled(FlexDivRow)`
     @media (max-width: 767px) {
         flex-direction: column;
+        width: 100%;
     }
 `;
 
