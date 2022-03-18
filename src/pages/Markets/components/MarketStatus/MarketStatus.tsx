@@ -16,6 +16,21 @@ type MarketStatusProps = {
 const MarketStatus: React.FC<MarketStatusProps> = ({ market, fontSize, fontWeight, labelFontSize }) => {
     const { t } = useTranslation();
 
+    const endOfDefaultClaimingTimeout =
+        market.isResolved && !market.isDisputed && market.resolvedTime > 0
+            ? market.resolvedTime + market.claimTimeoutDefaultPeriod
+            : 0;
+
+    const endOfDisputedClaimingTimeout =
+        market.backstopTimeout > 0 && market.resolvedTime > 0 && market.disputeClosedTime > 0
+            ? market.disputeClosedTime + market.backstopTimeout
+            : 0;
+
+    const endOfClaimingTimeout =
+        endOfDefaultClaimingTimeout < endOfDisputedClaimingTimeout || endOfDisputedClaimingTimeout === 0
+            ? endOfDefaultClaimingTimeout
+            : endOfDisputedClaimingTimeout;
+
     return (
         <Container>
             <StatusLabel labelFontSize={labelFontSize}>
@@ -24,10 +39,17 @@ const MarketStatus: React.FC<MarketStatusProps> = ({ market, fontSize, fontWeigh
             {market.status === MarketStatusEnum.Open ? (
                 <TimeRemaining end={market.endOfPositioning} fontSize={fontSize} fontWeight={fontWeight} />
             ) : (
-                <Status fontSize={fontSize}>
-                    {/* {t(`market.status.${market.isClaimAvailable ? 'claim-available' : 'maturity'}`)} */}
-                    {t(`market.status.${market.status.toString()}`)}
-                </Status>
+                <>
+                    <Status fontSize={fontSize}>
+                        {/* {t(`market.status.${market.isClaimAvailable ? 'claim-available' : 'maturity'}`)} */}
+                        {t(`market.status.${market.status.toString()}`)}
+                    </Status>
+                    {(market.status === MarketStatusEnum.ResolvedPendingConfirmation ||
+                        market.status === MarketStatusEnum.CancelledPendingConfirmation) &&
+                        endOfClaimingTimeout > 0 && (
+                            <TimeRemaining end={endOfClaimingTimeout} fontSize={fontSize} fontWeight={fontWeight} />
+                        )}
+                </>
             )}
         </Container>
     );

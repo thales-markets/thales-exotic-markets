@@ -1,3 +1,4 @@
+import { DisputeStatus } from 'constants/markets';
 import useDisputeQuery from 'queries/markets/useDisputeQuery';
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
@@ -14,9 +15,10 @@ import DisputeVotingResults from './DisputeVotingResults';
 type DisputeCardProps = {
     disputeInfo: DisputeInfo;
     isOracleCouncilMember: boolean;
+    positions: string[];
 };
 
-const DisputeCard: React.FC<DisputeCardProps> = ({ disputeInfo, isOracleCouncilMember }) => {
+const DisputeCard: React.FC<DisputeCardProps> = ({ disputeInfo, isOracleCouncilMember, positions }) => {
     const isAppReady = useSelector((state: RootState) => getIsAppReady(state));
     const networkId = useSelector((state: RootState) => getNetworkId(state));
     const walletAddress = useSelector((state: RootState) => getWalletAddress(state)) || '';
@@ -33,25 +35,38 @@ const DisputeCard: React.FC<DisputeCardProps> = ({ disputeInfo, isOracleCouncilM
         return undefined;
     }, [disputeQuery.isSuccess, disputeQuery.data]);
 
-    const voteOnContract: number = useMemo(() => {
+    const { voteOnContract, positionOnContract } = useMemo(() => {
         if (isOracleCouncilMember && disputeData && isWalletConnected) {
             const walletVote = disputeData.disputeVotes.find(
                 (vote) => vote.voter.toLowerCase() === walletAddress.toLowerCase()
             );
             if (walletVote) {
-                return walletVote.vote;
+                return {
+                    voteOnContract: walletVote.vote,
+                    positionOnContract: walletVote.vote,
+                };
             }
         }
-        return 0;
+        return {
+            voteOnContract: 0,
+            positionOnContract: 0,
+        };
     }, [isOracleCouncilMember, disputeData, isWalletConnected]);
 
     return (
         <Container>
             <DisputeOverview disputeInfo={disputeInfo} status={disputeData ? disputeData.status : ''} />
             {isOracleCouncilMember && disputeData && disputeData.isOpenForVoting && (
-                <DisputeVoting voteOnContract={voteOnContract} disputeInfo={disputeInfo} />
+                <DisputeVoting
+                    voteOnContract={voteOnContract}
+                    disputeInfo={disputeInfo}
+                    positions={positions}
+                    positionOnContract={positionOnContract}
+                />
             )}
-            {disputeData && <DisputeVotingResults votingResults={disputeData.disputeVotingResults} />}
+            {disputeData && disputeData.status !== DisputeStatus.Cancelled && (
+                <DisputeVotingResults votingResults={disputeData.disputeVotingResults} />
+            )}
         </Container>
     );
 };

@@ -27,7 +27,7 @@ const useDisputeQuery = (
                 const [
                     disputeVotes,
                     contractData,
-                    canMarketBeDisputed,
+                    isMarketClosedForDisputes,
                     isDisputeOpen,
                     isOpenDisputeCancelled,
                 ] = await Promise.all([
@@ -37,7 +37,7 @@ const useDisputeQuery = (
                         network: networkId,
                     }),
                     thalesOracleCouncilContract.getDispute(marketAddress, dispute),
-                    thalesOracleCouncilContract.canMarketBeDisputed(marketAddress),
+                    thalesOracleCouncilContract.isMarketClosedForDisputes(marketAddress),
                     thalesOracleCouncilContract.isDisputeOpen(marketAddress, dispute),
                     thalesOracleCouncilContract.isOpenDisputeCancelled(marketAddress, dispute),
                 ]);
@@ -50,7 +50,7 @@ const useDisputeQuery = (
                     votedOption: Number(votedOption),
                     timestamp: Number(timestamp),
                     isInPositioningPhase,
-                    canMarketBeDisputed,
+                    isMarketClosedForDisputes,
                     isOpenDisputeCancelled,
                 };
 
@@ -75,7 +75,7 @@ const useDisputeQuery = (
                     ? DisputeStatus.Open
                     : DISPUTE_VOTED_OPTION_STATUS_MAP[disputeContractData.votedOption as DisputeVotingOption];
 
-                const isOpenForVoting = canMarketBeDisputed && isDisputeOpen && !isOpenDisputeCancelled;
+                const isOpenForVoting = !isMarketClosedForDisputes && isDisputeOpen && !isOpenDisputeCancelled;
 
                 return {
                     disputeContractData,

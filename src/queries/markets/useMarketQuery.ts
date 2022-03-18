@@ -12,12 +12,19 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
         QUERY_KEYS.Market(marketAddress),
         async () => {
             const contract = new ethers.Contract(marketAddress, marketContract.abi, networkConnector.provider);
-            const { thalesOracleCouncilContract } = networkConnector;
-            const [allMarketData, backstopTimeout, disputeClosedTime, isMarketClosedForDisputes] = await Promise.all([
+            const { thalesOracleCouncilContract, marketManagerContract } = networkConnector;
+            const [
+                allMarketData,
+                backstopTimeout,
+                disputeClosedTime,
+                isMarketClosedForDisputes,
+                claimTimeoutDefaultPeriod,
+            ] = await Promise.all([
                 contract.getAllMarketData(),
                 contract.backstopTimeout(),
                 contract.disputeClosedTime(),
                 thalesOracleCouncilContract?.isMarketClosedForDisputes(marketAddress),
+                marketManagerContract?.claimTimeoutDefaultPeriod(),
             ]);
 
             const [
@@ -81,6 +88,7 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                 isMarketClosedForDisputes,
                 backstopTimeout: Number(backstopTimeout) * 1000,
                 disputeClosedTime: Number(disputeClosedTime) * 1000,
+                claimTimeoutDefaultPeriod: Number(claimTimeoutDefaultPeriod) * 1000,
             };
 
             // TODO - needs refactoring

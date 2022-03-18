@@ -29,6 +29,7 @@ export type MarketInfo = {
     canMarketBeResolved: boolean;
     canUsersClaim: boolean;
     disputeClosedTime: number;
+    claimTimeoutDefaultPeriod: number;
 };
 
 export type MarketData = MarketInfo & {
@@ -90,7 +91,7 @@ export type DisputeContractData = {
     votedOption: number;
     reasonForDispute: string;
     isInPositioningPhase: boolean;
-    canMarketBeDisputed: boolean;
+    isMarketClosedForDisputes: boolean;
     isOpenDisputeCancelled: boolean;
 };
 

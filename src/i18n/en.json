@@ -35,6 +35,7 @@
             "select-position": "Select position",
             "select-vote": "Select vote",
             "select-outcome": "Select outcome",
+            "select-result": "Select result",
             "invalid-price": "Invalid price",
             "invalid-price-max": "The price cannot be higher than ${{max}}",
             "invalid-amount-max": "The amount cannot be higher than {{max}}",
@@ -91,14 +92,14 @@
         "status": {
             "open": "Open",
             "cancelled-pending-confirmation": "Cancelled - pending confirmation",
-            "cancelled-disputed": "Cancelled - disputed",
-            "cancelled-confirmed": "Cancelled - confirmed",
+            "cancelled-disputed": "Cancelled - under dispute",
+            "cancelled-confirmed": "Cancelled",
             "paused": "Paused",
             "resolve-pending": "Resolve pending",
             "resolve-pending-disputed": "Resolve pending - under dispute",
             "resolved-pending-confirmation": "Resolved - pending confirmation",
             "resolved-disputed": "Resolved - under dispute",
-            "resolved-confirmed": "Resolved - confirmed"
+            "resolved-confirmed": "Resolved"
         },
         "pool-size-label": "Pool size",
         "total-pool-size-label": "Total pool size",

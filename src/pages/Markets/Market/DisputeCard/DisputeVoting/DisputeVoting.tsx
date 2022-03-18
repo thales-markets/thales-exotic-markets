@@ -2,6 +2,7 @@ import Button from 'components/Button';
 import RadioButton from 'components/fields/RadioButton';
 import ValidationMessage from 'components/ValidationMessage';
 import {
+    DisputeVotingOption,
     DISPUTE_VOTING_OPTIONS_MARKET_OPEN,
     DISPUTE_VOTING_OPTIONS_MARKET_RESOLVED,
     DISPUTE_VOTING_OPTIONS_TRANSLATION_KEYS,
@@ -16,13 +17,21 @@ import networkConnector from 'utils/networkConnector';
 type DisputeVotingProps = {
     voteOnContract: number;
     disputeInfo: DisputeInfo;
-    // myPosition: boolean;
+    positions: string[];
+    positionOnContract: number;
 };
 
-const DisputeVoting: React.FC<DisputeVotingProps> = ({ voteOnContract, disputeInfo }) => {
+const DisputeVoting: React.FC<DisputeVotingProps> = ({
+    voteOnContract,
+    disputeInfo,
+    positions,
+    positionOnContract,
+}) => {
     const { t } = useTranslation();
     const [vote, setVote] = useState<number>(voteOnContract);
+    const [selectedPosition, setSelectedPosition] = useState<number>(positionOnContract);
     const [currentVoteOnContract, setCurrentVoteOnContract] = useState<number>(voteOnContract);
+    const [currentPositionOnContract, setCurrentPositionOnContract] = useState<number>(positionOnContract);
     const [txErrorMessage, setTxErrorMessage] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
@@ -30,10 +39,13 @@ const DisputeVoting: React.FC<DisputeVotingProps> = ({ voteOnContract, disputeIn
         ? DISPUTE_VOTING_OPTIONS_MARKET_OPEN
         : DISPUTE_VOTING_OPTIONS_MARKET_RESOLVED;
 
-    const showVoteButton = currentVoteOnContract === 0;
-    const showChangeVoteButton = currentVoteOnContract !== vote;
+    const showVoteButton = currentVoteOnContract === 0 && currentPositionOnContract === 0;
+    const showChangeVoteButton = currentVoteOnContract !== vote || currentPositionOnContract !== selectedPosition;
     const isVoteSelected = vote > 0;
-    const isButtonDisabled = isSubmitting || !isVoteSelected;
+    const isPositionSelected =
+        (vote === DisputeVotingOption.ACCEPT_RESULT && selectedPosition > 0) ||
+        vote !== DisputeVotingOption.ACCEPT_RESULT;
+    const isButtonDisabled = isSubmitting || !isVoteSelected || !isPositionSelected;
 
     const handleVote = async () => {
         const { thalesOracleCouncilContract, signer } = networkConnector;
@@ -48,7 +60,7 @@ const DisputeVoting: React.FC<DisputeVotingProps> = ({ voteOnContract, disputeIn
                     disputeInfo.market,
                     disputeInfo.disputeNumber,
                     vote,
-                    0
+                    vote === DisputeVotingOption.ACCEPT_RESULT ? selectedPosition : 0
                 );
                 const txResult = await tx.wait();
 
@@ -56,6 +68,7 @@ const DisputeVoting: React.FC<DisputeVotingProps> = ({ voteOnContract, disputeIn
                     // dispatchMarketNotification(t('migration.migrate-button.confirmation-message'));
                     setIsSubmitting(false);
                     setCurrentVoteOnContract(vote);
+                    setCurrentPositionOnContract(selectedPosition);
                 }
             } catch (e) {
                 console.log(e);
@@ -70,6 +83,13 @@ const DisputeVoting: React.FC<DisputeVotingProps> = ({ voteOnContract, disputeIn
             return (
                 <VoteButton type="secondary" disabled={true}>
                     {t(`common.errors.select-vote`)}
+                </VoteButton>
+            );
+        }
+        if (!isPositionSelected) {
+            return (
+                <VoteButton type="secondary" disabled={true}>
+                    {t(`common.errors.select-outcome`)}
                 </VoteButton>
             );
         }
@@ -101,14 +121,28 @@ const DisputeVoting: React.FC<DisputeVotingProps> = ({ voteOnContract, disputeIn
             <Title>{t('market.dispute.vote-label')}</Title>
             {disputeVotingOptions.map((votingOption) => {
                 return (
-                    <RadioButtonContainer key={votingOption}>
+                    <VoteOptionsContainer key={votingOption}>
                         <RadioButton
                             checked={votingOption === vote}
                             value={votingOption}
                             onChange={() => setVote(votingOption)}
                             label={t(DISPUTE_VOTING_OPTIONS_TRANSLATION_KEYS[votingOption])}
                         />
-                    </RadioButtonContainer>
+                        {votingOption === DisputeVotingOption.ACCEPT_RESULT &&
+                            vote === DisputeVotingOption.ACCEPT_RESULT &&
+                            positions.map((position: string, index: number) => {
+                                return (
+                                    <PositionsContainer key={position}>
+                                        <RadioButton
+                                            checked={index + 1 === selectedPosition}
+                                            value={index + 1}
+                                            onChange={() => setSelectedPosition(index + 1)}
+                                            label={position}
+                                        />
+                                    </PositionsContainer>
+                                );
+                            })}
+                    </VoteOptionsContainer>
                 );
             })}
             {getSubmitButton()}
@@ -133,7 +167,7 @@ const Title = styled.span`
     margin-bottom: 20px;
 `;
 
-const RadioButtonContainer = styled.div`
+const VoteOptionsContainer = styled.div`
     label {
         padding-left: 22px;
         font-size: 15px;
@@ -153,6 +187,10 @@ const RadioButtonContainer = styled.div`
         border: 3px solid ${(props) => props.theme.borderColor.primary};
         margin-top: 1px;
     }
+`;
+
+const PositionsContainer = styled(VoteOptionsContainer)`
+    margin-left: 22px;
 `;
 
 const VoteButton = styled(Button)`

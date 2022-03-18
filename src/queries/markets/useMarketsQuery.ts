@@ -21,6 +21,7 @@ const useMarketsQuery = (networkId: NetworkId, options?: UseQueryOptions<Markets
             const mappedMarkets = markets.map((market: MarketInfo) => {
                 market.canMarketBeResolved =
                     Date.now() > market.endOfPositioning && !market.isDisputed && !market.isResolved;
+                market.claimTimeoutDefaultPeriod = Number(claimTimeoutDefaultPeriod) * 1000;
                 market.canUsersClaim =
                     market.isResolved &&
                     !market.isDisputed &&
@@ -30,6 +31,7 @@ const useMarketsQuery = (networkId: NetworkId, options?: UseQueryOptions<Markets
                             market.resolvedTime > 0 &&
                             market.disputeClosedTime > 0 &&
                             Date.now() > market.disputeClosedTime + market.backstopTimeout));
+
                 market.isMarketClosedForDisputes = market.marketClosedForDisputes && market.canUsersClaim;
 
                 if (market.isPaused) {

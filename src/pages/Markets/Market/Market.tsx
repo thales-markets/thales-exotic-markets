@@ -45,7 +45,7 @@ const Market: React.FC<MarketProps> = (props) => {
                             positions={market.positions}
                         />
                     )}
-                    <Disputes marketAddress={marketAddress} />
+                    <Disputes marketAddress={marketAddress} positions={market.positions} />
                 </>
             ) : (
                 <SimpleLoader />
