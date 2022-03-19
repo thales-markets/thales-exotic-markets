@@ -121,6 +121,20 @@
             "cancel-market-label": "Cancel market",
             "cancel-progress-label": "Canceling in progress..."
         },
+        "toast-messsage": {
+            "transaction-pending": "Transaction pending",
+            "approve-success": "{{token}} successfully approved",
+            "open-dispute-success": "Dispute successfully opened",
+            "create-market-success": "Market successfully created",
+            "claim-winnings-success": "Winnings successfully claimed",
+            "claim-refund-success": "Refund successfully claimed",
+            "resolve-market-success": "Market successfully resolved",
+            "ticket-buy-success": "Ticket successfully bought",
+            "change-position-success": "Position successfully changed",
+            "withdraw-success": "Successfuly withdrawn",
+            "vote-success": "Successfully voted",
+            "cancel-market-success": "Market successfully canceled"
+        },
         "filter-label": {
             "global": {
                 "all": "All markets",

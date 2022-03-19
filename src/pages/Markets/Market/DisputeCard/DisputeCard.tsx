@@ -53,19 +53,27 @@ const DisputeCard: React.FC<DisputeCardProps> = ({ disputeInfo, isOracleCouncilM
         };
     }, [isOracleCouncilMember, disputeData, isWalletConnected]);
 
+    const showDisputeVoting = isOracleCouncilMember && disputeData && disputeData.isOpenForVoting;
+    const showDisputeVotingResults = disputeData && disputeData.status !== DisputeStatus.Cancelled;
+    const showDisputeVotingData = showDisputeVoting || showDisputeVotingResults;
+
     return (
         <Container>
             <DisputeOverview disputeInfo={disputeInfo} status={disputeData ? disputeData.status : ''} />
-            {isOracleCouncilMember && disputeData && disputeData.isOpenForVoting && (
-                <DisputeVoting
-                    voteOnContract={voteOnContract}
-                    disputeInfo={disputeInfo}
-                    positions={positions}
-                    positionOnContract={positionOnContract}
-                />
-            )}
-            {disputeData && disputeData.status !== DisputeStatus.Cancelled && (
-                <DisputeVotingResults votingResults={disputeData.disputeVotingResults} />
+            {showDisputeVotingData && (
+                <VotingContainer>
+                    {showDisputeVoting && (
+                        <DisputeVoting
+                            voteOnContract={voteOnContract}
+                            disputeInfo={disputeInfo}
+                            positions={positions}
+                            positionOnContract={positionOnContract}
+                        />
+                    )}
+                    {showDisputeVotingResults && (
+                        <DisputeVotingResults votingResults={disputeData.disputeVotingResults} />
+                    )}
+                </VotingContainer>
             )}
         </Container>
     );
@@ -79,11 +87,40 @@ const Container = styled(FlexDivRow)`
     padding: 30px 10px;
     margin-bottom: 30px;
     color: ${(props) => props.theme.textColor.primary};
+    @media (max-width: 991px) {
+        flex-direction: column;
+    }
+    @media (max-width: 575px) {
+        padding: 20px 0px;
+    }
+`;
+
+const VotingContainer = styled(FlexDivRow)`
+    margin-right: 20px;
+    margin-left: 20px;
+    @media (max-width: 991px) {
+        border-top: 2px solid ${(props) => props.theme.borderColor.primary};
+        padding-top: 20px;
+    }
     > div {
-        padding-right: 20px;
+        border-left: 2px solid ${(props) => props.theme.borderColor.primary};
         padding-left: 20px;
         :not(:last-child) {
-            border-right: 2px solid ${(props) => props.theme.borderColor.primary};
+            padding-right: 20px;
+        }
+        @media (max-width: 991px) {
+            flex-direction: column;
+            width: 100%;
+            :first-child {
+                border: none;
+            }
+            padding-left: 0px;
+            :first-child:not(:last-child) {
+                padding-right: 20px;
+            }
+            :last-child:not(:first-child) {
+                padding-left: 20px;
+            }
         }
     }
 `;

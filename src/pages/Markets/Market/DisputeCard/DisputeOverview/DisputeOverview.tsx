@@ -24,7 +24,10 @@ const DisputeOverview: React.FC<DisputeOverviewProps> = ({ disputeInfo, status }
     );
 };
 
-const Container = styled(FlexDivColumn)``;
+const Container = styled(FlexDivColumn)`
+    padding-right: 20px;
+    padding-left: 20px;
+`;
 
 const Label = styled.span`
     font-weight: bold;
@@ -38,6 +41,7 @@ const Content = styled.span`
     line-height: 25px;
     text-align: justify;
     margin-bottom: 20px;
+    word-wrap: break-word;
 `;
 
 export default DisputeOverview;

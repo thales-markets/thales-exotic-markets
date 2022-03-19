@@ -17,7 +17,6 @@ import { BigNumber, ethers } from 'ethers';
 import { checkAllowance } from 'utils/network';
 import onboardConnector from 'utils/onboardConnector';
 import { PAYMENT_CURRENCY } from 'constants/currency';
-import ValidationMessage from 'components/ValidationMessage';
 import ApprovalModal from 'components/ApprovalModal';
 import usePaymentTokenBalanceQuery from 'queries/wallet/usePaymentTokenBalanceQuery';
 import { MAX_GAS_LIMIT } from 'constants/network';
@@ -25,6 +24,8 @@ import { buildMarketLink, navigateTo } from 'utils/routes';
 import useOracleCouncilMemberQuery from 'queries/oracleCouncil/useOracleCouncilMemberQuery';
 import SimpleLoader from 'components/SimpleLoader';
 import WarningMessage from 'components/WarningMessage';
+import { toast } from 'react-toastify';
+import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
 
 type OpenDisputeProps = RouteComponentProps<{
     marketAddress: string;
@@ -38,7 +39,6 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
     const isWalletConnected = useSelector((state: RootState) => getIsWalletConnected(state));
     const [hasAllowance, setAllowance] = useState<boolean>(false);
     const [isAllowing, setIsAllowing] = useState<boolean>(false);
-    const [txErrorMessage, setTxErrorMessage] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [reasonForDispute, setReasonForDispute] = useState<string>('');
     const [paymentTokenBalance, setPaymentTokenBalance] = useState<number | string>('');
@@ -126,21 +126,29 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
     const handleAllowance = async (approveAmount: BigNumber) => {
         const { paymentTokenContract, thalesBondsContract, signer } = networkConnector;
         if (paymentTokenContract && thalesBondsContract && signer) {
-            const paymentTokenContractWithSigner = paymentTokenContract.connect(signer);
-            const addressToApprove = thalesBondsContract.address;
+            const id = toast.loading(t('market.toast-messsage.transaction-pending'));
+            setIsAllowing(true);
+
             try {
-                setIsAllowing(true);
+                const paymentTokenContractWithSigner = paymentTokenContract.connect(signer);
+                const addressToApprove = thalesBondsContract.address;
+
                 const tx = (await paymentTokenContractWithSigner.approve(addressToApprove, approveAmount, {
                     gasLimit: MAX_GAS_LIMIT,
                 })) as ethers.ContractTransaction;
                 setOpenApprovalModal(false);
                 const txResult = await tx.wait();
+
                 if (txResult && txResult.transactionHash) {
+                    toast.update(
+                        id,
+                        getSuccessToastOptions(t('market.toast-messsage.approve-success', { token: PAYMENT_CURRENCY }))
+                    );
                     setIsAllowing(false);
                 }
             } catch (e) {
                 console.log(e);
-                setTxErrorMessage(t('common.errors.unknown-error-try-again'));
+                toast.update(id, getErrorToastOptions(t('common.errors.unknown-error-try-again')));
                 setIsAllowing(false);
             }
         }
@@ -149,7 +157,7 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
     const handleSubmit = async () => {
         const { thalesOracleCouncilContract, signer } = networkConnector;
         if (thalesOracleCouncilContract && signer) {
-            setTxErrorMessage(null);
+            const id = toast.loading(t('market.toast-messsage.transaction-pending'));
             setIsSubmitting(true);
 
             try {
@@ -159,14 +167,13 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
                 const txResult = await tx.wait();
 
                 if (txResult && txResult.transactionHash) {
-                    // dispatchMarketNotification(t('migration.migrate-button.confirmation-message'));
+                    toast.update(id, getSuccessToastOptions(t('market.toast-messsage.open-dispute-success')));
                     setIsSubmitting(false);
                     navigateTo(buildMarketLink(marketAddress));
-                    // setAmount('');
                 }
             } catch (e) {
                 console.log(e);
-                setTxErrorMessage(t('common.errors.unknown-error-try-again'));
+                toast.update(id, getErrorToastOptions(t('common.errors.unknown-error-try-again')));
                 setIsSubmitting(false);
             }
         }
@@ -240,11 +247,6 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
                             disabled={isSubmitting || !canOpenDispute}
                         />
                         <ButtonContainer>{getSubmitButton()}</ButtonContainer>
-                        <ValidationMessage
-                            showValidation={txErrorMessage !== null}
-                            message={txErrorMessage}
-                            onDismiss={() => setTxErrorMessage(null)}
-                        />
                         {!canOpenDispute && <WarningMessage message={getDisputesDisabledMessage()} />}
                     </Form>
                     {openApprovalModal && (

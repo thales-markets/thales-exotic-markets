@@ -12,11 +12,12 @@ import { useSelector } from 'react-redux';
 import useAccountMarketDataQuery from 'queries/markets/useAccountMarketDataQuery';
 import onboardConnector from 'utils/onboardConnector';
 import networkConnector from 'utils/networkConnector';
-import ValidationMessage from 'components/ValidationMessage';
 import marketContract from 'utils/contracts/exoticPositionalMarketContract';
 import { ethers } from 'ethers';
 import Button from 'components/Button';
 import { MarketStatus } from 'constants/markets';
+import { toast } from 'react-toastify';
+import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
 
 type MaturityPhaseProps = {
     market: MarketData;
@@ -28,7 +29,6 @@ const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
     const walletAddress = useSelector((state: RootState) => getWalletAddress(state)) || '';
     const isWalletConnected = useSelector((state: RootState) => getIsWalletConnected(state));
     const [accountMarketData, setAccountMarketData] = useState<AccountMarketData | undefined>(undefined);
-    const [txErrorMessage, setTxErrorMessage] = useState<string | null>(null);
     const [isClaiming, setIsClaiming] = useState<boolean>(false);
 
     const accountMarketDataQuery = useAccountMarketDataQuery(market.address, walletAddress, {
@@ -48,7 +48,7 @@ const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
     const handleClaim = async () => {
         const { signer } = networkConnector;
         if (signer) {
-            setTxErrorMessage(null);
+            const id = toast.loading(t('market.toast-messsage.transaction-pending'));
             setIsClaiming(true);
 
             try {
@@ -58,12 +58,23 @@ const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
                 const txResult = await tx.wait();
 
                 if (txResult && txResult.transactionHash) {
-                    // dispatchMarketNotification(t('migration.migrate-button.confirmation-message'));
+                    toast.update(
+                        id,
+                        getSuccessToastOptions(
+                            t(
+                                `market.toast-messsage.${
+                                    market.status === MarketStatus.CancelledConfirmed
+                                        ? 'claim-refund-success'
+                                        : 'claim-winnings-success'
+                                }`
+                            )
+                        )
+                    );
                     setIsClaiming(false);
                 }
             } catch (e) {
                 console.log(e);
-                setTxErrorMessage(t('common.errors.unknown-error-try-again'));
+                toast.update(id, getErrorToastOptions(t('common.errors.unknown-error-try-again')));
                 setIsClaiming(false);
             }
         }
@@ -135,14 +146,7 @@ const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
                     {formatCurrencyWithKey(PAYMENT_CURRENCY, claimAmount)}
                 </MainInfo>
             )}
-            <ButtonContainer>
-                {getButtons()}
-                <ValidationMessage
-                    showValidation={txErrorMessage !== null}
-                    message={txErrorMessage}
-                    onDismiss={() => setTxErrorMessage(null)}
-                />
-            </ButtonContainer>
+            <ButtonContainer>{getButtons()}</ButtonContainer>
         </>
     );
 };

@@ -1,6 +1,6 @@
 import Button from 'components/Button';
 import RadioButton from 'components/fields/RadioButton';
-import ValidationMessage from 'components/ValidationMessage';
+import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
 import {
     DisputeVotingOption,
     DISPUTE_VOTING_OPTIONS_MARKET_OPEN,
@@ -9,6 +9,7 @@ import {
 } from 'constants/markets';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { FlexDivColumn } from 'styles/common';
 import { DisputeInfo } from 'types/markets';
@@ -32,7 +33,6 @@ const DisputeVoting: React.FC<DisputeVotingProps> = ({
     const [selectedPosition, setSelectedPosition] = useState<number>(positionOnContract);
     const [currentVoteOnContract, setCurrentVoteOnContract] = useState<number>(voteOnContract);
     const [currentPositionOnContract, setCurrentPositionOnContract] = useState<number>(positionOnContract);
-    const [txErrorMessage, setTxErrorMessage] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
     const disputeVotingOptions = disputeInfo.isInPositioningPhase
@@ -50,7 +50,7 @@ const DisputeVoting: React.FC<DisputeVotingProps> = ({
     const handleVote = async () => {
         const { thalesOracleCouncilContract, signer } = networkConnector;
         if (thalesOracleCouncilContract && signer) {
-            setTxErrorMessage(null);
+            const id = toast.loading(t('market.toast-messsage.transaction-pending'));
             setIsSubmitting(true);
 
             try {
@@ -65,14 +65,14 @@ const DisputeVoting: React.FC<DisputeVotingProps> = ({
                 const txResult = await tx.wait();
 
                 if (txResult && txResult.transactionHash) {
-                    // dispatchMarketNotification(t('migration.migrate-button.confirmation-message'));
+                    toast.update(id, getSuccessToastOptions(t('market.toast-messsage.vote-success')));
                     setIsSubmitting(false);
                     setCurrentVoteOnContract(vote);
                     setCurrentPositionOnContract(selectedPosition);
                 }
             } catch (e) {
                 console.log(e);
-                setTxErrorMessage(t('common.errors.unknown-error-try-again'));
+                toast.update(id, getErrorToastOptions(t('common.errors.unknown-error-try-again')));
                 setIsSubmitting(false);
             }
         }
@@ -146,11 +146,6 @@ const DisputeVoting: React.FC<DisputeVotingProps> = ({
                 );
             })}
             {getSubmitButton()}
-            <ValidationMessage
-                showValidation={txErrorMessage !== null}
-                message={txErrorMessage}
-                onDismiss={() => setTxErrorMessage(null)}
-            />
         </Container>
     );
 };

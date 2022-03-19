@@ -28,9 +28,10 @@ import { PAYMENT_CURRENCY } from 'constants/currency';
 import usePaymentTokenBalanceQuery from 'queries/wallet/usePaymentTokenBalanceQuery';
 import NumericInput from 'components/fields/NumericInput';
 import ApprovalModal from 'components/ApprovalModal';
-import ValidationMessage from 'components/ValidationMessage';
 import useTagsQuery from 'queries/markets/useTagsQuery';
 import { buildMarketLink, navigateTo } from 'utils/routes';
+import { toast } from 'react-toastify';
+import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
 
 const CreateMarket: React.FC = () => {
     const { t } = useTranslation();
@@ -40,7 +41,6 @@ const CreateMarket: React.FC = () => {
     const isWalletConnected = useSelector((state: RootState) => getIsWalletConnected(state));
     const [hasAllowance, setAllowance] = useState<boolean>(false);
     const [isAllowing, setIsAllowing] = useState<boolean>(false);
-    const [txErrorMessage, setTxErrorMessage] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [question, setQuestion] = useState<string>('');
     const [dataSource, setDataSource] = useState<string>('');
@@ -139,21 +139,29 @@ const CreateMarket: React.FC = () => {
     const handleAllowance = async (approveAmount: BigNumber) => {
         const { paymentTokenContract, thalesBondsContract, signer } = networkConnector;
         if (paymentTokenContract && thalesBondsContract && signer) {
-            const paymentTokenContractWithSigner = paymentTokenContract.connect(signer);
-            const addressToApprove = thalesBondsContract.address;
+            const id = toast.loading(t('market.toast-messsage.transaction-pending'));
+            setIsAllowing(true);
+
             try {
-                setIsAllowing(true);
+                const paymentTokenContractWithSigner = paymentTokenContract.connect(signer);
+                const addressToApprove = thalesBondsContract.address;
+
                 const tx = (await paymentTokenContractWithSigner.approve(addressToApprove, approveAmount, {
                     gasLimit: MAX_GAS_LIMIT,
                 })) as ethers.ContractTransaction;
                 setOpenApprovalModal(false);
                 const txResult = await tx.wait();
+
                 if (txResult && txResult.transactionHash) {
+                    toast.update(
+                        id,
+                        getSuccessToastOptions(t('market.toast-messsage.approve-success', { token: PAYMENT_CURRENCY }))
+                    );
                     setIsAllowing(false);
                 }
             } catch (e) {
                 console.log(e);
-                setTxErrorMessage(t('common.errors.unknown-error-try-again'));
+                toast.update(id, getErrorToastOptions(t('common.errors.unknown-error-try-again')));
                 setIsAllowing(false);
             }
         }
@@ -162,7 +170,7 @@ const CreateMarket: React.FC = () => {
     const handleSubmit = async () => {
         const { marketManagerContract, signer } = networkConnector;
         if (marketManagerContract && signer) {
-            setTxErrorMessage(null);
+            const id = toast.loading(t('market.toast-messsage.transaction-pending'));
             setIsSubmitting(true);
 
             try {
@@ -187,9 +195,8 @@ const CreateMarket: React.FC = () => {
                 const txResult = await tx.wait();
 
                 if (txResult && txResult.events) {
-                    // dispatchMarketNotification(t('migration.migrate-button.confirmation-message'));
+                    toast.update(id, getSuccessToastOptions(t('market.toast-messsage.create-market-success')));
                     setIsSubmitting(false);
-                    // setAmount('');
                     const rawData = txResult.events[txResult.events.length - 1];
                     if (rawData && rawData.decode) {
                         const marketData = rawData.decode(rawData.data);
@@ -198,7 +205,7 @@ const CreateMarket: React.FC = () => {
                 }
             } catch (e) {
                 console.log(e);
-                setTxErrorMessage(t('common.errors.unknown-error-try-again'));
+                toast.update(id, getErrorToastOptions(t('common.errors.unknown-error-try-again')));
                 setIsSubmitting(false);
             }
         }
@@ -374,11 +381,6 @@ const CreateMarket: React.FC = () => {
                         disabled={isSubmitting}
                     />
                     <ButtonContainer>{getSubmitButton()}</ButtonContainer>
-                    <ValidationMessage
-                        showValidation={txErrorMessage !== null}
-                        message={txErrorMessage}
-                        onDismiss={() => setTxErrorMessage(null)}
-                    />
                 </Form>
                 <Description />
             </ContentWrapper>

@@ -15,12 +15,13 @@ import { BigNumber, ethers } from 'ethers';
 import networkConnector from 'utils/networkConnector';
 import { MAX_GAS_LIMIT } from 'constants/network';
 import ApprovalModal from 'components/ApprovalModal';
-import ValidationMessage from 'components/ValidationMessage';
 import marketContract from 'utils/contracts/exoticPositionalMarketContract';
 import usePaymentTokenBalanceQuery from 'queries/wallet/usePaymentTokenBalanceQuery';
 import onboardConnector from 'utils/onboardConnector';
 import RadioButton from 'components/fields/RadioButton';
 import useAccountMarketDataQuery from 'queries/markets/useAccountMarketDataQuery';
+import { toast } from 'react-toastify';
+import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
 
 type PositioningPhaseProps = {
     market: MarketData;
@@ -34,7 +35,6 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
     const isWalletConnected = useSelector((state: RootState) => getIsWalletConnected(state));
     const [hasAllowance, setAllowance] = useState<boolean>(false);
     const [isAllowing, setIsAllowing] = useState<boolean>(false);
-    const [txErrorMessage, setTxErrorMessage] = useState<string | null>(null);
     const [isBuying, setIsBuying] = useState<boolean>(false);
     const [isWithdrawing, setIsWithdrawing] = useState<boolean>(false);
     const [isCanceling, setIsCanceling] = useState<boolean>(false);
@@ -119,21 +119,29 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
     const handleAllowance = async (approveAmount: BigNumber) => {
         const { paymentTokenContract, signer } = networkConnector;
         if (paymentTokenContract && signer) {
-            const paymentTokenContractWithSigner = paymentTokenContract.connect(signer);
-            const addressToApprove = market.address;
+            const id = toast.loading(t('market.toast-messsage.transaction-pending'));
+            setIsAllowing(true);
+
             try {
-                setIsAllowing(true);
+                const paymentTokenContractWithSigner = paymentTokenContract.connect(signer);
+                const addressToApprove = market.address;
+
                 const tx = (await paymentTokenContractWithSigner.approve(addressToApprove, approveAmount, {
                     gasLimit: MAX_GAS_LIMIT,
                 })) as ethers.ContractTransaction;
                 setOpenApprovalModal(false);
                 const txResult = await tx.wait();
+
                 if (txResult && txResult.transactionHash) {
+                    toast.update(
+                        id,
+                        getSuccessToastOptions(t('market.toast-messsage.approve-success', { token: PAYMENT_CURRENCY }))
+                    );
                     setIsAllowing(false);
                 }
             } catch (e) {
                 console.log(e);
-                setTxErrorMessage(t('common.errors.unknown-error-try-again'));
+                toast.update(id, getErrorToastOptions(t('common.errors.unknown-error-try-again')));
                 setIsAllowing(false);
             }
         }
@@ -142,7 +150,7 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
     const handleBuy = async () => {
         const { signer } = networkConnector;
         if (signer) {
-            setTxErrorMessage(null);
+            const id = toast.loading(t('market.toast-messsage.transaction-pending'));
             setIsBuying(true);
 
             try {
@@ -152,13 +160,22 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
                 const txResult = await tx.wait();
 
                 if (txResult && txResult.transactionHash) {
-                    // dispatchMarketNotification(t('migration.migrate-button.confirmation-message'));
+                    toast.update(
+                        id,
+                        getSuccessToastOptions(
+                            t(
+                                `market.toast-messsage.${
+                                    showTicketBuy ? 'ticket-buy-success' : 'change-position-succes'
+                                }`
+                            )
+                        )
+                    );
                     setIsBuying(false);
                     setCurrentPositionOnContract(selectedPosition);
                 }
             } catch (e) {
                 console.log(e);
-                setTxErrorMessage(t('common.errors.unknown-error-try-again'));
+                toast.update(id, getErrorToastOptions(t('common.errors.unknown-error-try-again')));
                 setIsBuying(false);
             }
         }
@@ -167,7 +184,7 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
     const handleWithdraw = async () => {
         const { signer } = networkConnector;
         if (signer) {
-            setTxErrorMessage(null);
+            const id = toast.loading(t('market.toast-messsage.transaction-pending'));
             setIsWithdrawing(true);
 
             try {
@@ -177,14 +194,14 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
                 const txResult = await tx.wait();
 
                 if (txResult && txResult.transactionHash) {
-                    // dispatchMarketNotification(t('migration.migrate-button.confirmation-message'));
+                    toast.update(id, getSuccessToastOptions(t('market.toast-messsage.withdraw-success')));
                     setIsWithdrawing(false);
                     setCurrentPositionOnContract(0);
                     setSelectedPosition(0);
                 }
             } catch (e) {
                 console.log(e);
-                setTxErrorMessage(t('common.errors.unknown-error-try-again'));
+                toast.update(id, getErrorToastOptions(t('common.errors.unknown-error-try-again')));
                 setIsWithdrawing(false);
             }
         }
@@ -193,7 +210,7 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
     const handleCancel = async () => {
         const { marketManagerContract, signer } = networkConnector;
         if (marketManagerContract && signer) {
-            setTxErrorMessage(null);
+            const id = toast.loading(t('market.toast-messsage.transaction-pending'));
             setIsCanceling(true);
 
             try {
@@ -203,13 +220,12 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
                 const txResult = await tx.wait();
 
                 if (txResult && txResult.transactionHash) {
-                    // dispatchMarketNotification(t('migration.migrate-button.confirmation-message'));
+                    toast.update(id, getSuccessToastOptions(t('market.toast-messsage.cancel-market-success')));
                     setIsCanceling(false);
-                    // setAmount('');
                 }
             } catch (e) {
                 console.log(e);
-                setTxErrorMessage(t('common.errors.unknown-error-try-again'));
+                toast.update(id, getErrorToastOptions(t('common.errors.unknown-error-try-again')));
                 setIsCanceling(false);
             }
         }
@@ -316,11 +332,6 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
                             : t('market.button.cancel-progress-label')}
                     </MarketButton>
                 )}
-                <ValidationMessage
-                    showValidation={txErrorMessage !== null}
-                    message={txErrorMessage}
-                    onDismiss={() => setTxErrorMessage(null)}
-                />
             </ButtonContainer>
             {openApprovalModal && (
                 <ApprovalModal
