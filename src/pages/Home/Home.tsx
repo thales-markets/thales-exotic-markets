@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { FlexDivColumnCentered, FlexDivRow } from 'styles/common';
-import Footer from './Footer';
+// import Footer from './Footer';
 import { ReactComponent as HomepageExotic } from 'assets/images/home-exotic.svg';
 import SPAAnchor from 'components/SPAAnchor';
 import { buildHref } from 'utils/routes';
@@ -22,7 +22,7 @@ const Home: React.FC = () => {
                     </DappButtonContainer>
                 </SPAAnchor>
             </ContentContainer>
-            <Footer />
+            {/* <Footer /> */}
         </>
     );
 };

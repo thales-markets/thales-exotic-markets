@@ -2,7 +2,14 @@ import DatetimePicker from 'components/fields/DatetimePicker';
 import TextInput from 'components/fields/TextInput';
 import TextAreaInput from 'components/fields/TextAreaInput';
 import Toggle from 'components/fields/Toggle';
-import { DEFAULT_POSITIONING_DURATION, MarketType, MAXIMUM_INPUT_CHARACTERS, MAXIMUM_TAGS } from 'constants/markets';
+import {
+    DATE_PICKER_MAX_DATE,
+    DATE_PICKER_MIN_DATE,
+    DEFAULT_POSITIONING_DURATION,
+    MarketType,
+    MAXIMUM_INPUT_CHARACTERS,
+    MAXIMUM_TAGS,
+} from 'constants/markets';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
@@ -33,6 +40,15 @@ import { buildMarketLink, navigateTo } from 'utils/routes';
 import { toast } from 'react-toastify';
 import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
 import { formatCurrencyWithKey } from 'utils/formatters/number';
+import { endOfToday, isSameDay, setMonth, startOfToday } from 'date-fns';
+
+const calculateMinTime = (currentDate: Date, minDate: Date) => {
+    const isMinDateCurrentDate = isSameDay(currentDate, minDate);
+    if (isMinDateCurrentDate) {
+        return minDate;
+    }
+    return startOfToday();
+};
 
 const CreateMarket: React.FC = () => {
     const { t } = useTranslation();
@@ -50,12 +66,15 @@ const CreateMarket: React.FC = () => {
     const [isWithdrawalAllowed, setIsWithdrawalAllowed] = useState<boolean>(true);
     const [positions, setPositions] = useState<string[]>(new Array(2).fill(''));
     const [endOfPositioning, setEndOfPositioning] = useState<Date>(
-        setDateTimeToUtcNoon(new Date(new Date().getTime() + DEFAULT_POSITIONING_DURATION))
+        setDateTimeToUtcNoon(new Date(DATE_PICKER_MIN_DATE.getTime() + DEFAULT_POSITIONING_DURATION))
     );
     const [tags, setTags] = useState<Tag[]>([]);
     const [suggestions, setSuggestions] = useState<Tag[]>([]);
     const [paymentTokenBalance, setPaymentTokenBalance] = useState<number | string>('');
     const [openApprovalModal, setOpenApprovalModal] = useState<boolean>(false);
+    const [minTime, setMinTime] = useState<Date>(DATE_PICKER_MIN_DATE);
+    const [minDate, setMinDate] = useState<Date>(DATE_PICKER_MIN_DATE);
+    const [maxDate, setMaxDate] = useState<Date>(DATE_PICKER_MAX_DATE);
 
     const marketsParametersQuery = useMarketsParametersQuery(networkId, {
         enabled: isAppReady,
@@ -67,6 +86,16 @@ const CreateMarket: React.FC = () => {
         }
         return undefined;
     }, [marketsParametersQuery.isSuccess, marketsParametersQuery.data]);
+
+    const minimumPositioningDuration = marketsParameters ? marketsParameters.minimumPositioningDuration : 0;
+
+    useEffect(() => {
+        const minDate = new Date((Date.now() / 1000 + minimumPositioningDuration) * 1000);
+        const minTime = calculateMinTime(endOfPositioning, minDate);
+        setMinTime(minTime);
+        setMinDate(minDate);
+        setMaxDate(setMonth(minDate, minDate.getMonth() + 1));
+    }, [minimumPositioningDuration]);
 
     const tagsQuery = useTagsQuery(networkId, {
         enabled: isAppReady,
@@ -304,6 +333,12 @@ const CreateMarket: React.FC = () => {
         setTags(newTags);
     };
 
+    const handleEndOfPositioningChange = (date: Date) => {
+        setEndOfPositioning(convertLocalToUTCDate(minDate > date ? minDate : maxDate < date ? maxDate : date));
+        const minTime = calculateMinTime(date, minDate);
+        setMinTime(minTime);
+    };
+
     return (
         <Container>
             <ContentWrapper>
@@ -340,9 +375,13 @@ const CreateMarket: React.FC = () => {
                     />
                     <DatetimePicker
                         selected={convertUTCToLocalDate(endOfPositioning)}
-                        onChange={(date: Date) => setEndOfPositioning(convertLocalToUTCDate(date))}
+                        onChange={handleEndOfPositioningChange}
                         label={t('market.create-market.positioning-end-label')}
                         disabled={isSubmitting}
+                        minTime={minTime}
+                        maxTime={endOfToday()}
+                        minDate={minDate}
+                        maxDate={maxDate}
                     />
                     <Toggle
                         isLeftOptionSelected={marketType === MarketType.TICKET}

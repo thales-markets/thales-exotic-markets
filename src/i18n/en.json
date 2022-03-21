@@ -143,7 +143,7 @@
                 "all": "All markets",
                 "disputed": "Disputed",
                 "yourpositions": "Your positions",
-                "claim": "Claim",
+                "claim": "Claimable",
                 "history": "History"
             },
             "all": "All"
@@ -175,7 +175,7 @@
                 "open-bid": "Open bid"
             },
             "ticket-price-label": "Ticket price",
-            "withdraw-label": "Withdraw",
+            "withdraw-label": "Withdrawals",
             "withdraw-options": {
                 "enabled": "Enabled",
                 "disabled": "Disabled"
