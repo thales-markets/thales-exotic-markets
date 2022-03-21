@@ -98,6 +98,9 @@ export type DisputeContractData = {
     isInPositioningPhase: boolean;
     isMarketClosedForDisputes: boolean;
     isOpenDisputeCancelled: boolean;
+    disputeWinningPositionChoosen: number;
+    firstMemberThatChooseWinningPosition: string;
+    acceptResultVotesCount: number;
 };
 
 export type DisputeVoteInfo = {
@@ -107,6 +110,7 @@ export type DisputeVoteInfo = {
     dispute: number;
     voter: string;
     vote: number;
+    position: number;
 };
 
 export type DisputeVotes = DisputeVoteInfo[];
@@ -124,6 +128,10 @@ export type DisputeData = {
     disputeVotingResults: DisputeVotingResults;
     status: DisputeStatus;
     isOpenForVoting: boolean;
+};
+
+export type AccountDisputeData = {
+    canDisputorClaimbackBondFromUnclosedDispute: boolean;
 };
 
 export type AccountPosition = {

@@ -108,7 +108,7 @@ export const TimeRemaining: React.FC<TimeRemainingProps> = ({
 
 const Container = styled.span<{ fontSize?: number; fontWeight?: number; duration: Duration; showBorder?: boolean }>`
     font-size: ${(props) => props.fontSize || 25}px;
-    font-wight: ${(props) => props.fontWeight || 400};
+    font-weight: ${(props) => props.fontWeight || 400};
     color: ${(props) => props.theme.textColor.primary};
     text-align: center;
 `;

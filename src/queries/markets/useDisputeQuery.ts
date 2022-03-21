@@ -30,6 +30,9 @@ const useDisputeQuery = (
                     isMarketClosedForDisputes,
                     isDisputeOpen,
                     isOpenDisputeCancelled,
+                    disputeWinningPositionChoosen,
+                    firstMemberThatChooseWinningPosition,
+                    acceptResultVotesCount,
                 ] = await Promise.all([
                     thalesData.exoticMarkets.disputeVotes({
                         market: marketAddress,
@@ -40,6 +43,13 @@ const useDisputeQuery = (
                     thalesOracleCouncilContract.isMarketClosedForDisputes(marketAddress),
                     thalesOracleCouncilContract.isDisputeOpen(marketAddress, dispute),
                     thalesOracleCouncilContract.isOpenDisputeCancelled(marketAddress, dispute),
+                    thalesOracleCouncilContract.disputeWinningPositionChoosen(marketAddress, dispute),
+                    thalesOracleCouncilContract.firstMemberThatChoseWinningPosition(marketAddress),
+                    thalesOracleCouncilContract.disputeVotesCount(
+                        marketAddress,
+                        dispute,
+                        DisputeVotingOption.ACCEPT_RESULT
+                    ),
                 ]);
 
                 const [disputer, reasonForDispute, votedOption, timestamp, isInPositioningPhase] = contractData;
@@ -52,6 +62,9 @@ const useDisputeQuery = (
                     isInPositioningPhase,
                     isMarketClosedForDisputes,
                     isOpenDisputeCancelled,
+                    disputeWinningPositionChoosen: Number(disputeWinningPositionChoosen),
+                    firstMemberThatChooseWinningPosition,
+                    acceptResultVotesCount: Number(acceptResultVotesCount),
                 };
 
                 const disputeVotingOptions = isInPositioningPhase

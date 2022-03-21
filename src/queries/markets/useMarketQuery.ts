@@ -11,9 +11,17 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
         QUERY_KEYS.Market(marketAddress),
         async () => {
             const { marketDataContract, thalesOracleCouncilContract, marketManagerContract } = networkConnector;
-            const [allMarketData, isMarketClosedForDisputes, claimTimeoutDefaultPeriod] = await Promise.all([
+            const [
+                allMarketData,
+                isMarketClosedForDisputes,
+                numberOfDisputes,
+                numberOfOpenDisputes,
+                claimTimeoutDefaultPeriod,
+            ] = await Promise.all([
                 marketDataContract?.getAllMarketData(marketAddress),
                 thalesOracleCouncilContract?.isMarketClosedForDisputes(marketAddress),
+                thalesOracleCouncilContract?.marketTotalDisputes(marketAddress),
+                thalesOracleCouncilContract?.getMarketOpenDisputes(marketAddress),
                 marketManagerContract?.claimTimeoutDefaultPeriod(),
             ]);
 
@@ -69,8 +77,8 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                 claimablePoolSize: bigNumberFormatter(claimablePoolSize),
                 poolSizePerPosition: poolSizePerPosition.map((item: BigNumberish) => bigNumberFormatter(item)),
                 isOpen: !isResolved,
-                numberOfDisputes: 0,
-                numberOfOpenDisputes: 0,
+                numberOfDisputes: Number(numberOfDisputes),
+                numberOfOpenDisputes: Number(numberOfOpenDisputes),
                 canUsersPlacePosition,
                 canMarketBeResolved,
                 canMarketBeResolvedByPDAO,

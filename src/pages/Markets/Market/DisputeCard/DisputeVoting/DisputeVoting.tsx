@@ -1,5 +1,6 @@
 import Button from 'components/Button';
 import RadioButton from 'components/fields/RadioButton';
+import WarningMessage from 'components/WarningMessage';
 import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
 import {
     DisputeVotingOption,
@@ -9,10 +10,13 @@ import {
 } from 'constants/markets';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import { getWalletAddress } from 'redux/modules/wallet';
+import { RootState } from 'redux/rootReducer';
 import styled from 'styled-components';
 import { FlexDivColumn } from 'styles/common';
-import { DisputeInfo } from 'types/markets';
+import { DisputeContractData, DisputeInfo } from 'types/markets';
 import networkConnector from 'utils/networkConnector';
 
 type DisputeVotingProps = {
@@ -20,6 +24,7 @@ type DisputeVotingProps = {
     disputeInfo: DisputeInfo;
     positions: string[];
     positionOnContract: number;
+    disputeContractData: DisputeContractData;
 };
 
 const DisputeVoting: React.FC<DisputeVotingProps> = ({
@@ -27,8 +32,10 @@ const DisputeVoting: React.FC<DisputeVotingProps> = ({
     disputeInfo,
     positions,
     positionOnContract,
+    disputeContractData,
 }) => {
     const { t } = useTranslation();
+    const walletAddress = useSelector((state: RootState) => getWalletAddress(state)) || '';
     const [vote, setVote] = useState<number>(voteOnContract);
     const [selectedPosition, setSelectedPosition] = useState<number>(positionOnContract);
     const [currentVoteOnContract, setCurrentVoteOnContract] = useState<number>(voteOnContract);
@@ -45,7 +52,32 @@ const DisputeVoting: React.FC<DisputeVotingProps> = ({
     const isPositionSelected =
         (vote === DisputeVotingOption.ACCEPT_RESULT && selectedPosition > 0) ||
         vote !== DisputeVotingOption.ACCEPT_RESULT;
-    const isButtonDisabled = isSubmitting || !isVoteSelected || !isPositionSelected;
+
+    const isDisputeWinningPositionChoosen = disputeContractData.disputeWinningPositionChoosen > 0;
+    const isFirstMemberThatChooseWinningPosition =
+        walletAddress.toLowerCase() === disputeContractData.firstMemberThatChooseWinningPosition.toLowerCase();
+
+    const showWinningPositionMismatchWarning =
+        isDisputeWinningPositionChoosen &&
+        !isFirstMemberThatChooseWinningPosition &&
+        isPositionSelected &&
+        vote === DisputeVotingOption.ACCEPT_RESULT &&
+        disputeContractData.disputeWinningPositionChoosen !== selectedPosition;
+
+    const showFirstMemberChangePositionWarning =
+        isDisputeWinningPositionChoosen &&
+        isFirstMemberThatChooseWinningPosition &&
+        isPositionSelected &&
+        vote === DisputeVotingOption.ACCEPT_RESULT &&
+        disputeContractData.disputeWinningPositionChoosen !== selectedPosition &&
+        disputeContractData.acceptResultVotesCount > 1;
+
+    const isButtonDisabled =
+        isSubmitting ||
+        !isVoteSelected ||
+        !isPositionSelected ||
+        showWinningPositionMismatchWarning ||
+        showFirstMemberChangePositionWarning;
 
     const handleVote = async () => {
         const { thalesOracleCouncilContract, signer } = networkConnector;
@@ -146,6 +178,14 @@ const DisputeVoting: React.FC<DisputeVotingProps> = ({
                 );
             })}
             {getSubmitButton()}
+            <WarningContainer>
+                {showWinningPositionMismatchWarning && (
+                    <WarningMessage message={t('market.dispute.voting-warning-message.winning-position-mismatch')} />
+                )}
+                {showFirstMemberChangePositionWarning && (
+                    <WarningMessage message={t('market.dispute.voting-warning-message.first-member-change-position')} />
+                )}
+            </WarningContainer>
         </Container>
     );
 };
@@ -192,6 +232,12 @@ const VoteButton = styled(Button)`
     font-size: 15px;
     padding: 4px 10px;
     margin-top: 10px;
+`;
+
+const WarningContainer = styled(FlexDivColumn)`
+    div {
+        font-size: 13px;
+    }
 `;
 
 export default DisputeVoting;

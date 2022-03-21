@@ -114,7 +114,9 @@ const Home: React.FC = () => {
         }
         switch (globalFilter) {
             case GlobalFilterEnum.Disputed:
-                filteredMarkets = filteredMarkets.filter((market: MarketInfo) => market.numberOfOpenDisputes > 0);
+                filteredMarkets = filteredMarkets.filter(
+                    (market: MarketInfo) => market.numberOfOpenDisputes > 0 && !market.isMarketClosedForDisputes
+                );
                 break;
             case GlobalFilterEnum.YourPositions:
                 filteredMarkets = filteredMarkets.filter((market: MarketInfo) => {

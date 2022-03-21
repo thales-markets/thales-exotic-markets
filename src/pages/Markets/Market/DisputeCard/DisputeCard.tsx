@@ -43,7 +43,7 @@ const DisputeCard: React.FC<DisputeCardProps> = ({ disputeInfo, isOracleCouncilM
             if (walletVote) {
                 return {
                     voteOnContract: walletVote.vote,
-                    positionOnContract: walletVote.vote,
+                    positionOnContract: walletVote.position,
                 };
             }
         }
@@ -57,9 +57,14 @@ const DisputeCard: React.FC<DisputeCardProps> = ({ disputeInfo, isOracleCouncilM
     const showDisputeVotingResults = disputeData && disputeData.status !== DisputeStatus.Cancelled;
     const showDisputeVotingData = showDisputeVoting || showDisputeVotingResults;
 
+    const disputeWinningPosition =
+        disputeData && disputeData.disputeContractData.disputeWinningPositionChoosen > 0
+            ? positions[disputeData.disputeContractData.disputeWinningPositionChoosen - 1]
+            : undefined;
+
     return (
         <Container>
-            <DisputeOverview disputeInfo={disputeInfo} status={disputeData ? disputeData.status : ''} />
+            <DisputeOverview disputeInfo={disputeInfo} status={disputeData ? disputeData.status : undefined} />
             {showDisputeVotingData && (
                 <VotingContainer>
                     {showDisputeVoting && (
@@ -68,10 +73,14 @@ const DisputeCard: React.FC<DisputeCardProps> = ({ disputeInfo, isOracleCouncilM
                             disputeInfo={disputeInfo}
                             positions={positions}
                             positionOnContract={positionOnContract}
+                            disputeContractData={disputeData.disputeContractData}
                         />
                     )}
                     {showDisputeVotingResults && (
-                        <DisputeVotingResults votingResults={disputeData.disputeVotingResults} />
+                        <DisputeVotingResults
+                            votingResults={disputeData.disputeVotingResults}
+                            disputeWinningPosition={disputeWinningPosition}
+                        />
                     )}
                 </VotingContainer>
             )}

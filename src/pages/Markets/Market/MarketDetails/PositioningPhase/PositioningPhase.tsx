@@ -88,6 +88,8 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
         !hasAllowance ||
         insufficientBalance ||
         !isPositionSelected;
+    const isChangePositionButtonDisabled =
+        isBuying || isWithdrawing || isCanceling || !isWalletConnected || !isPositionSelected;
     const isWithdrawButtonDisabled = isBuying || isWithdrawing || isCanceling || !isWalletConnected;
     const isCancelButtonDisabled = isBuying || isWithdrawing || isCanceling || !isWalletConnected;
 
@@ -114,7 +116,7 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
                 getAllowance();
             }
         }
-    }, [walletAddress, isWalletConnected, hasAllowance, market.ticketPrice, isAllowing]);
+    }, [walletAddress, isWalletConnected, hasAllowance, market.ticketPrice, isAllowing, isBuying, isWithdrawing]);
 
     const handleAllowance = async (approveAmount: BigNumber) => {
         const { paymentTokenContract, signer } = networkConnector;
@@ -165,7 +167,7 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
                         getSuccessToastOptions(
                             t(
                                 `market.toast-messsage.${
-                                    showTicketBuy ? 'ticket-buy-success' : 'change-position-succes'
+                                    showTicketBuy ? 'ticket-buy-success' : 'change-position-success'
                                 }`
                             )
                         )
@@ -239,7 +241,7 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
                 </MarketButton>
             );
         }
-        if (insufficientBalance) {
+        if (insufficientBalance && showTicketBuy) {
             return (
                 <MarketButton type="secondary" disabled={true}>
                     {t(`common.errors.insufficient-balance`)}
@@ -253,7 +255,7 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
                 </MarketButton>
             );
         }
-        if (!hasAllowance) {
+        if (!hasAllowance && showTicketBuy) {
             return (
                 <MarketButton type="secondary" disabled={isAllowing} onClick={() => setOpenApprovalModal(true)}>
                     {!isAllowing
@@ -274,7 +276,7 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
         return (
             <>
                 {showTicketChangePosition && (
-                    <MarketButton type="secondary" disabled={isBuyButtonDisabled} onClick={handleBuy}>
+                    <MarketButton type="secondary" disabled={isChangePositionButtonDisabled} onClick={handleBuy}>
                         {!isBuying
                             ? t('market.button.change-position-label')
                             : t('market.button.change-position-progress-label')}

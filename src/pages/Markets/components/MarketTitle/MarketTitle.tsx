@@ -21,7 +21,7 @@ const Title = styled.span<{ fontSize?: number; marginBottom?: number }>`
     line-height: 100%;
     text-align: center;
     color: ${(props) => props.theme.textColor.primary};
-    margin-bottom: ${(props) => props.marginBottom || 25}px;
+    margin-bottom: ${(props) => props.marginBottom || 35}px;
 `;
 
 export default MarketTitle;

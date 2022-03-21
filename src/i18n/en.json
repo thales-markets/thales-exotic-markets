@@ -94,7 +94,9 @@
             "resolve-pending-disputed": "Resolve pending - under dispute",
             "resolved-pending-confirmation": "Resolved - pending confirmation",
             "resolved-disputed": "Resolved - under dispute",
-            "resolved-confirmed": "Resolved"
+            "resolved-confirmed": "Resolved",
+            "claim-available": "Claim available",
+            "cancelled-refund-available": "Cancelled - refund available"
         },
         "pool-size-label": "Pool size",
         "total-pool-size-label": "Total pool size",
@@ -104,6 +106,7 @@
         "claim-winnings-label": "Claim winnings",
         "claim-refund-label": "Claim refund",
         "nothing-to-claim-label": "Nothing to claim",
+        "open-disputes-label": "Open disputes",
         "button": {
             "open-dispute-label": "Open dispute",
             "create-market-label": "Create market",
@@ -208,7 +211,9 @@
                 "vote-label": "Vote",
                 "vote-progress-label": "Voting in progress...",
                 "change-vote-label": "Change vote",
-                "change-vote-progress-label": "Voting in progress..."
+                "change-vote-progress-label": "Voting in progress...",
+                "claim-refund-label": "Claim refund",
+                "claim-refund-progress-label": "Claiming in progress..."
             },
             "status": {
                 "open": "Open",
@@ -227,6 +232,10 @@
                 "accept-result": "Accept the dispute and set a result",
                 "accept-reset": "Accept the dispute and reset market result",
                 "refuse-mature": "Refuse the dispute"
+            },
+            "voting-warning-message": {
+                "winning-position-mismatch": "Winning position mismatch. The other council member set the initial winning position. Use the initial winning position or vote for reset.",
+                "first-member-change-position": "You can not change the initial winning position. Other council members also voted for the same result. Use the initial winning position or vote for reset."
             }
         }
     }

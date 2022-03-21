@@ -1,14 +1,13 @@
 import MarketStatus from 'pages/Markets/components/MarketStatus';
 import MarketTitle from 'pages/Markets/components/MarketTitle';
-import OpenDisputeButton from 'pages/Markets/components/OpenDisputeButton';
 import Tags from 'pages/Markets/components/Tags';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { FlexDivColumnCentered, FlexDivRow, FlexDivColumn } from 'styles/common';
+import { FlexDivColumnCentered, FlexDivRow } from 'styles/common';
 import { AccountPosition, MarketInfo } from 'types/markets';
-import { buildOpenDisputeLink, navigateTo } from 'utils/routes';
 import { MarketStatus as MarketStatusEnum } from 'constants/markets';
+import OpenDisputeInfo from 'pages/Markets/components/OpenDisputeInfo';
 
 type MarketCardProps = {
     market: MarketInfo;
@@ -23,6 +22,8 @@ const MarketCard: React.FC<MarketCardProps> = ({ market, accountPosition }) => {
         !!accountPosition &&
         (accountPosition.position === market.winningPosition ||
             (accountPosition.position > 0 && market.status === MarketStatusEnum.CancelledConfirmed));
+
+    const showNumberOfOpenDisputes = !market.canUsersClaim;
 
     return (
         <Container isClaimAvailable={isClaimAvailable}>
@@ -42,20 +43,16 @@ const MarketCard: React.FC<MarketCardProps> = ({ market, accountPosition }) => {
                     </Position>
                 ))}
             </Positions>
-            <MarketStatus market={market} />
+            <MarketStatus market={market} fontWeight={700} isClaimAvailable={isClaimAvailable} />
             <CardFooter>
                 <Tags tags={market.tags} />
-                <ButtonsContainer>
-                    <OpenDisputeButton
-                        numberOfOpenDisputes={market.numberOfOpenDisputes}
-                        onClick={(e: any) => {
-                            e.preventDefault();
-                            navigateTo(buildOpenDisputeLink(market.address));
-                        }}
+                {showNumberOfOpenDisputes && (
+                    <OpenDisputeInfo
+                        numberOfOpenDisputes={market.isMarketClosedForDisputes ? 0 : market.numberOfOpenDisputes}
                     >
-                        {t('market.button.open-dispute-label')}
-                    </OpenDisputeButton>
-                </ButtonsContainer>
+                        {t('market.open-disputes-label')}
+                    </OpenDisputeInfo>
+                )}
             </CardFooter>
         </Container>
     );
@@ -67,15 +64,15 @@ const Container = styled(FlexDivColumnCentered)<{ isClaimAvailable: boolean }>`
     box-sizing: border-box;
     border-radius: 25px;
     padding: 20px;
-    margin: 7.5px;
+    margin: 8px 4px 8px 4px;
     &:hover {
         background: ${(props) => props.theme.background.secondary};
     }
 `;
 
 const Positions = styled(FlexDivColumnCentered)`
-    margin-bottom: 25px;
-    align-items: start;
+    margin-bottom: 20px;
+    align-items: center;
     align-self: center;
     padding: 0 20px;
 `;
@@ -83,9 +80,11 @@ const Positions = styled(FlexDivColumnCentered)`
 const Position = styled.label`
     display: block;
     position: relative;
+    margin-bottom: 20px;
+    text-align: center;
+    cursor: pointer;
     &.disabled {
         opacity: 0.4;
-        cursor: default;
     }
 `;
 
@@ -93,7 +92,7 @@ const PositionLabel = styled.span`
     font-style: normal;
     font-weight: bold;
     font-size: 20px;
-    line-height: 27px;
+    line-height: 100%;
     color: ${(props) => props.theme.textColor.primary};
 `;
 
@@ -102,7 +101,7 @@ const Checkmark = styled.span`
         content: '';
         position: absolute;
         left: -17px;
-        top: 3px;
+        top: -1px;
         width: 5px;
         height: 14px;
         border: solid ${(props) => props.theme.borderColor.primary};
@@ -115,15 +114,7 @@ const Checkmark = styled.span`
 
 const CardFooter = styled(FlexDivRow)`
     margin-top: 25px;
-`;
-
-const ButtonsContainer = styled(FlexDivColumn)`
     align-items: end;
-    button {
-        &:first-child {
-            margin-bottom: 4px;
-        }
-    }
 `;
 
 export default MarketCard;
