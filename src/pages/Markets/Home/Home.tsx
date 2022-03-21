@@ -98,8 +98,9 @@ const Home: React.FC = () => {
             return (
                 !!accountPosition &&
                 market.canUsersClaim &&
+                accountPosition.position > 0 &&
                 (accountPosition.position === market.winningPosition ||
-                    (accountPosition.position > 0 && market.status === MarketStatus.CancelledConfirmed))
+                    market.status === MarketStatus.CancelledConfirmed)
             );
         }).length;
     }, [markets, accountPositions]);
@@ -130,8 +131,9 @@ const Home: React.FC = () => {
                     return (
                         !!accountPosition &&
                         market.canUsersClaim &&
+                        accountPosition.position > 0 &&
                         (accountPosition.position === market.winningPosition ||
-                            (accountPosition.position > 0 && market.status === MarketStatus.CancelledConfirmed))
+                            market.status === MarketStatus.CancelledConfirmed)
                     );
                 });
                 break;

@@ -24,7 +24,7 @@ import networkConnector from 'utils/networkConnector';
 import { BigNumber, ethers } from 'ethers';
 import { MAX_GAS_LIMIT } from 'constants/network';
 import onboardConnector from 'utils/onboardConnector';
-import { PAYMENT_CURRENCY } from 'constants/currency';
+import { DEFAULT_CURRENCY_DECIMALS, PAYMENT_CURRENCY } from 'constants/currency';
 import usePaymentTokenBalanceQuery from 'queries/wallet/usePaymentTokenBalanceQuery';
 import NumericInput from 'components/fields/NumericInput';
 import ApprovalModal from 'components/ApprovalModal';
@@ -32,6 +32,7 @@ import useTagsQuery from 'queries/markets/useTagsQuery';
 import { buildMarketLink, navigateTo } from 'utils/routes';
 import { toast } from 'react-toastify';
 import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
+import { formatCurrencyWithKey } from 'utils/formatters/number';
 
 const CreateMarket: React.FC = () => {
     const { t } = useTranslation();
@@ -380,7 +381,19 @@ const CreateMarket: React.FC = () => {
                         label={t('market.create-market.tags-label', { max: MAXIMUM_TAGS })}
                         disabled={isSubmitting}
                     />
-                    <ButtonContainer>{getSubmitButton()}</ButtonContainer>
+                    <ButtonContainer>
+                        <BondInfo>
+                            {t('market.create-market.bond-info', {
+                                amount: formatCurrencyWithKey(
+                                    PAYMENT_CURRENCY,
+                                    fixedBondAmount,
+                                    DEFAULT_CURRENCY_DECIMALS,
+                                    true
+                                ),
+                            })}
+                        </BondInfo>
+                        {getSubmitButton()}
+                    </ButtonContainer>
                 </Form>
                 <Description />
             </ContentWrapper>
@@ -426,6 +439,12 @@ const CreateMarketButton = styled(Button)`
 const ButtonContainer = styled(FlexDivColumn)`
     margin: 40px 0 0 0;
     align-items: center;
+`;
+
+const BondInfo = styled.div`
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 10px;
 `;
 
 export default CreateMarket;

@@ -18,10 +18,10 @@ const MarketCard: React.FC<MarketCardProps> = ({ market, accountPosition }) => {
     const { t } = useTranslation();
 
     const isClaimAvailable =
-        market.canUsersClaim &&
         !!accountPosition &&
-        (accountPosition.position === market.winningPosition ||
-            (accountPosition.position > 0 && market.status === MarketStatusEnum.CancelledConfirmed));
+        market.canUsersClaim &&
+        accountPosition.position > 0 &&
+        (accountPosition.position === market.winningPosition || market.status === MarketStatusEnum.CancelledConfirmed);
 
     const showNumberOfOpenDisputes = !market.canUsersClaim;
 

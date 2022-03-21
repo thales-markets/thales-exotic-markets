@@ -188,7 +188,8 @@
             "button": {
                 "create-market-label": "Create market",
                 "create-market-progress-label": "Creating in progress..."
-            }
+            },
+            "bond-info": "In order to create market you need to put a bond of {{amount}}"
         },
         "resolve-market": {
             "title": "Resolve market"
