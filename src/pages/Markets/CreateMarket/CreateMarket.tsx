@@ -90,7 +90,7 @@ const CreateMarket: React.FC = () => {
     const minimumPositioningDuration = marketsParameters ? marketsParameters.minimumPositioningDuration : 0;
 
     useEffect(() => {
-        const minDate = new Date((Date.now() / 1000 + minimumPositioningDuration) * 1000);
+        const minDate = convertUTCToLocalDate(new Date((Date.now() / 1000 + minimumPositioningDuration) * 1000));
         const minTime = calculateMinTime(endOfPositioning, minDate);
         setMinTime(minTime);
         setMinDate(minDate);
@@ -125,6 +125,7 @@ const CreateMarket: React.FC = () => {
     }, [paymentTokenBalanceQuery.isSuccess, paymentTokenBalanceQuery.data]);
 
     const fixedBondAmount = marketsParameters ? marketsParameters.fixedBondAmount : 0;
+    const creationRestrictedToOwner = marketsParameters ? marketsParameters.creationRestrictedToOwner : false;
 
     const isQuestionEntered = question.trim() !== '';
     const isDataSourceEntered = dataSource.trim() !== '';
@@ -139,7 +140,12 @@ const CreateMarket: React.FC = () => {
         isQuestionEntered && isDataSourceEntered && isTicketPriceEntered && arePositionsEntered && areTagsEntered;
 
     const isButtonDisabled =
-        isSubmitting || !isWalletConnected || !hasAllowance || !areMarketDataEntered || insufficientBalance;
+        isSubmitting ||
+        !isWalletConnected ||
+        !hasAllowance ||
+        !areMarketDataEntered ||
+        insufficientBalance ||
+        creationRestrictedToOwner;
 
     useEffect(() => {
         const { paymentTokenContract, thalesBondsContract, signer } = networkConnector;

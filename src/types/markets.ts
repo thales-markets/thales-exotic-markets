@@ -68,6 +68,7 @@ export type MarketsParameters = {
     withdrawalPercentage: number;
     disputePrice: number;
     paymentToken: string;
+    creationRestrictedToOwner: boolean;
 };
 
 export type TagInfo = {
