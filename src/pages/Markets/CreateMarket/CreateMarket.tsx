@@ -8,7 +8,9 @@ import {
     DEFAULT_POSITIONING_DURATION,
     MarketType,
     MAXIMUM_INPUT_CHARACTERS,
+    MAXIMUM_POSITIONS,
     MAXIMUM_TAGS,
+    MINIMUM_TICKET_PRICE,
 } from 'constants/markets';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -42,6 +44,7 @@ import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
 import { formatCurrencyWithKey } from 'utils/formatters/number';
 import { endOfToday, isSameDay, setMonth, startOfToday } from 'date-fns';
 import WarningMessage from 'components/WarningMessage';
+import { BondInfo } from 'components/common';
 
 const calculateMinTime = (currentDate: Date, minDate: Date) => {
     const isMinDateCurrentDate = isSameDay(currentDate, minDate);
@@ -76,6 +79,7 @@ const CreateMarket: React.FC = () => {
     const [minTime, setMinTime] = useState<Date>(DATE_PICKER_MIN_DATE);
     const [minDate, setMinDate] = useState<Date>(DATE_PICKER_MIN_DATE);
     const [maxDate, setMaxDate] = useState<Date>(DATE_PICKER_MAX_DATE);
+    const [isTicketPriceValid, setIsTicketPriceValid] = useState<boolean>(true);
 
     const marketsParametersQuery = useMarketsParametersQuery(networkId, {
         enabled: isAppReady,
@@ -129,6 +133,8 @@ const CreateMarket: React.FC = () => {
     const creationRestrictedToOwner = marketsParameters
         ? marketsParameters.creationRestrictedToOwner && marketsParameters.owner !== walletAddress
         : false;
+    const maxNumberOfTags = marketsParameters ? marketsParameters.maxNumberOfTags : MAXIMUM_TAGS;
+    const maximumPositionsAllowed = marketsParameters ? marketsParameters.maximumPositionsAllowed : MAXIMUM_POSITIONS;
 
     const isQuestionEntered = question.trim() !== '';
     const isDataSourceEntered = dataSource.trim() !== '';
@@ -148,7 +154,8 @@ const CreateMarket: React.FC = () => {
         !hasAllowance ||
         !areMarketDataEntered ||
         insufficientBalance ||
-        creationRestrictedToOwner;
+        creationRestrictedToOwner ||
+        !isTicketPriceValid;
 
     useEffect(() => {
         const { paymentTokenContract, thalesBondsContract, signer } = networkConnector;
@@ -286,6 +293,9 @@ const CreateMarket: React.FC = () => {
         if (insufficientBalance) {
             return <CreateMarketButton disabled={true}>{t(`common.errors.insufficient-balance`)}</CreateMarketButton>;
         }
+        if (!isTicketPriceValid) {
+            return <CreateMarketButton disabled={true}>{t(`common.errors.invalid-ticket-price`)}</CreateMarketButton>;
+        }
         if (!areMarketDataEntered) {
             return <CreateMarketButton disabled={true}>{getEnterMarketDataMessage()}</CreateMarketButton>;
         }
@@ -327,7 +337,7 @@ const CreateMarket: React.FC = () => {
 
     const addTag = (tag: Tag) => {
         const tagIndex = tags.findIndex((tagItem: Tag) => tag.id === tagItem.id);
-        if (tagIndex === -1 && tags.length < MAXIMUM_TAGS) {
+        if (tagIndex === -1 && tags.length < maxNumberOfTags) {
             const suggestionsTagIndex = suggestions.findIndex((tagItem: Tag) => tag.id === tagItem.id);
             const newSuggestions = [...suggestions];
             newSuggestions[suggestionsTagIndex].disabled = true;
@@ -354,6 +364,14 @@ const CreateMarket: React.FC = () => {
         const minTime = calculateMinTime(date, minDate);
         setMinTime(minTime);
     };
+
+    useEffect(() => {
+        setIsTicketPriceValid(
+            (marketType === MarketType.TICKET && Number(ticketPrice) === 0) ||
+                (Number(ticketPrice) > 0 && Number(ticketPrice) >= MINIMUM_TICKET_PRICE) ||
+                marketType === MarketType.OPEN_BID
+        );
+    }, [ticketPrice, marketType]);
 
     return (
         <Container>
@@ -393,6 +411,7 @@ const CreateMarket: React.FC = () => {
                         onPositionChange={setPositionText}
                         label={t('market.create-market.positions-label')}
                         disabled={isSubmitting || creationRestrictedToOwner}
+                        maxPositions={maximumPositionsAllowed}
                     />
                     <DatetimePicker
                         selected={convertUTCToLocalDate(endOfPositioning)}
@@ -412,7 +431,8 @@ const CreateMarket: React.FC = () => {
                         label={t('market.create-market.type-label')}
                         leftText={t('market.create-market.type-options.ticket')}
                         rightText={t('market.create-market.type-options.open-bid')}
-                        disabled={isSubmitting || creationRestrictedToOwner}
+                        // disabled={isSubmitting || creationRestrictedToOwner}
+                        disabled={true}
                     />
                     {marketType === MarketType.TICKET && (
                         <NumericInput
@@ -421,6 +441,15 @@ const CreateMarket: React.FC = () => {
                             label={t('market.create-market.ticket-price-label')}
                             currencyLabel={PAYMENT_CURRENCY}
                             disabled={isSubmitting || creationRestrictedToOwner}
+                            showValidation={!isTicketPriceValid}
+                            validationMessage={t(`common.errors.invalid-ticket-price-min`, {
+                                min: formatCurrencyWithKey(
+                                    PAYMENT_CURRENCY,
+                                    MINIMUM_TICKET_PRICE,
+                                    DEFAULT_CURRENCY_DECIMALS,
+                                    true
+                                ),
+                            })}
                         />
                     )}
                     <Toggle
@@ -438,8 +467,9 @@ const CreateMarket: React.FC = () => {
                         suggestions={suggestions}
                         onTagAdd={addTag}
                         onTagRemove={removeTag}
-                        label={t('market.create-market.tags-label', { max: MAXIMUM_TAGS })}
+                        label={t('market.create-market.tags-label', { max: maxNumberOfTags })}
                         disabled={isSubmitting || creationRestrictedToOwner}
+                        maxTags={maxNumberOfTags}
                     />
                     <ButtonContainer>
                         <BondInfo>
@@ -499,12 +529,6 @@ const CreateMarketButton = styled(Button)`
 const ButtonContainer = styled(FlexDivColumn)`
     margin: 40px 0 0 0;
     align-items: center;
-`;
-
-const BondInfo = styled.div`
-    font-size: 15px;
-    font-weight: 700;
-    margin-bottom: 10px;
 `;
 
 export default CreateMarket;

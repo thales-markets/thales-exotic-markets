@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { FlexDivCentered, FlexDivColumn } from 'styles/common';
+import { FlexDivColumn } from 'styles/common';
 import Button from 'components/Button';
 import { useSelector } from 'react-redux';
 import { RootState } from 'redux/rootReducer';
@@ -13,13 +13,15 @@ import networkConnector from 'utils/networkConnector';
 import { BigNumber, ethers } from 'ethers';
 import { checkAllowance } from 'utils/network';
 import onboardConnector from 'utils/onboardConnector';
-import { PAYMENT_CURRENCY } from 'constants/currency';
+import { DEFAULT_CURRENCY_DECIMALS, PAYMENT_CURRENCY } from 'constants/currency';
 import ApprovalModal from 'components/ApprovalModal';
 import usePaymentTokenBalanceQuery from 'queries/wallet/usePaymentTokenBalanceQuery';
 import { MAX_GAS_LIMIT } from 'constants/network';
 import RadioButton from 'components/fields/RadioButton';
 import { toast } from 'react-toastify';
 import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
+import { formatCurrencyWithKey } from 'utils/formatters/number';
+import { BondInfo } from 'components/common';
 
 type ResolveMarketProps = {
     marketAddress: string;
@@ -92,7 +94,7 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ marketAddress, positions,
                     console.log(e);
                 }
             };
-            if (isWalletConnected) {
+            if (isWalletConnected && !isMarketCreator) {
                 getAllowance();
             }
         }
@@ -165,11 +167,7 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ marketAddress, positions,
             return <MarketButton disabled={true}>{t(`common.errors.insufficient-balance`)}</MarketButton>;
         }
         if (!isOutcomePositionSelected) {
-            return (
-                <MarketButton type="secondary" disabled={true}>
-                    {t(`common.errors.select-outcome`)}
-                </MarketButton>
-            );
+            return <MarketButton disabled={true}>{t(`common.errors.select-outcome`)}</MarketButton>;
         }
         if (!hasAllowance && !isMarketCreator) {
             return (
@@ -209,7 +207,21 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ marketAddress, positions,
                     );
                 })}
             </Positions>
-            <ButtonContainer>{getSubmitButton()}</ButtonContainer>
+            <ButtonContainer>
+                {!isMarketCreator && (
+                    <BondInfo>
+                        {t('market.resolve-market.bond-info', {
+                            amount: formatCurrencyWithKey(
+                                PAYMENT_CURRENCY,
+                                fixedBondAmount,
+                                DEFAULT_CURRENCY_DECIMALS,
+                                true
+                            ),
+                        })}
+                    </BondInfo>
+                )}
+                {getSubmitButton()}
+            </ButtonContainer>
             {openApprovalModal && (
                 <ApprovalModal
                     defaultAmount={fixedBondAmount}
@@ -253,8 +265,9 @@ const MarketButton = styled(Button)`
     height: 32px;
 `;
 
-const ButtonContainer = styled(FlexDivCentered)`
-    margin: 40px 0 0px 0;
+const ButtonContainer = styled(FlexDivColumn)`
+    margin: 40px 0 0 0;
+    align-items: center;
 `;
 
 export default ResolveMarket;

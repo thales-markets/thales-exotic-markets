@@ -40,9 +40,8 @@
             "select-vote": "Select vote",
             "select-outcome": "Select outcome",
             "select-result": "Select result",
-            "invalid-price": "Invalid price",
-            "invalid-price-max": "The price cannot be higher than ${{max}}",
-            "invalid-amount-max": "The amount cannot be higher than {{max}}",
+            "invalid-ticket-price": "Invalid ticket price",
+            "invalid-ticket-price-min": "The minimum ticket price is {{min}}",
             "insufficient-balance-wallet": "Please ensure your wallet has sufficient {{currencyKey}}",
             "invalid-slippage": "Invalid slippage",
             "user-rejected-tx": "User rejected transaction"
@@ -194,11 +193,12 @@
                 "create-market-label": "Create market",
                 "create-market-progress-label": "Creating in progress..."
             },
-            "bond-info": "In order to create market you need to put a bond of {{amount}}",
+            "bond-info": "In order to create market you need to deposit a bond of {{amount}}.",
             "creation-disabled-message": "Market creation is disabled, only owner can create markets."
         },
         "resolve-market": {
-            "title": "Resolve market"
+            "title": "Resolve market",
+            "bond-info": "In order to resolve market you need to deposit a bond of {{amount}}."
         },
         "dispute": {
             "open-dispute-title": "Open dispute for \"{{question}}\"",
@@ -207,6 +207,7 @@
             "reason-for-dispute-label": "Reason for dispute",
             "vote-label": "Vote",
             "results-label": "Results",
+            "open-dispute-bond-info": "In order to open dispute you need to deposit a bond of {{amount}}.",
             "disputes-disabled-message": {
                 "market-closed": "The market is closed for disputes.",
                 "creator": "The creator of the market doesn't have the right to open disputes.",

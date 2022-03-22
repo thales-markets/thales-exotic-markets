@@ -2,7 +2,7 @@ import TextAreaInput from 'components/fields/TextAreaInput';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { FlexDivCentered, FlexDivColumn } from 'styles/common';
+import { FlexDivColumn } from 'styles/common';
 import Button from 'components/Button';
 import { MAXIMUM_INPUT_CHARACTERS } from 'constants/markets';
 import { useSelector } from 'react-redux';
@@ -16,7 +16,7 @@ import networkConnector from 'utils/networkConnector';
 import { BigNumber, ethers } from 'ethers';
 import { checkAllowance } from 'utils/network';
 import onboardConnector from 'utils/onboardConnector';
-import { PAYMENT_CURRENCY } from 'constants/currency';
+import { DEFAULT_CURRENCY_DECIMALS, PAYMENT_CURRENCY } from 'constants/currency';
 import ApprovalModal from 'components/ApprovalModal';
 import usePaymentTokenBalanceQuery from 'queries/wallet/usePaymentTokenBalanceQuery';
 import { MAX_GAS_LIMIT } from 'constants/network';
@@ -26,6 +26,8 @@ import SimpleLoader from 'components/SimpleLoader';
 import WarningMessage from 'components/WarningMessage';
 import { toast } from 'react-toastify';
 import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
+import { formatCurrencyWithKey } from 'utils/formatters/number';
+import { BondInfo } from 'components/common';
 
 type OpenDisputeProps = RouteComponentProps<{
     marketAddress: string;
@@ -246,7 +248,19 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
                             maximumCharacters={MAXIMUM_INPUT_CHARACTERS}
                             disabled={isSubmitting || !canOpenDispute}
                         />
-                        <ButtonContainer>{getSubmitButton()}</ButtonContainer>
+                        <ButtonContainer>
+                            <BondInfo>
+                                {t('market.dispute.open-dispute-bond-info', {
+                                    amount: formatCurrencyWithKey(
+                                        PAYMENT_CURRENCY,
+                                        disputePrice,
+                                        DEFAULT_CURRENCY_DECIMALS,
+                                        true
+                                    ),
+                                })}
+                            </BondInfo>
+                            {getSubmitButton()}
+                        </ButtonContainer>
                         {!canOpenDispute && <WarningMessage>{getDisputesDisabledMessage()}</WarningMessage>}
                     </Form>
                     {openApprovalModal && (
@@ -297,8 +311,9 @@ const DisputeButton = styled(Button)`
     height: 32px;
 `;
 
-const ButtonContainer = styled(FlexDivCentered)`
+const ButtonContainer = styled(FlexDivColumn)`
     margin: 20px 0 0 0;
+    align-items: center;
 `;
 
 export default OpenDispute;

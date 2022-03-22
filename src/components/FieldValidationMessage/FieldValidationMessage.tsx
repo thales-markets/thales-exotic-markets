@@ -1,5 +1,4 @@
 import React from 'react';
-// import { ReactComponent as ValidationErrorIcon } from 'assets/images/validation-error-circle.svg';
 import styled from 'styled-components';
 import { FlexDiv } from 'styles/common';
 
@@ -54,11 +53,5 @@ const Message = styled(FlexDiv)<{ arrowPosition: string }>`
         border-color: transparent transparent #e9bcbc transparent;
     }
 `;
-
-// export const StyledValidationErrorIcon = styled(ValidationErrorIcon)`
-//     margin-right: 4px;
-//     min-width: 12px;
-//     min-height: 12px;
-// `;
 
 export default FieldValidationMessage;

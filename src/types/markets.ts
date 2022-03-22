@@ -73,6 +73,7 @@ export type MarketsParameters = {
     paymentToken: string;
     creationRestrictedToOwner: boolean;
     owner: string;
+    maxNumberOfTags: number;
 };
 
 export type TagInfo = {
