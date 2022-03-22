@@ -7,7 +7,7 @@ import { RootState } from 'redux/rootReducer';
 import styled from 'styled-components';
 import { FlexDivCentered, FlexDivColumn, FlexDivRowCentered } from 'styles/common';
 import { AccountMarketData, MarketData } from 'types/markets';
-import { formatCurrencyWithKey } from 'utils/formatters/number';
+import { formatCurrencyWithKey, formatPercentage } from 'utils/formatters/number';
 import { PAYMENT_CURRENCY, DEFAULT_CURRENCY_DECIMALS } from 'constants/currency';
 import { getIsWalletConnected, getNetworkId, getWalletAddress } from 'redux/modules/wallet';
 import { checkAllowance } from 'utils/network';
@@ -22,6 +22,7 @@ import RadioButton from 'components/fields/RadioButton';
 import useAccountMarketDataQuery from 'queries/markets/useAccountMarketDataQuery';
 import { toast } from 'react-toastify';
 import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
+import { getRoi } from 'utils/markets';
 
 type PositioningPhaseProps = {
     market: MarketData;
@@ -44,7 +45,7 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
     // we need two positionOnContract, one is set on success, the second one only from query
     const [currentPositionOnContract, setCurrentPositionOnContract] = useState<number>(0);
     const [positionOnContract, setPositionOnContract] = useState<number>(0);
-    const [winingAmount, setWiningAmount] = useState<number>(0);
+    const [winningAmount, setWinningAmount] = useState<number>(0);
 
     const accountMarketDataQuery = useAccountMarketDataQuery(market.address, walletAddress, {
         enabled: isAppReady && isWalletConnected,
@@ -54,7 +55,7 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
         if (accountMarketDataQuery.isSuccess && accountMarketDataQuery.data) {
             setCurrentPositionOnContract((accountMarketDataQuery.data as AccountMarketData).position);
             setPositionOnContract((accountMarketDataQuery.data as AccountMarketData).position);
-            setWiningAmount((accountMarketDataQuery.data as AccountMarketData).winningAmount);
+            setWinningAmount((accountMarketDataQuery.data as AccountMarketData).winningAmount);
         }
     }, [accountMarketDataQuery.isSuccess, accountMarketDataQuery.data]);
 
@@ -324,13 +325,15 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
                         <Info>
                             <InfoLabel>{t('market.roi-label')}:</InfoLabel>
                             <InfoContent>
-                                {formatCurrencyWithKey(
-                                    PAYMENT_CURRENCY,
-                                    positionOnContract === 0
-                                        ? market.winningAmountsNewUser[index]
-                                        : positionOnContract === index + 1
-                                        ? winingAmount
-                                        : market.winningAmountsNoPosition[index]
+                                {formatPercentage(
+                                    getRoi(
+                                        market.ticketPrice,
+                                        positionOnContract === 0
+                                            ? market.winningAmountsNewUser[index]
+                                            : positionOnContract === index + 1
+                                            ? winningAmount
+                                            : market.winningAmountsNoPosition[index]
+                                    )
                                 )}
                             </InfoContent>
                         </Info>

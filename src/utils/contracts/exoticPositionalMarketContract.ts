@@ -425,6 +425,13 @@ export const exoticPositionalMarketContract = {
             type: 'function',
         },
         {
+            inputs: [{ internalType: 'address', name: '_account', type: 'address' }],
+            name: 'getUserPotentialWinningAmount',
+            outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+            stateMutability: 'view',
+            type: 'function',
+        },
+        {
             inputs: [],
             name: 'getWinningAmountPerTicket',
             outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],

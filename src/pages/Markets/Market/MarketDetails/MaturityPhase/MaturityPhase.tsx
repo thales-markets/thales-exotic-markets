@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { FlexDivCentered, FlexDivColumn, FlexDivRowCentered } from 'styles/common';
 import { AccountMarketData, MarketData } from 'types/markets';
-import { formatCurrencyWithKey } from 'utils/formatters/number';
+import { formatCurrencyWithKey, formatPercentage } from 'utils/formatters/number';
 import { PAYMENT_CURRENCY, DEFAULT_CURRENCY_DECIMALS } from 'constants/currency';
 import { RootState } from 'redux/rootReducer';
 import { getIsAppReady } from 'redux/modules/app';
@@ -18,6 +18,7 @@ import Button from 'components/Button';
 import { MarketStatus } from 'constants/markets';
 import { toast } from 'react-toastify';
 import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
+import { getRoi } from 'utils/markets';
 
 type MaturityPhaseProps = {
     market: MarketData;
@@ -136,13 +137,15 @@ const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
                             <Info>
                                 <InfoLabel>{t('market.roi-label')}:</InfoLabel>
                                 <InfoContent>
-                                    {formatCurrencyWithKey(
-                                        PAYMENT_CURRENCY,
-                                        selectedPosition === 0
-                                            ? market.winningAmountsNewUser[index]
-                                            : selectedPosition === index + 1
-                                            ? winningAmount
-                                            : market.winningAmountsNoPosition[index]
+                                    {formatPercentage(
+                                        getRoi(
+                                            market.ticketPrice,
+                                            selectedPosition === 0
+                                                ? market.winningAmountsNewUser[index]
+                                                : selectedPosition === index + 1
+                                                ? winningAmount
+                                                : market.winningAmountsNoPosition[index]
+                                        )
                                     )}
                                 </InfoContent>
                             </Info>
