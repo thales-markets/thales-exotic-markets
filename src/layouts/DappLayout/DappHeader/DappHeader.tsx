@@ -1,3 +1,4 @@
+import GetUsd from 'components/GetUsd';
 import Logo from 'components/Logo';
 import WalletInfo from 'components/WalletInfo';
 import React from 'react';
@@ -8,6 +9,7 @@ const DappHeader: React.FC = () => {
     return (
         <Container>
             <Logo />
+            <GetUsd />
             <WalletInfo />
         </Container>
     );

@@ -27,6 +27,7 @@ export const QUERY_KEYS = {
             walletAddress,
             networkId,
         ],
+        GetUsdDefaultAmount: (networkId: NetworkId) => ['wallet', 'getUsdDefaultAmount', networkId],
     },
     OracleCouncilMember: (walletAddress: string, networkId: NetworkId) => [
         'oracleCouncilMember',

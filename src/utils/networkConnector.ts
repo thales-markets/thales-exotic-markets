@@ -6,6 +6,7 @@ import marketDataContract from 'utils/contracts/exoticPositionalMarketDataContra
 import thalesBondsContract from 'utils/contracts/thalesBondsContract';
 import thalesOracleCouncilContract from 'utils/contracts/thalesOracleCouncilContract';
 import tagsContract from 'utils/contracts/exoticPositionalTagsContract';
+import exoticUsdContract from 'utils/contracts/exoticUsdContract';
 import { NetworkIdByName } from './network';
 
 type NetworkConnector = {
@@ -19,6 +20,7 @@ type NetworkConnector = {
     thalesBondsContract?: ethers.Contract;
     thalesOracleCouncilContract?: ethers.Contract;
     tagsContract?: ethers.Contract;
+    exoticUsdContract?: ethers.Contract;
 };
 
 // @ts-ignore
@@ -35,6 +37,7 @@ const networkConnector: NetworkConnector = {
         this.thalesBondsContract = initializeContract(thalesBondsContract, networkSettings);
         this.thalesOracleCouncilContract = initializeContract(thalesOracleCouncilContract, networkSettings);
         this.tagsContract = initializeContract(tagsContract, networkSettings);
+        this.exoticUsdContract = initializeContract(exoticUsdContract, networkSettings);
     },
 };
 

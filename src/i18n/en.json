@@ -4,7 +4,9 @@
             "connect-your-wallet": "Connect wallet",
             "switch-wallet": "Switch wallet",
             "disconnect-wallet": "Disconnect wallet",
-            "wallet-options": "Wallet options"
+            "wallet-options": "Wallet options",
+            "get-usd": "Get {{amount}}",
+            "get-usd-progress": "Minting {{amount}}..."
         },
         "enable-wallet-access": {
             "approve-label": "Approve {{currencyKey}}",
@@ -136,7 +138,8 @@
             "change-position-success": "Position successfully changed",
             "withdraw-success": "Successfuly withdrawn",
             "vote-success": "Successfully voted",
-            "cancel-market-success": "Market successfully canceled"
+            "cancel-market-success": "Market successfully canceled",
+            "get-usd-success": "{{amount}} successfully minted"
         },
         "filter-label": {
             "global": {
