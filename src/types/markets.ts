@@ -43,6 +43,8 @@ export type MarketData = MarketInfo & {
     fixedBondAmount: number;
     safeBoxLowAmount: number;
     arbitraryRewardForDisputor: number;
+    winningAmountsNewUser: number[];
+    winningAmountsNoPosition: number[];
 };
 
 export type Markets = MarketInfo[];
@@ -51,6 +53,7 @@ export type AccountMarketData = {
     position: number;
     claimAmount: number;
     canClaim: boolean;
+    winningAmount: number;
 };
 
 export type SortOptionType = {
@@ -69,6 +72,7 @@ export type MarketsParameters = {
     disputePrice: number;
     paymentToken: string;
     creationRestrictedToOwner: boolean;
+    owner: string;
 };
 
 export type TagInfo = {
@@ -118,6 +122,7 @@ export type DisputeVotes = DisputeVoteInfo[];
 
 export type DisputeVotingResultInfo = {
     votingOption: DisputeVotingOption;
+    position: number;
     numberOfVotes: number;
 };
 

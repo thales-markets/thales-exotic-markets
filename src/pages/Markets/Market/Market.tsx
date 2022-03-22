@@ -1,9 +1,11 @@
 import SimpleLoader from 'components/SimpleLoader';
 import useMarketQuery from 'queries/markets/useMarketQuery';
+import useOracleCouncilMemberQuery from 'queries/oracleCouncil/useOracleCouncilMemberQuery';
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
 import { getIsAppReady } from 'redux/modules/app';
+import { getIsWalletConnected, getNetworkId, getWalletAddress } from 'redux/modules/wallet';
 import { RootState } from 'redux/rootReducer';
 import styled from 'styled-components';
 import { FlexDivColumn } from 'styles/common';
@@ -18,6 +20,9 @@ type MarketProps = RouteComponentProps<{
 
 const Market: React.FC<MarketProps> = (props) => {
     const isAppReady = useSelector((state: RootState) => getIsAppReady(state));
+    const networkId = useSelector((state: RootState) => getNetworkId(state));
+    const walletAddress = useSelector((state: RootState) => getWalletAddress(state)) || '';
+    const isWalletConnected = useSelector((state: RootState) => getIsWalletConnected(state));
 
     const { params } = props.match;
     const marketAddress = params && params.marketAddress ? params.marketAddress : '';
@@ -33,19 +38,34 @@ const Market: React.FC<MarketProps> = (props) => {
         return undefined;
     }, [marketQuery.isSuccess, marketQuery.data]);
 
+    const oracleCouncilMemberQuery = useOracleCouncilMemberQuery(walletAddress, networkId, {
+        enabled: isAppReady && isWalletConnected,
+    });
+
+    const isOracleCouncilMember: boolean = useMemo(() => {
+        if (oracleCouncilMemberQuery.isSuccess) {
+            return oracleCouncilMemberQuery.data as boolean;
+        }
+        return true;
+    }, [oracleCouncilMemberQuery.isSuccess, oracleCouncilMemberQuery.data]);
+
     return (
         <Container>
             {market ? (
                 <>
                     <MarketDetails market={market} />
-                    {market.canMarketBeResolved && (
+                    {market.canMarketBeResolved && !isOracleCouncilMember && (
                         <ResolveMarket
                             marketAddress={market.address}
                             marketCreator={market.creator}
                             positions={market.positions}
                         />
                     )}
-                    <Disputes marketAddress={marketAddress} positions={market.positions} />
+                    <Disputes
+                        marketAddress={marketAddress}
+                        positions={market.positions}
+                        winningPosition={market.winningPosition}
+                    />
                 </>
             ) : (
                 <SimpleLoader />

@@ -41,6 +41,7 @@ import { toast } from 'react-toastify';
 import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
 import { formatCurrencyWithKey } from 'utils/formatters/number';
 import { endOfToday, isSameDay, setMonth, startOfToday } from 'date-fns';
+import WarningMessage from 'components/WarningMessage';
 
 const calculateMinTime = (currentDate: Date, minDate: Date) => {
     const isMinDateCurrentDate = isSameDay(currentDate, minDate);
@@ -125,7 +126,9 @@ const CreateMarket: React.FC = () => {
     }, [paymentTokenBalanceQuery.isSuccess, paymentTokenBalanceQuery.data]);
 
     const fixedBondAmount = marketsParameters ? marketsParameters.fixedBondAmount : 0;
-    const creationRestrictedToOwner = marketsParameters ? marketsParameters.creationRestrictedToOwner : false;
+    const creationRestrictedToOwner = marketsParameters
+        ? marketsParameters.creationRestrictedToOwner && marketsParameters.owner !== walletAddress
+        : false;
 
     const isQuestionEntered = question.trim() !== '';
     const isDataSourceEntered = dataSource.trim() !== '';
@@ -273,6 +276,13 @@ const CreateMarket: React.FC = () => {
                 </CreateMarketButton>
             );
         }
+        if (creationRestrictedToOwner) {
+            return (
+                <CreateMarketButton disabled={true}>
+                    {t(`market.create-market.button.create-market-label`)}
+                </CreateMarketButton>
+            );
+        }
         if (insufficientBalance) {
             return <CreateMarketButton disabled={true}>{t(`common.errors.insufficient-balance`)}</CreateMarketButton>;
         }
@@ -349,6 +359,11 @@ const CreateMarket: React.FC = () => {
         <Container>
             <ContentWrapper>
                 <Form>
+                    {creationRestrictedToOwner && (
+                        <WarningMessage marginBottom={20}>
+                            {t('market.create-market.creation-disabled-message')}
+                        </WarningMessage>
+                    )}
                     <TextAreaInput
                         value={question}
                         onChange={setQuestion}
@@ -358,7 +373,7 @@ const CreateMarket: React.FC = () => {
                             max: MAXIMUM_INPUT_CHARACTERS,
                         })}
                         maximumCharacters={MAXIMUM_INPUT_CHARACTERS}
-                        disabled={isSubmitting}
+                        disabled={isSubmitting || creationRestrictedToOwner}
                     />
                     <TextInput
                         value={dataSource}
@@ -369,7 +384,7 @@ const CreateMarket: React.FC = () => {
                             max: MAXIMUM_INPUT_CHARACTERS,
                         })}
                         maximumCharacters={MAXIMUM_INPUT_CHARACTERS}
-                        disabled={isSubmitting}
+                        disabled={isSubmitting || creationRestrictedToOwner}
                     />
                     <Positions
                         positions={positions}
@@ -377,13 +392,13 @@ const CreateMarket: React.FC = () => {
                         onPositionRemove={removePosition}
                         onPositionChange={setPositionText}
                         label={t('market.create-market.positions-label')}
-                        disabled={isSubmitting}
+                        disabled={isSubmitting || creationRestrictedToOwner}
                     />
                     <DatetimePicker
                         selected={convertUTCToLocalDate(endOfPositioning)}
                         onChange={handleEndOfPositioningChange}
                         label={t('market.create-market.positioning-end-label')}
-                        disabled={isSubmitting}
+                        disabled={isSubmitting || creationRestrictedToOwner}
                         minTime={minTime}
                         maxTime={endOfToday()}
                         minDate={minDate}
@@ -397,7 +412,7 @@ const CreateMarket: React.FC = () => {
                         label={t('market.create-market.type-label')}
                         leftText={t('market.create-market.type-options.ticket')}
                         rightText={t('market.create-market.type-options.open-bid')}
-                        disabled={isSubmitting}
+                        disabled={isSubmitting || creationRestrictedToOwner}
                     />
                     {marketType === MarketType.TICKET && (
                         <NumericInput
@@ -405,7 +420,7 @@ const CreateMarket: React.FC = () => {
                             onChange={(_, value) => setTicketPrice(value)}
                             label={t('market.create-market.ticket-price-label')}
                             currencyLabel={PAYMENT_CURRENCY}
-                            disabled={isSubmitting}
+                            disabled={isSubmitting || creationRestrictedToOwner}
                         />
                     )}
                     <Toggle
@@ -416,7 +431,7 @@ const CreateMarket: React.FC = () => {
                         label={t('market.create-market.withdraw-label')}
                         leftText={t('market.create-market.withdraw-options.enabled')}
                         rightText={t('market.create-market.withdraw-options.disabled')}
-                        disabled={isSubmitting}
+                        disabled={isSubmitting || creationRestrictedToOwner}
                     />
                     <TagsInput
                         tags={tags}
@@ -424,7 +439,7 @@ const CreateMarket: React.FC = () => {
                         onTagAdd={addTag}
                         onTagRemove={removeTag}
                         label={t('market.create-market.tags-label', { max: MAXIMUM_TAGS })}
-                        disabled={isSubmitting}
+                        disabled={isSubmitting || creationRestrictedToOwner}
                     />
                     <ButtonContainer>
                         <BondInfo>

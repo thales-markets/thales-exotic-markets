@@ -1,15 +1,17 @@
 import { useQuery, UseQueryOptions } from 'react-query';
 import QUERY_KEYS from 'constants/queryKeys';
 import { MarketData } from 'types/markets';
-import { BigNumberish } from 'ethers';
+import { BigNumberish, ethers } from 'ethers';
 import networkConnector from 'utils/networkConnector';
 import { bigNumberFormatter } from 'utils/formatters/ethers';
 import { MarketStatus } from 'constants/markets';
+import marketContract from 'utils/contracts/exoticPositionalMarketContract';
 
 const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketData>) => {
     return useQuery<MarketData>(
         QUERY_KEYS.Market(marketAddress),
         async () => {
+            const contract = new ethers.Contract(marketAddress, marketContract.abi, networkConnector.provider);
             const { marketDataContract, thalesOracleCouncilContract, marketManagerContract } = networkConnector;
             const [
                 allMarketData,
@@ -17,12 +19,16 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                 numberOfDisputes,
                 numberOfOpenDisputes,
                 claimTimeoutDefaultPeriod,
+                winningAmountsNewUser,
+                winningAmountsNoPosition,
             ] = await Promise.all([
                 marketDataContract?.getAllMarketData(marketAddress),
                 thalesOracleCouncilContract?.isMarketClosedForDisputes(marketAddress),
                 thalesOracleCouncilContract?.marketTotalDisputes(marketAddress),
                 thalesOracleCouncilContract?.getMarketOpenDisputes(marketAddress),
                 marketManagerContract?.claimTimeoutDefaultPeriod(),
+                contract?.getPotentialWinningAmountForAllPosition(true, 0),
+                contract?.getPotentialWinningAmountForAllPosition(false, 0),
             ]);
 
             const [
@@ -99,6 +105,10 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                 fixedBondAmount: bigNumberFormatter(fixedBondAmount),
                 safeBoxLowAmount: bigNumberFormatter(safeBoxLowAmount),
                 arbitraryRewardForDisputor: bigNumberFormatter(arbitraryRewardForDisputor),
+                winningAmountsNewUser: winningAmountsNewUser.map((item: BigNumberish) => bigNumberFormatter(item)),
+                winningAmountsNoPosition: winningAmountsNoPosition.map((item: BigNumberish) =>
+                    bigNumberFormatter(item)
+                ),
             };
 
             // TODO - needs refactoring

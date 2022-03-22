@@ -40,8 +40,11 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
     const [isCanceling, setIsCanceling] = useState<boolean>(false);
     const [openApprovalModal, setOpenApprovalModal] = useState<boolean>(false);
     const [paymentTokenBalance, setPaymentTokenBalance] = useState<number | string>('');
-    const [currentPositionOnContract, setCurrentPositionOnContract] = useState<number>(0);
     const [selectedPosition, setSelectedPosition] = useState<number>(0);
+    // we need two positionOnContract, one is set on success, the second one only from query
+    const [currentPositionOnContract, setCurrentPositionOnContract] = useState<number>(0);
+    const [positionOnContract, setPositionOnContract] = useState<number>(0);
+    const [winingAmount, setWiningAmount] = useState<number>(0);
 
     const accountMarketDataQuery = useAccountMarketDataQuery(market.address, walletAddress, {
         enabled: isAppReady && isWalletConnected,
@@ -50,6 +53,8 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
     useEffect(() => {
         if (accountMarketDataQuery.isSuccess && accountMarketDataQuery.data) {
             setCurrentPositionOnContract((accountMarketDataQuery.data as AccountMarketData).position);
+            setPositionOnContract((accountMarketDataQuery.data as AccountMarketData).position);
+            setWiningAmount((accountMarketDataQuery.data as AccountMarketData).winningAmount);
         }
     }, [accountMarketDataQuery.isSuccess, accountMarketDataQuery.data]);
 
@@ -313,6 +318,19 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
                                     market.poolSizePerPosition[index],
                                     DEFAULT_CURRENCY_DECIMALS,
                                     true
+                                )}
+                            </InfoContent>
+                        </Info>
+                        <Info>
+                            <InfoLabel>{t('market.roi-label')}:</InfoLabel>
+                            <InfoContent>
+                                {formatCurrencyWithKey(
+                                    PAYMENT_CURRENCY,
+                                    positionOnContract === 0
+                                        ? market.winningAmountsNewUser[index]
+                                        : positionOnContract === index + 1
+                                        ? winingAmount
+                                        : market.winningAmountsNoPosition[index]
                                 )}
                             </InfoContent>
                         </Info>

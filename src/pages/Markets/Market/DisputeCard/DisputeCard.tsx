@@ -1,6 +1,7 @@
 import { DisputeStatus } from 'constants/markets';
 import useDisputeQuery from 'queries/markets/useDisputeQuery';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { getIsAppReady } from 'redux/modules/app';
 import { getIsWalletConnected, getNetworkId, getWalletAddress } from 'redux/modules/wallet';
@@ -16,15 +17,24 @@ type DisputeCardProps = {
     disputeInfo: DisputeInfo;
     isOracleCouncilMember: boolean;
     positions: string[];
+    winningPosition: number;
 };
 
-const DisputeCard: React.FC<DisputeCardProps> = ({ disputeInfo, isOracleCouncilMember, positions }) => {
+const DisputeCard: React.FC<DisputeCardProps> = ({
+    disputeInfo,
+    isOracleCouncilMember,
+    positions,
+    winningPosition,
+}) => {
+    const { t } = useTranslation();
     const isAppReady = useSelector((state: RootState) => getIsAppReady(state));
     const networkId = useSelector((state: RootState) => getNetworkId(state));
     const walletAddress = useSelector((state: RootState) => getWalletAddress(state)) || '';
     const isWalletConnected = useSelector((state: RootState) => getIsWalletConnected(state));
 
-    const disputeQuery = useDisputeQuery(disputeInfo.market, disputeInfo.disputeNumber, networkId, {
+    const outcomePositions = [t('common.cancel'), ...positions];
+
+    const disputeQuery = useDisputeQuery(disputeInfo.market, disputeInfo.disputeNumber, outcomePositions, networkId, {
         enabled: isAppReady,
     });
 
@@ -48,19 +58,14 @@ const DisputeCard: React.FC<DisputeCardProps> = ({ disputeInfo, isOracleCouncilM
             }
         }
         return {
-            voteOnContract: 0,
-            positionOnContract: 0,
+            voteOnContract: -1,
+            positionOnContract: -1,
         };
     }, [isOracleCouncilMember, disputeData, isWalletConnected]);
 
     const showDisputeVoting = isOracleCouncilMember && disputeData && disputeData.isOpenForVoting;
     const showDisputeVotingResults = disputeData && disputeData.status !== DisputeStatus.Cancelled;
     const showDisputeVotingData = showDisputeVoting || showDisputeVotingResults;
-
-    const disputeWinningPosition =
-        disputeData && disputeData.disputeContractData.disputeWinningPositionChoosen > 0
-            ? positions[disputeData.disputeContractData.disputeWinningPositionChoosen - 1]
-            : undefined;
 
     return (
         <Container>
@@ -73,13 +78,13 @@ const DisputeCard: React.FC<DisputeCardProps> = ({ disputeInfo, isOracleCouncilM
                             disputeInfo={disputeInfo}
                             positions={positions}
                             positionOnContract={positionOnContract}
-                            disputeContractData={disputeData.disputeContractData}
+                            winningPosition={winningPosition}
                         />
                     )}
                     {showDisputeVotingResults && (
                         <DisputeVotingResults
                             votingResults={disputeData.disputeVotingResults}
-                            disputeWinningPosition={disputeWinningPosition}
+                            positions={outcomePositions}
                         />
                     )}
                 </VotingContainer>

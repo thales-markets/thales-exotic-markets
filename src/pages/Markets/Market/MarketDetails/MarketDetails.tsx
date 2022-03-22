@@ -38,10 +38,10 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
     });
 
     const isOracleCouncilMember: boolean = useMemo(() => {
-        if (oracleCouncilMemberQuery.isSuccess && oracleCouncilMemberQuery.data) {
+        if (oracleCouncilMemberQuery.isSuccess) {
             return oracleCouncilMemberQuery.data as boolean;
         }
-        return false;
+        return true;
     }, [oracleCouncilMemberQuery.isSuccess, oracleCouncilMemberQuery.data]);
 
     const accountMarketDataQuery = useAccountMarketDataQuery(market.address, walletAddress, {

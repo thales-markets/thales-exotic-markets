@@ -41,9 +41,11 @@ const Container = styled(FlexDivStart)`
     margin-bottom: 15px;
     align-items: center;
     &.disabled {
-        opacity: 0.4;
-        cursor: default;
-        pointer-events: none;
+        i {
+            opacity: 0.4;
+            cursor: default;
+            pointer-events: none;
+        }
     }
 `;
 

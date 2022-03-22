@@ -13,9 +13,10 @@ import DisputeCard from '../DisputeCard';
 type DisputesProps = {
     marketAddress: string;
     positions: string[];
+    winningPosition: number;
 };
 
-const Disputes: React.FC<DisputesProps> = ({ marketAddress, positions }) => {
+const Disputes: React.FC<DisputesProps> = ({ marketAddress, positions, winningPosition }) => {
     const isAppReady = useSelector((state: RootState) => getIsAppReady(state));
     const networkId = useSelector((state: RootState) => getNetworkId(state));
     const walletAddress = useSelector((state: RootState) => getWalletAddress(state)) || '';
@@ -35,7 +36,7 @@ const Disputes: React.FC<DisputesProps> = ({ marketAddress, positions }) => {
     });
 
     const isOracleCouncilMember: boolean = useMemo(() => {
-        if (oracleCouncilMemberQuery.isSuccess && oracleCouncilMemberQuery.data) {
+        if (oracleCouncilMemberQuery.isSuccess) {
             return oracleCouncilMemberQuery.data as boolean;
         }
         return false;
@@ -49,6 +50,7 @@ const Disputes: React.FC<DisputesProps> = ({ marketAddress, positions }) => {
                     disputeInfo={dispute}
                     isOracleCouncilMember={isOracleCouncilMember}
                     positions={positions}
+                    winningPosition={winningPosition}
                 >
                     {dispute}
                 </DisputeCard>

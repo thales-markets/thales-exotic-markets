@@ -20,6 +20,7 @@ const useMarketsParametersQuery = (networkId: NetworkId, options?: UseQueryOptio
                 disputePrice: 0,
                 paymentToken: '',
                 creationRestrictedToOwner: false,
+                owner: '',
             };
             const marketManagerContract = networkConnector.marketManagerContract;
             if (marketManagerContract) {
@@ -34,6 +35,7 @@ const useMarketsParametersQuery = (networkId: NetworkId, options?: UseQueryOptio
                     disputePrice,
                     paymentToken,
                     creationRestrictedToOwner,
+                    owner,
                 ] = await Promise.all([
                     marketManagerContract.fixedBondAmount(),
                     marketManagerContract.maximumPositionsAllowed(),
@@ -45,6 +47,7 @@ const useMarketsParametersQuery = (networkId: NetworkId, options?: UseQueryOptio
                     marketManagerContract.disputePrice(),
                     marketManagerContract.paymentToken(),
                     marketManagerContract.creationRestrictedToOwner(),
+                    marketManagerContract.owner(),
                 ]);
 
                 marketsParameters.fixedBondAmount = bigNumberFormatter(fixedBondAmount);
@@ -57,6 +60,7 @@ const useMarketsParametersQuery = (networkId: NetworkId, options?: UseQueryOptio
                 marketsParameters.disputePrice = Number(disputePrice);
                 marketsParameters.paymentToken = paymentToken;
                 marketsParameters.creationRestrictedToOwner = creationRestrictedToOwner;
+                marketsParameters.owner = owner;
             }
 
             return marketsParameters;

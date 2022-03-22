@@ -97,6 +97,7 @@ export const thalesOracleCouncilContract = {
                 { indexed: false, internalType: 'address', name: 'market', type: 'address' },
                 { indexed: false, internalType: 'uint256', name: 'disputeIndex', type: 'uint256' },
                 { indexed: false, internalType: 'uint256', name: 'disputeCodeVote', type: 'uint256' },
+                { indexed: false, internalType: 'uint256', name: 'winningPosition', type: 'uint256' },
                 { indexed: false, internalType: 'address', name: 'voter', type: 'address' },
             ],
             name: 'VotedAddedForDispute',
@@ -108,6 +109,13 @@ export const thalesOracleCouncilContract = {
             name: 'addOracleCouncilMember',
             outputs: [],
             stateMutability: 'nonpayable',
+            type: 'function',
+        },
+        {
+            inputs: [{ internalType: 'address', name: '', type: 'address' }],
+            name: 'allOpenDisputesCancelledToIndexForMarket',
+            outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+            stateMutability: 'view',
             type: 'function',
         },
         {
@@ -215,6 +223,28 @@ export const thalesOracleCouncilContract = {
             type: 'function',
         },
         {
+            inputs: [
+                { internalType: 'address', name: '', type: 'address' },
+                { internalType: 'uint256', name: '', type: 'uint256' },
+                { internalType: 'address', name: '', type: 'address' },
+            ],
+            name: 'disputeWinningPositionChoosenByMember',
+            outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+            stateMutability: 'view',
+            type: 'function',
+        },
+        {
+            inputs: [
+                { internalType: 'address', name: '', type: 'address' },
+                { internalType: 'uint256', name: '', type: 'uint256' },
+                { internalType: 'uint256', name: '', type: 'uint256' },
+            ],
+            name: 'disputeWinningPositionVotes',
+            outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+            stateMutability: 'view',
+            type: 'function',
+        },
+        {
             inputs: [{ internalType: 'address', name: '', type: 'address' }],
             name: 'firstMemberThatChoseWinningPosition',
             outputs: [{ internalType: 'address', name: '', type: 'address' }],
@@ -280,6 +310,17 @@ export const thalesOracleCouncilContract = {
                 { internalType: 'uint256', name: '_index', type: 'uint256' },
             ],
             name: 'getDisputeTimestamp',
+            outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+            stateMutability: 'view',
+            type: 'function',
+        },
+        {
+            inputs: [
+                { internalType: 'address', name: '_market', type: 'address' },
+                { internalType: 'uint256', name: '_index', type: 'uint256' },
+                { internalType: 'address', name: '_councilMember', type: 'address' },
+            ],
+            name: 'getDisputeVoteOfCouncilMember',
             outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
             stateMutability: 'view',
             type: 'function',

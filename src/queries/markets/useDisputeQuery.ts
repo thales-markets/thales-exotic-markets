@@ -16,6 +16,7 @@ import networkConnector from 'utils/networkConnector';
 const useDisputeQuery = (
     marketAddress: string,
     dispute: number,
+    positions: string[],
     networkId: NetworkId,
     options?: UseQueryOptions<DisputeData | undefined>
 ) => {
@@ -73,13 +74,31 @@ const useDisputeQuery = (
 
                 const disputeVotingResults: DisputeVotingResults = [];
                 disputeVotingOptions.forEach((votingOption) => {
-                    const numberOfVotes = disputeVotes.filter(
+                    const votingOptionVotes = disputeVotes.filter(
                         (disputeVote: DisputeVoteInfo) => disputeVote.vote === votingOption
-                    ).length;
-                    disputeVotingResults.push({
-                        votingOption,
-                        numberOfVotes,
-                    });
+                    );
+                    const numberOfVotes = votingOptionVotes.length;
+
+                    if (votingOption === DisputeVotingOption.ACCEPT_RESULT && numberOfVotes > 0) {
+                        positions.forEach((_, index: number) => {
+                            const votingOptionPositionNumberOfVotes = votingOptionVotes.filter(
+                                (disputeVote: DisputeVoteInfo) => disputeVote.position === index
+                            ).length;
+                            if (votingOptionPositionNumberOfVotes) {
+                                disputeVotingResults.push({
+                                    votingOption,
+                                    position: index,
+                                    numberOfVotes: votingOptionPositionNumberOfVotes,
+                                });
+                            }
+                        });
+                    } else {
+                        disputeVotingResults.push({
+                            votingOption,
+                            position: 0,
+                            numberOfVotes,
+                        });
+                    }
                 });
 
                 const status = isOpenDisputeCancelled

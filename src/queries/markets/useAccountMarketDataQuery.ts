@@ -18,6 +18,7 @@ const useAccountMarketDataQuery = (
                 position: 0,
                 claimAmount: 0,
                 canClaim: false,
+                winningAmount: 0,
             };
 
             const { signer } = networkConnector;
@@ -31,6 +32,13 @@ const useAccountMarketDataQuery = (
                 marketData.position = Number(userPosition);
                 marketData.claimAmount = bigNumberFormatter(claimAmount);
                 marketData.canClaim = canClaim;
+                if (marketData.position > 0) {
+                    const winningAmountsWithPosition = await contractWithSigner.getPotentialWinningAmountForAllPosition(
+                        false,
+                        marketData.position
+                    );
+                    marketData.winningAmount = bigNumberFormatter(winningAmountsWithPosition[marketData.position - 1]);
+                }
             }
 
             return marketData;

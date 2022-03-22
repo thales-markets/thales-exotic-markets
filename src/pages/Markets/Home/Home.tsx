@@ -17,6 +17,7 @@ import {
     AccountPositionsMap,
     MarketInfo,
     Markets,
+    MarketsParameters,
     SortOptionType,
     TagInfo,
     Tags,
@@ -31,6 +32,7 @@ import { GlobalFilterEnum, SortDirection, DEFAULT_SORT_BY, MarketStatus } from '
 import SortOption from '../components/SortOption';
 import useTagsQuery from 'queries/markets/useTagsQuery';
 import useAccountPositionsQuery from 'queries/markets/useAccountPositionsQuery';
+import useMarketsParametersQuery from 'queries/markets/useMarketsParametersQuery';
 
 const Home: React.FC = () => {
     const { t } = useTranslation();
@@ -53,6 +55,21 @@ const Home: React.FC = () => {
         label: t('market.filter-label.all'),
     };
     const [tagFilter, setTagFilter] = useState<TagInfo>(allTagsFilterItem);
+
+    const marketsParametersQuery = useMarketsParametersQuery(networkId, {
+        enabled: isAppReady,
+    });
+
+    const marketsParameters: MarketsParameters | undefined = useMemo(() => {
+        if (marketsParametersQuery.isSuccess && marketsParametersQuery.data) {
+            return marketsParametersQuery.data as MarketsParameters;
+        }
+        return undefined;
+    }, [marketsParametersQuery.isSuccess, marketsParametersQuery.data]);
+
+    const creationRestrictedToOwner = marketsParameters
+        ? marketsParameters.creationRestrictedToOwner && marketsParameters.owner !== walletAddress
+        : true;
 
     const marketsQuery = useMarketsQuery(networkId, { enabled: isAppReady });
 
@@ -226,15 +243,17 @@ const Home: React.FC = () => {
                         );
                     })}
                 </GlobalFiltersContainer>
-                <ButtonsContainer>
-                    <Button
-                        onClick={() => {
-                            navigateTo(ROUTES.Markets.CreateMarket);
-                        }}
-                    >
-                        {t('market.button.create-market-label')}
-                    </Button>
-                </ButtonsContainer>
+                {!creationRestrictedToOwner && (
+                    <ButtonsContainer>
+                        <Button
+                            onClick={() => {
+                                navigateTo(ROUTES.Markets.CreateMarket);
+                            }}
+                        >
+                            {t('market.button.create-market-label')}
+                        </Button>
+                    </ButtonsContainer>
+                )}
             </FiltersContainer>
             <TagsContainer>
                 <TagLabel>{t('market.tags-label')}:</TagLabel>

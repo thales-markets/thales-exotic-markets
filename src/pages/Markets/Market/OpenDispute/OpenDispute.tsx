@@ -73,7 +73,7 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
     });
 
     const isOracleCouncilMember: boolean = useMemo(() => {
-        if (oracleCouncilMemberQuery.isSuccess && oracleCouncilMemberQuery.data) {
+        if (oracleCouncilMemberQuery.isSuccess) {
             return oracleCouncilMemberQuery.data as boolean;
         }
         return false;
@@ -247,7 +247,7 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
                             disabled={isSubmitting || !canOpenDispute}
                         />
                         <ButtonContainer>{getSubmitButton()}</ButtonContainer>
-                        {!canOpenDispute && <WarningMessage message={getDisputesDisabledMessage()} />}
+                        {!canOpenDispute && <WarningMessage>{getDisputesDisabledMessage()}</WarningMessage>}
                     </Form>
                     {openApprovalModal && (
                         <ApprovalModal

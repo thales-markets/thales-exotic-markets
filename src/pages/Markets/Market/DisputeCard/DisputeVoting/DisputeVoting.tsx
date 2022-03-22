@@ -1,6 +1,5 @@
 import Button from 'components/Button';
 import RadioButton from 'components/fields/RadioButton';
-import WarningMessage from 'components/WarningMessage';
 import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
 import {
     DisputeVotingOption,
@@ -10,13 +9,10 @@ import {
 } from 'constants/markets';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { getWalletAddress } from 'redux/modules/wallet';
-import { RootState } from 'redux/rootReducer';
 import styled from 'styled-components';
 import { FlexDivColumn } from 'styles/common';
-import { DisputeContractData, DisputeInfo } from 'types/markets';
+import { DisputeInfo } from 'types/markets';
 import networkConnector from 'utils/networkConnector';
 
 type DisputeVotingProps = {
@@ -24,7 +20,7 @@ type DisputeVotingProps = {
     disputeInfo: DisputeInfo;
     positions: string[];
     positionOnContract: number;
-    disputeContractData: DisputeContractData;
+    winningPosition: number;
 };
 
 const DisputeVoting: React.FC<DisputeVotingProps> = ({
@@ -32,52 +28,32 @@ const DisputeVoting: React.FC<DisputeVotingProps> = ({
     disputeInfo,
     positions,
     positionOnContract,
-    disputeContractData,
+    winningPosition,
 }) => {
     const { t } = useTranslation();
-    const walletAddress = useSelector((state: RootState) => getWalletAddress(state)) || '';
     const [vote, setVote] = useState<number>(voteOnContract);
     const [selectedPosition, setSelectedPosition] = useState<number>(positionOnContract);
     const [currentVoteOnContract, setCurrentVoteOnContract] = useState<number>(voteOnContract);
     const [currentPositionOnContract, setCurrentPositionOnContract] = useState<number>(positionOnContract);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
+    const outcomePositions = [...positions, t('common.cancel')].map((position: string, index: number) => ({
+        position,
+        disabled: index + 1 === winningPosition,
+    }));
+
     const disputeVotingOptions = disputeInfo.isInPositioningPhase
         ? DISPUTE_VOTING_OPTIONS_MARKET_OPEN
         : DISPUTE_VOTING_OPTIONS_MARKET_RESOLVED;
 
-    const showVoteButton = currentVoteOnContract === 0 && currentPositionOnContract === 0;
+    const showVoteButton = currentVoteOnContract === -1 && currentPositionOnContract === -1;
     const showChangeVoteButton = currentVoteOnContract !== vote || currentPositionOnContract !== selectedPosition;
     const isVoteSelected = vote > 0;
     const isPositionSelected =
-        (vote === DisputeVotingOption.ACCEPT_RESULT && selectedPosition > 0) ||
+        (vote === DisputeVotingOption.ACCEPT_RESULT && selectedPosition > -1) ||
         vote !== DisputeVotingOption.ACCEPT_RESULT;
 
-    const isDisputeWinningPositionChoosen = disputeContractData.disputeWinningPositionChoosen > 0;
-    const isFirstMemberThatChooseWinningPosition =
-        walletAddress.toLowerCase() === disputeContractData.firstMemberThatChooseWinningPosition.toLowerCase();
-
-    const showWinningPositionMismatchWarning =
-        isDisputeWinningPositionChoosen &&
-        !isFirstMemberThatChooseWinningPosition &&
-        isPositionSelected &&
-        vote === DisputeVotingOption.ACCEPT_RESULT &&
-        disputeContractData.disputeWinningPositionChoosen !== selectedPosition;
-
-    const showFirstMemberChangePositionWarning =
-        isDisputeWinningPositionChoosen &&
-        isFirstMemberThatChooseWinningPosition &&
-        isPositionSelected &&
-        vote === DisputeVotingOption.ACCEPT_RESULT &&
-        disputeContractData.disputeWinningPositionChoosen !== selectedPosition &&
-        disputeContractData.acceptResultVotesCount > 1;
-
-    const isButtonDisabled =
-        isSubmitting ||
-        !isVoteSelected ||
-        !isPositionSelected ||
-        showWinningPositionMismatchWarning ||
-        showFirstMemberChangePositionWarning;
+    const isButtonDisabled = isSubmitting || !isVoteSelected || !isPositionSelected;
 
     const handleVote = async () => {
         const { thalesOracleCouncilContract, signer } = networkConnector;
@@ -162,14 +138,17 @@ const DisputeVoting: React.FC<DisputeVotingProps> = ({
                         />
                         {votingOption === DisputeVotingOption.ACCEPT_RESULT &&
                             vote === DisputeVotingOption.ACCEPT_RESULT &&
-                            positions.map((position: string, index: number) => {
+                            outcomePositions.map((outcomePosition, index: number) => {
+                                if (outcomePosition.disabled) return;
+                                const positionIndex = (index + 1) % outcomePositions.length;
+
                                 return (
-                                    <PositionsContainer key={position}>
+                                    <PositionsContainer key={outcomePosition.position}>
                                         <RadioButton
-                                            checked={index + 1 === selectedPosition}
-                                            value={index + 1}
-                                            onChange={() => setSelectedPosition(index + 1)}
-                                            label={position}
+                                            checked={positionIndex === selectedPosition}
+                                            value={positionIndex}
+                                            onChange={() => setSelectedPosition(positionIndex)}
+                                            label={outcomePosition.position}
                                         />
                                     </PositionsContainer>
                                 );
@@ -178,14 +157,6 @@ const DisputeVoting: React.FC<DisputeVotingProps> = ({
                 );
             })}
             {getSubmitButton()}
-            <WarningContainer>
-                {showWinningPositionMismatchWarning && (
-                    <WarningMessage message={t('market.dispute.voting-warning-message.winning-position-mismatch')} />
-                )}
-                {showFirstMemberChangePositionWarning && (
-                    <WarningMessage message={t('market.dispute.voting-warning-message.first-member-change-position')} />
-                )}
-            </WarningContainer>
         </Container>
     );
 };
@@ -232,12 +203,6 @@ const VoteButton = styled(Button)`
     font-size: 15px;
     padding: 4px 10px;
     margin-top: 10px;
-`;
-
-const WarningContainer = styled(FlexDivColumn)`
-    div {
-        font-size: 13px;
-    }
 `;
 
 export default DisputeVoting;

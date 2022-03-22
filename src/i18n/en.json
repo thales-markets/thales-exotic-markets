@@ -4,7 +4,7 @@
             "connect-your-wallet": "Connect wallet",
             "switch-wallet": "Switch wallet",
             "disconnect-wallet": "Disconnect wallet",
-            "wallet-options": "wallet options"
+            "wallet-options": "Wallet options"
         },
         "enable-wallet-access": {
             "approve-label": "Approve {{currencyKey}}",
@@ -71,7 +71,7 @@
         "launch-dapp": "launch dapp",
         "cancel": "Cancel",
         "select-date": "Select date...",
-        "tags-placeholder": "Enter tag...",
+        "tags-placeholder": "Search tags...",
         "remove-tag-tooltip": "Click to remove tag",
         "input-characters-note": "{{entered }} / {{max}}"
     },
@@ -189,7 +189,8 @@
                 "create-market-label": "Create market",
                 "create-market-progress-label": "Creating in progress..."
             },
-            "bond-info": "In order to create market you need to put a bond of {{amount}}"
+            "bond-info": "In order to create market you need to put a bond of {{amount}}",
+            "creation-disabled-message": "Market creation is disabled, only owner can create markets."
         },
         "resolve-market": {
             "title": "Resolve market"

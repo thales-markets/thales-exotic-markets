@@ -7,10 +7,10 @@ import { DisputeVotingResultInfo, DisputeVotingResults as VotingResults } from '
 
 type DisputeVotingResultsProps = {
     votingResults: VotingResults;
-    disputeWinningPosition?: string;
+    positions: string[];
 };
 
-const DisputeVotingResults: React.FC<DisputeVotingResultsProps> = ({ votingResults, disputeWinningPosition }) => {
+const DisputeVotingResults: React.FC<DisputeVotingResultsProps> = ({ votingResults, positions }) => {
     const { t } = useTranslation();
 
     return (
@@ -18,11 +18,11 @@ const DisputeVotingResults: React.FC<DisputeVotingResultsProps> = ({ votingResul
             <Title>{t('market.dispute.results-label')}</Title>
             {votingResults.map((result: DisputeVotingResultInfo) => {
                 return (
-                    <Result key={result.votingOption}>
+                    <Result key={`${result.votingOption}-${result.position}`}>
                         <VotingOption>
                             {`${t(DISPUTE_VOTING_OPTIONS_TRANSLATION_KEYS[result.votingOption])}${
-                                result.votingOption === DisputeVotingOption.ACCEPT_RESULT && disputeWinningPosition
-                                    ? ` (${disputeWinningPosition})`
+                                result.votingOption === DisputeVotingOption.ACCEPT_RESULT && result.numberOfVotes > 0
+                                    ? ` (${positions[result.position]})`
                                     : ''
                             }`}
                         </VotingOption>

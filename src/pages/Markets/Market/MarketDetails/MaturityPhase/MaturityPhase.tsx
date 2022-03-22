@@ -107,32 +107,48 @@ const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
     return (
         <>
             <Positions>
-                {market.positions.map((position: string, index: number) => (
-                    <PositionContainer
-                        key={position}
-                        className={market.winningPosition === index + 1 ? '' : 'disabled'}
-                    >
-                        <Position>
-                            {!!accountMarketData && accountMarketData.position === index + 1 && <Checkmark />}
-                            <PositionLabel
-                                hasPaddingLeft={!!accountMarketData && accountMarketData.position === index + 1}
-                            >
-                                {position}
-                            </PositionLabel>
-                        </Position>
-                        <Info>
-                            <InfoLabel>{t('market.pool-size-label')}:</InfoLabel>
-                            <InfoContent>
-                                {formatCurrencyWithKey(
-                                    PAYMENT_CURRENCY,
-                                    market.poolSizePerPosition[index],
-                                    DEFAULT_CURRENCY_DECIMALS,
-                                    true
-                                )}
-                            </InfoContent>
-                        </Info>
-                    </PositionContainer>
-                ))}
+                {market.positions.map((position: string, index: number) => {
+                    const selectedPosition = accountMarketData ? accountMarketData.position : 0;
+                    const winningAmount = accountMarketData ? accountMarketData.winningAmount : 0;
+
+                    return (
+                        <PositionContainer
+                            key={position}
+                            className={market.winningPosition === index + 1 ? '' : 'disabled'}
+                        >
+                            <Position>
+                                {selectedPosition === index + 1 && <Checkmark />}
+                                <PositionLabel hasPaddingLeft={selectedPosition === index + 1}>
+                                    {position}
+                                </PositionLabel>
+                            </Position>
+                            <Info>
+                                <InfoLabel>{t('market.pool-size-label')}:</InfoLabel>
+                                <InfoContent>
+                                    {formatCurrencyWithKey(
+                                        PAYMENT_CURRENCY,
+                                        market.poolSizePerPosition[index],
+                                        DEFAULT_CURRENCY_DECIMALS,
+                                        true
+                                    )}
+                                </InfoContent>
+                            </Info>
+                            <Info>
+                                <InfoLabel>{t('market.roi-label')}:</InfoLabel>
+                                <InfoContent>
+                                    {formatCurrencyWithKey(
+                                        PAYMENT_CURRENCY,
+                                        selectedPosition === 0
+                                            ? market.winningAmountsNewUser[index]
+                                            : selectedPosition === index + 1
+                                            ? winningAmount
+                                            : market.winningAmountsNoPosition[index]
+                                    )}
+                                </InfoContent>
+                            </Info>
+                        </PositionContainer>
+                    );
+                })}
             </Positions>
             {canClaim && (
                 <MainInfo>
