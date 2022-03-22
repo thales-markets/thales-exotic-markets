@@ -11,7 +11,7 @@ import { getIsAppReady } from 'redux/modules/app';
 import { getIsWalletConnected, getNetworkId, getWalletAddress } from 'redux/modules/wallet';
 import { RootState } from 'redux/rootReducer';
 import styled from 'styled-components';
-import { FlexDivCentered, FlexDivColumn, FlexDivRow, FlexDivStart } from 'styles/common';
+import { FlexDivCentered, FlexDivColumn, FlexDivColumnCentered, FlexDivRow, FlexDivStart } from 'styles/common';
 import {
     AccountPosition,
     AccountPositionsMap,
@@ -202,6 +202,14 @@ const Home: React.FC = () => {
         }
     };
 
+    const resetFilters = () => {
+        setGlobalFilter(GlobalFilterEnum.All);
+        setTagFilter(allTagsFilterItem);
+        setMarketSearch('');
+    };
+
+    const marketsList = marketSearch ? searchFilteredMarkets : filteredMarkets;
+
     return (
         <Container>
             <SearchContainer>
@@ -272,11 +280,13 @@ const Home: React.FC = () => {
             </TagsContainer>
             {marketsQuery.isLoading ? (
                 <SimpleLoader />
+            ) : marketsList.length === 0 ? (
+                <NoMarketsContainer>
+                    <NoMarketsLabel>{t('market.no-markets-found')}</NoMarketsLabel>
+                    <Button onClick={resetFilters}>{t('market.view-all-markets')}</Button>
+                </NoMarketsContainer>
             ) : (
-                <MarketsGrid
-                    markets={marketSearch ? searchFilteredMarkets : filteredMarkets}
-                    accountPositions={accountPositions}
-                />
+                <MarketsGrid markets={marketsList} accountPositions={accountPositions} />
             )}
         </Container>
     );
@@ -318,6 +328,23 @@ const TagsContainer = styled(FlexDivStart)`
     flex-wrap: wrap;
     align-items: center;
     margin-bottom: 10px;
+`;
+
+const NoMarketsContainer = styled(FlexDivColumnCentered)`
+    min-height: 200px;
+    align-items: center;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 28px;
+    line-height: 100%;
+    button {
+        height: 32px;
+        padding-top: 1px;
+    }
+`;
+
+const NoMarketsLabel = styled.span`
+    margin-bottom: 30px;
 `;
 
 export default Home;

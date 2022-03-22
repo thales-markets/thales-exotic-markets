@@ -152,6 +152,8 @@
             "all": "All"
         },
         "back-to-markets": "Back to markets",
+        "no-markets-found": "No markets found",
+        "view-all-markets": "View all markets",
         "create-market": {
             "header": {
                 "step-title": {
