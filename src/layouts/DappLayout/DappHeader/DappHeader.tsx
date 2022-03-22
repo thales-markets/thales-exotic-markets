@@ -20,6 +20,12 @@ const Container = styled(FlexDivRowCentered)`
     @media (max-width: 767px) {
         flex-direction: column;
     }
+    > div {
+        width: 33%;
+        @media (max-width: 767px) {
+            width: auto;
+        }
+    }
 `;
 
 export default DappHeader;

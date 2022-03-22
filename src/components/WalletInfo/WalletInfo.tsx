@@ -97,7 +97,7 @@ const WalletInfo: React.FC = () => {
 const Container = styled(FlexDivCentered)`
     position: relative;
     height: 28px;
-    width: 254px;
+    justify-content: end;
 `;
 
 const WalletContainer = styled(FlexDivRowCentered)`
