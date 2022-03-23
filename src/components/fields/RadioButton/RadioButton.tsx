@@ -50,12 +50,12 @@ const Container = styled.label<{ isColumnDirection?: boolean }>`
     display: ${(props) => (props.isColumnDirection ? 'flex' : 'block')};
     position: relative;
     padding-top: ${(props) => (props.isColumnDirection ? 40 : 0)}px;
-    padding-left: ${(props) => (props.isColumnDirection ? 0 : 35)}px;
+    padding-left: ${(props) => (props.isColumnDirection ? 0 : 45)}px;
     cursor: pointer;
     font-style: normal;
     font-weight: normal;
-    font-size: 40px;
-    line-height: 40px;
+    font-size: ${(props) => (props.isColumnDirection ? 40 : 45)}px;
+    line-height: ${(props) => (props.isColumnDirection ? 40 : 60)}px;
     color: ${(props) => props.theme.textColor.primary};
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -85,6 +85,7 @@ const Checkmark = styled.span<{ isColumnDirection?: boolean }>`
     border: 5px solid ${(props) => props.theme.borderColor.primary};
     background-color: transparent;
     border-radius: 50%;
+    margin-top: ${(props) => (props.isColumnDirection ? 0 : 12)}px;
     :after {
         content: '';
         position: absolute;

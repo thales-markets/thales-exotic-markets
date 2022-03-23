@@ -161,20 +161,28 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ marketAddress, positions,
     const getSubmitButton = () => {
         if (!isWalletConnected) {
             return (
-                <MarketButton onClick={() => onboardConnector.connectWallet()}>
+                <MarketButton type="secondary" onClick={() => onboardConnector.connectWallet()}>
                     {t('common.wallet.connect-your-wallet')}
                 </MarketButton>
             );
         }
         if (insufficientBalance && !isMarketCreator) {
-            return <MarketButton disabled={true}>{t(`common.errors.insufficient-balance`)}</MarketButton>;
+            return (
+                <MarketButton type="secondary" disabled={true}>
+                    {t(`common.errors.insufficient-balance`)}
+                </MarketButton>
+            );
         }
         if (!isOutcomePositionSelected) {
-            return <MarketButton disabled={true}>{t(`common.errors.select-outcome`)}</MarketButton>;
+            return (
+                <MarketButton type="secondary" disabled={true}>
+                    {t(`common.errors.select-outcome`)}
+                </MarketButton>
+            );
         }
         if (!hasAllowance && !isMarketCreator) {
             return (
-                <MarketButton disabled={isAllowing} onClick={() => setOpenApprovalModal(true)}>
+                <MarketButton type="secondary" disabled={isAllowing} onClick={() => setOpenApprovalModal(true)}>
                     {!isAllowing
                         ? t('common.enable-wallet-access.approve-label', { currencyKey: PAYMENT_CURRENCY })
                         : t('common.enable-wallet-access.approve-progress-label', {
@@ -184,7 +192,7 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ marketAddress, positions,
             );
         }
         return (
-            <MarketButton disabled={isButtonDisabled} onClick={handleSubmit}>
+            <MarketButton type="secondary" disabled={isButtonDisabled} onClick={handleSubmit}>
                 {!isSubmitting
                     ? t('market.button.resolve-market-label')
                     : t('market.button.resolve-market-progress-label')}
@@ -241,11 +249,12 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ marketAddress, positions,
 const Container = styled(FlexDivColumn)`
     margin-top: 40px;
     align-items: center;
-    border: 1px solid ${(props) => props.theme.borderColor.primary};
+    background: ${(props) => props.theme.button.background.primary};
     border-radius: 25px;
     flex: initial;
     padding: 30px 20px 40px 20px;
     width: 100%;
+    background: ;
 `;
 
 const Title = styled(FlexDivColumn)`
