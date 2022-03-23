@@ -116,8 +116,33 @@ const Home: React.FC = () => {
         DEFAULT_SEARCH_DEBOUNCE_MS
     );
 
-    const firstLevelFilteredMarkets = useMemo(() => {
+    const tagsFilteredMarkets = useMemo(() => {
         let filteredMarkets = searchFilteredMarkets;
+
+        if (tagFilter.id !== allTagsFilterItem.id) {
+            filteredMarkets = filteredMarkets.filter((market: MarketInfo) =>
+                market.tags.map((tag) => Number(tag)).includes(tagFilter.id)
+            );
+        }
+
+        return filteredMarkets;
+    }, [searchFilteredMarkets, tagFilter]);
+
+    const accountClaimsCount = useMemo(() => {
+        return tagsFilteredMarkets.filter((market: MarketInfo) => {
+            const accountPosition: AccountPosition = accountPositions[market.address];
+            return (
+                !!accountPosition &&
+                market.canUsersClaim &&
+                accountPosition.position > 0 &&
+                (accountPosition.position === market.winningPosition ||
+                    market.status === MarketStatus.CancelledConfirmed)
+            );
+        }).length;
+    }, [tagsFilteredMarkets, accountPositions]);
+
+    const showOpenMarketsFilteredMarkets = useMemo(() => {
+        let filteredMarkets = tagsFilteredMarkets;
 
         if (tagFilter.id !== allTagsFilterItem.id) {
             filteredMarkets = filteredMarkets.filter((market: MarketInfo) =>
@@ -128,38 +153,25 @@ const Home: React.FC = () => {
         filteredMarkets = filteredMarkets.filter((market: MarketInfo) => market.isResolved !== showOpenMarkets);
 
         return filteredMarkets;
-    }, [searchFilteredMarkets, tagFilter, showOpenMarkets]);
+    }, [tagsFilteredMarkets, tagFilter, showOpenMarkets]);
 
-    const totalCount = firstLevelFilteredMarkets.length;
+    const totalCount = showOpenMarketsFilteredMarkets.length;
 
     const disputedCount = useMemo(() => {
-        return firstLevelFilteredMarkets.filter((market: MarketInfo) => {
+        return showOpenMarketsFilteredMarkets.filter((market: MarketInfo) => {
             return market.numberOfOpenDisputes > 0 && !market.isMarketClosedForDisputes;
         }).length;
-    }, [firstLevelFilteredMarkets]);
+    }, [showOpenMarketsFilteredMarkets]);
 
     const accountPositionsCount = useMemo(() => {
-        return firstLevelFilteredMarkets.filter((market: MarketInfo) => {
+        return showOpenMarketsFilteredMarkets.filter((market: MarketInfo) => {
             const accountPosition: AccountPosition = accountPositions[market.address];
             return !!accountPosition && accountPosition.position > 0;
         }).length;
-    }, [firstLevelFilteredMarkets, accountPositions]);
-
-    const accountClaimsCount = useMemo(() => {
-        return firstLevelFilteredMarkets.filter((market: MarketInfo) => {
-            const accountPosition: AccountPosition = accountPositions[market.address];
-            return (
-                !!accountPosition &&
-                market.canUsersClaim &&
-                accountPosition.position > 0 &&
-                (accountPosition.position === market.winningPosition ||
-                    market.status === MarketStatus.CancelledConfirmed)
-            );
-        }).length;
-    }, [firstLevelFilteredMarkets, accountPositions]);
+    }, [showOpenMarketsFilteredMarkets, accountPositions]);
 
     const secondLevelFilteredMarkets = useMemo(() => {
-        let filteredMarkets = firstLevelFilteredMarkets;
+        let filteredMarkets = showOpenMarketsFilteredMarkets;
 
         switch (globalFilter) {
             case GlobalFilterEnum.Disputed:
@@ -199,7 +211,7 @@ const Home: React.FC = () => {
                     return 0;
             }
         });
-    }, [firstLevelFilteredMarkets, sortBy, sortDirection, globalFilter]);
+    }, [showOpenMarketsFilteredMarkets, sortBy, sortDirection, globalFilter, accountPositions]);
 
     const setSort = (sortOption: SortOptionType) => {
         if (sortBy === sortOption.id) {
@@ -264,9 +276,6 @@ const Home: React.FC = () => {
                                 disabled={false}
                                 selected={globalFilter === filterItem}
                                 onClick={() => {
-                                    if (filterItem === GlobalFilterEnum.YourPositions) {
-                                        setShowOpenMarkets(true);
-                                    }
                                     if (filterItem === GlobalFilterEnum.Claim) {
                                         setShowOpenMarkets(false);
                                     }

@@ -261,7 +261,7 @@ const Title = styled(FlexDivColumn)`
     align-items: center;
     font-style: normal;
     font-weight: bold;
-    font-size: 40px;
+    font-size: 45px;
     line-height: 100%;
     text-align: center;
     margin-bottom: 40px;

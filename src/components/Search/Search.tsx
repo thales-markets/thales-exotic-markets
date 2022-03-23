@@ -17,6 +17,7 @@ const Search: React.FC<SearchProps> = ({ text, handleChange }) => {
                 type="text"
                 placeholder={t('market.search-placeholder')}
                 defaultValue={text}
+                value={text}
                 onChange={(event) => handleChange(event.target.value)}
             />
             <IconWrapper>
