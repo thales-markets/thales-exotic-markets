@@ -85,6 +85,8 @@
         "status-label": "Status",
         "tags-label": "Tags",
         "search-placeholder": "Search markets",
+        "open-markets-label": "Open markets",
+        "resolved-markets-label": "Resolved markets",
         "status": {
             "open": "Open",
             "cancelled-pending-confirmation": "Cancelled - pending confirmation",

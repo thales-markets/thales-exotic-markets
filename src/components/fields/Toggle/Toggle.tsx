@@ -53,6 +53,14 @@ const ToggleText = styled.span`
     -ms-user-select: none;
     -o-user-select: none;
     user-select: none;
+    :first-child {
+        text-align: end;
+    }
+    width: calc(50% - 25px);
+    white-space: nowrap;
+    @media (max-width: 575px) {
+        white-space: break-spaces;
+    }
 `;
 
 const ToggleIcon = styled.i<{ isLeftOptionSelected: boolean }>`
