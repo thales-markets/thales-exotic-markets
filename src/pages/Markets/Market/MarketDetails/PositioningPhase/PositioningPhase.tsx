@@ -94,10 +94,10 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
     const isCancelButtonDisabled = isBuying || isWithdrawing || isCanceling || !isWalletConnected;
 
     useEffect(() => {
-        const { paymentTokenContract, signer } = networkConnector;
-        if (paymentTokenContract && signer) {
+        const { paymentTokenContract, thalesBondsContract, signer } = networkConnector;
+        if (paymentTokenContract && thalesBondsContract && signer) {
             const paymentTokenContractWithSigner = paymentTokenContract.connect(signer);
-            const addressToApprove = market.address;
+            const addressToApprove = thalesBondsContract.address;
             const getAllowance = async () => {
                 try {
                     const parsedTicketPrice = ethers.utils.parseEther(Number(market.ticketPrice).toString());
@@ -119,14 +119,14 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
     }, [walletAddress, isWalletConnected, hasAllowance, market.ticketPrice, isAllowing, isBuying, isWithdrawing]);
 
     const handleAllowance = async (approveAmount: BigNumber) => {
-        const { paymentTokenContract, signer } = networkConnector;
-        if (paymentTokenContract && signer) {
+        const { paymentTokenContract, thalesBondsContract, signer } = networkConnector;
+        if (paymentTokenContract && thalesBondsContract && signer) {
             const id = toast.loading(t('market.toast-messsage.transaction-pending'));
             setIsAllowing(true);
 
             try {
                 const paymentTokenContractWithSigner = paymentTokenContract.connect(signer);
-                const addressToApprove = market.address;
+                const addressToApprove = thalesBondsContract.address;
 
                 const tx = (await paymentTokenContractWithSigner.approve(addressToApprove, approveAmount, {
                     gasLimit: MAX_GAS_LIMIT,
