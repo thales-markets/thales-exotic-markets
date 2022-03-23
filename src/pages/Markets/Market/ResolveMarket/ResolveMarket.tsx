@@ -60,7 +60,7 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ marketAddress, positions,
     });
 
     useEffect(() => {
-        if (paymentTokenBalanceQuery.isSuccess && paymentTokenBalanceQuery.data) {
+        if (paymentTokenBalanceQuery.isSuccess) {
             setPaymentTokenBalance(Number(paymentTokenBalanceQuery.data));
         }
     }, [paymentTokenBalanceQuery.isSuccess, paymentTokenBalanceQuery.data]);
@@ -73,7 +73,10 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ marketAddress, positions,
     const isMarketCreator = marketCreator === walletAddress;
 
     const isButtonDisabled =
-        isSubmitting || !isWalletConnected || !hasAllowance || !isOutcomePositionSelected || insufficientBalance;
+        isSubmitting ||
+        !isWalletConnected ||
+        !isOutcomePositionSelected ||
+        ((!hasAllowance || insufficientBalance) && !isMarketCreator);
 
     useEffect(() => {
         const { paymentTokenContract, thalesBondsContract, signer } = networkConnector;
@@ -94,7 +97,7 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ marketAddress, positions,
                     console.log(e);
                 }
             };
-            if (isWalletConnected && !isMarketCreator) {
+            if (isWalletConnected) {
                 getAllowance();
             }
         }

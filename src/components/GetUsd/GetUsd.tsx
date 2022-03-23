@@ -26,7 +26,7 @@ const GetUsd: React.FC = () => {
     });
 
     useEffect(() => {
-        if (getUsdDefaultAmountQuery.isSuccess && getUsdDefaultAmountQuery.data) {
+        if (getUsdDefaultAmountQuery.isSuccess) {
             setGetUsdDefaultAmount(Number(getUsdDefaultAmountQuery.data));
         }
     }, [getUsdDefaultAmountQuery.isSuccess, getUsdDefaultAmountQuery.data]);

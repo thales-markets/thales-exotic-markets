@@ -39,7 +39,7 @@ const DisputeCard: React.FC<DisputeCardProps> = ({
     });
 
     const disputeData: DisputeData | undefined = useMemo(() => {
-        if (disputeQuery.isSuccess && disputeQuery.data) {
+        if (disputeQuery.isSuccess) {
             return disputeQuery.data as DisputeData | undefined;
         }
         return undefined;
