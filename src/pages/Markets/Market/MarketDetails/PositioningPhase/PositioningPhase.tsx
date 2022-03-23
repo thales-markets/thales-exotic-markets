@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import { getIsAppReady } from 'redux/modules/app';
 import { RootState } from 'redux/rootReducer';
 import styled from 'styled-components';
-import { FlexDivCentered, FlexDivColumn, FlexDivRowCentered } from 'styles/common';
+import { FlexDivCentered, FlexDivColumn } from 'styles/common';
 import { AccountMarketData, MarketData } from 'types/markets';
 import { formatCurrencyWithKey, formatPercentage } from 'utils/formatters/number';
 import { PAYMENT_CURRENCY, DEFAULT_CURRENCY_DECIMALS } from 'constants/currency';
@@ -56,15 +56,9 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
             setCurrentPositionOnContract((accountMarketDataQuery.data as AccountMarketData).position);
             setPositionOnContract((accountMarketDataQuery.data as AccountMarketData).position);
             setWinningAmount((accountMarketDataQuery.data as AccountMarketData).winningAmount);
-        }
-    }, [accountMarketDataQuery.isSuccess, accountMarketDataQuery.data]);
-
-    // set only on the first load, that is why isSuccess is the only dependency
-    useEffect(() => {
-        if (accountMarketDataQuery.isSuccess && accountMarketDataQuery.data) {
             setSelectedPosition((accountMarketDataQuery.data as AccountMarketData).position);
         }
-    }, [accountMarketDataQuery.isSuccess]);
+    }, [accountMarketDataQuery.isSuccess, accountMarketDataQuery.data]);
 
     const paymentTokenBalanceQuery = usePaymentTokenBalanceQuery(walletAddress, networkId, {
         enabled: isAppReady && isWalletConnected,
@@ -310,6 +304,7 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
                             onChange={() => setSelectedPosition(index + 1)}
                             label={position}
                             disabled={isBuying || isWithdrawing}
+                            isColumnDirection
                         />
                         <Info>
                             <InfoLabel>{t('market.pool-size-label')}:</InfoLabel>
@@ -332,7 +327,9 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
                                             ? market.winningAmountsNewUser[index]
                                             : positionOnContract === index + 1
                                             ? winningAmount
-                                            : market.winningAmountsNoPosition[index]
+                                            : market.winningAmountsNoPosition[index],
+                                        market.totalUsersTakenPositions > 1 ||
+                                            (market.totalUsersTakenPositions === 1 && positionOnContract === 0)
                                     )
                                 )}
                             </InfoContent>
@@ -369,14 +366,12 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
     );
 };
 
-const Positions = styled(FlexDivRowCentered)`
-    margin-top: 0px;
+const Positions = styled(FlexDivColumn)`
     margin-bottom: 20px;
-    flex-wrap: wrap;
 `;
 
 const Position = styled(FlexDivColumn)`
-    margin-bottom: 20px;
+    margin-bottom: 35px;
 `;
 
 const Info = styled(FlexDivCentered)<{ fontSize?: number }>`

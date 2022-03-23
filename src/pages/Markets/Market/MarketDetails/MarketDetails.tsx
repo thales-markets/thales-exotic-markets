@@ -64,7 +64,9 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
 
     return (
         <MarketContainer>
-            <MarketTitle fontSize={40}>{market.question}</MarketTitle>
+            <MarketTitle fontSize={40} marginBottom={40}>
+                {market.question}
+            </MarketTitle>
             {market.status === MarketStatusEnum.Open && <PositioningPhase market={market} />}
             {market.status !== MarketStatusEnum.Open && <MaturityPhase market={market} />}
             <MarketStatus

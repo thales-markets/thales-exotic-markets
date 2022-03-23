@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { FlexDivCentered, FlexDivColumn, FlexDivRowCentered } from 'styles/common';
+import { FlexDivCentered, FlexDivColumn } from 'styles/common';
 import { AccountMarketData, MarketData } from 'types/markets';
 import { formatCurrencyWithKey, formatPercentage } from 'utils/formatters/number';
 import { PAYMENT_CURRENCY, DEFAULT_CURRENCY_DECIMALS } from 'constants/currency';
@@ -144,7 +144,9 @@ const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
                                                 ? market.winningAmountsNewUser[index]
                                                 : selectedPosition === index + 1
                                                 ? winningAmount
-                                                : market.winningAmountsNoPosition[index]
+                                                : market.winningAmountsNoPosition[index],
+                                            market.totalUsersTakenPositions > 1 ||
+                                                (market.totalUsersTakenPositions === 1 && selectedPosition === 0)
                                         )
                                     )}
                                 </InfoContent>
@@ -170,14 +172,12 @@ const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
     );
 };
 
-const Positions = styled(FlexDivRowCentered)`
-    margin-top: 0px;
+const Positions = styled(FlexDivColumn)`
     margin-bottom: 20px;
-    flex-wrap: wrap;
 `;
 
 const PositionContainer = styled(FlexDivColumn)`
-    margin-bottom: 20px;
+    margin-bottom: 35px;
     &.disabled {
         opacity: 0.4;
         cursor: default;

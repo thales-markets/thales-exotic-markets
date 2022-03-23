@@ -45,6 +45,7 @@ export type MarketData = MarketInfo & {
     arbitraryRewardForDisputor: number;
     winningAmountsNewUser: number[];
     winningAmountsNoPosition: number[];
+    totalUsersTakenPositions: number;
 };
 
 export type Markets = MarketInfo[];

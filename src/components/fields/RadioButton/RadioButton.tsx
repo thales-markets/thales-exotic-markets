@@ -8,11 +8,21 @@ type RadioButtonProps = {
     disabled?: boolean;
     checked: boolean;
     label?: string;
+    isColumnDirection?: boolean;
 };
 
-const RadioButton: React.FC<RadioButtonProps> = ({ value, onChange, className, disabled, checked, label, ...rest }) => {
+const RadioButton: React.FC<RadioButtonProps> = ({
+    value,
+    onChange,
+    className,
+    disabled,
+    checked,
+    label,
+    isColumnDirection,
+    ...rest
+}) => {
     return (
-        <Container className={disabled ? 'disabled' : ''}>
+        <Container className={disabled ? 'disabled' : ''} isColumnDirection={isColumnDirection}>
             {label}
             <Input
                 {...rest}
@@ -23,7 +33,7 @@ const RadioButton: React.FC<RadioButtonProps> = ({ value, onChange, className, d
                 className={className}
                 disabled={disabled}
             />
-            <Checkmark className="checkmark" />
+            <Checkmark className="checkmark" isColumnDirection={isColumnDirection} />
         </Container>
     );
 };
@@ -36,15 +46,16 @@ const Input = styled.input`
     width: 0;
 `;
 
-const Container = styled.label`
-    display: block;
+const Container = styled.label<{ isColumnDirection?: boolean }>`
+    display: ${(props) => (props.isColumnDirection ? 'flex' : 'block')};
     position: relative;
-    padding-left: 35px;
+    padding-top: ${(props) => (props.isColumnDirection ? 40 : 0)}px;
+    padding-left: ${(props) => (props.isColumnDirection ? 0 : 35)}px;
     cursor: pointer;
     font-style: normal;
     font-weight: normal;
     font-size: 40px;
-    line-height: 55px;
+    line-height: 40px;
     color: ${(props) => props.theme.textColor.primary};
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -62,26 +73,26 @@ const Container = styled.label`
     }
     align-self: center;
     white-space: nowrap;
+    justify-content: center;
 `;
 
-const Checkmark = styled.span`
+const Checkmark = styled.span<{ isColumnDirection?: boolean }>`
     position: absolute;
     top: 0;
-    left: 0;
-    height: 29px;
-    width: 29px;
-    border: 4px solid ${(props) => props.theme.borderColor.primary};
+    left: ${(props) => (props.isColumnDirection ? 'auto' : '0')};
+    height: 36px;
+    width: 36px;
+    border: 5px solid ${(props) => props.theme.borderColor.primary};
     background-color: transparent;
     border-radius: 50%;
-    margin-top: 12px;
     :after {
         content: '';
         position: absolute;
         display: none;
-        left: 3px;
-        top: 3px;
-        width: 15px;
-        height: 15px;
+        left: 5px;
+        top: 5px;
+        width: 16px;
+        height: 16px;
         border-radius: 50%;
         background: ${(props) => props.theme.borderColor.primary};
         -webkit-transform: rotate(45deg);

@@ -67,7 +67,7 @@ const GetUsd: React.FC = () => {
 
     return (
         <Container>
-            <Button type="secondary" onClick={handleGet}>
+            <Button type="secondary" onClick={handleGet} disabled={isSubmitting}>
                 {isSubmitting
                     ? t('common.wallet.get-usd-progress', {
                           amount: formattedAmount,

@@ -1,2 +1,2 @@
-export const getRoi = (ticketPrice: number, potentialWinnings: number) =>
-    potentialWinnings > 0 ? (potentialWinnings - ticketPrice) / ticketPrice : 0;
+export const getRoi = (ticketPrice: number, potentialWinnings: number, showRoi: boolean) =>
+    showRoi ? (potentialWinnings - ticketPrice) / ticketPrice : 0;
