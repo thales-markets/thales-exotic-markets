@@ -119,7 +119,7 @@ const Home: React.FC = () => {
     );
 
     const tagsFilteredMarkets = useMemo(() => {
-        let filteredMarkets = searchFilteredMarkets;
+        let filteredMarkets = marketSearch ? searchFilteredMarkets : markets;
 
         if (tagFilter.id !== allTagsFilterItem.id) {
             filteredMarkets = filteredMarkets.filter((market: MarketInfo) =>
@@ -128,7 +128,7 @@ const Home: React.FC = () => {
         }
 
         return filteredMarkets;
-    }, [searchFilteredMarkets, tagFilter]);
+    }, [markets, searchFilteredMarkets, tagFilter, marketSearch]);
 
     const accountClaimsCount = useMemo(() => {
         return tagsFilteredMarkets.filter((market: MarketInfo) => {
@@ -172,7 +172,7 @@ const Home: React.FC = () => {
         }).length;
     }, [showOpenMarketsFilteredMarkets, accountPositions]);
 
-    const secondLevelFilteredMarkets = useMemo(() => {
+    const globalFilteredMarkets = useMemo(() => {
         let filteredMarkets = showOpenMarketsFilteredMarkets;
 
         switch (globalFilter) {
@@ -242,7 +242,7 @@ const Home: React.FC = () => {
         setShowOpenMarkets(true);
     };
 
-    const marketsList = secondLevelFilteredMarkets;
+    const marketsList = globalFilteredMarkets;
 
     return (
         <Container>

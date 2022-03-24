@@ -21,6 +21,7 @@ import { MarketStatus as MarketStatusEnum } from 'constants/markets';
 import OpenDisputeInfo from 'pages/Markets/components/OpenDisputeInfo';
 import Button from 'components/Button';
 import useAccountMarketDataQuery from 'queries/markets/useAccountMarketDataQuery';
+import DataSourceLink from 'pages/Markets/components/DataSourceLink';
 
 type MarketDetailsProps = {
     market: MarketData;
@@ -69,13 +70,17 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
             </MarketTitle>
             {market.status === MarketStatusEnum.Open && <PositioningPhase market={market} />}
             {market.status !== MarketStatusEnum.Open && <MaturityPhase market={market} />}
-            <MarketStatus
-                market={market}
-                fontSize={40}
-                labelFontSize={20}
-                fontWeight={700}
-                isClaimAvailable={isClaimAvailable}
-            />
+            <StatusSourceContainer>
+                <StatusSourceInfo />
+                <MarketStatus
+                    market={market}
+                    fontSize={40}
+                    labelFontSize={20}
+                    fontWeight={700}
+                    isClaimAvailable={isClaimAvailable}
+                />
+                <DataSourceLink link={market.dataSource} />
+            </StatusSourceContainer>
             <Footer>
                 <Tags tags={market.tags} labelFontSize={20} />
                 <Info fontSize={20}>
@@ -132,8 +137,20 @@ const InfoContent = styled.span`
     font-weight: 700;
 `;
 
+const StatusSourceContainer = styled(FlexDivRow)`
+    align-items: end;
+    @media (max-width: 767px) {
+        flex-direction: column;
+        align-items: center;
+    }
+`;
+
+const StatusSourceInfo = styled(FlexDivRow)`
+    width: 146px;
+`;
+
 const Footer = styled(FlexDivRow)`
-    margin-top: 25px;
+    margin-top: 10px;
     > div {
         width: 33%;
     }
@@ -158,6 +175,7 @@ const OpenDisputeButton = styled(Button)`
     font-size: 17px;
     margin-bottom: 4px;
     margin-left: 6px;
+    width: 146px;
 `;
 
 export default MarketDetails;

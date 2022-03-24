@@ -23,7 +23,7 @@ const StyledButton = styled.button<{ buttonType: ButtonType }>`
         props.buttonType === 'secondary'
             ? props.theme.button.background.secondary
             : props.theme.button.background.primary};
-    padding: 0 25px;
+    padding: 0 20px;
     border-radius: 30px;
     font-style: normal;
     font-weight: bold;

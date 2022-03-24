@@ -83,6 +83,7 @@ const Market: React.FC<MarketProps> = (props) => {
 const Container = styled(FlexDivColumn)`
     width: 100%;
     position: relative;
+    align-items: center;
 `;
 
 export default Market;

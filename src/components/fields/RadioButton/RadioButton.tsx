@@ -1,6 +1,8 @@
 import React, { ChangeEvent } from 'react';
 import styled from 'styled-components';
 
+type TextColor = 'primary' | 'secondary' | 'tertiary';
+
 type RadioButtonProps = {
     value: string | number;
     onChange: (e: ChangeEvent<HTMLInputElement>) => void;
@@ -9,6 +11,7 @@ type RadioButtonProps = {
     checked: boolean;
     label?: string;
     isColumnDirection?: boolean;
+    color?: TextColor;
 };
 
 const RadioButton: React.FC<RadioButtonProps> = ({
@@ -19,10 +22,11 @@ const RadioButton: React.FC<RadioButtonProps> = ({
     checked,
     label,
     isColumnDirection,
+    color = 'primary',
     ...rest
 }) => {
     return (
-        <Container className={disabled ? 'disabled' : ''} isColumnDirection={isColumnDirection}>
+        <Container className={disabled ? 'disabled' : ''} isColumnDirection={isColumnDirection} color={color}>
             {label}
             <Input
                 {...rest}
@@ -46,7 +50,7 @@ const Input = styled.input`
     width: 0;
 `;
 
-const Container = styled.label<{ isColumnDirection?: boolean }>`
+const Container = styled.label<{ isColumnDirection?: boolean; color: TextColor }>`
     display: ${(props) => (props.isColumnDirection ? 'flex' : 'block')};
     position: relative;
     padding-top: ${(props) => (props.isColumnDirection ? 40 : 0)}px;
@@ -56,7 +60,7 @@ const Container = styled.label<{ isColumnDirection?: boolean }>`
     font-weight: normal;
     font-size: ${(props) => (props.isColumnDirection ? 40 : 45)}px;
     line-height: ${(props) => (props.isColumnDirection ? 40 : 60)}px;
-    color: ${(props) => props.theme.textColor.primary};
+    color: ${(props) => props.theme.textColor[props.color]};
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
@@ -72,7 +76,6 @@ const Container = styled.label<{ isColumnDirection?: boolean }>`
         cursor: default;
     }
     align-self: center;
-    white-space: nowrap;
     justify-content: center;
 `;
 
@@ -85,7 +88,7 @@ const Checkmark = styled.span<{ isColumnDirection?: boolean }>`
     border: 5px solid ${(props) => props.theme.borderColor.primary};
     background-color: transparent;
     border-radius: 50%;
-    margin-top: ${(props) => (props.isColumnDirection ? 0 : 12)}px;
+    margin-top: ${(props) => (props.isColumnDirection ? 0 : 10)}px;
     :after {
         content: '';
         position: absolute;

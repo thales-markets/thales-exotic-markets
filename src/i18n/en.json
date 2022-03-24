@@ -110,6 +110,7 @@
         "claim-refund-label": "Claim refund",
         "nothing-to-claim-label": "Nothing to claim",
         "open-disputes-label": "Open disputes",
+        "data-source-label": "Data source",
         "button": {
             "open-dispute-label": "Open dispute",
             "create-market-label": "Create market",
