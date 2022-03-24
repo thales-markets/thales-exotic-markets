@@ -4,7 +4,7 @@ import { bigNumberFormatter } from 'utils/formatters/ethers';
 import networkConnector from 'utils/networkConnector';
 import { NetworkId } from 'types/network';
 import { MarketsParameters } from 'types/markets';
-import { MAXIMUM_POSITIONS, MAXIMUM_TAGS } from 'constants/markets';
+import { MAXIMUM_POSITIONS, MAXIMUM_TAGS, MINIMUM_TICKET_PRICE } from 'constants/markets';
 
 const useMarketsParametersQuery = (networkId: NetworkId, options?: UseQueryOptions<MarketsParameters>) => {
     return useQuery<MarketsParameters>(
@@ -23,6 +23,7 @@ const useMarketsParametersQuery = (networkId: NetworkId, options?: UseQueryOptio
                 creationRestrictedToOwner: false,
                 owner: '',
                 maxNumberOfTags: MAXIMUM_TAGS,
+                minFixedTicketPrice: MINIMUM_TICKET_PRICE,
             };
             const marketManagerContract = networkConnector.marketManagerContract;
             if (marketManagerContract) {
@@ -39,6 +40,7 @@ const useMarketsParametersQuery = (networkId: NetworkId, options?: UseQueryOptio
                     creationRestrictedToOwner,
                     owner,
                     maxNumberOfTags,
+                    minFixedTicketPrice,
                 ] = await Promise.all([
                     marketManagerContract.fixedBondAmount(),
                     marketManagerContract.maximumPositionsAllowed(),
@@ -52,6 +54,7 @@ const useMarketsParametersQuery = (networkId: NetworkId, options?: UseQueryOptio
                     marketManagerContract.creationRestrictedToOwner(),
                     marketManagerContract.owner(),
                     marketManagerContract.maxNumberOfTags(),
+                    marketManagerContract.minFixedTicketPrice(),
                 ]);
 
                 marketsParameters.fixedBondAmount = bigNumberFormatter(fixedBondAmount);
@@ -66,6 +69,7 @@ const useMarketsParametersQuery = (networkId: NetworkId, options?: UseQueryOptio
                 marketsParameters.creationRestrictedToOwner = creationRestrictedToOwner;
                 marketsParameters.owner = owner;
                 marketsParameters.maxNumberOfTags = Number(maxNumberOfTags);
+                marketsParameters.minFixedTicketPrice = bigNumberFormatter(minFixedTicketPrice);
             }
 
             return marketsParameters;

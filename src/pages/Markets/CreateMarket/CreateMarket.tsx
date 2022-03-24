@@ -137,6 +137,7 @@ const CreateMarket: React.FC = () => {
         : false;
     const maxNumberOfTags = marketsParameters ? marketsParameters.maxNumberOfTags : MAXIMUM_TAGS;
     const maximumPositionsAllowed = marketsParameters ? marketsParameters.maximumPositionsAllowed : MAXIMUM_POSITIONS;
+    const minFixedTicketPrice = marketsParameters ? marketsParameters.minFixedTicketPrice : MINIMUM_TICKET_PRICE;
 
     const isQuestionEntered = question.trim() !== '';
     const isDataSourceEntered = dataSource.trim() !== '';
@@ -370,7 +371,7 @@ const CreateMarket: React.FC = () => {
     useEffect(() => {
         setIsTicketPriceValid(
             (marketType === MarketType.TICKET && Number(ticketPrice) === 0) ||
-                (Number(ticketPrice) > 0 && Number(ticketPrice) >= MINIMUM_TICKET_PRICE) ||
+                (Number(ticketPrice) > 0 && Number(ticketPrice) >= minFixedTicketPrice) ||
                 marketType === MarketType.OPEN_BID
         );
     }, [ticketPrice, marketType]);
@@ -448,7 +449,7 @@ const CreateMarket: React.FC = () => {
                             validationMessage={t(`common.errors.invalid-ticket-price-min`, {
                                 min: formatCurrencyWithKey(
                                     PAYMENT_CURRENCY,
-                                    MINIMUM_TICKET_PRICE,
+                                    minFixedTicketPrice,
                                     DEFAULT_CURRENCY_DECIMALS,
                                     true
                                 ),

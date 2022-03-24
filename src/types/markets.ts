@@ -75,6 +75,7 @@ export type MarketsParameters = {
     creationRestrictedToOwner: boolean;
     owner: string;
     maxNumberOfTags: number;
+    minFixedTicketPrice: number;
 };
 
 export type TagInfo = {

@@ -134,6 +134,12 @@ export const exoticPositionalMarketManagerContract = {
         },
         {
             anonymous: false,
+            inputs: [{ indexed: false, internalType: 'uint256', name: 'minFixedTicketPrice', type: 'uint256' }],
+            name: 'NewMinimumFixedTicketAmount',
+            type: 'event',
+        },
+        {
+            anonymous: false,
             inputs: [{ indexed: false, internalType: 'address', name: 'oracleCouncilAddress', type: 'address' }],
             name: 'NewOracleCouncilAddress',
             type: 'event',
@@ -479,6 +485,13 @@ export const exoticPositionalMarketManagerContract = {
         },
         {
             inputs: [],
+            name: 'minFixedTicketPrice',
+            outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+            stateMutability: 'view',
+            type: 'function',
+        },
+        {
+            inputs: [],
             name: 'minimumPositioningDuration',
             outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
             stateMutability: 'view',
@@ -623,17 +636,6 @@ export const exoticPositionalMarketManagerContract = {
         {
             inputs: [
                 { internalType: 'address', name: '_market', type: 'address' },
-                { internalType: 'address', name: '_recepient', type: 'address' },
-                { internalType: 'uint256', name: '_amount', type: 'uint256' },
-            ],
-            name: 'sendMarketBondAmountTo',
-            outputs: [],
-            stateMutability: 'nonpayable',
-            type: 'function',
-        },
-        {
-            inputs: [
-                { internalType: 'address', name: '_market', type: 'address' },
                 { internalType: 'address', name: '_disputorAddress', type: 'address' },
                 { internalType: 'uint256', name: '_amount', type: 'uint256' },
             ],
@@ -722,6 +724,7 @@ export const exoticPositionalMarketManagerContract = {
             stateMutability: 'nonpayable',
             type: 'function',
         },
+        { inputs: [], name: 'setMaxAllowanceForBonds', outputs: [], stateMutability: 'nonpayable', type: 'function' },
         {
             inputs: [{ internalType: 'uint256', name: '_maxNumberOfTags', type: 'uint256' }],
             name: 'setMaxNumberOfTags',
@@ -739,6 +742,13 @@ export const exoticPositionalMarketManagerContract = {
         {
             inputs: [{ internalType: 'uint256', name: '_maximumPositionsAllowed', type: 'uint256' }],
             name: 'setMaximumPositionsAllowed',
+            outputs: [],
+            stateMutability: 'nonpayable',
+            type: 'function',
+        },
+        {
+            inputs: [{ internalType: 'uint256', name: '_minFixedTicketPrice', type: 'uint256' }],
+            name: 'setMinimumFixedTicketAmount',
             outputs: [],
             stateMutability: 'nonpayable',
             type: 'function',
