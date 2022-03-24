@@ -52,7 +52,6 @@ const GetUsd: React.FC = () => {
 
             try {
                 const ethBalance = bigNumberFormatter(await signer.getBalance());
-                console.log(ethBalance, FAUCET_ETH_AMOUNT_TO_SEND);
                 const exoticUsdContractWithSigner = exoticUsdContract.connect(faucetSigner);
 
                 const tx = await exoticUsdContractWithSigner.mintForUser(walletAddress, {
