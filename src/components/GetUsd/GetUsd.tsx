@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import { RootState } from 'redux/rootReducer';
-import { getNetworkId, getWalletAddress } from 'redux/modules/wallet';
+import { getIsWalletConnected, getNetworkId, getWalletAddress } from 'redux/modules/wallet';
 import { FlexDivCentered } from 'styles/common';
 import { useTranslation } from 'react-i18next';
 import { getIsAppReady } from 'redux/modules/app';
@@ -23,6 +23,7 @@ const GetUsd: React.FC = () => {
     const networkId = useSelector((state: RootState) => getNetworkId(state));
     const isAppReady = useSelector((state: RootState) => getIsAppReady(state));
     const walletAddress = useSelector((state: RootState) => getWalletAddress(state)) || '';
+    const isWalletConnected = useSelector((state: RootState) => getIsWalletConnected(state));
     const [getUsdDefaultAmount, setGetUsdDefaultAmount] = useState<number | string>('');
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
@@ -77,17 +78,21 @@ const GetUsd: React.FC = () => {
     };
 
     return (
-        <Container>
-            <Button type="secondary" onClick={handleGet} disabled={isSubmitting}>
-                {isSubmitting
-                    ? t('common.wallet.get-usd-progress', {
-                          amount: formattedAmount,
-                      })
-                    : t('common.wallet.get-usd', {
-                          amount: formattedAmount,
-                      })}
-            </Button>
-        </Container>
+        <>
+            {isWalletConnected && (
+                <Container>
+                    <Button type="secondary" onClick={handleGet} disabled={isSubmitting}>
+                        {isSubmitting
+                            ? t('common.wallet.get-usd-progress', {
+                                  amount: formattedAmount,
+                              })
+                            : t('common.wallet.get-usd', {
+                                  amount: formattedAmount,
+                              })}
+                    </Button>
+                </Container>
+            )}
+        </>
     );
 };
 
