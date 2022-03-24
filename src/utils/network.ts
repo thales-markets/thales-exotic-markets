@@ -8,17 +8,17 @@ import { EthereumProvider, NetworkId } from 'types/network';
 import networkConnector from 'utils/networkConnector';
 
 export const NetworkIdByName: Record<string, NetworkId> = {
-    OptimsimMainnet: 10,
+    // OptimsimMainnet: 10,
     OptimsimKovan: 69,
 };
 
 export const NetworkNameById: Record<NetworkId, string> = {
-    10: 'optimism mainnet',
+    // 10: 'optimism mainnet',
     69: 'optimism kovan',
 };
 
 export const InfuraNetworkNameById: Record<NetworkId, string> = {
-    10: 'optimism-mainnet',
+    // 10: 'optimism-mainnet',
     69: 'optimsim-kovan',
 };
 

@@ -16,9 +16,9 @@
         },
         "unsupported-network": {
             "title": "Oops! You are on the wrong network!",
-            "description": "You have selected the wrong network in your wallet. To continue, please switch to Optimism Mainnet network.",
+            "description": "You have selected the wrong network in your wallet. To continue, please switch to Optimism Kovan network.",
             "button": {
-                "optimism": "Switch to Optimism"
+                "optimism": "Switch to Optimism Kovan"
             }
         },
         "errors": {
