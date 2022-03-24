@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import { RootState } from 'redux/rootReducer';
-import { getNetworkId } from 'redux/modules/wallet';
+import { getNetworkId, getWalletAddress } from 'redux/modules/wallet';
 import { FlexDivCentered } from 'styles/common';
 import { useTranslation } from 'react-i18next';
 import { getIsAppReady } from 'redux/modules/app';
@@ -13,11 +13,16 @@ import useGetUsdDefaultAmountQuery from 'queries/wallet/useGetUsdDefaultAmountQu
 import { toast } from 'react-toastify';
 import { getSuccessToastOptions, getErrorToastOptions } from 'config/toast';
 import networkConnector from 'utils/networkConnector';
+import { ethers } from 'ethers';
+import { bigNumberFormatter } from 'utils/formatters/ethers';
+
+const FAUCET_ETH_AMOUNT_TO_SEND = 0.000001;
 
 const GetUsd: React.FC = () => {
     const { t } = useTranslation();
     const networkId = useSelector((state: RootState) => getNetworkId(state));
     const isAppReady = useSelector((state: RootState) => getIsAppReady(state));
+    const walletAddress = useSelector((state: RootState) => getWalletAddress(state)) || '';
     const [getUsdDefaultAmount, setGetUsdDefaultAmount] = useState<number | string>('');
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
@@ -39,15 +44,22 @@ const GetUsd: React.FC = () => {
     );
 
     const handleGet = async () => {
-        const { exoticUsdContract, signer } = networkConnector;
-        if (exoticUsdContract && signer) {
+        const { exoticUsdContract, provider, signer } = networkConnector;
+        const faucetSigner = new ethers.Wallet(process.env.REACT_APP_FAUCET_WALLET_PRIVATE_KEY || '', provider);
+        if (exoticUsdContract && signer && faucetSigner) {
             const id = toast.loading(t('market.toast-messsage.transaction-pending'));
             setIsSubmitting(true);
 
             try {
-                const exoticUsdContractWithSigner = exoticUsdContract.connect(signer);
+                const ethBalance = bigNumberFormatter(await signer.getBalance());
+                console.log(ethBalance, FAUCET_ETH_AMOUNT_TO_SEND);
+                const exoticUsdContractWithSigner = exoticUsdContract.connect(faucetSigner);
 
-                const tx = await exoticUsdContractWithSigner.mintForUser();
+                const tx = await exoticUsdContractWithSigner.mintForUser(walletAddress, {
+                    value: ethers.utils.parseEther(
+                        (ethBalance < FAUCET_ETH_AMOUNT_TO_SEND ? FAUCET_ETH_AMOUNT_TO_SEND : 0).toString()
+                    ),
+                });
                 const txResult = await tx.wait();
 
                 if (txResult && txResult.transactionHash) {

@@ -1,7 +1,7 @@
 export const exoticUsdContract = {
     addresses: {
         10: '',
-        69: '0x59F83802e77F5c11621348737E9e94c7f99b30CD',
+        69: '0x762838253A45a9106cc859ec99dF31DF48FCf735',
     },
     abi: [
         { inputs: [], stateMutability: 'nonpayable', type: 'constructor' },
@@ -58,6 +58,7 @@ export const exoticUsdContract = {
             name: 'Transfer',
             type: 'event',
         },
+        { stateMutability: 'payable', type: 'fallback' },
         {
             inputs: [
                 { internalType: 'address', name: 'owner', type: 'address' },
@@ -119,7 +120,13 @@ export const exoticUsdContract = {
             stateMutability: 'nonpayable',
             type: 'function',
         },
-        { inputs: [], name: 'mintForUser', outputs: [], stateMutability: 'nonpayable', type: 'function' },
+        {
+            inputs: [{ internalType: 'address payable', name: '_account', type: 'address' }],
+            name: 'mintForUser',
+            outputs: [],
+            stateMutability: 'payable',
+            type: 'function',
+        },
         {
             inputs: [],
             name: 'name',
@@ -142,6 +149,13 @@ export const exoticUsdContract = {
             type: 'function',
         },
         { inputs: [], name: 'renounceOwnership', outputs: [], stateMutability: 'nonpayable', type: 'function' },
+        {
+            inputs: [{ internalType: 'address payable', name: '_account', type: 'address' }],
+            name: 'sendEthToUser',
+            outputs: [],
+            stateMutability: 'nonpayable',
+            type: 'function',
+        },
         {
             inputs: [{ internalType: 'uint256', name: '_defaultAmount', type: 'uint256' }],
             name: 'setDefaultAmount',
@@ -212,6 +226,7 @@ export const exoticUsdContract = {
             stateMutability: 'nonpayable',
             type: 'function',
         },
+        { stateMutability: 'payable', type: 'receive' },
     ],
 };
 
