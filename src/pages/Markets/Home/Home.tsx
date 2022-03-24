@@ -4,7 +4,7 @@ import Search from 'components/Search';
 import { DEFAULT_SEARCH_DEBOUNCE_MS } from 'constants/defaults';
 import useDebouncedMemo from 'hooks/useDebouncedMemo';
 import useMarketsQuery from 'queries/markets/useMarketsQuery';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { getIsAppReady } from 'redux/modules/app';
@@ -58,7 +58,7 @@ const Home: React.FC = () => {
         id: 0,
         label: t('market.filter-label.all'),
     };
-    const [tagFilter, setTagFilter] = useState<TagInfo>(allTagsFilterItem);
+    const [tagFilter, setTagFilter] = useLocalStorage(LOCAL_STORAGE_KEYS.FILTER_TAGS, allTagsFilterItem);
 
     const marketsParametersQuery = useMarketsParametersQuery(networkId, {
         enabled: isAppReady,
