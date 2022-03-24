@@ -38,13 +38,15 @@ import usePaymentTokenBalanceQuery from 'queries/wallet/usePaymentTokenBalanceQu
 import NumericInput from 'components/fields/NumericInput';
 import ApprovalModal from 'components/ApprovalModal';
 import useTagsQuery from 'queries/markets/useTagsQuery';
-import { buildMarketLink, navigateTo } from 'utils/routes';
+import { buildHref, buildMarketLink, navigateTo } from 'utils/routes';
 import { toast } from 'react-toastify';
 import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
 import { formatCurrencyWithKey } from 'utils/formatters/number';
 import { endOfToday, isSameDay, setMonth, startOfToday } from 'date-fns';
 import WarningMessage from 'components/WarningMessage';
 import { BondInfo } from 'components/common';
+import BackToLink from '../components/BackToLink';
+import ROUTES from 'constants/routes';
 
 const calculateMinTime = (currentDate: Date, minDate: Date) => {
     const isMinDateCurrentDate = isSameDay(currentDate, minDate);
@@ -375,6 +377,7 @@ const CreateMarket: React.FC = () => {
 
     return (
         <Container>
+            <BackToLink link={buildHref(ROUTES.Markets.Home)} text={t('market.back-to-markets')} />
             <ContentWrapper>
                 <Form>
                     {creationRestrictedToOwner && (
@@ -501,7 +504,6 @@ const CreateMarket: React.FC = () => {
 };
 
 const Container = styled(FlexDivColumn)`
-    margin-top: 60px;
     align-items: center;
     @media (max-width: 767px) {
         width: 100%;
@@ -509,6 +511,7 @@ const Container = styled(FlexDivColumn)`
 `;
 
 const ContentWrapper = styled(FlexDivRow)`
+    margin-top: 20px;
     @media (max-width: 767px) {
         flex-direction: column;
         width: 100%;

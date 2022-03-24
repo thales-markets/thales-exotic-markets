@@ -34,6 +34,8 @@ import useTagsQuery from 'queries/markets/useTagsQuery';
 import useAccountPositionsQuery from 'queries/markets/useAccountPositionsQuery';
 import useMarketsParametersQuery from 'queries/markets/useMarketsParametersQuery';
 import Toggle from 'components/fields/Toggle';
+import { LOCAL_STORAGE_KEYS } from 'constants/storage';
+import useLocalStorage from 'hooks/useLocalStorage';
 
 const Home: React.FC = () => {
     const { t } = useTranslation();
@@ -41,11 +43,11 @@ const Home: React.FC = () => {
     const networkId = useSelector((state: RootState) => getNetworkId(state));
     const walletAddress = useSelector((state: RootState) => getWalletAddress(state)) || '';
     const isWalletConnected = useSelector((state: RootState) => getIsWalletConnected(state));
-    const [globalFilter, setGlobalFilter] = useState<GlobalFilterEnum>(GlobalFilterEnum.All);
-    const [sortDirection, setSortDirection] = useState(SortDirection.ASC);
-    const [sortBy, setSortBy] = useState(DEFAULT_SORT_BY);
-    const [marketSearch, setMarketSearch] = useState<string>('');
-    const [showOpenMarkets, setShowOpenMarkets] = useState<boolean>(true);
+    const [globalFilter, setGlobalFilter] = useLocalStorage(LOCAL_STORAGE_KEYS.FILTER_GLOBAL, GlobalFilterEnum.All);
+    const [sortDirection, setSortDirection] = useLocalStorage(LOCAL_STORAGE_KEYS.SORT_DIRECTION, SortDirection.ASC);
+    const [sortBy, setSortBy] = useLocalStorage(LOCAL_STORAGE_KEYS.SORT_BY, DEFAULT_SORT_BY);
+    const [marketSearch, setMarketSearch] = useLocalStorage(LOCAL_STORAGE_KEYS.FILTER_MARKET_SEARCH, '');
+    const [showOpenMarkets, setShowOpenMarkets] = useLocalStorage(LOCAL_STORAGE_KEYS.FILTER_SHOW_OPEN_MARKETS, true);
 
     const sortOptions: SortOptionType[] = [
         { id: 1, title: t('market.time-remaining-label') },
@@ -255,6 +257,7 @@ const Home: React.FC = () => {
                     }}
                     leftText={t('market.open-markets-label')}
                     rightText={t('market.resolved-markets-label')}
+                    isCentered
                 />
             </ToggleContainer>
             <FiltersContainer>

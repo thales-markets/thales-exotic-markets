@@ -28,6 +28,7 @@ import { toast } from 'react-toastify';
 import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
 import { formatCurrencyWithKey } from 'utils/formatters/number';
 import { BondInfo } from 'components/common';
+import BackToLink from 'pages/Markets/components/BackToLink';
 
 type OpenDisputeProps = RouteComponentProps<{
     marketAddress: string;
@@ -235,6 +236,7 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
         <Container>
             {market ? (
                 <>
+                    <BackToLink link={buildMarketLink(marketAddress)} text={t('market.back-to-market')} />
                     <Form>
                         <Title>{t('market.dispute.open-dispute-title', { question: market.question })}</Title>
                         <TextAreaInput
@@ -281,7 +283,6 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
 };
 
 const Container = styled(FlexDivColumn)`
-    margin-top: 50px;
     align-items: center;
     width: 690px;
     @media (max-width: 767px) {
@@ -300,6 +301,7 @@ const Title = styled(FlexDivColumn)`
 `;
 
 const Form = styled(FlexDivColumn)`
+    margin-top: 20px;
     border: 1px solid ${(props) => props.theme.borderColor.primary};
     border-radius: 25px;
     flex: initial;
