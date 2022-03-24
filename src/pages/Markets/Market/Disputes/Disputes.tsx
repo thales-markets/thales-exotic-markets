@@ -61,6 +61,7 @@ const Disputes: React.FC<DisputesProps> = ({ marketAddress, positions, winningPo
 
 const Container = styled(FlexDivColumn)`
     margin-top: 40px;
+    width: 100%;
 `;
 
 export default Disputes;
