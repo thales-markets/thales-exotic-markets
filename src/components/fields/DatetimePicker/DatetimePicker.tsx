@@ -4,15 +4,26 @@ import ReactDatePicker, { ReactDatePickerProps } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { FieldContainer, FieldLabel } from '../common';
 import styled from 'styled-components';
-import { DATE_PICKER_MAX_DATE, DATE_PICKER_MIN_DATE } from 'constants/markets';
 import { FlexDivColumn } from 'styles/common';
 
 type DatetimePickerProps = ReactDatePickerProps & {
     label?: string;
     disabled?: boolean;
+    minTime: Date;
+    maxTime: Date;
+    minDate: Date;
+    maxDate: Date;
 };
 
-export const DatetimePicker: React.FC<DatetimePickerProps> = ({ label, disabled, ...rest }) => {
+export const DatetimePicker: React.FC<DatetimePickerProps> = ({
+    label,
+    disabled,
+    minTime,
+    maxTime,
+    minDate,
+    maxDate,
+    ...rest
+}) => {
     const { t } = useTranslation();
 
     return (
@@ -22,13 +33,16 @@ export const DatetimePicker: React.FC<DatetimePickerProps> = ({ label, disabled,
                 <ReactDatePicker
                     dateFormat="MMM d, yyyy | HH:mm"
                     timeFormat="HH:mm"
-                    minDate={DATE_PICKER_MIN_DATE}
-                    maxDate={DATE_PICKER_MAX_DATE}
+                    minDate={minDate}
+                    maxDate={maxDate}
+                    minTime={minTime}
+                    maxTime={maxTime}
                     placeholderText={t('common.select-date')}
                     autoComplete="off"
                     popperPlacement="bottom-start"
                     showTimeSelect
                     readOnly={disabled}
+                    calendarStartDay={1}
                     {...rest}
                 />
             </DatePickerContainer>
@@ -243,6 +257,17 @@ const DatePickerContainer = styled(FlexDivColumn)`
         :hover {
             background: ${(props) => props.theme.background.secondary} !important;
             color: ${(props) => props.theme.textColor.primary} !important;
+        }
+    }
+
+    li.react-datepicker__time-list-item--disabled {
+        color: ${(props) => props.theme.textColor.primary} !important;
+        opacity: 0.2 !important;
+        background: transparent !important;
+        :hover {
+            color: ${(props) => props.theme.textColor.primary} !important;
+            opacity: 0.2 !important;
+            background: transparent !important;
         }
     }
 

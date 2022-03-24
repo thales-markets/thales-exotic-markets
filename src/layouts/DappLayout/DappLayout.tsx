@@ -9,13 +9,10 @@ import { isNetworkSupported } from 'utils/network';
 import { FlexDivColumn } from 'styles/common';
 import DappHeader from './DappHeader';
 import Loader from 'components/Loader';
-import DappFooter from './DappFooter';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-type DappLayoutProps = {
-    hideFooter?: boolean;
-};
-
-const DappLayout: React.FC<DappLayoutProps> = ({ hideFooter, children }) => {
+const DappLayout: React.FC = ({ children }) => {
     const isAppReady = useSelector((state: RootState) => getIsAppReady(state));
     const networkId = useSelector((state: RootState) => getNetworkId(state));
 
@@ -29,8 +26,8 @@ const DappLayout: React.FC<DappLayoutProps> = ({ hideFooter, children }) => {
                         <Wrapper>
                             <DappHeader />
                             {children}
-                            {!hideFooter && <DappFooter />}
                         </Wrapper>
+                        <ToastContainer theme={'colored'} />
                     </Background>
                 )
             ) : (
@@ -52,11 +49,14 @@ const Wrapper = styled(FlexDivColumn)`
     margin-left: auto;
     margin-right: auto;
     padding: 40px 0px;
-    @media (max-width: 1024px) {
-        padding: 40px 20px;
-    }
     max-width: 1220px;
     min-height: 100vh;
+    @media (max-width: 1260px) {
+        padding: 40px 20px;
+    }
+    @media (max-width: 767px) {
+        padding: 40px 10px;
+    }
 `;
 
 export default DappLayout;

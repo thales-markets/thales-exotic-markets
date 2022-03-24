@@ -11,9 +11,16 @@ type MarketStatusProps = {
     fontSize?: number;
     fontWeight?: number;
     labelFontSize?: number;
+    isClaimAvailable: boolean;
 };
 
-const MarketStatus: React.FC<MarketStatusProps> = ({ market, fontSize, fontWeight, labelFontSize }) => {
+const MarketStatus: React.FC<MarketStatusProps> = ({
+    market,
+    fontSize,
+    fontWeight,
+    labelFontSize,
+    isClaimAvailable,
+}) => {
     const { t } = useTranslation();
 
     const endOfDefaultClaimingTimeout =
@@ -40,9 +47,14 @@ const MarketStatus: React.FC<MarketStatusProps> = ({ market, fontSize, fontWeigh
                 <TimeRemaining end={market.endOfPositioning} fontSize={fontSize} fontWeight={fontWeight} />
             ) : (
                 <>
-                    <Status fontSize={fontSize}>
-                        {/* {t(`market.status.${market.isClaimAvailable ? 'claim-available' : 'maturity'}`)} */}
-                        {t(`market.status.${market.status.toString()}`)}
+                    <Status fontSize={fontSize} fontWeight={fontWeight}>
+                        {t(
+                            isClaimAvailable
+                                ? market.status === MarketStatusEnum.CancelledConfirmed
+                                    ? 'market.status.cancelled-refund-available'
+                                    : 'market.status.claim-available'
+                                : `market.status.${market.status.toString()}`
+                        )}
                     </Status>
                     {(market.status === MarketStatusEnum.ResolvedPendingConfirmation ||
                         market.status === MarketStatusEnum.CancelledPendingConfirmation) &&
@@ -67,10 +79,10 @@ const StatusLabel = styled.span<{ labelFontSize?: number }>`
     margin-bottom: 4px;
 `;
 
-const Status = styled.span<{ fontSize?: number }>`
+const Status = styled.span<{ fontSize?: number; fontWeight?: number }>`
     font-style: normal;
-    font-weight: normal;
     font-size: ${(props) => props.fontSize || 25}px;
+    font-weight: ${(props) => props.fontWeight || 400};
     line-height: 100%;
     text-align: center;
     color: ${(props) => props.theme.textColor.primary};

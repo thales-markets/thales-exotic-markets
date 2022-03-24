@@ -1,7 +1,7 @@
 export const paymentTokenContract = {
     addresses: {
         10: '',
-        69: '0xf584ff99f97b5abb1872af1aa7924fedf3e1b53d',
+        69: '0x762838253a45a9106cc859ec99df31df48fcf735',
     },
     abi: [
         {

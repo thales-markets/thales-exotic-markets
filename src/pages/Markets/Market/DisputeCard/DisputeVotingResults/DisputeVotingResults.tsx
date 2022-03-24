@@ -1,4 +1,4 @@
-import { DISPUTE_VOTING_OPTIONS_TRANSLATION_KEYS } from 'constants/markets';
+import { DisputeVotingOption, DISPUTE_VOTING_OPTIONS_TRANSLATION_KEYS } from 'constants/markets';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
@@ -7,9 +7,10 @@ import { DisputeVotingResultInfo, DisputeVotingResults as VotingResults } from '
 
 type DisputeVotingResultsProps = {
     votingResults: VotingResults;
+    positions: string[];
 };
 
-const DisputeVotingResults: React.FC<DisputeVotingResultsProps> = ({ votingResults }) => {
+const DisputeVotingResults: React.FC<DisputeVotingResultsProps> = ({ votingResults, positions }) => {
     const { t } = useTranslation();
 
     return (
@@ -17,8 +18,14 @@ const DisputeVotingResults: React.FC<DisputeVotingResultsProps> = ({ votingResul
             <Title>{t('market.dispute.results-label')}</Title>
             {votingResults.map((result: DisputeVotingResultInfo) => {
                 return (
-                    <Result key={result.votingOption}>
-                        <VotingOption>{t(DISPUTE_VOTING_OPTIONS_TRANSLATION_KEYS[result.votingOption])} </VotingOption>
+                    <Result key={`${result.votingOption}-${result.position}`}>
+                        <VotingOption>
+                            {`${t(DISPUTE_VOTING_OPTIONS_TRANSLATION_KEYS[result.votingOption])}${
+                                result.votingOption === DisputeVotingOption.ACCEPT_RESULT && result.numberOfVotes > 0
+                                    ? ` (${positions[result.position]})`
+                                    : ''
+                            }`}
+                        </VotingOption>
                         <NumberOfVotes>{result.numberOfVotes}</NumberOfVotes>
                     </Result>
                 );
@@ -42,12 +49,9 @@ const Title = styled.span`
 const Result = styled(FlexDivRow)`
     font-size: 15px;
     line-height: 20px;
-    margin-top: 10px;
     padding-bottom: 10px;
     align-items: center;
-    :not(:first-child) {
-        margin-top: 10px;
-    }
+    margin-top: 10px;
     :not(:last-child) {
         border-bottom: 1px solid ${(props) => props.theme.borderColor.primary};
     }

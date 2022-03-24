@@ -17,10 +17,11 @@ const Search: React.FC<SearchProps> = ({ text, handleChange }) => {
                 type="text"
                 placeholder={t('market.search-placeholder')}
                 defaultValue={text}
+                value={text}
                 onChange={(event) => handleChange(event.target.value)}
             />
             <IconWrapper>
-                <Icon />
+                <SearchIcon />
             </IconWrapper>
         </Wrapper>
     );
@@ -54,7 +55,7 @@ const IconWrapper = styled.div`
     left: 3px;
 `;
 
-const Icon = styled.i`
+const SearchIcon = styled.i`
     font-size: 19px;
     position: absolute;
     left: 2px;

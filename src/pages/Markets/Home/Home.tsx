@@ -11,12 +11,13 @@ import { getIsAppReady } from 'redux/modules/app';
 import { getIsWalletConnected, getNetworkId, getWalletAddress } from 'redux/modules/wallet';
 import { RootState } from 'redux/rootReducer';
 import styled from 'styled-components';
-import { FlexDivCentered, FlexDivColumn, FlexDivRow, FlexDivStart } from 'styles/common';
+import { FlexDivCentered, FlexDivColumn, FlexDivColumnCentered, FlexDivRow, FlexDivStart } from 'styles/common';
 import {
     AccountPosition,
     AccountPositionsMap,
     MarketInfo,
     Markets,
+    MarketsParameters,
     SortOptionType,
     TagInfo,
     Tags,
@@ -31,6 +32,10 @@ import { GlobalFilterEnum, SortDirection, DEFAULT_SORT_BY, MarketStatus } from '
 import SortOption from '../components/SortOption';
 import useTagsQuery from 'queries/markets/useTagsQuery';
 import useAccountPositionsQuery from 'queries/markets/useAccountPositionsQuery';
+import useMarketsParametersQuery from 'queries/markets/useMarketsParametersQuery';
+import Toggle from 'components/fields/Toggle';
+import { LOCAL_STORAGE_KEYS } from 'constants/storage';
+import useLocalStorage from 'hooks/useLocalStorage';
 
 const Home: React.FC = () => {
     const { t } = useTranslation();
@@ -38,10 +43,11 @@ const Home: React.FC = () => {
     const networkId = useSelector((state: RootState) => getNetworkId(state));
     const walletAddress = useSelector((state: RootState) => getWalletAddress(state)) || '';
     const isWalletConnected = useSelector((state: RootState) => getIsWalletConnected(state));
-    const [globalFilter, setGlobalFilter] = useState<GlobalFilterEnum>(GlobalFilterEnum.All);
-    const [sortDirection, setSortDirection] = useState(SortDirection.DESC);
-    const [sortBy, setSortBy] = useState(DEFAULT_SORT_BY);
-    const [marketSearch, setMarketSearch] = useState<string>('');
+    const [globalFilter, setGlobalFilter] = useLocalStorage(LOCAL_STORAGE_KEYS.FILTER_GLOBAL, GlobalFilterEnum.All);
+    const [sortDirection, setSortDirection] = useLocalStorage(LOCAL_STORAGE_KEYS.SORT_DIRECTION, SortDirection.ASC);
+    const [sortBy, setSortBy] = useLocalStorage(LOCAL_STORAGE_KEYS.SORT_BY, DEFAULT_SORT_BY);
+    const [marketSearch, setMarketSearch] = useLocalStorage(LOCAL_STORAGE_KEYS.FILTER_MARKET_SEARCH, '');
+    const [showOpenMarkets, setShowOpenMarkets] = useLocalStorage(LOCAL_STORAGE_KEYS.FILTER_SHOW_OPEN_MARKETS, true);
 
     const sortOptions: SortOptionType[] = [
         { id: 1, title: t('market.time-remaining-label') },
@@ -53,6 +59,21 @@ const Home: React.FC = () => {
         label: t('market.filter-label.all'),
     };
     const [tagFilter, setTagFilter] = useState<TagInfo>(allTagsFilterItem);
+
+    const marketsParametersQuery = useMarketsParametersQuery(networkId, {
+        enabled: isAppReady,
+    });
+
+    const marketsParameters: MarketsParameters | undefined = useMemo(() => {
+        if (marketsParametersQuery.isSuccess && marketsParametersQuery.data) {
+            return marketsParametersQuery.data as MarketsParameters;
+        }
+        return undefined;
+    }, [marketsParametersQuery.isSuccess, marketsParametersQuery.data]);
+
+    const creationRestrictedToOwner = marketsParameters
+        ? marketsParameters.creationRestrictedToOwner && marketsParameters.owner !== walletAddress
+        : true;
 
     const marketsQuery = useMarketsQuery(networkId, { enabled: isAppReady });
 
@@ -85,36 +106,80 @@ const Home: React.FC = () => {
         return {};
     }, [accountPositionsQuery.isSuccess, accountPositionsQuery.data]);
 
-    const accountPositionsCount = useMemo(() => {
-        return markets.filter((market: MarketInfo) => {
-            const accountPosition: AccountPosition = accountPositions[market.address];
-            return !!accountPosition && accountPosition.position > 0;
-        }).length;
-    }, [markets, accountPositions]);
+    const searchFilteredMarkets = useDebouncedMemo(
+        () => {
+            return marketSearch
+                ? markets.filter((market: MarketInfo) =>
+                      market.question.toLowerCase().includes(marketSearch.toLowerCase())
+                  )
+                : markets;
+        },
+        [markets, marketSearch],
+        DEFAULT_SEARCH_DEBOUNCE_MS
+    );
 
-    const accountClaimsCount = useMemo(() => {
-        return markets.filter((market: MarketInfo) => {
-            const accountPosition: AccountPosition = accountPositions[market.address];
-            return (
-                !!accountPosition &&
-                market.canUsersClaim &&
-                (accountPosition.position === market.winningPosition ||
-                    (accountPosition.position > 0 && market.status === MarketStatus.CancelledConfirmed))
-            );
-        }).length;
-    }, [markets, accountPositions]);
-
-    const filteredMarkets = useMemo(() => {
-        let filteredMarkets = markets;
+    const tagsFilteredMarkets = useMemo(() => {
+        let filteredMarkets = marketSearch ? searchFilteredMarkets : markets;
 
         if (tagFilter.id !== allTagsFilterItem.id) {
             filteredMarkets = filteredMarkets.filter((market: MarketInfo) =>
                 market.tags.map((tag) => Number(tag)).includes(tagFilter.id)
             );
         }
+
+        return filteredMarkets;
+    }, [markets, searchFilteredMarkets, tagFilter, marketSearch]);
+
+    const accountClaimsCount = useMemo(() => {
+        return tagsFilteredMarkets.filter((market: MarketInfo) => {
+            const accountPosition: AccountPosition = accountPositions[market.address];
+            return (
+                !!accountPosition &&
+                market.canUsersClaim &&
+                accountPosition.position > 0 &&
+                (accountPosition.position === market.winningPosition ||
+                    market.status === MarketStatus.CancelledConfirmed)
+            );
+        }).length;
+    }, [tagsFilteredMarkets, accountPositions]);
+
+    const showOpenMarketsFilteredMarkets = useMemo(() => {
+        let filteredMarkets = tagsFilteredMarkets;
+
+        if (tagFilter.id !== allTagsFilterItem.id) {
+            filteredMarkets = filteredMarkets.filter((market: MarketInfo) =>
+                market.tags.map((tag) => Number(tag)).includes(tagFilter.id)
+            );
+        }
+
+        filteredMarkets = filteredMarkets.filter((market: MarketInfo) => market.isResolved !== showOpenMarkets);
+
+        return filteredMarkets;
+    }, [tagsFilteredMarkets, tagFilter, showOpenMarkets]);
+
+    const totalCount = showOpenMarketsFilteredMarkets.length;
+
+    const disputedCount = useMemo(() => {
+        return showOpenMarketsFilteredMarkets.filter((market: MarketInfo) => {
+            return market.numberOfOpenDisputes > 0 && !market.isMarketClosedForDisputes;
+        }).length;
+    }, [showOpenMarketsFilteredMarkets]);
+
+    const accountPositionsCount = useMemo(() => {
+        return showOpenMarketsFilteredMarkets.filter((market: MarketInfo) => {
+            const accountPosition: AccountPosition = accountPositions[market.address];
+            return !!accountPosition && accountPosition.position > 0;
+        }).length;
+    }, [showOpenMarketsFilteredMarkets, accountPositions]);
+
+    const globalFilteredMarkets = useMemo(() => {
+        let filteredMarkets = showOpenMarketsFilteredMarkets;
+
         switch (globalFilter) {
             case GlobalFilterEnum.Disputed:
-                filteredMarkets = filteredMarkets.filter((market: MarketInfo) => market.numberOfOpenDisputes > 0);
+                filteredMarkets = filteredMarkets.filter(
+                    (market: MarketInfo) => market.numberOfOpenDisputes > 0 && !market.isMarketClosedForDisputes
+                );
                 break;
             case GlobalFilterEnum.YourPositions:
                 filteredMarkets = filteredMarkets.filter((market: MarketInfo) => {
@@ -128,8 +193,9 @@ const Home: React.FC = () => {
                     return (
                         !!accountPosition &&
                         market.canUsersClaim &&
+                        accountPosition.position > 0 &&
                         (accountPosition.position === market.winningPosition ||
-                            (accountPosition.position > 0 && market.status === MarketStatus.CancelledConfirmed))
+                            market.status === MarketStatus.CancelledConfirmed)
                     );
                 });
                 break;
@@ -147,19 +213,7 @@ const Home: React.FC = () => {
                     return 0;
             }
         });
-    }, [markets, sortBy, sortDirection, tagFilter, globalFilter]);
-
-    const searchFilteredMarkets = useDebouncedMemo(
-        () => {
-            return marketSearch
-                ? filteredMarkets.filter((market: MarketInfo) =>
-                      market.question.toLowerCase().includes(marketSearch.toLowerCase())
-                  )
-                : filteredMarkets;
-        },
-        [filteredMarkets, marketSearch],
-        DEFAULT_SEARCH_DEBOUNCE_MS
-    );
+    }, [showOpenMarketsFilteredMarkets, sortBy, sortDirection, globalFilter, accountPositions]);
 
     const setSort = (sortOption: SortOptionType) => {
         if (sortBy === sortOption.id) {
@@ -181,16 +235,40 @@ const Home: React.FC = () => {
         }
     };
 
+    const resetFilters = () => {
+        setGlobalFilter(GlobalFilterEnum.All);
+        setTagFilter(allTagsFilterItem);
+        setMarketSearch('');
+        setShowOpenMarkets(true);
+    };
+
+    const marketsList = globalFilteredMarkets;
+
     return (
         <Container>
             <SearchContainer>
                 <Search text={marketSearch} handleChange={setMarketSearch} />
             </SearchContainer>
+            <ToggleContainer>
+                <Toggle
+                    isLeftOptionSelected={showOpenMarkets}
+                    onClick={() => {
+                        setShowOpenMarkets(!showOpenMarkets);
+                    }}
+                    leftText={t('market.open-markets-label')}
+                    rightText={t('market.resolved-markets-label')}
+                    isCentered
+                />
+            </ToggleContainer>
             <FiltersContainer>
                 <GlobalFiltersContainer>
                     {Object.values(GlobalFilterEnum).map((filterItem) => {
                         const count =
-                            filterItem === GlobalFilterEnum.YourPositions
+                            filterItem === GlobalFilterEnum.All
+                                ? totalCount
+                                : filterItem === GlobalFilterEnum.Disputed
+                                ? disputedCount
+                                : filterItem === GlobalFilterEnum.YourPositions
                                 ? accountPositionsCount
                                 : filterItem === GlobalFilterEnum.Claim
                                 ? accountClaimsCount
@@ -200,7 +278,12 @@ const Home: React.FC = () => {
                             <GlobalFilter
                                 disabled={false}
                                 selected={globalFilter === filterItem}
-                                onClick={() => setGlobalFilter(filterItem)}
+                                onClick={() => {
+                                    if (filterItem === GlobalFilterEnum.Claim) {
+                                        setShowOpenMarkets(false);
+                                    }
+                                    setGlobalFilter(filterItem);
+                                }}
                                 key={filterItem}
                                 count={count}
                             >
@@ -222,15 +305,17 @@ const Home: React.FC = () => {
                         );
                     })}
                 </GlobalFiltersContainer>
-                <ButtonsContainer>
-                    <Button
-                        onClick={() => {
-                            navigateTo(ROUTES.Markets.CreateMarket);
-                        }}
-                    >
-                        {t('market.button.create-market-label')}
-                    </Button>
-                </ButtonsContainer>
+                {!creationRestrictedToOwner && (
+                    <ButtonsContainer>
+                        <Button
+                            onClick={() => {
+                                navigateTo(ROUTES.Markets.CreateMarket);
+                            }}
+                        >
+                            {t('market.button.create-market-label')}
+                        </Button>
+                    </ButtonsContainer>
+                )}
             </FiltersContainer>
             <TagsContainer>
                 <TagLabel>{t('market.tags-label')}:</TagLabel>
@@ -249,11 +334,13 @@ const Home: React.FC = () => {
             </TagsContainer>
             {marketsQuery.isLoading ? (
                 <SimpleLoader />
+            ) : marketsList.length === 0 ? (
+                <NoMarketsContainer>
+                    <NoMarketsLabel>{t('market.no-markets-found')}</NoMarketsLabel>
+                    <Button onClick={resetFilters}>{t('market.view-all-markets')}</Button>
+                </NoMarketsContainer>
             ) : (
-                <MarketsGrid
-                    markets={marketSearch ? searchFilteredMarkets : filteredMarkets}
-                    accountPositions={accountPositions}
-                />
+                <MarketsGrid markets={marketsList} accountPositions={accountPositions} />
             )}
         </Container>
     );
@@ -275,7 +362,15 @@ const Container = styled(FlexDivColumn)`
 `;
 
 const SearchContainer = styled(FlexDivCentered)`
-    margin: 30px 0;
+    margin-top: 30px;
+`;
+
+const ToggleContainer = styled(FlexDivCentered)`
+    margin-top: 20px;
+    margin-bottom: 10px;
+    span {
+        text-transform: uppercase;
+    }
 `;
 
 const FiltersContainer = styled(FlexDivRow)`
@@ -295,6 +390,23 @@ const TagsContainer = styled(FlexDivStart)`
     flex-wrap: wrap;
     align-items: center;
     margin-bottom: 10px;
+`;
+
+const NoMarketsContainer = styled(FlexDivColumnCentered)`
+    min-height: 200px;
+    align-items: center;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 28px;
+    line-height: 100%;
+    button {
+        height: 32px;
+        padding-top: 1px;
+    }
+`;
+
+const NoMarketsLabel = styled.span`
+    margin-bottom: 30px;
 `;
 
 export default Home;

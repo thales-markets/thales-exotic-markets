@@ -27,7 +27,7 @@ const WalletInfo: React.FC = () => {
     });
 
     useEffect(() => {
-        if (paymentTokenBalanceQuery.isSuccess && paymentTokenBalanceQuery.data) {
+        if (paymentTokenBalanceQuery.isSuccess) {
             setPaymentTokenBalance(Number(paymentTokenBalanceQuery.data));
         }
     }, [paymentTokenBalanceQuery.isSuccess, paymentTokenBalanceQuery.data]);
@@ -97,6 +97,7 @@ const WalletInfo: React.FC = () => {
 const Container = styled(FlexDivCentered)`
     position: relative;
     height: 28px;
+    justify-content: end;
 `;
 
 const WalletContainer = styled(FlexDivRowCentered)`
@@ -162,6 +163,9 @@ const WalletOptions = styled(FlexDivColumn)`
     z-index: 100;
     background: ${(props) => props.theme.button.background.secondary};
     color: ${(props) => props.theme.button.textColor.primary};
+    @media (max-width: 767px) {
+        right: -127px;
+    }
 `;
 
 const WalletOptionsHeader = styled(FlexDivCentered)`

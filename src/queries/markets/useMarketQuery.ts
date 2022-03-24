@@ -1,20 +1,36 @@
 import { useQuery, UseQueryOptions } from 'react-query';
 import QUERY_KEYS from 'constants/queryKeys';
 import { MarketData } from 'types/markets';
-import { BigNumberish } from 'ethers';
+import { BigNumberish, ethers } from 'ethers';
 import networkConnector from 'utils/networkConnector';
 import { bigNumberFormatter } from 'utils/formatters/ethers';
 import { MarketStatus } from 'constants/markets';
+import marketContract from 'utils/contracts/exoticPositionalMarketContract';
 
 const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketData>) => {
     return useQuery<MarketData>(
         QUERY_KEYS.Market(marketAddress),
         async () => {
+            const contract = new ethers.Contract(marketAddress, marketContract.abi, networkConnector.provider);
             const { marketDataContract, thalesOracleCouncilContract, marketManagerContract } = networkConnector;
-            const [allMarketData, isMarketClosedForDisputes, claimTimeoutDefaultPeriod] = await Promise.all([
+            const [
+                allMarketData,
+                isMarketClosedForDisputes,
+                numberOfDisputes,
+                numberOfOpenDisputes,
+                claimTimeoutDefaultPeriod,
+                winningAmountsNewUser,
+                winningAmountsNoPosition,
+                totalUsersTakenPositions,
+            ] = await Promise.all([
                 marketDataContract?.getAllMarketData(marketAddress),
                 thalesOracleCouncilContract?.isMarketClosedForDisputes(marketAddress),
+                thalesOracleCouncilContract?.marketTotalDisputes(marketAddress),
+                thalesOracleCouncilContract?.getMarketOpenDisputes(marketAddress),
                 marketManagerContract?.claimTimeoutDefaultPeriod(),
+                contract?.getPotentialWinningAmountForAllPosition(true, 0),
+                contract?.getPotentialWinningAmountForAllPosition(false, 0),
+                contract?.totalUsersTakenPositions(),
             ]);
 
             const [
@@ -55,7 +71,7 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                 address: marketAddress,
                 question,
                 dataSource,
-                isTicketType: ticketType === 0,
+                isTicketType: Number(ticketType) === 0,
                 endOfPositioning: Number(endOfPositioning) * 1000,
                 ticketPrice: bigNumberFormatter(ticketPrice),
                 creationTime: Number(creationTime) * 1000,
@@ -69,8 +85,8 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                 claimablePoolSize: bigNumberFormatter(claimablePoolSize),
                 poolSizePerPosition: poolSizePerPosition.map((item: BigNumberish) => bigNumberFormatter(item)),
                 isOpen: !isResolved,
-                numberOfDisputes: 0,
-                numberOfOpenDisputes: 0,
+                numberOfDisputes: Number(numberOfDisputes),
+                numberOfOpenDisputes: Number(numberOfOpenDisputes),
                 canUsersPlacePosition,
                 canMarketBeResolved,
                 canMarketBeResolvedByPDAO,
@@ -91,6 +107,11 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                 fixedBondAmount: bigNumberFormatter(fixedBondAmount),
                 safeBoxLowAmount: bigNumberFormatter(safeBoxLowAmount),
                 arbitraryRewardForDisputor: bigNumberFormatter(arbitraryRewardForDisputor),
+                winningAmountsNewUser: winningAmountsNewUser.map((item: BigNumberish) => bigNumberFormatter(item)),
+                winningAmountsNoPosition: winningAmountsNoPosition.map((item: BigNumberish) =>
+                    bigNumberFormatter(item)
+                ),
+                totalUsersTakenPositions: Number(totalUsersTakenPositions),
             };
 
             // TODO - needs refactoring

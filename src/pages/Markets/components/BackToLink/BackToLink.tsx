@@ -1,26 +1,31 @@
 import SPAAnchor from 'components/SPAAnchor';
-import ROUTES from 'constants/routes';
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { FlexDivCentered } from 'styles/common';
-import { buildHref } from 'utils/routes';
 
-const DappFooter: React.FC = () => {
-    const { t } = useTranslation();
+type BackToLinkProps = {
+    link: string;
+    text: string;
+};
 
+const BackToLink: React.FC<BackToLinkProps> = ({ link, text }) => {
     return (
-        <SPAAnchor href={buildHref(ROUTES.Markets.Home)}>
-            <Container>
-                <LeftIcon />
-                {t('market.back-to-markets')}
-            </Container>
-        </SPAAnchor>
+        <Container>
+            <SPAAnchor href={link}>
+                <Link>
+                    <LeftIcon />
+                    {text}
+                </Link>
+            </SPAAnchor>
+        </Container>
     );
 };
 
 const Container = styled(FlexDivCentered)`
-    margin-top: 40px;
+    margin-top: 30px;
+`;
+
+const Link = styled(FlexDivCentered)`
     font-style: normal;
     font-weight: bold;
     font-size: 20px;
@@ -35,6 +40,7 @@ const Container = styled(FlexDivCentered)`
 const LeftIcon = styled.i`
     font-size: 24px;
     margin-right: 4px;
+    margin-top: 4px;
     &:before {
         font-family: HomepageIcons !important;
         content: '\\0048';
@@ -42,4 +48,4 @@ const LeftIcon = styled.i`
     }
 `;
 
-export default DappFooter;
+export default BackToLink;

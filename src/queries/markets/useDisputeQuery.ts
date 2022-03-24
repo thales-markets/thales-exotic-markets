@@ -16,6 +16,7 @@ import networkConnector from 'utils/networkConnector';
 const useDisputeQuery = (
     marketAddress: string,
     dispute: number,
+    positions: string[],
     networkId: NetworkId,
     options?: UseQueryOptions<DisputeData | undefined>
 ) => {
@@ -30,6 +31,9 @@ const useDisputeQuery = (
                     isMarketClosedForDisputes,
                     isDisputeOpen,
                     isOpenDisputeCancelled,
+                    disputeWinningPositionChoosen,
+                    firstMemberThatChooseWinningPosition,
+                    acceptResultVotesCount,
                 ] = await Promise.all([
                     thalesData.exoticMarkets.disputeVotes({
                         market: marketAddress,
@@ -40,6 +44,13 @@ const useDisputeQuery = (
                     thalesOracleCouncilContract.isMarketClosedForDisputes(marketAddress),
                     thalesOracleCouncilContract.isDisputeOpen(marketAddress, dispute),
                     thalesOracleCouncilContract.isOpenDisputeCancelled(marketAddress, dispute),
+                    thalesOracleCouncilContract.disputeWinningPositionChoosen(marketAddress, dispute),
+                    thalesOracleCouncilContract.firstMemberThatChoseWinningPosition(marketAddress),
+                    thalesOracleCouncilContract.disputeVotesCount(
+                        marketAddress,
+                        dispute,
+                        DisputeVotingOption.ACCEPT_RESULT
+                    ),
                 ]);
 
                 const [disputer, reasonForDispute, votedOption, timestamp, isInPositioningPhase] = contractData;
@@ -52,6 +63,9 @@ const useDisputeQuery = (
                     isInPositioningPhase,
                     isMarketClosedForDisputes,
                     isOpenDisputeCancelled,
+                    disputeWinningPositionChoosen: Number(disputeWinningPositionChoosen),
+                    firstMemberThatChooseWinningPosition,
+                    acceptResultVotesCount: Number(acceptResultVotesCount),
                 };
 
                 const disputeVotingOptions = isInPositioningPhase
@@ -60,13 +74,31 @@ const useDisputeQuery = (
 
                 const disputeVotingResults: DisputeVotingResults = [];
                 disputeVotingOptions.forEach((votingOption) => {
-                    const numberOfVotes = disputeVotes.filter(
+                    const votingOptionVotes = disputeVotes.filter(
                         (disputeVote: DisputeVoteInfo) => disputeVote.vote === votingOption
-                    ).length;
-                    disputeVotingResults.push({
-                        votingOption,
-                        numberOfVotes,
-                    });
+                    );
+                    const numberOfVotes = votingOptionVotes.length;
+
+                    if (votingOption === DisputeVotingOption.ACCEPT_RESULT && numberOfVotes > 0) {
+                        positions.forEach((_, index: number) => {
+                            const votingOptionPositionNumberOfVotes = votingOptionVotes.filter(
+                                (disputeVote: DisputeVoteInfo) => disputeVote.position === index
+                            ).length;
+                            if (votingOptionPositionNumberOfVotes) {
+                                disputeVotingResults.push({
+                                    votingOption,
+                                    position: index,
+                                    numberOfVotes: votingOptionPositionNumberOfVotes,
+                                });
+                            }
+                        });
+                    } else {
+                        disputeVotingResults.push({
+                            votingOption,
+                            position: 0,
+                            numberOfVotes,
+                        });
+                    }
                 });
 
                 const status = isOpenDisputeCancelled

@@ -1,7 +1,7 @@
 import { NetworkId } from 'types/network';
 
 export const EtherscanNetworkNameById: Record<NetworkId, string> = {
-    10: 'optimistic',
+    // 10: 'optimistic',
     69: 'optimistic-kovan',
 };
 

@@ -5,9 +5,9 @@ import { useSelector } from 'react-redux';
 import { getIsAppReady } from 'redux/modules/app';
 import { RootState } from 'redux/rootReducer';
 import styled from 'styled-components';
-import { FlexDivCentered, FlexDivColumn, FlexDivRowCentered } from 'styles/common';
+import { FlexDivCentered, FlexDivColumn } from 'styles/common';
 import { AccountMarketData, MarketData } from 'types/markets';
-import { formatCurrencyWithKey } from 'utils/formatters/number';
+import { formatCurrencyWithKey, formatPercentage } from 'utils/formatters/number';
 import { PAYMENT_CURRENCY, DEFAULT_CURRENCY_DECIMALS } from 'constants/currency';
 import { getIsWalletConnected, getNetworkId, getWalletAddress } from 'redux/modules/wallet';
 import { checkAllowance } from 'utils/network';
@@ -15,12 +15,14 @@ import { BigNumber, ethers } from 'ethers';
 import networkConnector from 'utils/networkConnector';
 import { MAX_GAS_LIMIT } from 'constants/network';
 import ApprovalModal from 'components/ApprovalModal';
-import ValidationMessage from 'components/ValidationMessage';
 import marketContract from 'utils/contracts/exoticPositionalMarketContract';
 import usePaymentTokenBalanceQuery from 'queries/wallet/usePaymentTokenBalanceQuery';
 import onboardConnector from 'utils/onboardConnector';
 import RadioButton from 'components/fields/RadioButton';
 import useAccountMarketDataQuery from 'queries/markets/useAccountMarketDataQuery';
+import { toast } from 'react-toastify';
+import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
+import { getRoi } from 'utils/markets';
 
 type PositioningPhaseProps = {
     market: MarketData;
@@ -34,14 +36,16 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
     const isWalletConnected = useSelector((state: RootState) => getIsWalletConnected(state));
     const [hasAllowance, setAllowance] = useState<boolean>(false);
     const [isAllowing, setIsAllowing] = useState<boolean>(false);
-    const [txErrorMessage, setTxErrorMessage] = useState<string | null>(null);
     const [isBuying, setIsBuying] = useState<boolean>(false);
     const [isWithdrawing, setIsWithdrawing] = useState<boolean>(false);
     const [isCanceling, setIsCanceling] = useState<boolean>(false);
     const [openApprovalModal, setOpenApprovalModal] = useState<boolean>(false);
     const [paymentTokenBalance, setPaymentTokenBalance] = useState<number | string>('');
-    const [currentPositionOnContract, setCurrentPositionOnContract] = useState<number>(0);
     const [selectedPosition, setSelectedPosition] = useState<number>(0);
+    // we need two positionOnContract, one is set on success, the second one only from query
+    const [currentPositionOnContract, setCurrentPositionOnContract] = useState<number>(0);
+    const [positionOnContract, setPositionOnContract] = useState<number>(0);
+    const [winningAmount, setWinningAmount] = useState<number>(0);
 
     const accountMarketDataQuery = useAccountMarketDataQuery(market.address, walletAddress, {
         enabled: isAppReady && isWalletConnected,
@@ -50,22 +54,18 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
     useEffect(() => {
         if (accountMarketDataQuery.isSuccess && accountMarketDataQuery.data) {
             setCurrentPositionOnContract((accountMarketDataQuery.data as AccountMarketData).position);
-        }
-    }, [accountMarketDataQuery.isSuccess, accountMarketDataQuery.data]);
-
-    // set only on the first load, that is why isSuccess is the only dependency
-    useEffect(() => {
-        if (accountMarketDataQuery.isSuccess && accountMarketDataQuery.data) {
+            setPositionOnContract((accountMarketDataQuery.data as AccountMarketData).position);
+            setWinningAmount((accountMarketDataQuery.data as AccountMarketData).winningAmount);
             setSelectedPosition((accountMarketDataQuery.data as AccountMarketData).position);
         }
-    }, [accountMarketDataQuery.isSuccess]);
+    }, [accountMarketDataQuery.isSuccess, accountMarketDataQuery.data]);
 
     const paymentTokenBalanceQuery = usePaymentTokenBalanceQuery(walletAddress, networkId, {
         enabled: isAppReady && isWalletConnected,
     });
 
     useEffect(() => {
-        if (paymentTokenBalanceQuery.isSuccess && paymentTokenBalanceQuery.data) {
+        if (paymentTokenBalanceQuery.isSuccess) {
             setPaymentTokenBalance(paymentTokenBalanceQuery.data);
         }
     }, [paymentTokenBalanceQuery.isSuccess, paymentTokenBalanceQuery.data]);
@@ -88,14 +88,16 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
         !hasAllowance ||
         insufficientBalance ||
         !isPositionSelected;
+    const isChangePositionButtonDisabled =
+        isBuying || isWithdrawing || isCanceling || !isWalletConnected || !isPositionSelected;
     const isWithdrawButtonDisabled = isBuying || isWithdrawing || isCanceling || !isWalletConnected;
     const isCancelButtonDisabled = isBuying || isWithdrawing || isCanceling || !isWalletConnected;
 
     useEffect(() => {
-        const { paymentTokenContract, signer } = networkConnector;
-        if (paymentTokenContract && signer) {
+        const { paymentTokenContract, thalesBondsContract, signer } = networkConnector;
+        if (paymentTokenContract && thalesBondsContract && signer) {
             const paymentTokenContractWithSigner = paymentTokenContract.connect(signer);
-            const addressToApprove = market.address;
+            const addressToApprove = thalesBondsContract.address;
             const getAllowance = async () => {
                 try {
                     const parsedTicketPrice = ethers.utils.parseEther(Number(market.ticketPrice).toString());
@@ -114,26 +116,34 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
                 getAllowance();
             }
         }
-    }, [walletAddress, isWalletConnected, hasAllowance, market.ticketPrice, isAllowing]);
+    }, [walletAddress, isWalletConnected, hasAllowance, market.ticketPrice, isAllowing, isBuying, isWithdrawing]);
 
     const handleAllowance = async (approveAmount: BigNumber) => {
-        const { paymentTokenContract, signer } = networkConnector;
-        if (paymentTokenContract && signer) {
-            const paymentTokenContractWithSigner = paymentTokenContract.connect(signer);
-            const addressToApprove = market.address;
+        const { paymentTokenContract, thalesBondsContract, signer } = networkConnector;
+        if (paymentTokenContract && thalesBondsContract && signer) {
+            const id = toast.loading(t('market.toast-messsage.transaction-pending'));
+            setIsAllowing(true);
+
             try {
-                setIsAllowing(true);
+                const paymentTokenContractWithSigner = paymentTokenContract.connect(signer);
+                const addressToApprove = thalesBondsContract.address;
+
                 const tx = (await paymentTokenContractWithSigner.approve(addressToApprove, approveAmount, {
                     gasLimit: MAX_GAS_LIMIT,
                 })) as ethers.ContractTransaction;
                 setOpenApprovalModal(false);
                 const txResult = await tx.wait();
+
                 if (txResult && txResult.transactionHash) {
+                    toast.update(
+                        id,
+                        getSuccessToastOptions(t('market.toast-messsage.approve-success', { token: PAYMENT_CURRENCY }))
+                    );
                     setIsAllowing(false);
                 }
             } catch (e) {
                 console.log(e);
-                setTxErrorMessage(t('common.errors.unknown-error-try-again'));
+                toast.update(id, getErrorToastOptions(t('common.errors.unknown-error-try-again')));
                 setIsAllowing(false);
             }
         }
@@ -142,7 +152,7 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
     const handleBuy = async () => {
         const { signer } = networkConnector;
         if (signer) {
-            setTxErrorMessage(null);
+            const id = toast.loading(t('market.toast-messsage.transaction-pending'));
             setIsBuying(true);
 
             try {
@@ -152,13 +162,22 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
                 const txResult = await tx.wait();
 
                 if (txResult && txResult.transactionHash) {
-                    // dispatchMarketNotification(t('migration.migrate-button.confirmation-message'));
+                    toast.update(
+                        id,
+                        getSuccessToastOptions(
+                            t(
+                                `market.toast-messsage.${
+                                    showTicketBuy ? 'ticket-buy-success' : 'change-position-success'
+                                }`
+                            )
+                        )
+                    );
                     setIsBuying(false);
                     setCurrentPositionOnContract(selectedPosition);
                 }
             } catch (e) {
                 console.log(e);
-                setTxErrorMessage(t('common.errors.unknown-error-try-again'));
+                toast.update(id, getErrorToastOptions(t('common.errors.unknown-error-try-again')));
                 setIsBuying(false);
             }
         }
@@ -167,7 +186,7 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
     const handleWithdraw = async () => {
         const { signer } = networkConnector;
         if (signer) {
-            setTxErrorMessage(null);
+            const id = toast.loading(t('market.toast-messsage.transaction-pending'));
             setIsWithdrawing(true);
 
             try {
@@ -177,14 +196,14 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
                 const txResult = await tx.wait();
 
                 if (txResult && txResult.transactionHash) {
-                    // dispatchMarketNotification(t('migration.migrate-button.confirmation-message'));
+                    toast.update(id, getSuccessToastOptions(t('market.toast-messsage.withdraw-success')));
                     setIsWithdrawing(false);
                     setCurrentPositionOnContract(0);
                     setSelectedPosition(0);
                 }
             } catch (e) {
                 console.log(e);
-                setTxErrorMessage(t('common.errors.unknown-error-try-again'));
+                toast.update(id, getErrorToastOptions(t('common.errors.unknown-error-try-again')));
                 setIsWithdrawing(false);
             }
         }
@@ -193,7 +212,7 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
     const handleCancel = async () => {
         const { marketManagerContract, signer } = networkConnector;
         if (marketManagerContract && signer) {
-            setTxErrorMessage(null);
+            const id = toast.loading(t('market.toast-messsage.transaction-pending'));
             setIsCanceling(true);
 
             try {
@@ -203,13 +222,12 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
                 const txResult = await tx.wait();
 
                 if (txResult && txResult.transactionHash) {
-                    // dispatchMarketNotification(t('migration.migrate-button.confirmation-message'));
+                    toast.update(id, getSuccessToastOptions(t('market.toast-messsage.cancel-market-success')));
                     setIsCanceling(false);
-                    // setAmount('');
                 }
             } catch (e) {
                 console.log(e);
-                setTxErrorMessage(t('common.errors.unknown-error-try-again'));
+                toast.update(id, getErrorToastOptions(t('common.errors.unknown-error-try-again')));
                 setIsCanceling(false);
             }
         }
@@ -223,7 +241,7 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
                 </MarketButton>
             );
         }
-        if (insufficientBalance) {
+        if (insufficientBalance && showTicketBuy) {
             return (
                 <MarketButton type="secondary" disabled={true}>
                     {t(`common.errors.insufficient-balance`)}
@@ -237,7 +255,7 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
                 </MarketButton>
             );
         }
-        if (!hasAllowance) {
+        if (!hasAllowance && showTicketBuy) {
             return (
                 <MarketButton type="secondary" disabled={isAllowing} onClick={() => setOpenApprovalModal(true)}>
                     {!isAllowing
@@ -258,7 +276,7 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
         return (
             <>
                 {showTicketChangePosition && (
-                    <MarketButton type="secondary" disabled={isBuyButtonDisabled} onClick={handleBuy}>
+                    <MarketButton type="secondary" disabled={isChangePositionButtonDisabled} onClick={handleBuy}>
                         {!isBuying
                             ? t('market.button.change-position-label')
                             : t('market.button.change-position-progress-label')}
@@ -286,6 +304,7 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
                             onChange={() => setSelectedPosition(index + 1)}
                             label={position}
                             disabled={isBuying || isWithdrawing}
+                            isColumnDirection
                         />
                         <Info>
                             <InfoLabel>{t('market.pool-size-label')}:</InfoLabel>
@@ -295,6 +314,23 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
                                     market.poolSizePerPosition[index],
                                     DEFAULT_CURRENCY_DECIMALS,
                                     true
+                                )}
+                            </InfoContent>
+                        </Info>
+                        <Info>
+                            <InfoLabel>{t('market.roi-label')}:</InfoLabel>
+                            <InfoContent>
+                                {formatPercentage(
+                                    getRoi(
+                                        market.ticketPrice,
+                                        positionOnContract === 0
+                                            ? market.winningAmountsNewUser[index]
+                                            : positionOnContract === index + 1
+                                            ? winningAmount
+                                            : market.winningAmountsNoPosition[index],
+                                        market.totalUsersTakenPositions > 1 ||
+                                            (market.totalUsersTakenPositions === 1 && positionOnContract === 0)
+                                    )
                                 )}
                             </InfoContent>
                         </Info>
@@ -316,11 +352,6 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
                             : t('market.button.cancel-progress-label')}
                     </MarketButton>
                 )}
-                <ValidationMessage
-                    showValidation={txErrorMessage !== null}
-                    message={txErrorMessage}
-                    onDismiss={() => setTxErrorMessage(null)}
-                />
             </ButtonContainer>
             {openApprovalModal && (
                 <ApprovalModal
@@ -335,14 +366,12 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
     );
 };
 
-const Positions = styled(FlexDivRowCentered)`
-    margin-top: 0px;
+const Positions = styled(FlexDivColumn)`
     margin-bottom: 20px;
-    flex-wrap: wrap;
 `;
 
 const Position = styled(FlexDivColumn)`
-    margin-bottom: 20px;
+    margin-bottom: 35px;
 `;
 
 const Info = styled(FlexDivCentered)<{ fontSize?: number }>`

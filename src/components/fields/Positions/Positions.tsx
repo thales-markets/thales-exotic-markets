@@ -1,7 +1,7 @@
 import React from 'react';
 import { FieldContainer, FieldLabel } from '../common';
 import { useTranslation } from 'react-i18next';
-import { MAXIMUM_POSITIONS, MINIMUM_POSITIONS } from 'constants/markets';
+import { MINIMUM_POSITIONS } from 'constants/markets';
 import PositionInput from './PositionInput';
 import styled from 'styled-components';
 import { FlexDivCentered, FlexDivStart } from 'styles/common';
@@ -13,6 +13,7 @@ type PositionsProps = {
     onPositionRemove: (index: number) => void;
     onPositionAdd: () => void;
     disabled?: boolean;
+    maxPositions: number;
 };
 
 const Positions: React.FC<PositionsProps> = ({
@@ -22,11 +23,12 @@ const Positions: React.FC<PositionsProps> = ({
     onPositionRemove,
     onPositionAdd,
     disabled,
+    maxPositions,
 }) => {
     const { t } = useTranslation();
 
     const enableRemovePosition = positions.length > MINIMUM_POSITIONS;
-    const enableAddPosition = positions.length < MAXIMUM_POSITIONS;
+    const enableAddPosition = positions.length < maxPositions;
 
     return (
         <FieldContainer>

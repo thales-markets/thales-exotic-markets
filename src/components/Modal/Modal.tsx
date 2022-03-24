@@ -15,19 +15,11 @@ export const Modal: React.FC<ModalProps> = ({ title, onClose, children }) => {
         <ReactModal
             isOpen
             onRequestClose={onClose}
+            shouldCloseOnOverlayClick={false}
+            className="modal-content"
             style={{
                 overlay: {
                     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                },
-                content: {
-                    padding: '0px',
-                    maxWidth: '500px',
-                    width: '100%',
-                    top: 'calc(50% - 250px)',
-                    left: 'calc(50% - 250px)',
-                    height: 'fit-content',
-                    border: 'none',
-                    background: 'transparent',
                 },
             }}
         >
@@ -48,6 +40,9 @@ const Container = styled.div`
     padding: 25px 30px 35px 30px;
     overflow: auto;
     border-radius: 23px;
+    @media (max-width: 575px) {
+        padding: 25px 20px 35px 20px;
+    }
 `;
 
 const Header = styled(FlexDivRow)`

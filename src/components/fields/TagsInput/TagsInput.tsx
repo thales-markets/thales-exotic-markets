@@ -4,7 +4,6 @@ import ReactTags, { Tag } from 'react-tag-autocomplete';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import TagButton from 'components/TagButton';
-import { MAXIMUM_TAGS } from 'constants/markets';
 import { FlexDivColumn, FlexDivStart } from 'styles/common';
 
 type TagsInputProps = {
@@ -12,11 +11,20 @@ type TagsInputProps = {
     suggestions: Tag[];
     label?: string;
     disabled?: boolean;
+    maxTags: number;
     onTagAdd: (tag: Tag) => void;
     onTagRemove: (i: number) => void;
 };
 
-const TagsInput: React.FC<TagsInputProps> = ({ tags, suggestions, label, disabled, onTagAdd, onTagRemove }) => {
+const TagsInput: React.FC<TagsInputProps> = ({
+    tags,
+    suggestions,
+    label,
+    disabled,
+    maxTags,
+    onTagAdd,
+    onTagRemove,
+}) => {
     const { t } = useTranslation();
 
     const findTagIndexInSelectedTags = (tag: Tag) => tags.findIndex((tagItem: Tag) => tag.id === tagItem.id);
@@ -24,7 +32,7 @@ const TagsInput: React.FC<TagsInputProps> = ({ tags, suggestions, label, disable
     return (
         <FieldContainer>
             {label && <FieldLabel>{label}:</FieldLabel>}
-            <TagsContainer isInputDisabled={tags.length >= MAXIMUM_TAGS} className={disabled ? 'disabled' : ''}>
+            <TagsContainer isInputDisabled={tags.length >= maxTags} className={disabled ? 'disabled' : ''}>
                 <ReactTags
                     tags={tags}
                     suggestions={suggestions.filter((suggestion: Tag) => !suggestion.disabled)}

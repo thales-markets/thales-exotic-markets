@@ -1,0 +1,57 @@
+/* bnc-onboard wallet connector */
+
+onboard-custom {
+    z-index: 1301;
+}
+
+.bn-onboard-custom.bn-onboard-dark-mode {
+    border: 1px solid #f6f6fe;
+    background: linear-gradient(180deg, #5e2167 1.04%, #7760a8 100%) !important;
+}
+
+.bn-onboard-custom.bn-onboard-dark-mode-background.bn-onboard-custom {
+    background: linear-gradient(180deg, #ee5782 0%, #b81b8f 100%) !important;
+}
+
+.bn-onboard-custom.bn-onboard-dark-mode-background-hover:hover {
+    background: #f7cad7 !important;
+    color: #6c438a !important;
+}
+
+.bn-onboard-selected-wallet {
+    background: linear-gradient(180deg, #ee5782 0%, #b81b8f 100%) !important;
+}
+
+.bn-onboard-custom.bn-onboard-modal-content-close.bn-onboard-dark-mode-close-background {
+    background: transparent !important;
+}
+
+.bn-onboard-custom.bn-onboard-select-wallet-info {
+    color: #f6f6fe !important;
+}
+
+/* react-toastify notifications */
+#root {
+    --toastify-text-color-light: #6c438a;
+    --toastify-spinner-color: #6c438a;
+    --toastify-spinner-color-empty-area: #e1d9e7;
+}
+
+/* react-modal */
+.modal-content {
+    padding: 0px;
+    max-width: 500px;
+    width: 100%;
+    height: fit-content;
+    border: none;
+    background: transparent;
+    top: calc(50% - 250px);
+    left: calc(50% - 250px);
+    position: relative;
+}
+
+@media (max-width: 500px) {
+    .modal-content {
+        left: 0;
+    }
+}

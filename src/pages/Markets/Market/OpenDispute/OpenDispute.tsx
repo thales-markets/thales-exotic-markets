@@ -2,7 +2,7 @@ import TextAreaInput from 'components/fields/TextAreaInput';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { FlexDivCentered, FlexDivColumn } from 'styles/common';
+import { FlexDivColumn } from 'styles/common';
 import Button from 'components/Button';
 import { MAXIMUM_INPUT_CHARACTERS } from 'constants/markets';
 import { useSelector } from 'react-redux';
@@ -16,8 +16,7 @@ import networkConnector from 'utils/networkConnector';
 import { BigNumber, ethers } from 'ethers';
 import { checkAllowance } from 'utils/network';
 import onboardConnector from 'utils/onboardConnector';
-import { PAYMENT_CURRENCY } from 'constants/currency';
-import ValidationMessage from 'components/ValidationMessage';
+import { DEFAULT_CURRENCY_DECIMALS, PAYMENT_CURRENCY } from 'constants/currency';
 import ApprovalModal from 'components/ApprovalModal';
 import usePaymentTokenBalanceQuery from 'queries/wallet/usePaymentTokenBalanceQuery';
 import { MAX_GAS_LIMIT } from 'constants/network';
@@ -25,6 +24,11 @@ import { buildMarketLink, navigateTo } from 'utils/routes';
 import useOracleCouncilMemberQuery from 'queries/oracleCouncil/useOracleCouncilMemberQuery';
 import SimpleLoader from 'components/SimpleLoader';
 import WarningMessage from 'components/WarningMessage';
+import { toast } from 'react-toastify';
+import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
+import { formatCurrencyWithKey } from 'utils/formatters/number';
+import { BondInfo } from 'components/common';
+import BackToLink from 'pages/Markets/components/BackToLink';
 
 type OpenDisputeProps = RouteComponentProps<{
     marketAddress: string;
@@ -38,7 +42,6 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
     const isWalletConnected = useSelector((state: RootState) => getIsWalletConnected(state));
     const [hasAllowance, setAllowance] = useState<boolean>(false);
     const [isAllowing, setIsAllowing] = useState<boolean>(false);
-    const [txErrorMessage, setTxErrorMessage] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [reasonForDispute, setReasonForDispute] = useState<string>('');
     const [paymentTokenBalance, setPaymentTokenBalance] = useState<number | string>('');
@@ -63,7 +66,7 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
     });
 
     useEffect(() => {
-        if (paymentTokenBalanceQuery.isSuccess && paymentTokenBalanceQuery.data) {
+        if (paymentTokenBalanceQuery.isSuccess) {
             setPaymentTokenBalance(Number(paymentTokenBalanceQuery.data));
         }
     }, [paymentTokenBalanceQuery.isSuccess, paymentTokenBalanceQuery.data]);
@@ -73,7 +76,7 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
     });
 
     const isOracleCouncilMember: boolean = useMemo(() => {
-        if (oracleCouncilMemberQuery.isSuccess && oracleCouncilMemberQuery.data) {
+        if (oracleCouncilMemberQuery.isSuccess) {
             return oracleCouncilMemberQuery.data as boolean;
         }
         return false;
@@ -126,21 +129,29 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
     const handleAllowance = async (approveAmount: BigNumber) => {
         const { paymentTokenContract, thalesBondsContract, signer } = networkConnector;
         if (paymentTokenContract && thalesBondsContract && signer) {
-            const paymentTokenContractWithSigner = paymentTokenContract.connect(signer);
-            const addressToApprove = thalesBondsContract.address;
+            const id = toast.loading(t('market.toast-messsage.transaction-pending'));
+            setIsAllowing(true);
+
             try {
-                setIsAllowing(true);
+                const paymentTokenContractWithSigner = paymentTokenContract.connect(signer);
+                const addressToApprove = thalesBondsContract.address;
+
                 const tx = (await paymentTokenContractWithSigner.approve(addressToApprove, approveAmount, {
                     gasLimit: MAX_GAS_LIMIT,
                 })) as ethers.ContractTransaction;
                 setOpenApprovalModal(false);
                 const txResult = await tx.wait();
+
                 if (txResult && txResult.transactionHash) {
+                    toast.update(
+                        id,
+                        getSuccessToastOptions(t('market.toast-messsage.approve-success', { token: PAYMENT_CURRENCY }))
+                    );
                     setIsAllowing(false);
                 }
             } catch (e) {
                 console.log(e);
-                setTxErrorMessage(t('common.errors.unknown-error-try-again'));
+                toast.update(id, getErrorToastOptions(t('common.errors.unknown-error-try-again')));
                 setIsAllowing(false);
             }
         }
@@ -149,7 +160,7 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
     const handleSubmit = async () => {
         const { thalesOracleCouncilContract, signer } = networkConnector;
         if (thalesOracleCouncilContract && signer) {
-            setTxErrorMessage(null);
+            const id = toast.loading(t('market.toast-messsage.transaction-pending'));
             setIsSubmitting(true);
 
             try {
@@ -159,14 +170,13 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
                 const txResult = await tx.wait();
 
                 if (txResult && txResult.transactionHash) {
-                    // dispatchMarketNotification(t('migration.migrate-button.confirmation-message'));
+                    toast.update(id, getSuccessToastOptions(t('market.toast-messsage.open-dispute-success')));
                     setIsSubmitting(false);
                     navigateTo(buildMarketLink(marketAddress));
-                    // setAmount('');
                 }
             } catch (e) {
                 console.log(e);
-                setTxErrorMessage(t('common.errors.unknown-error-try-again'));
+                toast.update(id, getErrorToastOptions(t('common.errors.unknown-error-try-again')));
                 setIsSubmitting(false);
             }
         }
@@ -226,6 +236,7 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
         <Container>
             {market ? (
                 <>
+                    <BackToLink link={buildMarketLink(marketAddress)} text={t('market.back-to-market')} />
                     <Form>
                         <Title>{t('market.dispute.open-dispute-title', { question: market.question })}</Title>
                         <TextAreaInput
@@ -239,13 +250,20 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
                             maximumCharacters={MAXIMUM_INPUT_CHARACTERS}
                             disabled={isSubmitting || !canOpenDispute}
                         />
-                        <ButtonContainer>{getSubmitButton()}</ButtonContainer>
-                        <ValidationMessage
-                            showValidation={txErrorMessage !== null}
-                            message={txErrorMessage}
-                            onDismiss={() => setTxErrorMessage(null)}
-                        />
-                        {!canOpenDispute && <WarningMessage message={getDisputesDisabledMessage()} />}
+                        <ButtonContainer>
+                            <BondInfo>
+                                {t('market.dispute.open-dispute-bond-info', {
+                                    amount: formatCurrencyWithKey(
+                                        PAYMENT_CURRENCY,
+                                        disputePrice,
+                                        DEFAULT_CURRENCY_DECIMALS,
+                                        true
+                                    ),
+                                })}
+                            </BondInfo>
+                            {getSubmitButton()}
+                        </ButtonContainer>
+                        {!canOpenDispute && <WarningMessage>{getDisputesDisabledMessage()}</WarningMessage>}
                     </Form>
                     {openApprovalModal && (
                         <ApprovalModal
@@ -265,7 +283,6 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
 };
 
 const Container = styled(FlexDivColumn)`
-    margin-top: 50px;
     align-items: center;
     width: 690px;
     @media (max-width: 767px) {
@@ -284,6 +301,7 @@ const Title = styled(FlexDivColumn)`
 `;
 
 const Form = styled(FlexDivColumn)`
+    margin-top: 20px;
     border: 1px solid ${(props) => props.theme.borderColor.primary};
     border-radius: 25px;
     flex: initial;
@@ -295,8 +313,9 @@ const DisputeButton = styled(Button)`
     height: 32px;
 `;
 
-const ButtonContainer = styled(FlexDivCentered)`
+const ButtonContainer = styled(FlexDivColumn)`
     margin: 20px 0 0 0;
+    align-items: center;
 `;
 
 export default OpenDispute;

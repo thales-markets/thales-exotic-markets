@@ -43,6 +43,9 @@ export type MarketData = MarketInfo & {
     fixedBondAmount: number;
     safeBoxLowAmount: number;
     arbitraryRewardForDisputor: number;
+    winningAmountsNewUser: number[];
+    winningAmountsNoPosition: number[];
+    totalUsersTakenPositions: number;
 };
 
 export type Markets = MarketInfo[];
@@ -51,6 +54,7 @@ export type AccountMarketData = {
     position: number;
     claimAmount: number;
     canClaim: boolean;
+    winningAmount: number;
 };
 
 export type SortOptionType = {
@@ -68,6 +72,10 @@ export type MarketsParameters = {
     withdrawalPercentage: number;
     disputePrice: number;
     paymentToken: string;
+    creationRestrictedToOwner: boolean;
+    owner: string;
+    maxNumberOfTags: number;
+    minFixedTicketPrice: number;
 };
 
 export type TagInfo = {
@@ -98,6 +106,9 @@ export type DisputeContractData = {
     isInPositioningPhase: boolean;
     isMarketClosedForDisputes: boolean;
     isOpenDisputeCancelled: boolean;
+    disputeWinningPositionChoosen: number;
+    firstMemberThatChooseWinningPosition: string;
+    acceptResultVotesCount: number;
 };
 
 export type DisputeVoteInfo = {
@@ -107,12 +118,14 @@ export type DisputeVoteInfo = {
     dispute: number;
     voter: string;
     vote: number;
+    position: number;
 };
 
 export type DisputeVotes = DisputeVoteInfo[];
 
 export type DisputeVotingResultInfo = {
     votingOption: DisputeVotingOption;
+    position: number;
     numberOfVotes: number;
 };
 
@@ -124,6 +137,10 @@ export type DisputeData = {
     disputeVotingResults: DisputeVotingResults;
     status: DisputeStatus;
     isOpenForVoting: boolean;
+};
+
+export type AccountDisputeData = {
+    canDisputorClaimbackBondFromUnclosedDispute: boolean;
 };
 
 export type AccountPosition = {

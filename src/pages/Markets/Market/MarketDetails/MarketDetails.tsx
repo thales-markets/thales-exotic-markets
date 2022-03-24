@@ -8,9 +8,8 @@ import styled from 'styled-components';
 import { FlexDivCentered, FlexDivColumn, FlexDivRow, FlexDivEnd } from 'styles/common';
 import MarketStatus from 'pages/Markets/components/MarketStatus';
 import MarketTitle from 'pages/Markets/components/MarketTitle';
-import OpenDisputeButton from 'pages/Markets/components/OpenDisputeButton';
 import Tags from 'pages/Markets/components/Tags';
-import { MarketData } from 'types/markets';
+import { AccountMarketData, MarketData } from 'types/markets';
 import { formatCurrencyWithKey } from 'utils/formatters/number';
 import { PAYMENT_CURRENCY, DEFAULT_CURRENCY_DECIMALS } from 'constants/currency';
 import SPAAnchor from 'components/SPAAnchor';
@@ -19,6 +18,10 @@ import MaturityPhase from './MaturityPhase';
 import PositioningPhase from './PositioningPhase';
 import useOracleCouncilMemberQuery from 'queries/oracleCouncil/useOracleCouncilMemberQuery';
 import { MarketStatus as MarketStatusEnum } from 'constants/markets';
+import OpenDisputeInfo from 'pages/Markets/components/OpenDisputeInfo';
+import Button from 'components/Button';
+import useAccountMarketDataQuery from 'queries/markets/useAccountMarketDataQuery';
+import DataSourceLink from 'pages/Markets/components/DataSourceLink';
 
 type MarketDetailsProps = {
     market: MarketData;
@@ -36,23 +39,48 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
     });
 
     const isOracleCouncilMember: boolean = useMemo(() => {
-        if (oracleCouncilMemberQuery.isSuccess && oracleCouncilMemberQuery.data) {
+        if (oracleCouncilMemberQuery.isSuccess) {
             return oracleCouncilMemberQuery.data as boolean;
         }
-        return false;
+        return true;
     }, [oracleCouncilMemberQuery.isSuccess, oracleCouncilMemberQuery.data]);
+
+    const accountMarketDataQuery = useAccountMarketDataQuery(market.address, walletAddress, {
+        enabled: isAppReady && isWalletConnected,
+    });
+
+    const isClaimAvailable: boolean = useMemo(() => {
+        if (accountMarketDataQuery.isSuccess && accountMarketDataQuery.data) {
+            return (accountMarketDataQuery.data as AccountMarketData).canClaim;
+        }
+        return false;
+    }, [accountMarketDataQuery.isSuccess, accountMarketDataQuery.data]);
 
     const canOpenDispute =
         !market.isMarketClosedForDisputes &&
         !isOracleCouncilMember &&
         walletAddress.toLowerCase() !== market.creator.toLowerCase();
 
+    const showNumberOfOpenDisputes = !market.canUsersClaim;
+
     return (
         <MarketContainer>
-            <MarketTitle fontSize={40}>{market.question}</MarketTitle>
+            <MarketTitle fontSize={40} marginBottom={40}>
+                {market.question}
+            </MarketTitle>
             {market.status === MarketStatusEnum.Open && <PositioningPhase market={market} />}
             {market.status !== MarketStatusEnum.Open && <MaturityPhase market={market} />}
-            <MarketStatus market={market} fontSize={40} labelFontSize={20} fontWeight={700} />
+            <StatusSourceContainer>
+                <StatusSourceInfo />
+                <MarketStatus
+                    market={market}
+                    fontSize={40}
+                    labelFontSize={20}
+                    fontWeight={700}
+                    isClaimAvailable={isClaimAvailable}
+                />
+                <DataSourceLink link={market.dataSource} />
+            </StatusSourceContainer>
             <Footer>
                 <Tags tags={market.tags} labelFontSize={20} />
                 <Info fontSize={20}>
@@ -61,22 +89,29 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
                         {formatCurrencyWithKey(PAYMENT_CURRENCY, market.poolSize, DEFAULT_CURRENCY_DECIMALS, true)}
                     </InfoContent>
                 </Info>
-                <FooterButtonsContainer>
+                <OpenDisputeContainer>
+                    {showNumberOfOpenDisputes && (
+                        <OpenDisputeInfo
+                            numberOfOpenDisputes={market.isMarketClosedForDisputes ? 0 : market.numberOfOpenDisputes}
+                        >
+                            {t('market.open-disputes-label')}
+                        </OpenDisputeInfo>
+                    )}
                     {canOpenDispute && (
                         <SPAAnchor href={buildOpenDisputeLink(market.address)}>
-                            <OpenDisputeButton numberOfOpenDisputes={0}>
+                            <OpenDisputeButton type="secondary">
                                 {t('market.button.open-dispute-label')}
                             </OpenDisputeButton>
                         </SPAAnchor>
                     )}
-                </FooterButtonsContainer>
+                </OpenDisputeContainer>
             </Footer>
         </MarketContainer>
     );
 };
 
 const MarketContainer = styled(FlexDivColumn)`
-    margin-top: 60px;
+    margin-top: 20px;
     box-shadow: 0px 20px 40px rgba(0, 0, 0, 0.35);
     border-radius: 25px;
     width: 100%;
@@ -102,8 +137,20 @@ const InfoContent = styled.span`
     font-weight: 700;
 `;
 
+const StatusSourceContainer = styled(FlexDivRow)`
+    align-items: end;
+    @media (max-width: 767px) {
+        flex-direction: column;
+        align-items: center;
+    }
+`;
+
+const StatusSourceInfo = styled(FlexDivRow)`
+    width: 146px;
+`;
+
 const Footer = styled(FlexDivRow)`
-    margin-top: 25px;
+    margin-top: 10px;
     > div {
         width: 33%;
     }
@@ -117,11 +164,18 @@ const Footer = styled(FlexDivRow)`
     }
 `;
 
-const FooterButtonsContainer = styled(FlexDivEnd)`
+const OpenDisputeContainer = styled(FlexDivEnd)`
     align-items: center;
     @media (max-width: 767px) {
         justify-content: center;
     }
+`;
+
+const OpenDisputeButton = styled(Button)`
+    font-size: 17px;
+    margin-bottom: 4px;
+    margin-left: 6px;
+    width: 146px;
 `;
 
 export default MarketDetails;

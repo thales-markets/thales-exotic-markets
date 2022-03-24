@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { FlexDivCentered, FlexDivColumn } from 'styles/common';
+import { FlexDivColumn } from 'styles/common';
 import Button from 'components/Button';
 import { useSelector } from 'react-redux';
 import { RootState } from 'redux/rootReducer';
@@ -13,12 +13,15 @@ import networkConnector from 'utils/networkConnector';
 import { BigNumber, ethers } from 'ethers';
 import { checkAllowance } from 'utils/network';
 import onboardConnector from 'utils/onboardConnector';
-import { PAYMENT_CURRENCY } from 'constants/currency';
-import ValidationMessage from 'components/ValidationMessage';
+import { DEFAULT_CURRENCY_DECIMALS, PAYMENT_CURRENCY } from 'constants/currency';
 import ApprovalModal from 'components/ApprovalModal';
 import usePaymentTokenBalanceQuery from 'queries/wallet/usePaymentTokenBalanceQuery';
 import { MAX_GAS_LIMIT } from 'constants/network';
 import RadioButton from 'components/fields/RadioButton';
+import { toast } from 'react-toastify';
+import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
+import { formatCurrencyWithKey } from 'utils/formatters/number';
+import { BondInfo } from 'components/common';
 
 type ResolveMarketProps = {
     marketAddress: string;
@@ -34,7 +37,6 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ marketAddress, positions,
     const isWalletConnected = useSelector((state: RootState) => getIsWalletConnected(state));
     const [hasAllowance, setAllowance] = useState<boolean>(false);
     const [isAllowing, setIsAllowing] = useState<boolean>(false);
-    const [txErrorMessage, setTxErrorMessage] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [outcomePosition, setOutcomePosition] = useState<number>(-1);
     const [paymentTokenBalance, setPaymentTokenBalance] = useState<number | string>('');
@@ -58,7 +60,7 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ marketAddress, positions,
     });
 
     useEffect(() => {
-        if (paymentTokenBalanceQuery.isSuccess && paymentTokenBalanceQuery.data) {
+        if (paymentTokenBalanceQuery.isSuccess) {
             setPaymentTokenBalance(Number(paymentTokenBalanceQuery.data));
         }
     }, [paymentTokenBalanceQuery.isSuccess, paymentTokenBalanceQuery.data]);
@@ -71,7 +73,10 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ marketAddress, positions,
     const isMarketCreator = marketCreator === walletAddress;
 
     const isButtonDisabled =
-        isSubmitting || !isWalletConnected || !hasAllowance || !isOutcomePositionSelected || insufficientBalance;
+        isSubmitting ||
+        !isWalletConnected ||
+        !isOutcomePositionSelected ||
+        ((!hasAllowance || insufficientBalance) && !isMarketCreator);
 
     useEffect(() => {
         const { paymentTokenContract, thalesBondsContract, signer } = networkConnector;
@@ -101,21 +106,29 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ marketAddress, positions,
     const handleAllowance = async (approveAmount: BigNumber) => {
         const { paymentTokenContract, thalesBondsContract, signer } = networkConnector;
         if (paymentTokenContract && thalesBondsContract && signer) {
-            const paymentTokenContractWithSigner = paymentTokenContract.connect(signer);
-            const addressToApprove = thalesBondsContract.address;
+            const id = toast.loading(t('market.toast-messsage.transaction-pending'));
+            setIsAllowing(true);
+
             try {
-                setIsAllowing(true);
+                const paymentTokenContractWithSigner = paymentTokenContract.connect(signer);
+                const addressToApprove = thalesBondsContract.address;
+
                 const tx = (await paymentTokenContractWithSigner.approve(addressToApprove, approveAmount, {
                     gasLimit: MAX_GAS_LIMIT,
                 })) as ethers.ContractTransaction;
                 setOpenApprovalModal(false);
                 const txResult = await tx.wait();
+
                 if (txResult && txResult.transactionHash) {
+                    toast.update(
+                        id,
+                        getSuccessToastOptions(t('market.toast-messsage.approve-success', { token: PAYMENT_CURRENCY }))
+                    );
                     setIsAllowing(false);
                 }
             } catch (e) {
                 console.log(e);
-                setTxErrorMessage(t('common.errors.unknown-error-try-again'));
+                toast.update(id, getErrorToastOptions(t('common.errors.unknown-error-try-again')));
                 setIsAllowing(false);
             }
         }
@@ -124,7 +137,7 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ marketAddress, positions,
     const handleSubmit = async () => {
         const { marketManagerContract, signer } = networkConnector;
         if (marketManagerContract && signer) {
-            setTxErrorMessage(null);
+            const id = toast.loading(t('market.toast-messsage.transaction-pending'));
             setIsSubmitting(true);
 
             try {
@@ -134,13 +147,12 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ marketAddress, positions,
                 const txResult = await tx.wait();
 
                 if (txResult && txResult.transactionHash) {
-                    // dispatchMarketNotification(t('migration.migrate-button.confirmation-message'));
+                    toast.update(id, getSuccessToastOptions(t('market.toast-messsage.resolve-market-success')));
                     setIsSubmitting(false);
-                    // setAmount('');
                 }
             } catch (e) {
                 console.log(e);
-                setTxErrorMessage(t('common.errors.unknown-error-try-again'));
+                toast.update(id, getErrorToastOptions(t('common.errors.unknown-error-try-again')));
                 setIsSubmitting(false);
             }
         }
@@ -149,13 +161,17 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ marketAddress, positions,
     const getSubmitButton = () => {
         if (!isWalletConnected) {
             return (
-                <MarketButton onClick={() => onboardConnector.connectWallet()}>
+                <MarketButton type="secondary" onClick={() => onboardConnector.connectWallet()}>
                     {t('common.wallet.connect-your-wallet')}
                 </MarketButton>
             );
         }
         if (insufficientBalance && !isMarketCreator) {
-            return <MarketButton disabled={true}>{t(`common.errors.insufficient-balance`)}</MarketButton>;
+            return (
+                <MarketButton type="secondary" disabled={true}>
+                    {t(`common.errors.insufficient-balance`)}
+                </MarketButton>
+            );
         }
         if (!isOutcomePositionSelected) {
             return (
@@ -166,7 +182,7 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ marketAddress, positions,
         }
         if (!hasAllowance && !isMarketCreator) {
             return (
-                <MarketButton disabled={isAllowing} onClick={() => setOpenApprovalModal(true)}>
+                <MarketButton type="secondary" disabled={isAllowing} onClick={() => setOpenApprovalModal(true)}>
                     {!isAllowing
                         ? t('common.enable-wallet-access.approve-label', { currencyKey: PAYMENT_CURRENCY })
                         : t('common.enable-wallet-access.approve-progress-label', {
@@ -176,7 +192,7 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ marketAddress, positions,
             );
         }
         return (
-            <MarketButton disabled={isButtonDisabled} onClick={handleSubmit}>
+            <MarketButton type="secondary" disabled={isButtonDisabled} onClick={handleSubmit}>
                 {!isSubmitting
                     ? t('market.button.resolve-market-label')
                     : t('market.button.resolve-market-progress-label')}
@@ -202,12 +218,21 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ marketAddress, positions,
                     );
                 })}
             </Positions>
-            <ButtonContainer>{getSubmitButton()}</ButtonContainer>
-            <ValidationMessage
-                showValidation={txErrorMessage !== null}
-                message={txErrorMessage}
-                onDismiss={() => setTxErrorMessage(null)}
-            />
+            <ButtonContainer>
+                {!isMarketCreator && (
+                    <BondInfo>
+                        {t('market.resolve-market.bond-info', {
+                            amount: formatCurrencyWithKey(
+                                PAYMENT_CURRENCY,
+                                fixedBondAmount,
+                                DEFAULT_CURRENCY_DECIMALS,
+                                true
+                            ),
+                        })}
+                    </BondInfo>
+                )}
+                {getSubmitButton()}
+            </ButtonContainer>
             {openApprovalModal && (
                 <ApprovalModal
                     defaultAmount={fixedBondAmount}
@@ -224,18 +249,19 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ marketAddress, positions,
 const Container = styled(FlexDivColumn)`
     margin-top: 40px;
     align-items: center;
-    border: 1px solid ${(props) => props.theme.borderColor.primary};
+    background: ${(props) => props.theme.button.background.primary};
     border-radius: 25px;
     flex: initial;
     padding: 30px 20px 40px 20px;
     width: 100%;
+    background: ;
 `;
 
 const Title = styled(FlexDivColumn)`
     align-items: center;
     font-style: normal;
     font-weight: bold;
-    font-size: 40px;
+    font-size: 45px;
     line-height: 100%;
     text-align: center;
     margin-bottom: 40px;
@@ -251,8 +277,9 @@ const MarketButton = styled(Button)`
     height: 32px;
 `;
 
-const ButtonContainer = styled(FlexDivCentered)`
-    margin: 40px 0 0px 0;
+const ButtonContainer = styled(FlexDivColumn)`
+    margin: 40px 0 0 0;
+    align-items: center;
 `;
 
 export default ResolveMarket;

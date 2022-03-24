@@ -10,9 +10,18 @@ type ToggleProps = {
     onClick?: any;
     leftText?: string;
     rightText?: string;
+    isCentered?: boolean;
 };
 
-const Toggle: React.FC<ToggleProps> = ({ isLeftOptionSelected, label, disabled, onClick, leftText, rightText }) => {
+const Toggle: React.FC<ToggleProps> = ({
+    isLeftOptionSelected,
+    label,
+    disabled,
+    onClick,
+    leftText,
+    rightText,
+    isCentered,
+}) => {
     return (
         <FieldContainer>
             {label && <FieldLabel>{label}:</FieldLabel>}
@@ -25,9 +34,9 @@ const Toggle: React.FC<ToggleProps> = ({ isLeftOptionSelected, label, disabled, 
                 }}
                 className={disabled ? 'disabled' : ''}
             >
-                {leftText && <ToggleText>{leftText}</ToggleText>}
+                {leftText && <ToggleText isCentered={isCentered}>{leftText}</ToggleText>}
                 <ToggleIcon isLeftOptionSelected={isLeftOptionSelected} />
-                {rightText && <ToggleText>{rightText}</ToggleText>}
+                {rightText && <ToggleText isCentered={isCentered}>{rightText}</ToggleText>}
             </ToggleContainer>
         </FieldContainer>
     );
@@ -47,12 +56,20 @@ const ToggleContainer = styled(FlexDivStart)`
     width: fit-content;
 `;
 
-const ToggleText = styled.span`
+const ToggleText = styled.span<{ isCentered?: boolean }>`
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     -o-user-select: none;
     user-select: none;
+    :first-child {
+        text-align: end;
+    }
+    width: ${(props) => (props.isCentered ? 'calc(50% - 25px)' : 'auto')};
+    white-space: nowrap;
+    @media (max-width: 575px) {
+        white-space: break-spaces;
+    }
 `;
 
 const ToggleIcon = styled.i<{ isLeftOptionSelected: boolean }>`

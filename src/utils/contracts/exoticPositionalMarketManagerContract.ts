@@ -6,6 +6,12 @@ export const exoticPositionalMarketManagerContract = {
     abi: [
         {
             anonymous: false,
+            inputs: [{ indexed: false, internalType: 'bool', name: 'creationRestrictedToOwner', type: 'bool' }],
+            name: 'CreationRestrictedToOwnerChanged',
+            type: 'event',
+        },
+        {
+            anonymous: false,
             inputs: [{ indexed: false, internalType: 'uint256', name: 'creatorPercentage', type: 'uint256' }],
             name: 'CreatorPercentageChanged',
             type: 'event',
@@ -104,6 +110,12 @@ export const exoticPositionalMarketManagerContract = {
         },
         {
             anonymous: false,
+            inputs: [{ indexed: false, internalType: 'address', name: 'marketDataAddress', type: 'address' }],
+            name: 'NewMarketDataAddress',
+            type: 'event',
+        },
+        {
+            anonymous: false,
             inputs: [{ indexed: false, internalType: 'uint256', name: 'maxNumberOfTags', type: 'uint256' }],
             name: 'NewMaxNumberOfTags',
             type: 'event',
@@ -118,6 +130,12 @@ export const exoticPositionalMarketManagerContract = {
             anonymous: false,
             inputs: [{ indexed: false, internalType: 'uint256', name: 'maximumPositionsAllowed', type: 'uint256' }],
             name: 'NewMaximumPositionsAllowed',
+            type: 'event',
+        },
+        {
+            anonymous: false,
+            inputs: [{ indexed: false, internalType: 'uint256', name: 'minFixedTicketPrice', type: 'uint256' }],
+            name: 'NewMinimumFixedTicketAmount',
             type: 'event',
         },
         {
@@ -154,6 +172,12 @@ export const exoticPositionalMarketManagerContract = {
             anonymous: false,
             inputs: [{ indexed: false, internalType: 'address', name: 'thalesBondsAddress', type: 'address' }],
             name: 'NewThalesBonds',
+            type: 'event',
+        },
+        {
+            anonymous: false,
+            inputs: [{ indexed: false, internalType: 'address', name: 'theRundownConsumerAddress', type: 'address' }],
+            name: 'NewTheRundownConsumerAddress',
             type: 'event',
         },
         {
@@ -297,9 +321,32 @@ export const exoticPositionalMarketManagerContract = {
                 { internalType: 'uint256', name: '_positionCount', type: 'uint256' },
                 { internalType: 'string[]', name: '_positionPhrases', type: 'string[]' },
             ],
+            name: 'createCLMarket',
+            outputs: [],
+            stateMutability: 'nonpayable',
+            type: 'function',
+        },
+        {
+            inputs: [
+                { internalType: 'string', name: '_marketQuestion', type: 'string' },
+                { internalType: 'string', name: '_marketSource', type: 'string' },
+                { internalType: 'uint256', name: '_endOfPositioning', type: 'uint256' },
+                { internalType: 'uint256', name: '_fixedTicketPrice', type: 'uint256' },
+                { internalType: 'bool', name: '_withdrawalAllowed', type: 'bool' },
+                { internalType: 'uint256[]', name: '_tags', type: 'uint256[]' },
+                { internalType: 'uint256', name: '_positionCount', type: 'uint256' },
+                { internalType: 'string[]', name: '_positionPhrases', type: 'string[]' },
+            ],
             name: 'createExoticMarket',
             outputs: [],
             stateMutability: 'nonpayable',
+            type: 'function',
+        },
+        {
+            inputs: [],
+            name: 'creationRestrictedToOwner',
+            outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
+            stateMutability: 'view',
             type: 'function',
         },
         {
@@ -388,9 +435,30 @@ export const exoticPositionalMarketManagerContract = {
             type: 'function',
         },
         {
+            inputs: [{ internalType: 'address', name: '', type: 'address' }],
+            name: 'isChainLinkMarket',
+            outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
+            stateMutability: 'view',
+            type: 'function',
+        },
+        {
             inputs: [{ internalType: 'address', name: '_pauser', type: 'address' }],
             name: 'isPauserAddress',
             outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
+            stateMutability: 'view',
+            type: 'function',
+        },
+        {
+            inputs: [{ internalType: 'address', name: '_marketAddress', type: 'address' }],
+            name: 'issueBondsBackToCreatorAndResolver',
+            outputs: [],
+            stateMutability: 'nonpayable',
+            type: 'function',
+        },
+        {
+            inputs: [],
+            name: 'marketDataAddress',
+            outputs: [{ internalType: 'address', name: '', type: 'address' }],
             stateMutability: 'view',
             type: 'function',
         },
@@ -411,6 +479,13 @@ export const exoticPositionalMarketManagerContract = {
         {
             inputs: [],
             name: 'maximumPositionsAllowed',
+            outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+            stateMutability: 'view',
+            type: 'function',
+        },
+        {
+            inputs: [],
+            name: 'minFixedTicketPrice',
             outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
             stateMutability: 'view',
             type: 'function',
@@ -561,17 +636,6 @@ export const exoticPositionalMarketManagerContract = {
         {
             inputs: [
                 { internalType: 'address', name: '_market', type: 'address' },
-                { internalType: 'address', name: '_recepient', type: 'address' },
-                { internalType: 'uint256', name: '_amount', type: 'uint256' },
-            ],
-            name: 'sendMarketBondAmountTo',
-            outputs: [],
-            stateMutability: 'nonpayable',
-            type: 'function',
-        },
-        {
-            inputs: [
-                { internalType: 'address', name: '_market', type: 'address' },
                 { internalType: 'address', name: '_disputorAddress', type: 'address' },
                 { internalType: 'uint256', name: '_amount', type: 'uint256' },
             ],
@@ -597,6 +661,13 @@ export const exoticPositionalMarketManagerContract = {
         {
             inputs: [{ internalType: 'uint256', name: '_claimTimeout', type: 'uint256' }],
             name: 'setClaimTimeoutDefaultPeriod',
+            outputs: [],
+            stateMutability: 'nonpayable',
+            type: 'function',
+        },
+        {
+            inputs: [{ internalType: 'bool', name: '_creationRestrictedToOwner', type: 'bool' }],
+            name: 'setCreationRestrictedToOwner',
             outputs: [],
             stateMutability: 'nonpayable',
             type: 'function',
@@ -647,6 +718,14 @@ export const exoticPositionalMarketManagerContract = {
             type: 'function',
         },
         {
+            inputs: [{ internalType: 'address', name: '_marketDataAddress', type: 'address' }],
+            name: 'setMarketDataAddress',
+            outputs: [],
+            stateMutability: 'nonpayable',
+            type: 'function',
+        },
+        { inputs: [], name: 'setMaxAllowanceForBonds', outputs: [], stateMutability: 'nonpayable', type: 'function' },
+        {
             inputs: [{ internalType: 'uint256', name: '_maxNumberOfTags', type: 'uint256' }],
             name: 'setMaxNumberOfTags',
             outputs: [],
@@ -663,6 +742,13 @@ export const exoticPositionalMarketManagerContract = {
         {
             inputs: [{ internalType: 'uint256', name: '_maximumPositionsAllowed', type: 'uint256' }],
             name: 'setMaximumPositionsAllowed',
+            outputs: [],
+            stateMutability: 'nonpayable',
+            type: 'function',
+        },
+        {
+            inputs: [{ internalType: 'uint256', name: '_minFixedTicketPrice', type: 'uint256' }],
+            name: 'setMinimumFixedTicketAmount',
             outputs: [],
             stateMutability: 'nonpayable',
             type: 'function',
@@ -745,6 +831,13 @@ export const exoticPositionalMarketManagerContract = {
             type: 'function',
         },
         {
+            inputs: [{ internalType: 'address', name: '_theRundownConsumerAddress', type: 'address' }],
+            name: 'setTheRundownConsumerAddress',
+            outputs: [],
+            stateMutability: 'nonpayable',
+            type: 'function',
+        },
+        {
             inputs: [{ internalType: 'uint256', name: '_withdrawalPercentage', type: 'uint256' }],
             name: 'setWithdrawalPercentage',
             outputs: [],
@@ -761,6 +854,13 @@ export const exoticPositionalMarketManagerContract = {
         {
             inputs: [],
             name: 'thalesBonds',
+            outputs: [{ internalType: 'address', name: '', type: 'address' }],
+            stateMutability: 'view',
+            type: 'function',
+        },
+        {
+            inputs: [],
+            name: 'theRundownConsumerAddress',
             outputs: [{ internalType: 'address', name: '', type: 'address' }],
             stateMutability: 'view',
             type: 'function',

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { FlexDivCentered, FlexDivColumn, FlexDivRowCentered } from 'styles/common';
+import { FlexDivCentered, FlexDivColumn } from 'styles/common';
 import { AccountMarketData, MarketData } from 'types/markets';
-import { formatCurrencyWithKey } from 'utils/formatters/number';
+import { formatCurrencyWithKey, formatPercentage } from 'utils/formatters/number';
 import { PAYMENT_CURRENCY, DEFAULT_CURRENCY_DECIMALS } from 'constants/currency';
 import { RootState } from 'redux/rootReducer';
 import { getIsAppReady } from 'redux/modules/app';
@@ -12,11 +12,13 @@ import { useSelector } from 'react-redux';
 import useAccountMarketDataQuery from 'queries/markets/useAccountMarketDataQuery';
 import onboardConnector from 'utils/onboardConnector';
 import networkConnector from 'utils/networkConnector';
-import ValidationMessage from 'components/ValidationMessage';
 import marketContract from 'utils/contracts/exoticPositionalMarketContract';
 import { ethers } from 'ethers';
 import Button from 'components/Button';
 import { MarketStatus } from 'constants/markets';
+import { toast } from 'react-toastify';
+import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
+import { getRoi } from 'utils/markets';
 
 type MaturityPhaseProps = {
     market: MarketData;
@@ -28,7 +30,6 @@ const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
     const walletAddress = useSelector((state: RootState) => getWalletAddress(state)) || '';
     const isWalletConnected = useSelector((state: RootState) => getIsWalletConnected(state));
     const [accountMarketData, setAccountMarketData] = useState<AccountMarketData | undefined>(undefined);
-    const [txErrorMessage, setTxErrorMessage] = useState<string | null>(null);
     const [isClaiming, setIsClaiming] = useState<boolean>(false);
 
     const accountMarketDataQuery = useAccountMarketDataQuery(market.address, walletAddress, {
@@ -48,7 +49,7 @@ const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
     const handleClaim = async () => {
         const { signer } = networkConnector;
         if (signer) {
-            setTxErrorMessage(null);
+            const id = toast.loading(t('market.toast-messsage.transaction-pending'));
             setIsClaiming(true);
 
             try {
@@ -58,12 +59,23 @@ const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
                 const txResult = await tx.wait();
 
                 if (txResult && txResult.transactionHash) {
-                    // dispatchMarketNotification(t('migration.migrate-button.confirmation-message'));
+                    toast.update(
+                        id,
+                        getSuccessToastOptions(
+                            t(
+                                `market.toast-messsage.${
+                                    market.status === MarketStatus.CancelledConfirmed
+                                        ? 'claim-refund-success'
+                                        : 'claim-winnings-success'
+                                }`
+                            )
+                        )
+                    );
                     setIsClaiming(false);
                 }
             } catch (e) {
                 console.log(e);
-                setTxErrorMessage(t('common.errors.unknown-error-try-again'));
+                toast.update(id, getErrorToastOptions(t('common.errors.unknown-error-try-again')));
                 setIsClaiming(false);
             }
         }
@@ -96,32 +108,52 @@ const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
     return (
         <>
             <Positions>
-                {market.positions.map((position: string, index: number) => (
-                    <PositionContainer
-                        key={position}
-                        className={market.winningPosition === index + 1 ? '' : 'disabled'}
-                    >
-                        <Position>
-                            {!!accountMarketData && accountMarketData.position === index + 1 && <Checkmark />}
-                            <PositionLabel
-                                hasPaddingLeft={!!accountMarketData && accountMarketData.position === index + 1}
-                            >
-                                {position}
-                            </PositionLabel>
-                        </Position>
-                        <Info>
-                            <InfoLabel>{t('market.pool-size-label')}:</InfoLabel>
-                            <InfoContent>
-                                {formatCurrencyWithKey(
-                                    PAYMENT_CURRENCY,
-                                    market.poolSizePerPosition[index],
-                                    DEFAULT_CURRENCY_DECIMALS,
-                                    true
-                                )}
-                            </InfoContent>
-                        </Info>
-                    </PositionContainer>
-                ))}
+                {market.positions.map((position: string, index: number) => {
+                    const selectedPosition = accountMarketData ? accountMarketData.position : 0;
+                    const winningAmount = accountMarketData ? accountMarketData.winningAmount : 0;
+
+                    return (
+                        <PositionContainer
+                            key={position}
+                            className={market.winningPosition === index + 1 ? '' : 'disabled'}
+                        >
+                            <Position>
+                                {selectedPosition === index + 1 && <Checkmark />}
+                                <PositionLabel hasPaddingLeft={selectedPosition === index + 1}>
+                                    {position}
+                                </PositionLabel>
+                            </Position>
+                            <Info>
+                                <InfoLabel>{t('market.pool-size-label')}:</InfoLabel>
+                                <InfoContent>
+                                    {formatCurrencyWithKey(
+                                        PAYMENT_CURRENCY,
+                                        market.poolSizePerPosition[index],
+                                        DEFAULT_CURRENCY_DECIMALS,
+                                        true
+                                    )}
+                                </InfoContent>
+                            </Info>
+                            <Info>
+                                <InfoLabel>{t('market.roi-label')}:</InfoLabel>
+                                <InfoContent>
+                                    {formatPercentage(
+                                        getRoi(
+                                            market.ticketPrice,
+                                            selectedPosition === 0
+                                                ? market.winningAmountsNewUser[index]
+                                                : selectedPosition === index + 1
+                                                ? winningAmount
+                                                : market.winningAmountsNoPosition[index],
+                                            market.totalUsersTakenPositions > 1 ||
+                                                (market.totalUsersTakenPositions === 1 && selectedPosition === 0)
+                                        )
+                                    )}
+                                </InfoContent>
+                            </Info>
+                        </PositionContainer>
+                    );
+                })}
             </Positions>
             {canClaim && (
                 <MainInfo>
@@ -135,26 +167,17 @@ const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
                     {formatCurrencyWithKey(PAYMENT_CURRENCY, claimAmount)}
                 </MainInfo>
             )}
-            <ButtonContainer>
-                {getButtons()}
-                <ValidationMessage
-                    showValidation={txErrorMessage !== null}
-                    message={txErrorMessage}
-                    onDismiss={() => setTxErrorMessage(null)}
-                />
-            </ButtonContainer>
+            <ButtonContainer>{getButtons()}</ButtonContainer>
         </>
     );
 };
 
-const Positions = styled(FlexDivRowCentered)`
-    margin-top: 0px;
+const Positions = styled(FlexDivColumn)`
     margin-bottom: 20px;
-    flex-wrap: wrap;
 `;
 
 const PositionContainer = styled(FlexDivColumn)`
-    margin-bottom: 20px;
+    margin-bottom: 35px;
     &.disabled {
         opacity: 0.4;
         cursor: default;

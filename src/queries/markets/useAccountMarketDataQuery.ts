@@ -18,19 +18,22 @@ const useAccountMarketDataQuery = (
                 position: 0,
                 claimAmount: 0,
                 canClaim: false,
+                winningAmount: 0,
             };
 
             const { signer } = networkConnector;
             if (signer && walletAddress !== '') {
                 const contractWithSigner = new ethers.Contract(marketAddress, marketContract.abi, signer);
-                const [userPosition, claimAmount, canClaim] = await Promise.all([
+                const [userPosition, claimAmount, canClaim, winningAmount] = await Promise.all([
                     contractWithSigner.userPosition(walletAddress),
                     contractWithSigner.getUserClaimableAmount(walletAddress),
                     contractWithSigner.canUserClaim(walletAddress),
+                    contractWithSigner.getUserPotentialWinningAmount(walletAddress),
                 ]);
                 marketData.position = Number(userPosition);
                 marketData.claimAmount = bigNumberFormatter(claimAmount);
                 marketData.canClaim = canClaim;
+                marketData.winningAmount = bigNumberFormatter(winningAmount);
             }
 
             return marketData;

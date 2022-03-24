@@ -13,7 +13,11 @@ const Logo: React.FC = () => (
     </Container>
 );
 
-const Container = styled.div``;
+const Container = styled.div`
+    @media (max-width: 767px) {
+        margin-bottom: 10px;
+    }
+`;
 
 const StyledLogo = styled(LogoIcon)`
     fill: ${(props) => props.theme.textColor.primary};

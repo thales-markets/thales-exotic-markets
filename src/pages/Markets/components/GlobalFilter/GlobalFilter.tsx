@@ -37,7 +37,7 @@ const Container = styled(FlexDivRowCentered)`
         opacity: 0.4;
     }
     color: ${(props) => props.theme.textColor.primary};
-    margin-right: 40px;
+    margin-right: 30px;
     padding-bottom: 5px;
     margin-bottom: 10px;
 `;

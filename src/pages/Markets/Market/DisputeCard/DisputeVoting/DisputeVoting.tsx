@@ -1,6 +1,6 @@
 import Button from 'components/Button';
 import RadioButton from 'components/fields/RadioButton';
-import ValidationMessage from 'components/ValidationMessage';
+import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
 import {
     DisputeVotingOption,
     DISPUTE_VOTING_OPTIONS_MARKET_OPEN,
@@ -9,6 +9,7 @@ import {
 } from 'constants/markets';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { FlexDivColumn } from 'styles/common';
 import { DisputeInfo } from 'types/markets';
@@ -19,6 +20,7 @@ type DisputeVotingProps = {
     disputeInfo: DisputeInfo;
     positions: string[];
     positionOnContract: number;
+    winningPosition: number;
 };
 
 const DisputeVoting: React.FC<DisputeVotingProps> = ({
@@ -26,31 +28,37 @@ const DisputeVoting: React.FC<DisputeVotingProps> = ({
     disputeInfo,
     positions,
     positionOnContract,
+    winningPosition,
 }) => {
     const { t } = useTranslation();
     const [vote, setVote] = useState<number>(voteOnContract);
     const [selectedPosition, setSelectedPosition] = useState<number>(positionOnContract);
     const [currentVoteOnContract, setCurrentVoteOnContract] = useState<number>(voteOnContract);
     const [currentPositionOnContract, setCurrentPositionOnContract] = useState<number>(positionOnContract);
-    const [txErrorMessage, setTxErrorMessage] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+    const outcomePositions = [...positions, t('common.cancel')].map((position: string, index: number) => ({
+        position,
+        disabled: index + 1 === winningPosition,
+    }));
 
     const disputeVotingOptions = disputeInfo.isInPositioningPhase
         ? DISPUTE_VOTING_OPTIONS_MARKET_OPEN
         : DISPUTE_VOTING_OPTIONS_MARKET_RESOLVED;
 
-    const showVoteButton = currentVoteOnContract === 0 && currentPositionOnContract === 0;
+    const showVoteButton = currentVoteOnContract === -1 && currentPositionOnContract === -1;
     const showChangeVoteButton = currentVoteOnContract !== vote || currentPositionOnContract !== selectedPosition;
     const isVoteSelected = vote > 0;
     const isPositionSelected =
-        (vote === DisputeVotingOption.ACCEPT_RESULT && selectedPosition > 0) ||
+        (vote === DisputeVotingOption.ACCEPT_RESULT && selectedPosition > -1) ||
         vote !== DisputeVotingOption.ACCEPT_RESULT;
+
     const isButtonDisabled = isSubmitting || !isVoteSelected || !isPositionSelected;
 
     const handleVote = async () => {
         const { thalesOracleCouncilContract, signer } = networkConnector;
         if (thalesOracleCouncilContract && signer) {
-            setTxErrorMessage(null);
+            const id = toast.loading(t('market.toast-messsage.transaction-pending'));
             setIsSubmitting(true);
 
             try {
@@ -65,14 +73,14 @@ const DisputeVoting: React.FC<DisputeVotingProps> = ({
                 const txResult = await tx.wait();
 
                 if (txResult && txResult.transactionHash) {
-                    // dispatchMarketNotification(t('migration.migrate-button.confirmation-message'));
+                    toast.update(id, getSuccessToastOptions(t('market.toast-messsage.vote-success')));
                     setIsSubmitting(false);
                     setCurrentVoteOnContract(vote);
                     setCurrentPositionOnContract(selectedPosition);
                 }
             } catch (e) {
                 console.log(e);
-                setTxErrorMessage(t('common.errors.unknown-error-try-again'));
+                toast.update(id, getErrorToastOptions(t('common.errors.unknown-error-try-again')));
                 setIsSubmitting(false);
             }
         }
@@ -130,14 +138,17 @@ const DisputeVoting: React.FC<DisputeVotingProps> = ({
                         />
                         {votingOption === DisputeVotingOption.ACCEPT_RESULT &&
                             vote === DisputeVotingOption.ACCEPT_RESULT &&
-                            positions.map((position: string, index: number) => {
+                            outcomePositions.map((outcomePosition, index: number) => {
+                                if (outcomePosition.disabled) return;
+                                const positionIndex = (index + 1) % outcomePositions.length;
+
                                 return (
-                                    <PositionsContainer key={position}>
+                                    <PositionsContainer key={outcomePosition.position}>
                                         <RadioButton
-                                            checked={index + 1 === selectedPosition}
-                                            value={index + 1}
-                                            onChange={() => setSelectedPosition(index + 1)}
-                                            label={position}
+                                            checked={positionIndex === selectedPosition}
+                                            value={positionIndex}
+                                            onChange={() => setSelectedPosition(positionIndex)}
+                                            label={outcomePosition.position}
                                         />
                                     </PositionsContainer>
                                 );
@@ -146,11 +157,6 @@ const DisputeVoting: React.FC<DisputeVotingProps> = ({
                 );
             })}
             {getSubmitButton()}
-            <ValidationMessage
-                showValidation={txErrorMessage !== null}
-                message={txErrorMessage}
-                onDismiss={() => setTxErrorMessage(null)}
-            />
         </Container>
     );
 };
