@@ -1,5 +1,4 @@
 import DatetimePicker from 'components/fields/DatetimePicker';
-import TextInput from 'components/fields/TextInput';
 import TextAreaInput from 'components/fields/TextAreaInput';
 import Toggle from 'components/fields/Toggle';
 import {
@@ -56,6 +55,14 @@ const calculateMinTime = (currentDate: Date, minDate: Date) => {
     return startOfToday();
 };
 
+const calculateMaxTime = (currentDate: Date, maxDate: Date) => {
+    const isMaxDateCurrentDate = isSameDay(currentDate, maxDate);
+    if (isMaxDateCurrentDate) {
+        return maxDate;
+    }
+    return endOfToday();
+};
+
 const CreateMarket: React.FC = () => {
     const { t } = useTranslation();
     const networkId = useSelector((state: RootState) => getNetworkId(state));
@@ -80,6 +87,7 @@ const CreateMarket: React.FC = () => {
     const [openApprovalModal, setOpenApprovalModal] = useState<boolean>(false);
     const [minTime, setMinTime] = useState<Date>(DATE_PICKER_MIN_DATE);
     const [minDate, setMinDate] = useState<Date>(DATE_PICKER_MIN_DATE);
+    const [maxTime, setMaxTime] = useState<Date>(DATE_PICKER_MAX_DATE);
     const [maxDate, setMaxDate] = useState<Date>(DATE_PICKER_MAX_DATE);
     const [isTicketPriceValid, setIsTicketPriceValid] = useState<boolean>(true);
 
@@ -101,7 +109,11 @@ const CreateMarket: React.FC = () => {
         const minTime = calculateMinTime(endOfPositioning, minDate);
         setMinTime(minTime);
         setMinDate(minDate);
-        setMaxDate(setMonth(minDate, minDate.getMonth() + 1));
+
+        const maxDate = setMonth(minDate, minDate.getMonth() + 1);
+        const maxTime = calculateMaxTime(endOfPositioning, maxDate);
+        setMaxTime(maxTime);
+        setMaxDate(maxDate);
     }, [minimumPositioningDuration]);
 
     const tagsQuery = useTagsQuery(networkId, {
@@ -366,6 +378,8 @@ const CreateMarket: React.FC = () => {
         setEndOfPositioning(convertLocalToUTCDate(minDate > date ? minDate : maxDate < date ? maxDate : date));
         const minTime = calculateMinTime(date, minDate);
         setMinTime(minTime);
+        const maxTime = calculateMaxTime(date, maxDate);
+        setMaxTime(maxTime);
     };
 
     useEffect(() => {
@@ -397,7 +411,7 @@ const CreateMarket: React.FC = () => {
                         maximumCharacters={MAXIMUM_INPUT_CHARACTERS}
                         disabled={isSubmitting || creationRestrictedToOwner}
                     />
-                    <TextInput
+                    <TextAreaInput
                         value={dataSource}
                         onChange={setDataSource}
                         label={t('market.create-market.data-source-label')}
@@ -423,7 +437,7 @@ const CreateMarket: React.FC = () => {
                         label={t('market.create-market.positioning-end-label')}
                         disabled={isSubmitting || creationRestrictedToOwner}
                         minTime={minTime}
-                        maxTime={endOfToday()}
+                        maxTime={maxTime}
                         minDate={minDate}
                         maxDate={maxDate}
                     />
@@ -526,9 +540,7 @@ const Form = styled(FlexDivColumn)`
     height: fit-content;
 `;
 
-const CreateMarketButton = styled(Button)`
-    height: 32px;
-`;
+const CreateMarketButton = styled(Button)``;
 
 const ButtonContainer = styled(FlexDivColumn)`
     margin: 40px 0 0 0;

@@ -1,8 +1,6 @@
 import React, { ChangeEvent } from 'react';
 import styled from 'styled-components';
 
-type TextColor = 'primary' | 'secondary' | 'tertiary';
-
 type RadioButtonProps = {
     value: string | number;
     onChange: (e: ChangeEvent<HTMLInputElement>) => void;
@@ -10,23 +8,11 @@ type RadioButtonProps = {
     disabled?: boolean;
     checked: boolean;
     label?: string;
-    isColumnDirection?: boolean;
-    color?: TextColor;
 };
 
-const RadioButton: React.FC<RadioButtonProps> = ({
-    value,
-    onChange,
-    className,
-    disabled,
-    checked,
-    label,
-    isColumnDirection,
-    color = 'primary',
-    ...rest
-}) => {
+const RadioButton: React.FC<RadioButtonProps> = ({ value, onChange, className, disabled, checked, label, ...rest }) => {
     return (
-        <Container className={disabled ? 'disabled' : ''} isColumnDirection={isColumnDirection} color={color}>
+        <Container className={disabled ? 'disabled' : ''}>
             {label}
             <Input
                 {...rest}
@@ -37,7 +23,7 @@ const RadioButton: React.FC<RadioButtonProps> = ({
                 className={className}
                 disabled={disabled}
             />
-            <Checkmark className="checkmark" isColumnDirection={isColumnDirection} />
+            <Checkmark className="checkmark" />
         </Container>
     );
 };
@@ -50,20 +36,20 @@ const Input = styled.input`
     width: 0;
 `;
 
-const Container = styled.label<{ isColumnDirection?: boolean; color: TextColor }>`
-    display: ${(props) => (props.isColumnDirection ? 'flex' : 'block')};
+const Container = styled.label`
+    display: block;
     position: relative;
-    padding-top: ${(props) => (props.isColumnDirection ? 40 : 0)}px;
-    padding-left: ${(props) => (props.isColumnDirection ? 0 : 45)}px;
+    padding-left: 25px;
     cursor: pointer;
     font-style: normal;
     font-weight: normal;
-    font-size: ${(props) => (props.isColumnDirection ? 40 : 45)}px;
-    line-height: ${(props) => (props.isColumnDirection ? 40 : 60)}px;
-    color: ${(props) => props.theme.textColor[props.color]};
+    font-size: 25px;
+    line-height: 35px;
+    color: ${(props) => props.theme.textColor.primary};
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
+    -o-user-select: none;
     user-select: none;
     input:checked ~ .checkmark {
         background-color: transparent;
@@ -79,24 +65,24 @@ const Container = styled.label<{ isColumnDirection?: boolean; color: TextColor }
     justify-content: center;
 `;
 
-const Checkmark = styled.span<{ isColumnDirection?: boolean }>`
+const Checkmark = styled.span`
     position: absolute;
     top: 0;
-    left: ${(props) => (props.isColumnDirection ? 'auto' : '0')};
-    height: 36px;
-    width: 36px;
-    border: 5px solid ${(props) => props.theme.borderColor.primary};
+    left: 0;
+    height: 20px;
+    width: 20px;
+    border: 4px solid ${(props) => props.theme.borderColor.primary};
     background-color: transparent;
     border-radius: 50%;
-    margin-top: ${(props) => (props.isColumnDirection ? 0 : 10)}px;
+    margin-top: 6px;
     :after {
         content: '';
         position: absolute;
         display: none;
-        left: 5px;
-        top: 5px;
-        width: 16px;
-        height: 16px;
+        left: 2px;
+        top: 2px;
+        width: 8px;
+        height: 8px;
         border-radius: 50%;
         background: ${(props) => props.theme.borderColor.primary};
         -webkit-transform: rotate(45deg);

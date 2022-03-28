@@ -22,6 +22,7 @@ import { toast } from 'react-toastify';
 import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
 import { formatCurrencyWithKey } from 'utils/formatters/number';
 import { BondInfo } from 'components/common';
+import { refetchMarketData } from 'utils/queryConnector';
 
 type ResolveMarketProps = {
     marketAddress: string;
@@ -147,6 +148,7 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ marketAddress, positions,
                 const txResult = await tx.wait();
 
                 if (txResult && txResult.transactionHash) {
+                    refetchMarketData(marketAddress, walletAddress);
                     toast.update(id, getSuccessToastOptions(t('market.toast-messsage.resolve-market-success')));
                     setIsSubmitting(false);
                 }
@@ -261,10 +263,10 @@ const Title = styled(FlexDivColumn)`
     align-items: center;
     font-style: normal;
     font-weight: bold;
-    font-size: 45px;
+    font-size: 25px;
     line-height: 100%;
     text-align: center;
-    margin-bottom: 40px;
+    margin-bottom: 35px;
 `;
 
 const Positions = styled(FlexDivColumn)`
@@ -273,9 +275,7 @@ const Positions = styled(FlexDivColumn)`
     }
 `;
 
-const MarketButton = styled(Button)`
-    height: 32px;
-`;
+const MarketButton = styled(Button)``;
 
 const ButtonContainer = styled(FlexDivColumn)`
     margin: 40px 0 0 0;

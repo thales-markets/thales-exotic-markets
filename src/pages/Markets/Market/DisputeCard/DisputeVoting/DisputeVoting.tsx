@@ -168,9 +168,9 @@ const Container = styled(FlexDivColumn)`
 
 const Title = styled.span`
     font-weight: bold;
-    font-size: 25px;
+    font-size: 20px;
     line-height: 100%;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 `;
 
 const VoteOptionsContainer = styled.div`
@@ -202,7 +202,7 @@ const PositionsContainer = styled(VoteOptionsContainer)`
 const VoteButton = styled(Button)`
     font-size: 15px;
     padding: 4px 10px;
-    margin-top: 10px;
+    margin-top: 5px;
 `;
 
 export default DisputeVoting;

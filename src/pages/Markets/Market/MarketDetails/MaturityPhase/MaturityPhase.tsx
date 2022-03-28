@@ -19,6 +19,7 @@ import { MarketStatus } from 'constants/markets';
 import { toast } from 'react-toastify';
 import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
 import { getRoi } from 'utils/markets';
+import { Info, InfoContent, InfoLabel, MainInfo, PositionContainer, PositionLabel, Positions } from 'components/common';
 
 type MaturityPhaseProps = {
     market: MarketData;
@@ -91,7 +92,7 @@ const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
         }
 
         if (nothingToClaim) {
-            return <MarketButton disabled={true}>{t('market.nothing-to-claim-label')}</MarketButton>;
+            return <NothingToClaim>{t('market.nothing-to-claim-label')}</NothingToClaim>;
         }
 
         return (
@@ -105,155 +106,100 @@ const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
         );
     };
 
+    const selectedPosition = accountMarketData ? accountMarketData.position : 0;
+
     return (
         <>
             <Positions>
-                {market.positions.map((position: string, index: number) => {
-                    const selectedPosition = accountMarketData ? accountMarketData.position : 0;
-                    const winningAmount = accountMarketData ? accountMarketData.winningAmount : 0;
-
-                    return (
-                        <PositionContainer
-                            key={position}
-                            className={market.winningPosition === index + 1 ? '' : 'disabled'}
-                        >
-                            <Position>
-                                {selectedPosition === index + 1 && <Checkmark />}
-                                <PositionLabel hasPaddingLeft={selectedPosition === index + 1}>
-                                    {position}
-                                </PositionLabel>
-                            </Position>
+                {market.positions.map((position: string, index: number) => (
+                    <PositionContainer
+                        key={position}
+                        className={`${market.winningPosition !== index + 1 ? 'disabled' : ''} ${
+                            index + 1 === selectedPosition ? 'selected' : ''
+                        } maturity`}
+                    >
+                        <PositionLabel>{position}</PositionLabel>
+                        <Info>
+                            <InfoLabel>{t('market.pool-size-label')}:</InfoLabel>
+                            <InfoContent>
+                                {formatCurrencyWithKey(
+                                    PAYMENT_CURRENCY,
+                                    market.poolSizePerPosition[index],
+                                    DEFAULT_CURRENCY_DECIMALS,
+                                    true
+                                )}
+                            </InfoContent>
+                        </Info>
+                        {market.winningPosition === index + 1 && (
                             <Info>
-                                <InfoLabel>{t('market.pool-size-label')}:</InfoLabel>
+                                <InfoLabel>{t('market.winnings-per-ticket-label')}:</InfoLabel>
                                 <InfoContent>
                                     {formatCurrencyWithKey(
                                         PAYMENT_CURRENCY,
-                                        market.poolSizePerPosition[index],
+                                        market.winningAmountPerTicket,
                                         DEFAULT_CURRENCY_DECIMALS,
                                         true
                                     )}
                                 </InfoContent>
                             </Info>
+                        )}
+                        {market.winningPosition === index + 1 && (
                             <Info>
                                 <InfoLabel>{t('market.roi-label')}:</InfoLabel>
                                 <InfoContent>
-                                    {formatPercentage(
-                                        getRoi(
-                                            market.ticketPrice,
-                                            selectedPosition === 0
-                                                ? market.winningAmountsNewUser[index]
-                                                : selectedPosition === index + 1
-                                                ? winningAmount
-                                                : market.winningAmountsNoPosition[index],
-                                            market.totalUsersTakenPositions > 1 ||
-                                                (market.totalUsersTakenPositions === 1 && selectedPosition === 0)
-                                        )
-                                    )}
+                                    {formatPercentage(getRoi(market.ticketPrice, market.winningAmountPerTicket, true))}
                                 </InfoContent>
                             </Info>
-                        </PositionContainer>
-                    );
-                })}
+                        )}
+                    </PositionContainer>
+                ))}
             </Positions>
-            {canClaim && (
-                <MainInfo>
-                    {t(
-                        `market.${
-                            market.status === MarketStatus.CancelledConfirmed
-                                ? 'claim-refund-label'
-                                : 'claim-winnings-label'
-                        }`
-                    )}{' '}
-                    {formatCurrencyWithKey(PAYMENT_CURRENCY, claimAmount)}
-                </MainInfo>
-            )}
-            <ButtonContainer>{getButtons()}</ButtonContainer>
+            <MainInfo>
+                {t('market.ticket-price-label')}:{' '}
+                {formatCurrencyWithKey(PAYMENT_CURRENCY, market.ticketPrice, DEFAULT_CURRENCY_DECIMALS, true)}
+            </MainInfo>
+            <ButtonContainer>
+                {canClaim && (
+                    <ClaimInfo>
+                        {t(
+                            `market.${
+                                market.status === MarketStatus.CancelledConfirmed
+                                    ? 'your-refund-label'
+                                    : 'your-winnings-label'
+                            }`
+                        )}
+                        : {formatCurrencyWithKey(PAYMENT_CURRENCY, claimAmount)}
+                    </ClaimInfo>
+                )}
+                {getButtons()}
+            </ButtonContainer>
         </>
     );
 };
 
-const Positions = styled(FlexDivColumn)`
-    margin-bottom: 20px;
-`;
-
-const PositionContainer = styled(FlexDivColumn)`
-    margin-bottom: 35px;
-    &.disabled {
-        opacity: 0.4;
-        cursor: default;
-    }
-`;
-const Position = styled.label`
-    align-self: center;
-    display: block;
-    position: relative;
-`;
-
-const PositionLabel = styled.span<{ hasPaddingLeft: boolean }>`
-    font-style: normal;
-    font-weight: normal;
-    font-size: 40px;
-    line-height: 55px;
-    text-align: center;
-    padding-left: ${(props) => (props.hasPaddingLeft ? 35 : 0)}px;
-    color: ${(props) => props.theme.textColor.primary};
-`;
-
-const Info = styled(FlexDivCentered)<{ fontSize?: number }>`
-    font-style: normal;
-    font-weight: 300;
-    font-size: ${(props) => props.fontSize || 25}px;
-    line-height: 100%;
-    color: ${(props) => props.theme.textColor.primary};
-    white-space: nowrap;
-`;
-
-const InfoLabel = styled.span`
-    margin-right: 6px;
-`;
-
-const InfoContent = styled.span`
-    font-weight: 700;
-`;
-
-const Checkmark = styled.span`
-    :after {
-        content: '';
-        position: absolute;
-        left: 10px;
-        top: 12px;
-        width: 8px;
-        height: 22px;
-        border: solid ${(props) => props.theme.borderColor.primary};
-        border-width: 0 4px 4px 0;
-        -webkit-transform: rotate(45deg);
-        -ms-transform: rotate(45deg);
-        transform: rotate(45deg);
-    }
-`;
-
-const MainInfo = styled.span`
-    font-style: normal;
-    font-weight: bold;
-    font-size: 40px;
-    line-height: 55px;
-    text-align: center;
-    color: ${(props) => props.theme.textColor.primary};
-`;
-
 const ButtonContainer = styled(FlexDivColumn)`
-    margin-top: 40px;
-    margin-bottom: 40px;
+    margin-top: 35px;
+    margin-bottom: 35px;
     align-items: center;
 `;
 
-const MarketButton = styled(Button)`
-    height: 32px;
-    font-size: 22px;
-    padding-top: 2px;
-    :not(button:last-of-type) {
-        margin-bottom: 10px;
-    }
+const ClaimInfo = styled(MainInfo)`
+    margin-bottom: 15px;
+    line-height: 100%;
+`;
+
+const MarketButton = styled(Button)``;
+
+const NothingToClaim = styled(FlexDivCentered)`
+    background: transparent;
+    border: 1px solid ${(props) => props.theme.borderColor.primary};
+    border-radius: 30px;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 17px;
+    color: ${(props) => props.theme.textColor.primary};
+    min-height: 28px;
+    padding: 5px 20px;
 `;
 
 export default MaturityPhase;

@@ -16,7 +16,6 @@ const Search: React.FC<SearchProps> = ({ text, handleChange }) => {
             <Input
                 type="text"
                 placeholder={t('market.search-placeholder')}
-                defaultValue={text}
                 value={text}
                 onChange={(event) => handleChange(event.target.value)}
             />

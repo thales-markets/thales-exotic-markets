@@ -41,17 +41,17 @@ const Container = styled(FlexDivColumn)`
 
 const Title = styled.span`
     font-weight: bold;
-    font-size: 25px;
+    font-size: 20px;
     line-height: 100%;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 `;
 
 const Result = styled(FlexDivRow)`
     font-size: 15px;
     line-height: 20px;
-    padding-bottom: 10px;
+    padding-bottom: 5px;
     align-items: center;
-    margin-top: 10px;
+    margin-top: 5px;
     :not(:last-child) {
         border-bottom: 1px solid ${(props) => props.theme.borderColor.primary};
     }

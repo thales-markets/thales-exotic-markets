@@ -8,6 +8,9 @@ import { FlexDivColumnCentered, FlexDivRow } from 'styles/common';
 import { AccountPosition, MarketInfo } from 'types/markets';
 import { MarketStatus as MarketStatusEnum } from 'constants/markets';
 import OpenDisputeInfo from 'pages/Markets/components/OpenDisputeInfo';
+import { formatCurrencyWithKey } from 'utils/formatters/number';
+import { DEFAULT_CURRENCY_DECIMALS, PAYMENT_CURRENCY } from 'constants/currency';
+import { Info, InfoContent, InfoLabel } from 'components/common';
 
 type MarketCardProps = {
     market: MarketInfo;
@@ -54,6 +57,12 @@ const MarketCard: React.FC<MarketCardProps> = ({ market, accountPosition }) => {
                     </OpenDisputeInfo>
                 )}
             </CardFooter>
+            <Info fontSize={15} marginTop={10}>
+                <InfoLabel>{t('market.pool-size-label')}:</InfoLabel>
+                <InfoContent>
+                    {formatCurrencyWithKey(PAYMENT_CURRENCY, market.poolSize, DEFAULT_CURRENCY_DECIMALS, true)}
+                </InfoContent>
+            </Info>
         </Container>
     );
 };
@@ -113,7 +122,7 @@ const Checkmark = styled.span`
 `;
 
 const CardFooter = styled(FlexDivRow)`
-    margin-top: 25px;
+    margin-top: 20px;
     align-items: end;
 `;
 

@@ -400,7 +400,6 @@ const NoMarketsContainer = styled(FlexDivColumnCentered)`
     font-size: 28px;
     line-height: 100%;
     button {
-        height: 32px;
         padding-top: 1px;
     }
 `;

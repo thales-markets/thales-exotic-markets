@@ -30,10 +30,10 @@ export type MarketInfo = {
     canUsersClaim: boolean;
     disputeClosedTime: number;
     claimTimeoutDefaultPeriod: number;
+    poolSize: number;
 };
 
 export type MarketData = MarketInfo & {
-    poolSize: number;
     claimablePoolSize: number;
     poolSizePerPosition: number[];
     canUsersPlacePosition: boolean;
@@ -46,6 +46,7 @@ export type MarketData = MarketInfo & {
     winningAmountsNewUser: number[];
     winningAmountsNoPosition: number[];
     totalUsersTakenPositions: number;
+    winningAmountPerTicket: number;
 };
 
 export type Markets = MarketInfo[];

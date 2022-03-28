@@ -5,7 +5,7 @@ import { getIsWalletConnected, getNetworkId, getWalletAddress } from 'redux/modu
 import { RootState } from 'redux/rootReducer';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { FlexDivCentered, FlexDivColumn, FlexDivRow, FlexDivEnd } from 'styles/common';
+import { FlexDivColumn, FlexDivRow, FlexDivEnd } from 'styles/common';
 import MarketStatus from 'pages/Markets/components/MarketStatus';
 import MarketTitle from 'pages/Markets/components/MarketTitle';
 import Tags from 'pages/Markets/components/Tags';
@@ -21,7 +21,8 @@ import { MarketStatus as MarketStatusEnum } from 'constants/markets';
 import OpenDisputeInfo from 'pages/Markets/components/OpenDisputeInfo';
 import Button from 'components/Button';
 import useAccountMarketDataQuery from 'queries/markets/useAccountMarketDataQuery';
-import DataSourceLink from 'pages/Markets/components/DataSourceLink';
+import { Info, InfoContent, InfoLabel } from 'components/common';
+import DataSource from 'pages/Markets/components/DataSource';
 
 type MarketDetailsProps = {
     market: MarketData;
@@ -65,37 +66,33 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
 
     return (
         <MarketContainer>
-            <MarketTitle fontSize={40} marginBottom={40}>
+            <MarketTitle fontSize={25} marginBottom={40}>
                 {market.question}
             </MarketTitle>
             {market.status === MarketStatusEnum.Open && <PositioningPhase market={market} />}
             {market.status !== MarketStatusEnum.Open && <MaturityPhase market={market} />}
             <StatusSourceContainer>
                 <StatusSourceInfo />
-                <MarketStatus
-                    market={market}
-                    fontSize={40}
-                    labelFontSize={20}
-                    fontWeight={700}
-                    isClaimAvailable={isClaimAvailable}
-                />
-                <DataSourceLink link={market.dataSource} />
+                <MarketStatus market={market} fontSize={25} fontWeight={700} isClaimAvailable={isClaimAvailable} />
+                {showNumberOfOpenDisputes ? <DataSource dataSource={market.dataSource} /> : <StatusSourceInfo />}
             </StatusSourceContainer>
             <Footer>
-                <Tags tags={market.tags} labelFontSize={20} />
-                <Info fontSize={20}>
+                <Tags tags={market.tags} />
+                <Info>
                     <InfoLabel>{t('market.total-pool-size-label')}:</InfoLabel>
                     <InfoContent>
                         {formatCurrencyWithKey(PAYMENT_CURRENCY, market.poolSize, DEFAULT_CURRENCY_DECIMALS, true)}
                     </InfoContent>
                 </Info>
                 <OpenDisputeContainer>
-                    {showNumberOfOpenDisputes && (
+                    {showNumberOfOpenDisputes ? (
                         <OpenDisputeInfo
                             numberOfOpenDisputes={market.isMarketClosedForDisputes ? 0 : market.numberOfOpenDisputes}
                         >
                             {t('market.open-disputes-label')}
                         </OpenDisputeInfo>
+                    ) : (
+                        <DataSource dataSource={market.dataSource} />
                     )}
                     {canOpenDispute && (
                         <SPAAnchor href={buildOpenDisputeLink(market.address)}>
@@ -118,23 +115,6 @@ const MarketContainer = styled(FlexDivColumn)`
     padding: 40px 40px 30px 40px;
     background: ${(props) => props.theme.background.secondary};
     flex: initial;
-`;
-
-const Info = styled(FlexDivCentered)<{ fontSize?: number }>`
-    font-style: normal;
-    font-weight: 300;
-    font-size: ${(props) => props.fontSize || 25}px;
-    line-height: 100%;
-    color: ${(props) => props.theme.textColor.primary};
-    white-space: nowrap;
-`;
-
-const InfoLabel = styled.span`
-    margin-right: 6px;
-`;
-
-const InfoContent = styled.span`
-    font-weight: 700;
 `;
 
 const StatusSourceContainer = styled(FlexDivRow)`

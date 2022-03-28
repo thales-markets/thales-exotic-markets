@@ -33,7 +33,7 @@ const maxDate = new Date();
 maxDate.setMonth(maxDate.getMonth() + 1);
 export const DATE_PICKER_MAX_DATE = maxDate; // 1 month from now
 
-export const MAXIMUM_INPUT_CHARACTERS = 100;
+export const MAXIMUM_INPUT_CHARACTERS = 200;
 
 export enum MarketStatus {
     Open = 'open',

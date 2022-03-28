@@ -85,6 +85,7 @@ const AddPositionButton = styled(FlexDivStart)`
     -moz-user-select: none;
     -ms-user-select: none;
     -o-user-select: none;
+    user-select: none;
 `;
 
 const PlusSign = styled(FlexDivCentered)`

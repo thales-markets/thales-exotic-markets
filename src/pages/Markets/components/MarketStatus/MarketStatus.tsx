@@ -81,7 +81,7 @@ const StatusLabel = styled.span<{ labelFontSize?: number }>`
 
 const Status = styled.span<{ fontSize?: number; fontWeight?: number }>`
     font-style: normal;
-    font-size: ${(props) => props.fontSize || 25}px;
+    font-size: ${(props) => props.fontSize || 20}px;
     font-weight: ${(props) => props.fontWeight || 400};
     line-height: 100%;
     text-align: center;

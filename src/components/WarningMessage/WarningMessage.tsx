@@ -18,7 +18,7 @@ export const WarningMessage: React.FC<WarningMessageProps> = ({ children, margin
 const Container = styled(FlexDivCentered)<{ marginBottom?: number; fontSize?: number }>`
     font-style: normal;
     font-weight: bold;
-    margin-bottom: ${(props) => props.fontSize || 18}px;
+    margin-bottom: ${(props) => props.fontSize || 15}px;
     line-height: 100%;
     letter-spacing: 0.5px;
     color: #ffcc00;

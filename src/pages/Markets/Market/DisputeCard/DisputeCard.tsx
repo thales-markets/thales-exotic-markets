@@ -98,7 +98,7 @@ const Container = styled(FlexDivRow)`
     border-radius: 15px;
     font-style: normal;
     font-weight: normal;
-    padding: 30px 10px;
+    padding: 20px 0px 20px 0px;
     margin-bottom: 30px;
     color: ${(props) => props.theme.textColor.primary};
     @media (max-width: 991px) {

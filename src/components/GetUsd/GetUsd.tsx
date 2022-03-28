@@ -103,7 +103,6 @@ const Container = styled(FlexDivCentered)`
         margin-bottom: 10px;
     }
     button {
-        font-size: 18px;
         padding: 0 20px;
     }
 `;

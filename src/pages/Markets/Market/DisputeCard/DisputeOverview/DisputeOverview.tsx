@@ -92,8 +92,12 @@ const DisputeOverview: React.FC<DisputeOverviewProps> = ({ disputeInfo, status }
 };
 
 const Container = styled(FlexDivColumn)`
-    padding-right: 20px;
     padding-left: 20px;
+    @media (max-width: 991px) {
+        :not(:last-child) {
+            margin-bottom: 20px;
+        }
+    }
 `;
 
 const Overview = styled(FlexDivColumn)`
@@ -102,17 +106,19 @@ const Overview = styled(FlexDivColumn)`
 
 const Label = styled.span`
     font-weight: bold;
-    font-size: 25px;
+    font-size: 20px;
     line-height: 100%;
     margin-bottom: 10px;
 `;
 
 const Content = styled.span`
-    font-size: 18px;
-    line-height: 25px;
+    font-size: 15px;
+    line-height: 20px;
     text-align: justify;
-    margin-bottom: 20px;
     word-wrap: break-word;
+    :not(:last-child) {
+        margin-bottom: 15px;
+    }
 `;
 
 const StatusContainer = styled(FlexDivColumn)`
@@ -125,7 +131,6 @@ const Status = styled(Content)`
 
 const ClaimButton = styled(Button)`
     margin-top: 5px;
-    font-size: 18px;
     min-height: 26px;
 `;
 

@@ -309,9 +309,7 @@ const Form = styled(FlexDivColumn)`
     width: 100%;
 `;
 
-const DisputeButton = styled(Button)`
-    height: 32px;
-`;
+const DisputeButton = styled(Button)``;
 
 const ButtonContainer = styled(FlexDivColumn)`
     margin: 20px 0 0 0;
