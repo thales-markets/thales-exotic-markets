@@ -350,8 +350,7 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
                                             : positionOnContract === index + 1
                                             ? winningAmount
                                             : market.winningAmountsNoPosition[index],
-                                        market.totalUsersTakenPositions > 1 ||
-                                            (market.totalUsersTakenPositions === 1 && positionOnContract === 0)
+                                        true
                                     )
                                 )}
                             </InfoContent>

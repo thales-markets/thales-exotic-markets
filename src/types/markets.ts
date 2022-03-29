@@ -31,6 +31,8 @@ export type MarketInfo = {
     disputeClosedTime: number;
     claimTimeoutDefaultPeriod: number;
     poolSize: number;
+    numberOfParticipants: number;
+    noWinner: boolean;
 };
 
 export type MarketData = MarketInfo & {

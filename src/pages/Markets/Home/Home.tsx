@@ -28,7 +28,7 @@ import { TagLabel } from '../components/Tags/Tags';
 import MarketsGrid from './MarketsGrid';
 import { navigateTo } from 'utils/routes';
 import ROUTES from 'constants/routes';
-import { GlobalFilterEnum, SortDirection, DEFAULT_SORT_BY, MarketStatus } from 'constants/markets';
+import { GlobalFilterEnum, SortDirection, DEFAULT_SORT_BY } from 'constants/markets';
 import SortOption from '../components/SortOption';
 import useTagsQuery from 'queries/markets/useTagsQuery';
 import useAccountPositionsQuery from 'queries/markets/useAccountPositionsQuery';
@@ -36,6 +36,7 @@ import useMarketsParametersQuery from 'queries/markets/useMarketsParametersQuery
 import Toggle from 'components/fields/Toggle';
 import { LOCAL_STORAGE_KEYS } from 'constants/storage';
 import useLocalStorage from 'hooks/useLocalStorage';
+import { isClaimAvailable } from 'utils/markets';
 
 const Home: React.FC = () => {
     const { t } = useTranslation();
@@ -133,13 +134,7 @@ const Home: React.FC = () => {
     const accountClaimsCount = useMemo(() => {
         return tagsFilteredMarkets.filter((market: MarketInfo) => {
             const accountPosition: AccountPosition = accountPositions[market.address];
-            return (
-                !!accountPosition &&
-                market.canUsersClaim &&
-                accountPosition.position > 0 &&
-                (accountPosition.position === market.winningPosition ||
-                    market.status === MarketStatus.CancelledConfirmed)
-            );
+            return isClaimAvailable(market, accountPosition);
         }).length;
     }, [tagsFilteredMarkets, accountPositions]);
 
@@ -190,13 +185,7 @@ const Home: React.FC = () => {
             case GlobalFilterEnum.Claim:
                 filteredMarkets = filteredMarkets.filter((market: MarketInfo) => {
                     const accountPosition: AccountPosition = accountPositions[market.address];
-                    return (
-                        !!accountPosition &&
-                        market.canUsersClaim &&
-                        accountPosition.position > 0 &&
-                        (accountPosition.position === market.winningPosition ||
-                            market.status === MarketStatus.CancelledConfirmed)
-                    );
+                    return isClaimAvailable(market, accountPosition);
                 });
                 break;
             default:

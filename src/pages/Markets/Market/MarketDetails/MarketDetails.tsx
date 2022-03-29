@@ -5,7 +5,7 @@ import { getIsWalletConnected, getNetworkId, getWalletAddress } from 'redux/modu
 import { RootState } from 'redux/rootReducer';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { FlexDivColumn, FlexDivRow, FlexDivEnd } from 'styles/common';
+import { FlexDivColumn, FlexDivRow, FlexDivEnd, FlexDivColumnCentered } from 'styles/common';
 import MarketStatus from 'pages/Markets/components/MarketStatus';
 import MarketTitle from 'pages/Markets/components/MarketTitle';
 import Tags from 'pages/Markets/components/Tags';
@@ -78,12 +78,18 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
             </StatusSourceContainer>
             <Footer>
                 <Tags tags={market.tags} />
-                <Info>
-                    <InfoLabel>{t('market.total-pool-size-label')}:</InfoLabel>
-                    <InfoContent>
-                        {formatCurrencyWithKey(PAYMENT_CURRENCY, market.poolSize, DEFAULT_CURRENCY_DECIMALS, true)}
-                    </InfoContent>
-                </Info>
+                <FlexDivColumnCentered>
+                    <Info>
+                        <InfoLabel>{t('market.total-pool-size-label')}:</InfoLabel>
+                        <InfoContent>
+                            {formatCurrencyWithKey(PAYMENT_CURRENCY, market.poolSize, DEFAULT_CURRENCY_DECIMALS, true)}
+                        </InfoContent>
+                    </Info>
+                    <Info>
+                        <InfoLabel>{t('market.number-of-participants-label')}:</InfoLabel>
+                        <InfoContent>{market.numberOfParticipants}</InfoContent>
+                    </Info>
+                </FlexDivColumnCentered>
                 <OpenDisputeContainer>
                     {showNumberOfOpenDisputes ? (
                         <OpenDisputeInfo

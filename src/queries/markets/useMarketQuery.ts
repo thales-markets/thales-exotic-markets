@@ -23,6 +23,7 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                 winningAmountsNoPosition,
                 totalUsersTakenPositions,
                 winningAmountPerTicket,
+                noWinner,
             ] = await Promise.all([
                 marketDataContract?.getAllMarketData(marketAddress),
                 thalesOracleCouncilContract?.isMarketClosedForDisputes(marketAddress),
@@ -33,6 +34,7 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                 contract?.getPotentialWinningAmountForAllPosition(false, 0),
                 contract?.totalUsersTakenPositions(),
                 contract?.getWinningAmountPerTicket(),
+                contract?.noWinners(),
             ]);
 
             const [
@@ -115,6 +117,8 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                 ),
                 totalUsersTakenPositions: Number(totalUsersTakenPositions),
                 winningAmountPerTicket: bigNumberFormatter(winningAmountPerTicket),
+                noWinner,
+                numberOfParticipants: bigNumberFormatter(poolSize) / bigNumberFormatter(ticketPrice),
             };
 
             // TODO - needs refactoring

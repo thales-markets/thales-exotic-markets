@@ -68,13 +68,14 @@ const DisputeCard: React.FC<DisputeCardProps> = ({
     const showDisputeVotingData = showDisputeVoting || showDisputeVotingResults;
 
     const disabled =
-        disputeInfo.status === DisputeStatus.Cancelled ||
-        disputeInfo.status === DisputeStatus.RefusedOnPositioning ||
-        disputeInfo.status === DisputeStatus.RefusedMature;
+        disputeData &&
+        (disputeData.status === DisputeStatus.Cancelled ||
+            disputeData.status === DisputeStatus.RefusedOnPositioning ||
+            disputeData.status === DisputeStatus.RefusedMature);
 
     return (
         <Container className={disabled ? 'disabled' : ''}>
-            <DisputeOverview disputeInfo={disputeInfo} />
+            <DisputeOverview disputeInfo={disputeInfo} status={disputeData ? disputeData.status : undefined} />
             {showDisputeVotingData && (
                 <VotingContainer>
                     {showDisputeVoting && (

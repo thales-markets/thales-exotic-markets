@@ -180,6 +180,7 @@ const VoteOptionsContainer = styled.div`
         line-height: 20px;
         margin-bottom: 6px;
         white-space: break-spaces;
+        height: auto;
     }
     span {
         :after {

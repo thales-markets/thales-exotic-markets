@@ -20,6 +20,8 @@ import { toast } from 'react-toastify';
 import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
 import { getRoi } from 'utils/markets';
 import { Info, InfoContent, InfoLabel, MainInfo, PositionContainer, PositionLabel, Positions } from 'components/common';
+import { refetchMarketData } from 'utils/queryConnector';
+import Tooltip from 'components/Tooltip';
 
 type MaturityPhaseProps = {
     market: MarketData;
@@ -60,6 +62,7 @@ const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
                 const txResult = await tx.wait();
 
                 if (txResult && txResult.transactionHash) {
+                    refetchMarketData(market.address, walletAddress);
                     toast.update(
                         id,
                         getSuccessToastOptions(
@@ -130,9 +133,16 @@ const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
                                 )}
                             </InfoContent>
                         </Info>
-                        {market.winningPosition === index + 1 && (
+                        {(market.winningPosition === index + 1 || market.noWinner) && (
                             <Info>
-                                <InfoLabel>{t('market.winnings-per-ticket-label')}:</InfoLabel>
+                                <InfoLabel>
+                                    {t(
+                                        `market.${
+                                            market.noWinner ? 'claim-amount-ticket-label' : 'winnings-per-ticket-label'
+                                        }`
+                                    )}
+                                    :
+                                </InfoLabel>
                                 <InfoContent>
                                     {formatCurrencyWithKey(
                                         PAYMENT_CURRENCY,
@@ -143,7 +153,7 @@ const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
                                 </InfoContent>
                             </Info>
                         )}
-                        {market.winningPosition === index + 1 && (
+                        {(market.winningPosition === index + 1 || market.noWinner) && (
                             <Info>
                                 <InfoLabel>{t('market.roi-label')}:</InfoLabel>
                                 <InfoContent>
@@ -165,12 +175,26 @@ const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
                 {formatCurrencyWithKey(PAYMENT_CURRENCY, market.ticketPrice, DEFAULT_CURRENCY_DECIMALS, true)}
             </MainInfo>
             <ButtonContainer>
+                {market.noWinner && (
+                    <ClaimInfo>
+                        {t(`market.no-winners-label`)}
+                        <Tooltip
+                            overlay={
+                                <NoWinnersOverlayContainer>{t('market.no-winners-tooltip')}</NoWinnersOverlayContainer>
+                            }
+                            iconFontSize={20}
+                            marginLeft={4}
+                        />
+                    </ClaimInfo>
+                )}
                 {canClaim && (
                     <ClaimInfo>
                         {t(
                             `market.${
                                 market.status === MarketStatus.CancelledConfirmed
                                     ? 'your-refund-label'
+                                    : market.noWinner
+                                    ? 'your-claim-amount-label'
                                     : 'your-winnings-label'
                             }`
                         )}
@@ -206,6 +230,10 @@ const NothingToClaim = styled(FlexDivCentered)`
     color: ${(props) => props.theme.textColor.primary};
     min-height: 28px;
     padding: 5px 20px;
+`;
+
+const NoWinnersOverlayContainer = styled(FlexDivColumn)`
+    text-align: justify;
 `;
 
 export default MaturityPhase;

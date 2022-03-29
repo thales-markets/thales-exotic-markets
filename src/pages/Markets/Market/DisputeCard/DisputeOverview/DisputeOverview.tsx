@@ -15,9 +15,10 @@ import networkConnector from 'utils/networkConnector';
 
 type DisputeOverviewProps = {
     disputeInfo: DisputeInfo;
+    status?: string;
 };
 
-const DisputeOverview: React.FC<DisputeOverviewProps> = ({ disputeInfo }) => {
+const DisputeOverview: React.FC<DisputeOverviewProps> = ({ disputeInfo, status }) => {
     const { t } = useTranslation();
     const isAppReady = useSelector((state: RootState) => getIsAppReady(state));
     const walletAddress = useSelector((state: RootState) => getWalletAddress(state)) || '';
@@ -74,7 +75,7 @@ const DisputeOverview: React.FC<DisputeOverviewProps> = ({ disputeInfo }) => {
                 <Content>{disputeInfo.disputer}</Content>
                 <Label>{t('market.dispute.status-label')}:</Label>
                 <StatusContainer>
-                    <Status>{t(`market.dispute.status.${disputeInfo.status}`)}</Status>
+                    <Status>{status ? t(`market.dispute.status.${status}`) : ''}</Status>
                     {canDisputorClaimbackBondFromUnclosedDispute && (
                         <ClaimButton type="secondary" disabled={isSubmitting} onClick={handleClaim}>
                             {!isSubmitting

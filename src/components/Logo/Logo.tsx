@@ -7,7 +7,7 @@ import { buildHref } from 'utils/routes';
 
 const Logo: React.FC = () => (
     <Container>
-        <SPAAnchor href={buildHref(ROUTES.Home)}>
+        <SPAAnchor href={buildHref(ROUTES.Markets.Home)}>
             <StyledLogo />
         </SPAAnchor>
     </Container>
