@@ -7,19 +7,23 @@ type FieldValidationMessageProps = {
     message?: string;
     arrowPosition?: string;
     marginLeft?: string;
+    hideArrow?: boolean;
 };
 
 export const FieldValidationMessage: React.FC<FieldValidationMessageProps> = ({
     showValidation,
     message,
     marginLeft,
+    hideArrow,
     arrowPosition = 'left',
 }) => {
     return (
         <>
             {showValidation && (
                 <Container marginLeft={marginLeft}>
-                    <Message arrowPosition={arrowPosition}>{message}</Message>
+                    <Message arrowPosition={arrowPosition} hideArrow={hideArrow}>
+                        {message}
+                    </Message>
                 </Container>
             )}
         </>
@@ -31,7 +35,7 @@ const Container = styled.div<{ marginLeft?: string }>`
     margin-left: ${(props) => props.marginLeft || '0px'};
 `;
 
-const Message = styled(FlexDiv)<{ arrowPosition: string }>`
+const Message = styled(FlexDiv)<{ arrowPosition: string; hideArrow?: boolean }>`
     align-items: center;
     background: #e9bcbc;
     border-radius: 5px;
@@ -44,6 +48,7 @@ const Message = styled(FlexDiv)<{ arrowPosition: string }>`
     margin: 6px 2px 0 2px;
     padding: 4px 8px;
     :before {
+        display: ${(props) => (props.hideArrow ? 'none' : 'block')};
         content: '';
         position: absolute;
         top: -7px;

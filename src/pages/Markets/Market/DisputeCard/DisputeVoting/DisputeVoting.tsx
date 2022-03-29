@@ -170,7 +170,7 @@ const Title = styled.span`
     font-weight: bold;
     font-size: 20px;
     line-height: 100%;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 `;
 
 const VoteOptionsContainer = styled.div`
@@ -201,8 +201,9 @@ const PositionsContainer = styled(VoteOptionsContainer)`
 
 const VoteButton = styled(Button)`
     font-size: 15px;
-    padding: 4px 10px;
+    padding: 2px 10px;
     margin-top: 5px;
+    min-height: 26px;
 `;
 
 export default DisputeVoting;

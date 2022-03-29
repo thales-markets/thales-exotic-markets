@@ -76,6 +76,8 @@ const Container = styled(FlexDivColumnCentered)<{ isClaimAvailable: boolean }>`
     margin: 8px 4px 8px 4px;
     &:hover {
         background: ${(props) => props.theme.background.secondary};
+        border-color: transparent;
+        background-origin: border-box;
     }
 `;
 

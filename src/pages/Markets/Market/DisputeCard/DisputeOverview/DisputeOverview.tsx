@@ -15,10 +15,9 @@ import networkConnector from 'utils/networkConnector';
 
 type DisputeOverviewProps = {
     disputeInfo: DisputeInfo;
-    status?: string;
 };
 
-const DisputeOverview: React.FC<DisputeOverviewProps> = ({ disputeInfo, status }) => {
+const DisputeOverview: React.FC<DisputeOverviewProps> = ({ disputeInfo }) => {
     const { t } = useTranslation();
     const isAppReady = useSelector((state: RootState) => getIsAppReady(state));
     const walletAddress = useSelector((state: RootState) => getWalletAddress(state)) || '';
@@ -75,7 +74,7 @@ const DisputeOverview: React.FC<DisputeOverviewProps> = ({ disputeInfo, status }
                 <Content>{disputeInfo.disputer}</Content>
                 <Label>{t('market.dispute.status-label')}:</Label>
                 <StatusContainer>
-                    <Status>{status ? t(`market.dispute.status.${status}`) : ''}</Status>
+                    <Status>{t(`market.dispute.status.${disputeInfo.status}`)}</Status>
                     {canDisputorClaimbackBondFromUnclosedDispute && (
                         <ClaimButton type="secondary" disabled={isSubmitting} onClick={handleClaim}>
                             {!isSubmitting
@@ -92,11 +91,14 @@ const DisputeOverview: React.FC<DisputeOverviewProps> = ({ disputeInfo, status }
 };
 
 const Container = styled(FlexDivColumn)`
-    padding-left: 20px;
+    margin-left: 20px;
+    width: 280px;
     @media (max-width: 991px) {
         :not(:last-child) {
             margin-bottom: 20px;
         }
+        margin-right: 20px;
+        width: auto;
     }
 `;
 
@@ -116,6 +118,7 @@ const Content = styled.span`
     line-height: 20px;
     text-align: justify;
     word-wrap: break-word;
+    white-space: break-spaces;
     :not(:last-child) {
         margin-bottom: 15px;
     }
@@ -126,10 +129,12 @@ const StatusContainer = styled(FlexDivColumn)`
 `;
 
 const Status = styled(Content)`
-    margin-bottom: 0px;
+    margin-bottom: 0px !important;
 `;
 
 const ClaimButton = styled(Button)`
+    font-size: 15px;
+    padding: 2px 10px;
     margin-top: 5px;
     min-height: 26px;
 `;

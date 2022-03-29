@@ -115,6 +115,9 @@ const MarketContainer = styled(FlexDivColumn)`
     padding: 40px 40px 30px 40px;
     background: ${(props) => props.theme.background.secondary};
     flex: initial;
+    @media (max-width: 767px) {
+        padding: 30px 20px 20px 20px;
+    }
 `;
 
 const StatusSourceContainer = styled(FlexDivRow)`

@@ -5,6 +5,7 @@ import { MINIMUM_POSITIONS } from 'constants/markets';
 import PositionInput from './PositionInput';
 import styled from 'styled-components';
 import { FlexDivCentered, FlexDivStart } from 'styles/common';
+import FieldValidationMessage from 'components/FieldValidationMessage';
 
 type PositionsProps = {
     positions: string[];
@@ -29,6 +30,9 @@ const Positions: React.FC<PositionsProps> = ({
 
     const enableRemovePosition = positions.length > MINIMUM_POSITIONS;
     const enableAddPosition = positions.length < maxPositions;
+
+    const hasSamePositions =
+        positions.filter((item, index) => positions.indexOf(item) != index && item.trim() !== '').length > 0;
 
     return (
         <FieldContainer>
@@ -64,6 +68,13 @@ const Positions: React.FC<PositionsProps> = ({
                     {t('market.create-market.add-position-label')}
                 </AddPositionButton>
             )}
+            <ValidationContainer>
+                <FieldValidationMessage
+                    showValidation={hasSamePositions}
+                    message={t(`common.errors.different-position`)}
+                    hideArrow
+                />
+            </ValidationContainer>
         </FieldContainer>
     );
 };
@@ -99,6 +110,12 @@ const PlusSign = styled(FlexDivCentered)`
     margin-bottom: 2px;
     padding-bottom: 1px;
     padding-left: 1px;
+`;
+
+const ValidationContainer = styled(FlexDivStart)`
+    > div {
+        width: fit-content;
+    }
 `;
 
 export default Positions;

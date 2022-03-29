@@ -95,6 +95,10 @@ export type DisputeInfo = {
     disputer: string;
     reasonForDispute: string;
     isInPositioningPhase: boolean;
+    disputeCode: number;
+    status: DisputeStatus;
+    statusSortingIndex: number;
+    isOpenForVoting: boolean;
 };
 
 export type Disputes = DisputeInfo[];

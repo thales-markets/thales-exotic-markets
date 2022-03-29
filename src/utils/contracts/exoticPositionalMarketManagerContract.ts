@@ -104,6 +104,12 @@ export const exoticPositionalMarketManagerContract = {
         },
         {
             anonymous: false,
+            inputs: [{ indexed: false, internalType: 'uint256', name: 'disputeStringLengthLimit', type: 'uint256' }],
+            name: 'NewDisputeStringLengthLimit',
+            type: 'event',
+        },
+        {
+            anonymous: false,
             inputs: [{ indexed: false, internalType: 'uint256', name: 'fixedBond', type: 'uint256' }],
             name: 'NewFixedBondAmount',
             type: 'event',
@@ -297,6 +303,13 @@ export const exoticPositionalMarketManagerContract = {
             type: 'function',
         },
         {
+            inputs: [{ internalType: 'address', name: '', type: 'address' }],
+            name: 'cancelledByCreator',
+            outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
+            stateMutability: 'view',
+            type: 'function',
+        },
+        {
             inputs: [],
             name: 'claimTimeoutDefaultPeriod',
             outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
@@ -335,6 +348,7 @@ export const exoticPositionalMarketManagerContract = {
                 { internalType: 'bool', name: '_withdrawalAllowed', type: 'bool' },
                 { internalType: 'uint256[]', name: '_tags', type: 'uint256[]' },
                 { internalType: 'uint256', name: '_positionCount', type: 'uint256' },
+                { internalType: 'uint256', name: '_positionOfCreator', type: 'uint256' },
                 { internalType: 'string[]', name: '_positionPhrases', type: 'string[]' },
             ],
             name: 'createExoticMarket',
@@ -376,6 +390,13 @@ export const exoticPositionalMarketManagerContract = {
         {
             inputs: [],
             name: 'disputePrice',
+            outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+            stateMutability: 'view',
+            type: 'function',
+        },
+        {
+            inputs: [],
+            name: 'disputeStringLengthLimit',
             outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
             stateMutability: 'view',
             type: 'function',
@@ -704,6 +725,13 @@ export const exoticPositionalMarketManagerContract = {
             type: 'function',
         },
         {
+            inputs: [{ internalType: 'uint256', name: '_disputeStringLengthLimit', type: 'uint256' }],
+            name: 'setDisputeStringLengthLimit',
+            outputs: [],
+            stateMutability: 'nonpayable',
+            type: 'function',
+        },
+        {
             inputs: [{ internalType: 'address', name: '_exoticMastercopy', type: 'address' }],
             name: 'setExoticMarketMastercopy',
             outputs: [],
@@ -724,7 +752,6 @@ export const exoticPositionalMarketManagerContract = {
             stateMutability: 'nonpayable',
             type: 'function',
         },
-        { inputs: [], name: 'setMaxAllowanceForBonds', outputs: [], stateMutability: 'nonpayable', type: 'function' },
         {
             inputs: [{ internalType: 'uint256', name: '_maxNumberOfTags', type: 'uint256' }],
             name: 'setMaxNumberOfTags',

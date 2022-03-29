@@ -147,7 +147,13 @@ const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
                             <Info>
                                 <InfoLabel>{t('market.roi-label')}:</InfoLabel>
                                 <InfoContent>
-                                    {formatPercentage(getRoi(market.ticketPrice, market.winningAmountPerTicket, true))}
+                                    {formatPercentage(
+                                        getRoi(
+                                            market.ticketPrice,
+                                            market.winningAmountPerTicket,
+                                            market.winningAmountPerTicket > 0
+                                        )
+                                    )}
                                 </InfoContent>
                             </Info>
                         )}

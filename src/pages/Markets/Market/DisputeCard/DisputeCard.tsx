@@ -67,9 +67,14 @@ const DisputeCard: React.FC<DisputeCardProps> = ({
     const showDisputeVotingResults = disputeData && disputeData.status !== DisputeStatus.Cancelled;
     const showDisputeVotingData = showDisputeVoting || showDisputeVotingResults;
 
+    const disabled =
+        disputeInfo.status === DisputeStatus.Cancelled ||
+        disputeInfo.status === DisputeStatus.RefusedOnPositioning ||
+        disputeInfo.status === DisputeStatus.RefusedMature;
+
     return (
-        <Container>
-            <DisputeOverview disputeInfo={disputeInfo} status={disputeData ? disputeData.status : undefined} />
+        <Container className={disabled ? 'disabled' : ''}>
+            <DisputeOverview disputeInfo={disputeInfo} />
             {showDisputeVotingData && (
                 <VotingContainer>
                     {showDisputeVoting && (
@@ -98,7 +103,7 @@ const Container = styled(FlexDivRow)`
     border-radius: 15px;
     font-style: normal;
     font-weight: normal;
-    padding: 20px 0px 20px 0px;
+    padding: 30px 10px 30px 10px;
     margin-bottom: 30px;
     color: ${(props) => props.theme.textColor.primary};
     @media (max-width: 991px) {
@@ -106,6 +111,14 @@ const Container = styled(FlexDivRow)`
     }
     @media (max-width: 575px) {
         padding: 20px 0px;
+    }
+    &.disabled {
+        opacity: 0.4;
+        cursor: default;
+        button {
+            opacity: 1;
+            cursor: pointer;
+        }
     }
 `;
 

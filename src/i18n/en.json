@@ -36,7 +36,9 @@
             "enter-ticket-price": "Enter ticket price",
             "enter-tags": "Enter tags",
             "enter-reason-for-dispute": "Enter reason for dispute",
+            "select-initial-position": "Select initial position",
             "select-position": "Select position",
+            "different-position": "Positions must be different",
             "select-vote": "Select vote",
             "select-outcome": "Select outcome",
             "select-result": "Select result",
@@ -182,6 +184,7 @@
             "question-label": "Question",
             "data-source-label": "Data source",
             "positions-label": "Positions",
+            "your-initial-position-label": "Your initial position",
             "add-position-label": "ADD position",
             "positioning-end-label": "Positioning end (UTC)",
             "type-label": "Type",
@@ -212,7 +215,9 @@
             "bond-info": "In order to resolve market you need to deposit a bond of {{amount}}."
         },
         "dispute": {
-            "open-dispute-title": "Open dispute for \"{{question}}\"",
+            "open-dispute-title": "Open dispute on the market \"{{question}}\"",
+            "open-dispute-maturity-title": "Open dispute on the result of the market \"{{question}}\"",
+            "current-result-label": "Current result",
             "disputer-label": "Disputer",
             "status-label": "Status",
             "reason-for-dispute-label": "Reason for dispute",

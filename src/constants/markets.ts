@@ -97,3 +97,14 @@ export const DISPUTE_VOTED_OPTION_STATUS_MAP = {
     [DisputeVotingOption.ACCEPT_RESET]: DisputeStatus.AcceptedReset,
     [DisputeVotingOption.REFUSE_MATURE]: DisputeStatus.RefusedMature,
 };
+
+export const DISPUTE_STATUS_SORTING_MAP = {
+    [DisputeStatus.Open]: 0,
+    [DisputeStatus.AcceptedSlashed]: 1,
+    [DisputeStatus.AcceptedNotSlashed]: 1,
+    [DisputeStatus.AcceptedSetResult]: 1,
+    [DisputeStatus.AcceptedReset]: 2,
+    [DisputeStatus.RefusedMature]: 4,
+    [DisputeStatus.RefusedOnPositioning]: 5,
+    [DisputeStatus.Cancelled]: 6,
+};

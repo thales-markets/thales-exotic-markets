@@ -238,7 +238,20 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
                 <>
                     <BackToLink link={buildMarketLink(marketAddress)} text={t('market.back-to-market')} />
                     <Form>
-                        <Title>{t('market.dispute.open-dispute-title', { question: market.question })}</Title>
+                        <Title>
+                            {t(
+                                market.isResolved
+                                    ? 'market.dispute.open-dispute-maturity-title'
+                                    : 'market.dispute.open-dispute-title',
+                                { question: market.question }
+                            )}
+                        </Title>
+                        {market.isResolved && (
+                            <Info>
+                                {t('market.dispute.current-result-label')}:{' '}
+                                {market.positions[market.winningPosition - 1]}
+                            </Info>
+                        )}
                         <TextAreaInput
                             value={reasonForDispute}
                             onChange={setReasonForDispute}
@@ -297,7 +310,15 @@ const Title = styled(FlexDivColumn)`
     font-size: 25px;
     line-height: 100%;
     text-align: center;
-    margin-bottom: 80px;
+    margin-bottom: 60px;
+`;
+
+const Info = styled(FlexDivColumn)`
+    font-style: normal;
+    font-weight: bold;
+    font-size: 25px;
+    line-height: 100%;
+    margin-bottom: 20px;
 `;
 
 const Form = styled(FlexDivColumn)`

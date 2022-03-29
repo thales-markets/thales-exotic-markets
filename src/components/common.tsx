@@ -65,12 +65,15 @@ export const PositionContainer = styled(FlexDivColumn)`
     }
     &.maturity:not(.disabled) {
         cursor: default;
-        box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.5);
+        box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.3);
     }
     border: 1px solid ${(props) => props.theme.borderColor.primary};
     padding: 10px 20px;
     border-radius: 15px;
     width: 350px;
+    @media (max-width: 575px) {
+        width: 100%;
+    }
 `;
 
 export const Position = styled.span`

@@ -43,7 +43,7 @@ const Title = styled.span`
     font-weight: bold;
     font-size: 20px;
     line-height: 100%;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
 `;
 
 const Result = styled(FlexDivRow)`
