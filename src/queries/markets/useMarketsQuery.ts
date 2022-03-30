@@ -41,7 +41,7 @@ const useMarketsQuery = (networkId: NetworkId, options?: UseQueryOptions<Markets
                             if (market.isDisputed) {
                                 market.status = MarketStatus.CancelledDisputed;
                             } else {
-                                if (market.canUsersClaim) {
+                                if (market.canUsersClaim || market.cancelledByCreator) {
                                     market.status = MarketStatus.CancelledConfirmed;
                                 } else {
                                     market.status = MarketStatus.CancelledPendingConfirmation;

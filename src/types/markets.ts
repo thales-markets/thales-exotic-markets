@@ -32,7 +32,8 @@ export type MarketInfo = {
     claimTimeoutDefaultPeriod: number;
     poolSize: number;
     numberOfParticipants: number;
-    noWinner: boolean;
+    noWinners: boolean;
+    cancelledByCreator: boolean;
 };
 
 export type MarketData = MarketInfo & {
@@ -58,6 +59,7 @@ export type AccountMarketData = {
     claimAmount: number;
     canClaim: boolean;
     winningAmount: number;
+    canWithdraw: boolean;
 };
 
 export type SortOptionType = {

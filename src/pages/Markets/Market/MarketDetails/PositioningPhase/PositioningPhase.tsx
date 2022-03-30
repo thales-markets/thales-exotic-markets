@@ -49,6 +49,7 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
     const [currentPositionOnContract, setCurrentPositionOnContract] = useState<number>(0);
     const [positionOnContract, setPositionOnContract] = useState<number>(0);
     const [winningAmount, setWinningAmount] = useState<number>(0);
+    const [canWithdraw, setCanWithdraw] = useState<boolean>(false);
 
     const accountMarketDataQuery = useAccountMarketDataQuery(market.address, walletAddress, {
         enabled: isAppReady && isWalletConnected,
@@ -60,6 +61,7 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
             setPositionOnContract((accountMarketDataQuery.data as AccountMarketData).position);
             setWinningAmount((accountMarketDataQuery.data as AccountMarketData).winningAmount);
             setSelectedPosition((accountMarketDataQuery.data as AccountMarketData).position);
+            setCanWithdraw((accountMarketDataQuery.data as AccountMarketData).canWithdraw);
         }
     }, [accountMarketDataQuery.isSuccess, accountMarketDataQuery.data]);
 
@@ -93,7 +95,7 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
     const showTicketInfo = market.isTicketType && market.canUsersPlacePosition;
     const showTicketBid = showTicketInfo && currentPositionOnContract === 0;
     const showTicketChangePosition = showTicketInfo && currentPositionOnContract !== selectedPosition;
-    const showTicketWithdraw = showTicketInfo && market.isWithdrawalAllowed && currentPositionOnContract > 0;
+    const showTicketWithdraw = showTicketInfo && canWithdraw && currentPositionOnContract > 0;
     const showCancel = market.canCreatorCancelMarket && walletAddress.toLowerCase() === market.creator.toLowerCase();
 
     const insufficientBalance =

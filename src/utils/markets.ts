@@ -10,4 +10,4 @@ export const isClaimAvailable = (market: MarketInfo, accountPosition?: AccountPo
     accountPosition.position > 0 &&
     (accountPosition.position === market.winningPosition ||
         market.status === MarketStatus.CancelledConfirmed ||
-        market.noWinner);
+        market.noWinners);

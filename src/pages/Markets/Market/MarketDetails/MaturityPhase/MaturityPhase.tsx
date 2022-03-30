@@ -133,12 +133,12 @@ const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
                                 )}
                             </InfoContent>
                         </Info>
-                        {(market.winningPosition === index + 1 || market.noWinner) && (
+                        {(market.winningPosition === index + 1 || market.noWinners) && (
                             <Info>
                                 <InfoLabel>
                                     {t(
                                         `market.${
-                                            market.noWinner ? 'claim-amount-ticket-label' : 'winnings-per-ticket-label'
+                                            market.noWinners ? 'claim-amount-ticket-label' : 'winnings-per-ticket-label'
                                         }`
                                     )}
                                     :
@@ -153,7 +153,7 @@ const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
                                 </InfoContent>
                             </Info>
                         )}
-                        {(market.winningPosition === index + 1 || market.noWinner) && (
+                        {(market.winningPosition === index + 1 || market.noWinners) && (
                             <Info>
                                 <InfoLabel>{t('market.roi-label')}:</InfoLabel>
                                 <InfoContent>
@@ -175,7 +175,7 @@ const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
                 {formatCurrencyWithKey(PAYMENT_CURRENCY, market.ticketPrice, DEFAULT_CURRENCY_DECIMALS, true)}
             </MainInfo>
             <ButtonContainer>
-                {market.noWinner && (
+                {market.noWinners && (
                     <ClaimInfo>
                         {t(`market.no-winners-label`)}
                         <Tooltip
@@ -193,7 +193,7 @@ const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
                             `market.${
                                 market.status === MarketStatus.CancelledConfirmed
                                     ? 'your-refund-label'
-                                    : market.noWinner
+                                    : market.noWinners
                                     ? 'your-claim-amount-label'
                                     : 'your-winnings-label'
                             }`

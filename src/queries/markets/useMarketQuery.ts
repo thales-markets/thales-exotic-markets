@@ -19,17 +19,19 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                 numberOfDisputes,
                 numberOfOpenDisputes,
                 claimTimeoutDefaultPeriod,
+                cancelledByCreator,
                 winningAmountsNewUser,
                 winningAmountsNoPosition,
                 totalUsersTakenPositions,
                 winningAmountPerTicket,
-                noWinner,
+                noWinners,
             ] = await Promise.all([
                 marketDataContract?.getAllMarketData(marketAddress),
                 thalesOracleCouncilContract?.isMarketClosedForDisputes(marketAddress),
                 thalesOracleCouncilContract?.marketTotalDisputes(marketAddress),
                 thalesOracleCouncilContract?.getMarketOpenDisputes(marketAddress),
                 marketManagerContract?.claimTimeoutDefaultPeriod(),
+                marketManagerContract?.cancelledByCreator(marketAddress),
                 contract?.getPotentialWinningAmountForAllPosition(true, 0),
                 contract?.getPotentialWinningAmountForAllPosition(false, 0),
                 contract?.totalUsersTakenPositions(),
@@ -117,8 +119,9 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                 ),
                 totalUsersTakenPositions: Number(totalUsersTakenPositions),
                 winningAmountPerTicket: bigNumberFormatter(winningAmountPerTicket),
-                noWinner,
+                noWinners,
                 numberOfParticipants: bigNumberFormatter(poolSize) / bigNumberFormatter(ticketPrice),
+                cancelledByCreator,
             };
 
             // TODO - needs refactoring
@@ -130,7 +133,7 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                         if (market.isDisputed) {
                             market.status = MarketStatus.CancelledDisputed;
                         } else {
-                            if (market.canUsersClaim) {
+                            if (market.canUsersClaim || market.cancelledByCreator) {
                                 market.status = MarketStatus.CancelledConfirmed;
                             } else {
                                 market.status = MarketStatus.CancelledPendingConfirmation;
