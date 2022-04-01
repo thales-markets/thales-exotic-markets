@@ -7,11 +7,16 @@ import { getNetworkId } from 'redux/modules/wallet';
 import UnsupportedNetwork from 'components/UnsupportedNetwork';
 import { isNetworkSupported } from 'utils/network';
 import { FlexDivColumn } from 'styles/common';
+import DappHeader from './DappHeader';
 import Loader from 'components/Loader';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-const DappLayout: React.FC = ({ children }) => {
+type DappLayoutProps = {
+    showSearch?: boolean;
+};
+
+const DappLayout: React.FC<DappLayoutProps> = ({ children, showSearch }) => {
     const isAppReady = useSelector((state: RootState) => getIsAppReady(state));
     const networkId = useSelector((state: RootState) => getNetworkId(state));
 
@@ -22,7 +27,10 @@ const DappLayout: React.FC = ({ children }) => {
                     <UnsupportedNetwork />
                 ) : (
                     <Background>
-                        <Wrapper>{children}</Wrapper>
+                        <Wrapper>
+                            <DappHeader showSearch={showSearch} />
+                            {children}
+                        </Wrapper>
                         <ToastContainer theme={'colored'} />
                     </Background>
                 )

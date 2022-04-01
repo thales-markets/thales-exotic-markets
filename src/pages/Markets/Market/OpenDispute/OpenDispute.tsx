@@ -29,7 +29,6 @@ import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
 import { formatCurrencyWithKey } from 'utils/formatters/number';
 import { BondInfo } from 'components/common';
 import BackToLink from 'pages/Markets/components/BackToLink';
-import DappHeader from 'layouts/DappLayout/DappHeader';
 
 type OpenDisputeProps = RouteComponentProps<{
     marketAddress: string;
@@ -238,68 +237,65 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
     };
 
     return (
-        <>
-            <DappHeader />
-            <Container>
-                {market ? (
-                    <>
-                        <BackToLink link={buildMarketLink(marketAddress)} text={t('market.back-to-market')} />
-                        <Form>
-                            <Title>
-                                {t(
-                                    market.isResolved
-                                        ? 'market.dispute.open-dispute-maturity-title'
-                                        : 'market.dispute.open-dispute-title',
-                                    { question: market.question }
-                                )}
-                            </Title>
-                            {market.isResolved && (
-                                <Info>
-                                    {t('market.dispute.current-result-label')}:{' '}
-                                    {market.positions[market.winningPosition - 1]}
-                                </Info>
+        <Container>
+            {market ? (
+                <>
+                    <BackToLink link={buildMarketLink(marketAddress)} text={t('market.back-to-market')} />
+                    <Form>
+                        <Title>
+                            {t(
+                                market.isResolved
+                                    ? 'market.dispute.open-dispute-maturity-title'
+                                    : 'market.dispute.open-dispute-title',
+                                { question: market.question }
                             )}
-                            <TextAreaInput
-                                value={reasonForDispute}
-                                onChange={setReasonForDispute}
-                                label={t('market.dispute.reason-for-dispute-label')}
-                                note={t('common.input-characters-note', {
-                                    entered: reasonForDispute.length,
-                                    max: MAXIMUM_INPUT_CHARACTERS,
-                                })}
-                                maximumCharacters={MAXIMUM_INPUT_CHARACTERS}
-                                disabled={isSubmitting || !canOpenDispute}
-                            />
-                            <ButtonContainer>
-                                <BondInfo>
-                                    {t('market.dispute.open-dispute-bond-info', {
-                                        amount: formatCurrencyWithKey(
-                                            PAYMENT_CURRENCY,
-                                            disputePrice,
-                                            DEFAULT_CURRENCY_DECIMALS,
-                                            true
-                                        ),
-                                    })}
-                                </BondInfo>
-                                {getSubmitButton()}
-                            </ButtonContainer>
-                            {!canOpenDispute && <WarningMessage>{getDisputesDisabledMessage()}</WarningMessage>}
-                        </Form>
-                        {openApprovalModal && (
-                            <ApprovalModal
-                                defaultAmount={disputePrice}
-                                tokenSymbol={PAYMENT_CURRENCY}
-                                isAllowing={isAllowing}
-                                onSubmit={handleAllowance}
-                                onClose={() => setOpenApprovalModal(false)}
-                            />
+                        </Title>
+                        {market.isResolved && (
+                            <Info>
+                                {t('market.dispute.current-result-label')}:{' '}
+                                {market.positions[market.winningPosition - 1]}
+                            </Info>
                         )}
-                    </>
-                ) : (
-                    <SimpleLoader />
-                )}
-            </Container>
-        </>
+                        <TextAreaInput
+                            value={reasonForDispute}
+                            onChange={setReasonForDispute}
+                            label={t('market.dispute.reason-for-dispute-label')}
+                            note={t('common.input-characters-note', {
+                                entered: reasonForDispute.length,
+                                max: MAXIMUM_INPUT_CHARACTERS,
+                            })}
+                            maximumCharacters={MAXIMUM_INPUT_CHARACTERS}
+                            disabled={isSubmitting || !canOpenDispute}
+                        />
+                        <ButtonContainer>
+                            <BondInfo>
+                                {t('market.dispute.open-dispute-bond-info', {
+                                    amount: formatCurrencyWithKey(
+                                        PAYMENT_CURRENCY,
+                                        disputePrice,
+                                        DEFAULT_CURRENCY_DECIMALS,
+                                        true
+                                    ),
+                                })}
+                            </BondInfo>
+                            {getSubmitButton()}
+                        </ButtonContainer>
+                        {!canOpenDispute && <WarningMessage>{getDisputesDisabledMessage()}</WarningMessage>}
+                    </Form>
+                    {openApprovalModal && (
+                        <ApprovalModal
+                            defaultAmount={disputePrice}
+                            tokenSymbol={PAYMENT_CURRENCY}
+                            isAllowing={isAllowing}
+                            onSubmit={handleAllowance}
+                            onClose={() => setOpenApprovalModal(false)}
+                        />
+                    )}
+                </>
+            ) : (
+                <SimpleLoader />
+            )}
+        </Container>
     );
 };
 

@@ -1,6 +1,5 @@
 import Button from 'components/Button';
 import SimpleLoader from 'components/SimpleLoader';
-import Search from 'components/Search';
 import { DEFAULT_SEARCH_DEBOUNCE_MS } from 'constants/defaults';
 import useDebouncedMemo from 'hooks/useDebouncedMemo';
 import useMarketsQuery from 'queries/markets/useMarketsQuery';
@@ -11,7 +10,7 @@ import { getIsAppReady } from 'redux/modules/app';
 import { getIsWalletConnected, getNetworkId, getWalletAddress } from 'redux/modules/wallet';
 import { RootState } from 'redux/rootReducer';
 import styled from 'styled-components';
-import { FlexDivCentered, FlexDivColumn, FlexDivColumnCentered, FlexDivRow, FlexDivStart } from 'styles/common';
+import { FlexDivColumn, FlexDivColumnCentered, FlexDivRow, FlexDivStart } from 'styles/common';
 import {
     AccountPosition,
     AccountPositionsMap,
@@ -37,7 +36,6 @@ import Toggle from 'components/fields/Toggle';
 import { LOCAL_STORAGE_KEYS } from 'constants/storage';
 import useLocalStorage from 'hooks/useLocalStorage';
 import { isClaimAvailable } from 'utils/markets';
-import DappHeader from 'layouts/DappLayout/DappHeader';
 
 const Home: React.FC = () => {
     const { t } = useTranslation();
@@ -235,111 +233,104 @@ const Home: React.FC = () => {
     const marketsList = globalFilteredMarkets;
 
     return (
-        <>
-            <DappHeader>
-                <SearchContainer>
-                    <Search text={marketSearch} handleChange={setMarketSearch} />
-                </SearchContainer>
-            </DappHeader>
-            <Container>
-                <FiltersContainer>
-                    <GlobalFiltersContainer>
-                        {Object.values(GlobalFilterEnum).map((filterItem) => {
-                            const count =
-                                filterItem === GlobalFilterEnum.All
-                                    ? totalCount
-                                    : filterItem === GlobalFilterEnum.Disputed
-                                    ? disputedCount
-                                    : filterItem === GlobalFilterEnum.YourPositions
-                                    ? accountPositionsCount
-                                    : filterItem === GlobalFilterEnum.Claim
-                                    ? accountClaimsCount
-                                    : undefined;
+        <Container>
+            <FiltersContainer>
+                <GlobalFiltersContainer>
+                    {Object.values(GlobalFilterEnum).map((filterItem) => {
+                        const count =
+                            filterItem === GlobalFilterEnum.All
+                                ? totalCount
+                                : filterItem === GlobalFilterEnum.Disputed
+                                ? disputedCount
+                                : filterItem === GlobalFilterEnum.YourPositions
+                                ? accountPositionsCount
+                                : filterItem === GlobalFilterEnum.Claim
+                                ? accountClaimsCount
+                                : undefined;
 
-                            return (
-                                <GlobalFilter
-                                    disabled={false}
-                                    selected={globalFilter === filterItem}
-                                    onClick={() => {
-                                        if (filterItem === GlobalFilterEnum.Claim) {
-                                            setShowOpenMarkets(false);
-                                        }
-                                        setGlobalFilter(filterItem);
-                                    }}
-                                    key={filterItem}
-                                    count={count}
-                                >
-                                    {t(`market.filter-label.global.${filterItem.toLowerCase()}`)}
-                                </GlobalFilter>
-                            );
-                        })}
-                        {sortOptions.map((sortOption) => {
-                            return (
-                                <SortOption
-                                    disabled={false}
-                                    selected={sortOption.id === sortBy}
-                                    sortDirection={sortDirection}
-                                    onClick={() => setSort(sortOption)}
-                                    key={sortOption.title}
-                                >
-                                    {sortOption.title}
-                                </SortOption>
-                            );
-                        })}
-                    </GlobalFiltersContainer>
-                    <ToggleContainer>
-                        <Toggle
-                            isLeftOptionSelected={showOpenMarkets}
-                            onClick={() => {
-                                setShowOpenMarkets(!showOpenMarkets);
-                            }}
-                            leftText={t('market.open-markets-label')}
-                            rightText={t('market.resolved-markets-label')}
-                        />
-                    </ToggleContainer>
-                </FiltersContainer>
-                <FiltersContainer>
-                    <TagsContainer>
-                        <TagLabel>{t('market.tags-label')}:</TagLabel>
-                        {availableTags.map((tag: TagInfo) => {
-                            return (
-                                <TagButton
-                                    disabled={false}
-                                    selected={tagFilter.id === tag.id}
-                                    onClick={() => setTagFilter(tagFilter.id === tag.id ? allTagsFilterItem : tag)}
-                                    key={tag.label}
-                                >
-                                    {tag.label}
-                                </TagButton>
-                            );
-                        })}
-                    </TagsContainer>
-                    {!creationRestrictedToOwner && (
-                        <ButtonsContainer>
-                            <Button
+                        return (
+                            <GlobalFilter
+                                disabled={false}
+                                selected={globalFilter === filterItem}
                                 onClick={() => {
-                                    navigateTo(ROUTES.Markets.CreateMarket);
+                                    if (filterItem === GlobalFilterEnum.Claim) {
+                                        setShowOpenMarkets(false);
+                                    }
+                                    setGlobalFilter(filterItem);
                                 }}
+                                key={filterItem}
+                                count={count}
                             >
-                                {t('market.button.create-market-label')}
-                            </Button>
-                        </ButtonsContainer>
-                    )}
-                </FiltersContainer>
-                {marketsQuery.isLoading ? (
-                    <LoaderContainer>
-                        <SimpleLoader />
-                    </LoaderContainer>
-                ) : marketsList.length === 0 ? (
-                    <NoMarketsContainer>
-                        <NoMarketsLabel>{t('market.no-markets-found')}</NoMarketsLabel>
-                        <Button onClick={resetFilters}>{t('market.view-all-markets')}</Button>
-                    </NoMarketsContainer>
-                ) : (
-                    <MarketsGrid markets={marketsList} accountPositions={accountPositions} />
+                                {t(`market.filter-label.global.${filterItem.toLowerCase()}`)}
+                            </GlobalFilter>
+                        );
+                    })}
+                    {sortOptions.map((sortOption) => {
+                        return (
+                            <SortOption
+                                disabled={false}
+                                selected={sortOption.id === sortBy}
+                                sortDirection={sortDirection}
+                                onClick={() => setSort(sortOption)}
+                                key={sortOption.title}
+                            >
+                                {sortOption.title}
+                            </SortOption>
+                        );
+                    })}
+                </GlobalFiltersContainer>
+                <ToggleContainer>
+                    <Toggle
+                        isLeftOptionSelected={showOpenMarkets}
+                        onClick={() => {
+                            setShowOpenMarkets(!showOpenMarkets);
+                        }}
+                        leftText={t('market.open-markets-label')}
+                        rightText={t('market.resolved-markets-label')}
+                    />
+                </ToggleContainer>
+            </FiltersContainer>
+            <FiltersContainer>
+                <TagsContainer>
+                    <TagLabel>{t('market.tags-label')}:</TagLabel>
+                    {availableTags.map((tag: TagInfo) => {
+                        return (
+                            <TagButton
+                                disabled={false}
+                                selected={tagFilter.id === tag.id}
+                                onClick={() => setTagFilter(tagFilter.id === tag.id ? allTagsFilterItem : tag)}
+                                key={tag.label}
+                            >
+                                {tag.label}
+                            </TagButton>
+                        );
+                    })}
+                </TagsContainer>
+                {!creationRestrictedToOwner && (
+                    <ButtonsContainer>
+                        <Button
+                            onClick={() => {
+                                navigateTo(ROUTES.Markets.CreateMarket);
+                            }}
+                        >
+                            {t('market.button.create-market-label')}
+                        </Button>
+                    </ButtonsContainer>
                 )}
-            </Container>
-        </>
+            </FiltersContainer>
+            {marketsQuery.isLoading ? (
+                <LoaderContainer>
+                    <SimpleLoader />
+                </LoaderContainer>
+            ) : marketsList.length === 0 ? (
+                <NoMarketsContainer>
+                    <NoMarketsLabel>{t('market.no-markets-found')}</NoMarketsLabel>
+                    <Button onClick={resetFilters}>{t('market.view-all-markets')}</Button>
+                </NoMarketsContainer>
+            ) : (
+                <MarketsGrid markets={marketsList} accountPositions={accountPositions} />
+            )}
+        </Container>
     );
 };
 
@@ -357,8 +348,6 @@ const sortByField = (a: MarketInfo, b: MarketInfo, direction: SortDirection, fie
 const Container = styled(FlexDivColumn)`
     width: 100%;
 `;
-
-const SearchContainer = styled(FlexDivCentered)``;
 
 const ToggleContainer = styled(FlexDivColumn)`
     align-items: end;

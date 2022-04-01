@@ -1,6 +1,5 @@
 import SimpleLoader from 'components/SimpleLoader';
 import ROUTES from 'constants/routes';
-import DappHeader from 'layouts/DappLayout/DappHeader';
 import useMarketQuery from 'queries/markets/useMarketQuery';
 import useOracleCouncilMemberQuery from 'queries/oracleCouncil/useOracleCouncilMemberQuery';
 import React, { useMemo } from 'react';
@@ -56,27 +55,24 @@ const Market: React.FC<MarketProps> = (props) => {
     }, [oracleCouncilMemberQuery.isSuccess, oracleCouncilMemberQuery.data]);
 
     return (
-        <>
-            <DappHeader />
-            <Container>
-                {market ? (
-                    <>
-                        <BackToLink link={buildHref(ROUTES.Markets.Home)} text={t('market.back-to-markets')} />
-                        <MarketDetails market={market} />
-                        {market.canMarketBeResolved && !isOracleCouncilMember && !market.isPaused && (
-                            <ResolveMarket market={market} />
-                        )}
-                        <Disputes
-                            marketAddress={marketAddress}
-                            positions={market.positions}
-                            winningPosition={market.winningPosition}
-                        />
-                    </>
-                ) : (
-                    <SimpleLoader />
-                )}
-            </Container>
-        </>
+        <Container>
+            {market ? (
+                <>
+                    <BackToLink link={buildHref(ROUTES.Markets.Home)} text={t('market.back-to-markets')} />
+                    <MarketDetails market={market} />
+                    {market.canMarketBeResolved && !isOracleCouncilMember && !market.isPaused && (
+                        <ResolveMarket market={market} />
+                    )}
+                    <Disputes
+                        marketAddress={marketAddress}
+                        positions={market.positions}
+                        winningPosition={market.winningPosition}
+                    />
+                </>
+            ) : (
+                <SimpleLoader />
+            )}
+        </Container>
     );
 };
 

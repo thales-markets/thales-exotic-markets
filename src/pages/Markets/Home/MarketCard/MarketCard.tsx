@@ -22,7 +22,7 @@ const MarketCard: React.FC<MarketCardProps> = ({ market, accountPosition }) => {
     const { t } = useTranslation();
 
     const claimAvailable = isClaimAvailable(market, accountPosition);
-    const showNumberOfOpenDisputes = !market.canUsersClaim || true;
+    const showNumberOfOpenDisputes = !market.canUsersClaim;
 
     return (
         <Container isClaimAvailable={claimAvailable}>
@@ -52,7 +52,9 @@ const MarketCard: React.FC<MarketCardProps> = ({ market, accountPosition }) => {
             <CardFooter>
                 <Tags tags={market.tags} />
                 {showNumberOfOpenDisputes && (
-                    <OpenDisputeInfo numberOfOpenDisputes={market.numberOfDisputes}>
+                    <OpenDisputeInfo
+                        numberOfOpenDisputes={market.isMarketClosedForDisputes ? 0 : market.numberOfDisputes}
+                    >
                         {t('market.open-disputes-label')}
                     </OpenDisputeInfo>
                 )}
