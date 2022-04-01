@@ -5,12 +5,15 @@ import React from 'react';
 import styled from 'styled-components';
 import { FlexDivRowCentered } from 'styles/common';
 
-const DappHeader: React.FC = () => {
+const DappHeader: React.FC = ({ children }) => {
     return (
         <Container>
             <Logo />
-            <GetUsd />
-            <WalletInfo />
+            <RightContainer>
+                {children}
+                <GetUsd />
+                <WalletInfo />
+            </RightContainer>
         </Container>
     );
 };
@@ -20,10 +23,19 @@ const Container = styled(FlexDivRowCentered)`
     @media (max-width: 767px) {
         flex-direction: column;
     }
+`;
+
+const RightContainer = styled(FlexDivRowCentered)`
+    @media (max-width: 767px) {
+        flex-direction: column;
+    }
     > div {
-        width: 33%;
-        @media (max-width: 767px) {
-            width: auto;
+        :not(:last-child) {
+            margin-right: 10px;
+            @media (max-width: 767px) {
+                margin-right: 0px;
+                margin-bottom: 10px;
+            }
         }
     }
 `;

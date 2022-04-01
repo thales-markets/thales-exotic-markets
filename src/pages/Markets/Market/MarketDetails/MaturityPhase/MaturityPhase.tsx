@@ -45,9 +45,9 @@ const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
         }
     }, [accountMarketDataQuery.isSuccess, accountMarketDataQuery.data]);
 
-    const canClaim = accountMarketData && accountMarketData.canClaim;
+    const canClaim = accountMarketData && accountMarketData.canClaim && !market.isPaused;
     const claimAmount = accountMarketData ? accountMarketData.claimAmount : 0;
-    const nothingToClaim = market.canUsersClaim && claimAmount === 0;
+    const nothingToClaim = market.canUsersClaim && claimAmount === 0 && !market.isPaused;
 
     const handleClaim = async () => {
         const { signer } = networkConnector;

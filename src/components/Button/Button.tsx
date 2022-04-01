@@ -36,6 +36,7 @@ const StyledButton = styled.button<{ buttonType: ButtonType }>`
     cursor: pointer;
     min-height: 28px;
     width: fit-content;
+    white-space: nowrap;
     &:hover {
         opacity: 0.8;
     }

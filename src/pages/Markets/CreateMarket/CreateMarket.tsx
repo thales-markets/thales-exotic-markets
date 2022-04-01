@@ -48,6 +48,7 @@ import BackToLink from '../components/BackToLink';
 import ROUTES from 'constants/routes';
 import RadioButton from 'components/fields/RadioButton';
 import { FieldLabel } from 'components/fields/common';
+import DappHeader from 'layouts/DappLayout/DappHeader';
 
 const calculateMinTime = (currentDate: Date, minDate: Date) => {
     const isMinDateCurrentDate = isSameDay(currentDate, minDate);
@@ -409,148 +410,153 @@ const CreateMarket: React.FC = () => {
     }, [ticketPrice, marketType]);
 
     return (
-        <Container>
-            <BackToLink link={buildHref(ROUTES.Markets.Home)} text={t('market.back-to-markets')} />
-            <ContentWrapper>
-                <Form>
-                    {creationRestrictedToOwner && (
-                        <WarningMessage marginBottom={20}>
-                            {t('market.create-market.creation-disabled-message')}
-                        </WarningMessage>
-                    )}
-                    <TextAreaInput
-                        value={question}
-                        onChange={setQuestion}
-                        label={t('market.create-market.question-label')}
-                        note={t('common.input-characters-note', {
-                            entered: question.length,
-                            max: MAXIMUM_INPUT_CHARACTERS,
-                        })}
-                        maximumCharacters={MAXIMUM_INPUT_CHARACTERS}
-                        disabled={isSubmitting || creationRestrictedToOwner}
-                    />
-                    <TextAreaInput
-                        value={dataSource}
-                        onChange={setDataSource}
-                        label={t('market.create-market.data-source-label')}
-                        note={t('common.input-characters-note', {
-                            entered: dataSource.length,
-                            max: MAXIMUM_INPUT_CHARACTERS,
-                        })}
-                        maximumCharacters={MAXIMUM_INPUT_CHARACTERS}
-                        disabled={isSubmitting || creationRestrictedToOwner}
-                    />
-                    <Positions
-                        positions={positions}
-                        onPositionAdd={addPosition}
-                        onPositionRemove={removePosition}
-                        onPositionChange={setPositionText}
-                        label={t('market.create-market.positions-label')}
-                        disabled={isSubmitting || creationRestrictedToOwner}
-                        maxPositions={maximumPositionsAllowed}
-                    />
-                    <DatetimePicker
-                        selected={convertUTCToLocalDate(endOfPositioning)}
-                        onChange={handleEndOfPositioningChange}
-                        label={t('market.create-market.positioning-end-label')}
-                        disabled={isSubmitting || creationRestrictedToOwner}
-                        minTime={minTime}
-                        maxTime={maxTime}
-                        minDate={minDate}
-                        maxDate={maxDate}
-                    />
-                    <Toggle
-                        isLeftOptionSelected={marketType === MarketType.TICKET}
-                        onClick={() => {
-                            setMarketType(marketType === MarketType.TICKET ? MarketType.OPEN_BID : MarketType.TICKET);
-                        }}
-                        label={t('market.create-market.type-label')}
-                        leftText={t('market.create-market.type-options.ticket')}
-                        rightText={t('market.create-market.type-options.open-bid')}
-                        // disabled={isSubmitting || creationRestrictedToOwner}
-                        disabled={true}
-                    />
-                    {marketType === MarketType.TICKET && (
-                        <NumericInput
-                            value={ticketPrice}
-                            onChange={(_, value) => setTicketPrice(value)}
-                            label={t('market.create-market.ticket-price-label')}
-                            currencyLabel={PAYMENT_CURRENCY}
+        <>
+            <DappHeader />
+            <Container>
+                <BackToLink link={buildHref(ROUTES.Markets.Home)} text={t('market.back-to-markets')} />
+                <ContentWrapper>
+                    <Form>
+                        {creationRestrictedToOwner && (
+                            <WarningMessage marginBottom={20}>
+                                {t('market.create-market.creation-disabled-message')}
+                            </WarningMessage>
+                        )}
+                        <TextAreaInput
+                            value={question}
+                            onChange={setQuestion}
+                            label={t('market.create-market.question-label')}
+                            note={t('common.input-characters-note', {
+                                entered: question.length,
+                                max: MAXIMUM_INPUT_CHARACTERS,
+                            })}
+                            maximumCharacters={MAXIMUM_INPUT_CHARACTERS}
                             disabled={isSubmitting || creationRestrictedToOwner}
-                            showValidation={!isTicketPriceValid}
-                            validationMessage={t(`common.errors.invalid-ticket-price-min`, {
-                                min: formatCurrencyWithKey(
-                                    PAYMENT_CURRENCY,
-                                    minFixedTicketPrice,
-                                    DEFAULT_CURRENCY_DECIMALS,
-                                    true
-                                ),
-                            })}
                         />
-                    )}
-                    <Toggle
-                        isLeftOptionSelected={isWithdrawalAllowed}
-                        onClick={() => {
-                            setIsWithdrawalAllowed(!isWithdrawalAllowed);
-                        }}
-                        label={t('market.create-market.withdraw-label')}
-                        leftText={t('market.create-market.withdraw-options.enabled')}
-                        rightText={t('market.create-market.withdraw-options.disabled')}
-                        disabled={isSubmitting || creationRestrictedToOwner}
-                    />
-                    <TagsInput
-                        tags={tags}
-                        suggestions={suggestions}
-                        onTagAdd={addTag}
-                        onTagRemove={removeTag}
-                        label={t('market.create-market.tags-label', { max: maxNumberOfTags })}
-                        disabled={isSubmitting || creationRestrictedToOwner}
-                        maxTags={maxNumberOfTags}
-                    />
-                    <YourPostionsContainer>
-                        <FieldLabel>{t('market.create-market.your-initial-position-label')}:</FieldLabel>
-                        <YourPostions>
-                            {positions.map((position: string, index: number) => {
-                                const positionIndex = index + 1;
-                                return (
-                                    <RadioButton
-                                        checked={positionIndex === initialPosition}
-                                        value={positionIndex}
-                                        onChange={() => setInitialPosition(positionIndex)}
-                                        label={position}
-                                        disabled={isSubmitting || creationRestrictedToOwner}
-                                        key={`yourPositionKey${position}${index}`}
-                                    />
+                        <TextAreaInput
+                            value={dataSource}
+                            onChange={setDataSource}
+                            label={t('market.create-market.data-source-label')}
+                            note={t('common.input-characters-note', {
+                                entered: dataSource.length,
+                                max: MAXIMUM_INPUT_CHARACTERS,
+                            })}
+                            maximumCharacters={MAXIMUM_INPUT_CHARACTERS}
+                            disabled={isSubmitting || creationRestrictedToOwner}
+                        />
+                        <Positions
+                            positions={positions}
+                            onPositionAdd={addPosition}
+                            onPositionRemove={removePosition}
+                            onPositionChange={setPositionText}
+                            label={t('market.create-market.positions-label')}
+                            disabled={isSubmitting || creationRestrictedToOwner}
+                            maxPositions={maximumPositionsAllowed}
+                        />
+                        <DatetimePicker
+                            selected={convertUTCToLocalDate(endOfPositioning)}
+                            onChange={handleEndOfPositioningChange}
+                            label={t('market.create-market.positioning-end-label')}
+                            disabled={isSubmitting || creationRestrictedToOwner}
+                            minTime={minTime}
+                            maxTime={maxTime}
+                            minDate={minDate}
+                            maxDate={maxDate}
+                        />
+                        <Toggle
+                            isLeftOptionSelected={marketType === MarketType.TICKET}
+                            onClick={() => {
+                                setMarketType(
+                                    marketType === MarketType.TICKET ? MarketType.OPEN_BID : MarketType.TICKET
                                 );
-                            })}
-                        </YourPostions>
-                    </YourPostionsContainer>
-                    <ButtonContainer>
-                        <BondInfo>
-                            {t('market.create-market.bond-info', {
-                                amount: formatCurrencyWithKey(
-                                    PAYMENT_CURRENCY,
-                                    fixedBondAmount,
-                                    DEFAULT_CURRENCY_DECIMALS,
-                                    true
-                                ),
-                            })}
-                        </BondInfo>
-                        {getSubmitButton()}
-                    </ButtonContainer>
-                </Form>
-                <Description />
-            </ContentWrapper>
-            {openApprovalModal && (
-                <ApprovalModal
-                    defaultAmount={fixedBondAmount}
-                    tokenSymbol={PAYMENT_CURRENCY}
-                    isAllowing={isAllowing}
-                    onSubmit={handleAllowance}
-                    onClose={() => setOpenApprovalModal(false)}
-                />
-            )}
-        </Container>
+                            }}
+                            label={t('market.create-market.type-label')}
+                            leftText={t('market.create-market.type-options.ticket')}
+                            rightText={t('market.create-market.type-options.open-bid')}
+                            // disabled={isSubmitting || creationRestrictedToOwner}
+                            disabled={true}
+                        />
+                        {marketType === MarketType.TICKET && (
+                            <NumericInput
+                                value={ticketPrice}
+                                onChange={(_, value) => setTicketPrice(value)}
+                                label={t('market.create-market.ticket-price-label')}
+                                currencyLabel={PAYMENT_CURRENCY}
+                                disabled={isSubmitting || creationRestrictedToOwner}
+                                showValidation={!isTicketPriceValid}
+                                validationMessage={t(`common.errors.invalid-ticket-price-min`, {
+                                    min: formatCurrencyWithKey(
+                                        PAYMENT_CURRENCY,
+                                        minFixedTicketPrice,
+                                        DEFAULT_CURRENCY_DECIMALS,
+                                        true
+                                    ),
+                                })}
+                            />
+                        )}
+                        <Toggle
+                            isLeftOptionSelected={isWithdrawalAllowed}
+                            onClick={() => {
+                                setIsWithdrawalAllowed(!isWithdrawalAllowed);
+                            }}
+                            label={t('market.create-market.withdraw-label')}
+                            leftText={t('market.create-market.withdraw-options.enabled')}
+                            rightText={t('market.create-market.withdraw-options.disabled')}
+                            disabled={isSubmitting || creationRestrictedToOwner}
+                        />
+                        <TagsInput
+                            tags={tags}
+                            suggestions={suggestions}
+                            onTagAdd={addTag}
+                            onTagRemove={removeTag}
+                            label={t('market.create-market.tags-label', { max: maxNumberOfTags })}
+                            disabled={isSubmitting || creationRestrictedToOwner}
+                            maxTags={maxNumberOfTags}
+                        />
+                        <YourPostionsContainer>
+                            <FieldLabel>{t('market.create-market.your-initial-position-label')}:</FieldLabel>
+                            <YourPostions>
+                                {positions.map((position: string, index: number) => {
+                                    const positionIndex = index + 1;
+                                    return (
+                                        <RadioButton
+                                            checked={positionIndex === initialPosition}
+                                            value={positionIndex}
+                                            onChange={() => setInitialPosition(positionIndex)}
+                                            label={position}
+                                            disabled={isSubmitting || creationRestrictedToOwner}
+                                            key={`yourPositionKey${position}${index}`}
+                                        />
+                                    );
+                                })}
+                            </YourPostions>
+                        </YourPostionsContainer>
+                        <ButtonContainer>
+                            <BondInfo>
+                                {t('market.create-market.bond-info', {
+                                    amount: formatCurrencyWithKey(
+                                        PAYMENT_CURRENCY,
+                                        fixedBondAmount,
+                                        DEFAULT_CURRENCY_DECIMALS,
+                                        true
+                                    ),
+                                })}
+                            </BondInfo>
+                            {getSubmitButton()}
+                        </ButtonContainer>
+                    </Form>
+                    <Description />
+                </ContentWrapper>
+                {openApprovalModal && (
+                    <ApprovalModal
+                        defaultAmount={fixedBondAmount}
+                        tokenSymbol={PAYMENT_CURRENCY}
+                        isAllowing={isAllowing}
+                        onSubmit={handleAllowance}
+                        onClose={() => setOpenApprovalModal(false)}
+                    />
+                )}
+            </Container>
+        </>
     );
 };
 

@@ -7,7 +7,6 @@ import { getNetworkId } from 'redux/modules/wallet';
 import UnsupportedNetwork from 'components/UnsupportedNetwork';
 import { isNetworkSupported } from 'utils/network';
 import { FlexDivColumn } from 'styles/common';
-import DappHeader from './DappHeader';
 import Loader from 'components/Loader';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -23,10 +22,7 @@ const DappLayout: React.FC = ({ children }) => {
                     <UnsupportedNetwork />
                 ) : (
                     <Background>
-                        <Wrapper>
-                            <DappHeader />
-                            {children}
-                        </Wrapper>
+                        <Wrapper>{children}</Wrapper>
                         <ToastContainer theme={'colored'} />
                     </Background>
                 )

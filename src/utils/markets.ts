@@ -5,6 +5,7 @@ export const getRoi = (ticketPrice: number, potentialWinnings: number, showRoi: 
     showRoi ? (potentialWinnings - ticketPrice) / ticketPrice : 0;
 
 export const isClaimAvailable = (market: MarketInfo, accountPosition?: AccountPosition) =>
+    !market.isPaused &&
     !!accountPosition &&
     market.canUsersClaim &&
     accountPosition.position > 0 &&

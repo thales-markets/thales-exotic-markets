@@ -87,8 +87,8 @@
         "status-label": "Status",
         "tags-label": "Tags",
         "search-placeholder": "Search markets",
-        "open-markets-label": "Open markets",
-        "resolved-markets-label": "Resolved markets",
+        "open-markets-label": "Opened",
+        "resolved-markets-label": "Resolved",
         "status": {
             "open": "Open",
             "cancelled-pending-confirmation": "Cancelled - pending confirmation",
@@ -230,6 +230,7 @@
             "results-label": "Results",
             "open-dispute-bond-info": "In order to open dispute you need to deposit a bond of {{amount}}.",
             "disputes-disabled-message": {
+                "market-paused": "The market is paused.",
                 "market-closed": "The market is closed for disputes.",
                 "creator": "The creator of the market doesn't have the right to open disputes.",
                 "council-members": "Council members don't have the right to open disputes."

@@ -50,6 +50,7 @@ export type MarketData = MarketInfo & {
     winningAmountsNoPosition: number[];
     totalUsersTakenPositions: number;
     winningAmountPerTicket: number;
+    creatorBond: number;
 };
 
 export type Markets = MarketInfo[];

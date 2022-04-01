@@ -52,7 +52,7 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
 
     const isClaimAvailable: boolean = useMemo(() => {
         if (accountMarketDataQuery.isSuccess && accountMarketDataQuery.data) {
-            return (accountMarketDataQuery.data as AccountMarketData).canClaim;
+            return (accountMarketDataQuery.data as AccountMarketData).canClaim && !market.isPaused;
         }
         return false;
     }, [accountMarketDataQuery.isSuccess, accountMarketDataQuery.data]);
@@ -60,7 +60,8 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
     const canOpenDispute =
         !market.isMarketClosedForDisputes &&
         !isOracleCouncilMember &&
-        walletAddress.toLowerCase() !== market.creator.toLowerCase();
+        walletAddress.toLowerCase() !== market.creator.toLowerCase() &&
+        !market.isPaused;
 
     const showNumberOfOpenDisputes = !market.canUsersClaim;
 
