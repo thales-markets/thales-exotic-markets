@@ -1,6 +1,6 @@
 import { DisputeStatus } from 'constants/markets';
 import useDisputeQuery from 'queries/markets/useDisputeQuery';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { getIsAppReady } from 'redux/modules/app';
@@ -8,10 +8,13 @@ import { getIsWalletConnected, getNetworkId, getWalletAddress } from 'redux/modu
 import { RootState } from 'redux/rootReducer';
 import styled from 'styled-components';
 import { FlexDivRow } from 'styles/common';
-import { DisputeInfo, DisputeData } from 'types/markets';
+import { DisputeInfo, DisputeData, AccountDisputeData } from 'types/markets';
 import DisputeOverview from './DisputeOverview';
 import DisputeVoting from './DisputeVoting';
 import DisputeVotingResults from './DisputeVotingResults';
+import { ReactComponent as ArrowUpIcon } from 'assets/images/arrow-up.svg';
+import DisputeHeader from './DisputeHeader';
+import useAccountDisputeDataQuery from 'queries/markets/useAccountDisputeDataQuery';
 
 type DisputeCardProps = {
     disputeInfo: DisputeInfo;
@@ -31,6 +34,7 @@ const DisputeCard: React.FC<DisputeCardProps> = ({
     const networkId = useSelector((state: RootState) => getNetworkId(state));
     const walletAddress = useSelector((state: RootState) => getWalletAddress(state)) || '';
     const isWalletConnected = useSelector((state: RootState) => getIsWalletConnected(state));
+    const [isActive, setIsActive] = useState<boolean>(disputeInfo.status === DisputeStatus.Open);
 
     const outcomePositions = [t('common.cancel'), ...positions];
 
@@ -63,39 +67,72 @@ const DisputeCard: React.FC<DisputeCardProps> = ({
         };
     }, [isOracleCouncilMember, disputeData, isWalletConnected]);
 
+    const accountDisputeDataQuery = useAccountDisputeDataQuery(
+        disputeInfo.market,
+        disputeInfo.disputeNumber,
+        walletAddress,
+        {
+            enabled: isAppReady && isWalletConnected,
+        }
+    );
+
+    const canDisputorClaimbackBondFromUnclosedDispute: boolean = useMemo(() => {
+        if (accountDisputeDataQuery.isSuccess && accountDisputeDataQuery.data) {
+            return (accountDisputeDataQuery.data as AccountDisputeData).canDisputorClaimbackBondFromUnclosedDispute;
+        }
+        return false;
+    }, [accountDisputeDataQuery.isSuccess, accountDisputeDataQuery.data]);
+
     const showDisputeVoting = isOracleCouncilMember && disputeData && disputeData.isOpenForVoting;
     const showDisputeVotingResults = disputeData && disputeData.status !== DisputeStatus.Cancelled;
     const showDisputeVotingData = showDisputeVoting || showDisputeVotingResults;
 
     const disabled =
-        disputeData &&
-        (disputeData.status === DisputeStatus.Cancelled ||
+        !!disputeData &&
+        ((disputeData.status === DisputeStatus.Cancelled && !canDisputorClaimbackBondFromUnclosedDispute) ||
             disputeData.status === DisputeStatus.RefusedOnPositioning ||
             disputeData.status === DisputeStatus.RefusedMature);
 
     return (
-        <Container className={disabled ? 'disabled' : ''}>
-            <DisputeOverview disputeInfo={disputeInfo} status={disputeData ? disputeData.status : undefined} />
-            {showDisputeVotingData && (
-                <VotingContainer>
-                    {showDisputeVoting && (
-                        <DisputeVoting
-                            voteOnContract={voteOnContract}
-                            disputeInfo={disputeInfo}
-                            positions={positions}
-                            positionOnContract={positionOnContract}
-                            winningPosition={winningPosition}
-                        />
+        <>
+            {isActive ? (
+                <Container className={disabled ? 'disabled' : ''}>
+                    <DisputeOverview
+                        disputeInfo={disputeInfo}
+                        status={disputeData ? disputeData.status : undefined}
+                        canDisputorClaimbackBondFromUnclosedDispute={canDisputorClaimbackBondFromUnclosedDispute}
+                    />
+                    {showDisputeVotingData && (
+                        <VotingContainer>
+                            {showDisputeVoting && (
+                                <DisputeVoting
+                                    voteOnContract={voteOnContract}
+                                    disputeInfo={disputeInfo}
+                                    positions={positions}
+                                    positionOnContract={positionOnContract}
+                                    winningPosition={winningPosition}
+                                />
+                            )}
+                            {showDisputeVotingResults && (
+                                <DisputeVotingResults
+                                    votingResults={disputeData.disputeVotingResults}
+                                    positions={outcomePositions}
+                                />
+                            )}
+                        </VotingContainer>
                     )}
-                    {showDisputeVotingResults && (
-                        <DisputeVotingResults
-                            votingResults={disputeData.disputeVotingResults}
-                            positions={outcomePositions}
-                        />
-                    )}
-                </VotingContainer>
+                    <StyledArrowUp onClick={() => setIsActive(false)} />
+                </Container>
+            ) : (
+                <DisputeHeader
+                    disputeInfo={disputeInfo}
+                    status={disputeData ? disputeData.status : undefined}
+                    onClick={() => setIsActive(true)}
+                    canDisputorClaimbackBondFromUnclosedDispute={canDisputorClaimbackBondFromUnclosedDispute}
+                    disabled={disabled}
+                />
             )}
-        </Container>
+        </>
     );
 };
 
@@ -104,9 +141,10 @@ const Container = styled(FlexDivRow)`
     border-radius: 15px;
     font-style: normal;
     font-weight: normal;
-    padding: 30px 10px 30px 10px;
+    padding: 20px 10px 20px 10px;
     margin-bottom: 30px;
     color: ${(props) => props.theme.textColor.primary};
+    position: relative;
     @media (max-width: 991px) {
         flex-direction: column;
     }
@@ -116,11 +154,17 @@ const Container = styled(FlexDivRow)`
     &.disabled {
         opacity: 0.4;
         cursor: default;
-        button {
-            opacity: 1;
-            cursor: pointer;
-        }
     }
+`;
+
+const StyledArrowUp = styled(ArrowUpIcon)`
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 18px 30px 0 0;
+    cursor: pointer;
+    height: 25px;
+    width: 25px;
 `;
 
 const VotingContainer = styled(FlexDivRow)`

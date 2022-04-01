@@ -253,7 +253,8 @@
                 "accepted-set-result": "Accepted - new result set",
                 "accepted-reset": "Accepted - market result reset",
                 "refused-mature": "Refused",
-                "cancelled": "Cancelled"
+                "cancelled": "Cancelled",
+                "cancelled-refund-available": "Cancelled - refund available"
             },
             "voting-option": {
                 "accept-slash": "Accept the dispute and slash the creator",

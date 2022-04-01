@@ -385,7 +385,7 @@ const ToggleContainer = styled(FlexDivColumn)`
 const FiltersContainer = styled(FlexDivRow)`
     margin-bottom: 4px;
     :first-child {
-        margin-top: 40px;
+        margin-top: 50px;
     }
 `;
 

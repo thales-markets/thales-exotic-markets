@@ -1,45 +1,26 @@
 import Button from 'components/Button';
 import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
-import useAccountDisputeDataQuery from 'queries/markets/useAccountDisputeDataQuery';
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { getIsAppReady } from 'redux/modules/app';
-import { getIsWalletConnected, getWalletAddress } from 'redux/modules/wallet';
-import { RootState } from 'redux/rootReducer';
 import styled from 'styled-components';
 import { FlexDivColumn } from 'styles/common';
-import { AccountDisputeData, DisputeInfo } from 'types/markets';
+import { DisputeInfo } from 'types/markets';
 import networkConnector from 'utils/networkConnector';
 
 type DisputeOverviewProps = {
     disputeInfo: DisputeInfo;
     status?: string;
+    canDisputorClaimbackBondFromUnclosedDispute: boolean;
 };
 
-const DisputeOverview: React.FC<DisputeOverviewProps> = ({ disputeInfo, status }) => {
+const DisputeOverview: React.FC<DisputeOverviewProps> = ({
+    disputeInfo,
+    status,
+    canDisputorClaimbackBondFromUnclosedDispute,
+}) => {
     const { t } = useTranslation();
-    const isAppReady = useSelector((state: RootState) => getIsAppReady(state));
-    const walletAddress = useSelector((state: RootState) => getWalletAddress(state)) || '';
-    const isWalletConnected = useSelector((state: RootState) => getIsWalletConnected(state));
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-
-    const accountDisputeDataQuery = useAccountDisputeDataQuery(
-        disputeInfo.market,
-        disputeInfo.disputeNumber,
-        walletAddress,
-        {
-            enabled: isAppReady && isWalletConnected,
-        }
-    );
-
-    const canDisputorClaimbackBondFromUnclosedDispute: boolean = useMemo(() => {
-        if (accountDisputeDataQuery.isSuccess && accountDisputeDataQuery.data) {
-            return (accountDisputeDataQuery.data as AccountDisputeData).canDisputorClaimbackBondFromUnclosedDispute;
-        }
-        return false;
-    }, [accountDisputeDataQuery.isSuccess, accountDisputeDataQuery.data]);
 
     const handleClaim = async () => {
         const { thalesOracleCouncilContract, signer } = networkConnector;
