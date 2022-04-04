@@ -34,6 +34,7 @@ const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
     const isWalletConnected = useSelector((state: RootState) => getIsWalletConnected(state));
     const [accountMarketData, setAccountMarketData] = useState<AccountMarketData | undefined>(undefined);
     const [isClaiming, setIsClaiming] = useState<boolean>(false);
+    const [isDistributing, setIsDistributing] = useState<boolean>(false);
 
     const accountMarketDataQuery = useAccountMarketDataQuery(market.address, walletAddress, {
         enabled: isAppReady && isWalletConnected,
@@ -46,8 +47,19 @@ const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
     }, [accountMarketDataQuery.isSuccess, accountMarketDataQuery.data]);
 
     const canClaim = accountMarketData && accountMarketData.canClaim && !market.isPaused;
-    const claimAmount = accountMarketData ? accountMarketData.claimAmount : 0;
+    const userAlreadyClaimedAmount = accountMarketData ? accountMarketData.userAlreadyClaimedAmount : 0;
+    const userAlreadyClaimed = userAlreadyClaimedAmount > 0;
+    const claimAmount = accountMarketData
+        ? userAlreadyClaimed
+            ? userAlreadyClaimedAmount
+            : accountMarketData.claimAmount
+        : 0;
     const nothingToClaim = market.canUsersClaim && claimAmount === 0 && !market.isPaused;
+
+    const isCreator = market.creator === walletAddress;
+    const isResolver = market.resolver === walletAddress;
+
+    const feeEarnings = (isCreator ? market.creatorFee : 0) + (isResolver ? market.resolverFee : 0);
 
     const handleClaim = async () => {
         const { signer } = networkConnector;
@@ -85,6 +97,31 @@ const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
         }
     };
 
+    const handleDistribute = async () => {
+        const { signer } = networkConnector;
+        if (signer) {
+            const id = toast.loading(t('market.toast-messsage.transaction-pending'));
+            setIsDistributing(true);
+
+            try {
+                const marketContractWithSigner = new ethers.Contract(market.address, marketContract.abi, signer);
+
+                const tx = await marketContractWithSigner.issueFees();
+                const txResult = await tx.wait();
+
+                if (txResult && txResult.transactionHash) {
+                    refetchMarketData(market.address, walletAddress);
+                    toast.update(id, getSuccessToastOptions(t('distribute-success')));
+                    setIsDistributing(false);
+                }
+            } catch (e) {
+                console.log(e);
+                toast.update(id, getErrorToastOptions(t('common.errors.unknown-error-try-again')));
+                setIsDistributing(false);
+            }
+        }
+    };
+
     const getButtons = () => {
         if (!isWalletConnected) {
             return (
@@ -98,10 +135,14 @@ const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
             return <NothingToClaim>{t('market.nothing-to-claim-label')}</NothingToClaim>;
         }
 
+        if (userAlreadyClaimed) {
+            return <NothingToClaim>{t('market.winnings-claimed-label')}</NothingToClaim>;
+        }
+
         return (
             <>
                 {canClaim && (
-                    <MarketButton disabled={isClaiming} onClick={handleClaim}>
+                    <MarketButton disabled={isClaiming || isDistributing} onClick={handleClaim}>
                         {!isClaiming ? t('market.button.claim-label') : t('market.button.claim-progress-label')}
                     </MarketButton>
                 )}
@@ -174,6 +215,41 @@ const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
                 {t('market.ticket-price-label')}:{' '}
                 {formatCurrencyWithKey(PAYMENT_CURRENCY, market.ticketPrice, DEFAULT_CURRENCY_DECIMALS, true)}
             </MainInfo>
+            <FeesContainer>
+                <Info fontSize={18}>
+                    <InfoLabel>{t('market.creator-fee-label')}:</InfoLabel>
+                    <InfoContent>
+                        {formatCurrencyWithKey(PAYMENT_CURRENCY, market.creatorFee, DEFAULT_CURRENCY_DECIMALS, true)}
+                    </InfoContent>
+                </Info>
+                <Info fontSize={18}>
+                    <InfoLabel>{t('market.resolver-fee-label')}:</InfoLabel>
+                    <InfoContent>
+                        {formatCurrencyWithKey(PAYMENT_CURRENCY, market.resolverFee, DEFAULT_CURRENCY_DECIMALS, true)}
+                    </InfoContent>
+                </Info>
+                {(isCreator || isResolver) && (
+                    <MainInfo>
+                        {t('market.your-fee-label')}:{' '}
+                        {formatCurrencyWithKey(PAYMENT_CURRENCY, feeEarnings, DEFAULT_CURRENCY_DECIMALS, true)}
+                    </MainInfo>
+                )}
+                {!market.feesAndBondsClaimed ? (
+                    <DistributeButton
+                        disabled={isClaiming || isDistributing}
+                        onClick={handleDistribute}
+                        type="secondary"
+                    >
+                        {!isDistributing
+                            ? t('market.button.distribute-label')
+                            : t('market.button.distribute-progress-label')}
+                    </DistributeButton>
+                ) : (
+                    (isCreator || isResolver) && (
+                        <NothingToClaim marginTop={15}>{t('market.fees-bonds-distributed-label')}</NothingToClaim>
+                    )
+                )}
+            </FeesContainer>
             <ButtonContainer>
                 {market.noWinners && (
                     <ClaimInfo>
@@ -187,7 +263,7 @@ const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
                         />
                     </ClaimInfo>
                 )}
-                {canClaim && (
+                {(canClaim || userAlreadyClaimed) && (
                     <ClaimInfo>
                         {t(
                             `market.${
@@ -207,6 +283,11 @@ const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
     );
 };
 
+const FeesContainer = styled(FlexDivColumn)`
+    align-items: center;
+    margin-top: 30px;
+`;
+
 const ButtonContainer = styled(FlexDivColumn)`
     margin-top: 35px;
     margin-bottom: 35px;
@@ -220,7 +301,11 @@ const ClaimInfo = styled(MainInfo)`
 
 const MarketButton = styled(Button)``;
 
-const NothingToClaim = styled(FlexDivCentered)`
+const DistributeButton = styled(Button)`
+    margin-top: 15px;
+`;
+
+const NothingToClaim = styled(FlexDivCentered)<{ marginTop?: number }>`
     background: transparent;
     border: 1px solid ${(props) => props.theme.borderColor.primary};
     border-radius: 30px;
@@ -230,6 +315,7 @@ const NothingToClaim = styled(FlexDivCentered)`
     color: ${(props) => props.theme.textColor.primary};
     min-height: 28px;
     padding: 5px 20px;
+    margin-top: ${(props) => props.marginTop || 0}px;
 `;
 
 const NoWinnersOverlayContainer = styled(FlexDivColumn)`

@@ -30,6 +30,8 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                 totalUsersTakenPositions,
                 winningAmountPerTicket,
                 noWinners,
+                allFees,
+                feesAndBondsClaimed,
                 creatorBond,
             ] = await Promise.all([
                 marketDataContract?.getAllMarketData(marketAddress),
@@ -43,6 +45,8 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                 contract?.totalUsersTakenPositions(),
                 contract?.getWinningAmountPerTicket(),
                 contract?.noWinners(),
+                contract?.getAllFees(),
+                contract?.feesAndBondsClaimed(),
                 thalesBondsContract?.getCreatorBondForMarket(marketAddress),
             ]);
 
@@ -79,6 +83,8 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                 disputeClosedTime,
                 canCreatorCancelMarket,
             ] = allMarketData;
+
+            const [creatorFee, resolverFee, safeBoxFee, totalFees] = allFees;
 
             const market: MarketData = {
                 address: marketAddress,
@@ -130,6 +136,11 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                 numberOfParticipants: bigNumberFormatter(poolSize) / bigNumberFormatter(ticketPrice),
                 cancelledByCreator,
                 creatorBond: bigNumberFormatter(creatorBond),
+                creatorFee: bigNumberFormatter(creatorFee),
+                resolverFee: bigNumberFormatter(resolverFee),
+                safeBoxFee: bigNumberFormatter(safeBoxFee),
+                totalFees: bigNumberFormatter(totalFees),
+                feesAndBondsClaimed,
             };
 
             // TODO - needs refactoring

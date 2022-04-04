@@ -190,7 +190,7 @@ const CreateMarket: React.FC = () => {
             const addressToApprove = thalesBondsContract.address;
             const getAllowance = async () => {
                 try {
-                    const parsedAmount = ethers.utils.parseEther(Number(fixedBondAmount).toString());
+                    const parsedAmount = ethers.utils.parseEther(Number(requiredFunds).toString());
                     const allowance = await checkAllowance(
                         parsedAmount,
                         paymentTokenContractWithSigner,
@@ -206,7 +206,7 @@ const CreateMarket: React.FC = () => {
                 getAllowance();
             }
         }
-    }, [walletAddress, isWalletConnected, hasAllowance, fixedBondAmount, isAllowing]);
+    }, [walletAddress, isWalletConnected, hasAllowance, requiredFunds, isAllowing]);
 
     const handleAllowance = async (approveAmount: BigNumber) => {
         const { paymentTokenContract, thalesBondsContract, signer } = networkConnector;
@@ -467,6 +467,7 @@ const CreateMarket: React.FC = () => {
                         label={t('market.create-market.type-label')}
                         leftText={t('market.create-market.type-options.ticket')}
                         rightText={t('market.create-market.type-options.open-bid')}
+                        tooltip={t('market.create-market.type-tooltip')}
                         // disabled={isSubmitting || creationRestrictedToOwner}
                         disabled={true}
                     />
@@ -517,7 +518,7 @@ const CreateMarket: React.FC = () => {
                                         checked={positionIndex === initialPosition}
                                         value={positionIndex}
                                         onChange={() => setInitialPosition(positionIndex)}
-                                        label={position}
+                                        label={position.trim() === '' ? '...' : position}
                                         disabled={isSubmitting || creationRestrictedToOwner}
                                         key={`yourPositionKey${position}${index}`}
                                     />
@@ -543,7 +544,7 @@ const CreateMarket: React.FC = () => {
             </ContentWrapper>
             {openApprovalModal && (
                 <ApprovalModal
-                    defaultAmount={fixedBondAmount}
+                    defaultAmount={requiredFunds}
                     tokenSymbol={PAYMENT_CURRENCY}
                     isAllowing={isAllowing}
                     onSubmit={handleAllowance}

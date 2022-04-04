@@ -1,5 +1,7 @@
+import Tooltip from 'components/Tooltip';
 import React, { ChangeEvent } from 'react';
 import styled from 'styled-components';
+import { FlexDivColumn } from 'styles/common';
 
 type RadioButtonProps = {
     value: string | number;
@@ -8,9 +10,19 @@ type RadioButtonProps = {
     disabled?: boolean;
     checked: boolean;
     label?: string;
+    tooltip?: string;
 };
 
-const RadioButton: React.FC<RadioButtonProps> = ({ value, onChange, className, disabled, checked, label, ...rest }) => {
+const RadioButton: React.FC<RadioButtonProps> = ({
+    value,
+    onChange,
+    className,
+    disabled,
+    checked,
+    label,
+    tooltip,
+    ...rest
+}) => {
     return (
         <Container className={disabled ? 'disabled' : ''}>
             {label}
@@ -24,6 +36,14 @@ const RadioButton: React.FC<RadioButtonProps> = ({ value, onChange, className, d
                 disabled={disabled}
             />
             <Checkmark className="checkmark" />
+            {tooltip && (
+                <Tooltip
+                    overlay={<OverlayContainer>{tooltip}</OverlayContainer>}
+                    iconFontSize={20}
+                    marginLeft={6}
+                    top={-2}
+                />
+            )}
         </Container>
     );
 };
@@ -37,7 +57,7 @@ const Input = styled.input`
 `;
 
 const Container = styled.label`
-    display: block;
+    display: flex;
     position: relative;
     padding-left: 25px;
     cursor: pointer;
@@ -90,6 +110,10 @@ const Checkmark = styled.span`
         -ms-transform: rotate(45deg);
         transform: rotate(45deg);
     }
+`;
+
+const OverlayContainer = styled(FlexDivColumn)`
+    text-align: justify;
 `;
 
 export default RadioButton;

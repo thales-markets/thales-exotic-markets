@@ -214,6 +214,7 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ market }) => {
                             label={position}
                             disabled={isSubmitting}
                             key={position}
+                            tooltip={positionIndex === 0 ? t('market.resolve-market.cancel-tooltip') : undefined}
                         />
                     );
                 })}

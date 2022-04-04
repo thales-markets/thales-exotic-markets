@@ -51,6 +51,11 @@ export type MarketData = MarketInfo & {
     totalUsersTakenPositions: number;
     winningAmountPerTicket: number;
     creatorBond: number;
+    creatorFee: number;
+    resolverFee: number;
+    safeBoxFee: number;
+    totalFees: number;
+    feesAndBondsClaimed: number;
 };
 
 export type Markets = MarketInfo[];
@@ -61,6 +66,7 @@ export type AccountMarketData = {
     canClaim: boolean;
     winningAmount: number;
     canWithdraw: boolean;
+    userAlreadyClaimedAmount: number;
 };
 
 export type SortOptionType = {

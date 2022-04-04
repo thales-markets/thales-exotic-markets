@@ -1,3 +1,4 @@
+import Tooltip from 'components/Tooltip';
 import React from 'react';
 import styled from 'styled-components';
 import { FlexDivStart } from 'styles/common';
@@ -10,25 +11,42 @@ type ToggleProps = {
     onClick?: any;
     leftText?: string;
     rightText?: string;
+    tooltip?: string;
 };
 
-const Toggle: React.FC<ToggleProps> = ({ isLeftOptionSelected, label, disabled, onClick, leftText, rightText }) => {
+const Toggle: React.FC<ToggleProps> = ({
+    isLeftOptionSelected,
+    label,
+    disabled,
+    onClick,
+    leftText,
+    rightText,
+    tooltip,
+}) => {
+    const getToggleContent = () => (
+        <ToggleContainer
+            onClick={() => {
+                if (disabled) {
+                    return;
+                }
+                onClick();
+            }}
+            className={disabled ? 'toogle disabled' : 'toogle'}
+        >
+            {leftText && <ToggleText>{leftText}</ToggleText>}
+            <ToggleIcon isLeftOptionSelected={isLeftOptionSelected} />
+            {rightText && <ToggleText>{rightText}</ToggleText>}
+        </ToggleContainer>
+    );
+
     return (
         <FieldContainer>
             {label && <FieldLabel>{label}:</FieldLabel>}
-            <ToggleContainer
-                onClick={() => {
-                    if (disabled) {
-                        return;
-                    }
-                    onClick();
-                }}
-                className={disabled ? 'toogle disabled' : 'toogle'}
-            >
-                {leftText && <ToggleText>{leftText}</ToggleText>}
-                <ToggleIcon isLeftOptionSelected={isLeftOptionSelected} />
-                {rightText && <ToggleText>{rightText}</ToggleText>}
-            </ToggleContainer>
+            {!!tooltip ? (
+                <Tooltip overlay={<span>{tooltip}</span>} component={getToggleContent()} />
+            ) : (
+                getToggleContent()
+            )}
         </FieldContainer>
     );
 };

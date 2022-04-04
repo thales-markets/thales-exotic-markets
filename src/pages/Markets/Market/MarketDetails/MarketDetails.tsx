@@ -104,7 +104,11 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
                     {canOpenDispute && (
                         <SPAAnchor href={buildOpenDisputeLink(market.address)}>
                             <OpenDisputeButton type="secondary">
-                                {t('market.button.open-dispute-label')}
+                                {t(
+                                    `market.button.${
+                                        market.isOpen ? 'dispute-market-label' : 'dispute-resolution-label'
+                                    }`
+                                )}
                             </OpenDisputeButton>
                         </SPAAnchor>
                     )}
@@ -165,7 +169,6 @@ const OpenDisputeButton = styled(Button)`
     font-size: 17px;
     margin-bottom: 4px;
     margin-left: 6px;
-    width: 146px;
 `;
 
 export default MarketDetails;

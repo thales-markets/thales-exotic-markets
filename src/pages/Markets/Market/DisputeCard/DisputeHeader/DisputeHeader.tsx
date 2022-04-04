@@ -24,7 +24,7 @@ const DisputeHeader: React.FC<DisputeHeaderProps> = ({
     const { t } = useTranslation();
 
     return (
-        <Container className={disabled ? 'disabled' : ''}>
+        <Container className={disabled ? 'disabled' : ''} onClick={onClick}>
             <Info>
                 {t('market.dispute.disputer-label')}: {disputeInfo.disputer}
             </Info>
@@ -39,7 +39,7 @@ const DisputeHeader: React.FC<DisputeHeaderProps> = ({
                       )
                     : ''}
             </Info>
-            <StyledArrowDown onClick={onClick} />
+            <StyledArrowDown />
         </Container>
     );
 };
@@ -55,6 +55,7 @@ const Container = styled(FlexDivRow)`
     position: relative;
     word-wrap: break-word;
     white-space: break-spaces;
+    cursor: pointer;
     @media (max-width: 991px) {
         flex-direction: column;
     }
@@ -63,7 +64,6 @@ const Container = styled(FlexDivRow)`
     }
     &.disabled {
         opacity: 0.4;
-        cursor: default;
     }
 `;
 
@@ -83,7 +83,6 @@ const StyledArrowDown = styled(ArrowDownIcon)`
     top: 0;
     right: 0;
     margin: 18px 30px 0 0;
-    cursor: pointer;
     height: 25px;
     width: 25px;
 `;

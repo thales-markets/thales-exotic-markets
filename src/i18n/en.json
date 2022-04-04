@@ -116,6 +116,8 @@
         "your-refund-label": "Your refund",
         "your-claim-amount-label": "Your claim amount",
         "nothing-to-claim-label": "Nothing to claim",
+        "winnings-claimed-label": "Winnings claimed",
+        "fees-bonds-distributed-label": "Fees and bonds distributed",
         "no-winners-label": "No winners on this market",
         "no-winners-tooltip": "Since there are no winners on this market, everyone can claim their initial bid minus the fees.",
         "open-disputes-label": "Open disputes",
@@ -125,8 +127,13 @@
         "withdrawal-fee-label": "Withdrawal fee",
         "withdrawal-fee-tooltip": "<0>Withdrawal is subject to a total {{withdrawalPercentage}}% fee:</0><1>- {{creatorPercentage}}% paid to the market creator</1><1>- {{safeBoxPercentage}}% towards the Safe Box</1><0>These fees are paid within the withdrawal transactions.</0>",
         "withdrawal-not-allowed": "Withdrawals are not allowed",
+        "creator-fee-label": "Creator fee earnings",
+        "resolver-fee-label": "Resolver fee earnings",
+        "your-fee-label": "Your fee earnings",
         "button": {
             "open-dispute-label": "Open dispute",
+            "dispute-market-label": "Dispute market",
+            "dispute-resolution-label": "Dispute resolution",
             "create-market-label": "Create market",
             "bid-label": "Bid",
             "bid-progress-label": "Bidding in progress...",
@@ -140,7 +147,9 @@
             "claim-progress-label": "Claiming in progress...",
             "cancel-label": "Cancel",
             "cancel-market-label": "Cancel market",
-            "cancel-progress-label": "Canceling in progress..."
+            "cancel-progress-label": "Canceling in progress...",
+            "distribute-label": "Distribute fees and bonds",
+            "distribute-progress-label": "Distributing in progress..."
         },
         "toast-messsage": {
             "transaction-pending": "Transaction pending",
@@ -155,7 +164,8 @@
             "withdraw-success": "Successfuly withdrawn",
             "vote-success": "Successfully voted",
             "cancel-market-success": "Market successfully canceled",
-            "get-usd-success": "{{amount}} successfully minted"
+            "get-usd-success": "{{amount}} successfully minted",
+            "distribute-success": "Fees and bonds successfully sent"
         },
         "filter-label": {
             "global": {
@@ -193,6 +203,7 @@
             "add-position-label": "ADD position",
             "positioning-end-label": "Positioning end (UTC)",
             "type-label": "Type",
+            "type-tooltip": "Only ticket type is available now",
             "type-options": {
                 "ticket": "Ticket",
                 "open-bid": "Open bid"
@@ -217,6 +228,7 @@
         },
         "resolve-market": {
             "title": "Resolve market",
+            "cancel-tooltip": "If the market is not created according to the guidelines, use this option to cancel the market. Resolving a market with this position will allow anyone who placed a bid on the market to claim a full refund.",
             "bond-info": "In order to resolve market you need to deposit a bond of {{amount}}."
         },
         "dispute": {
