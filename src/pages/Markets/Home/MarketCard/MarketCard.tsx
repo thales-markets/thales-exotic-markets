@@ -53,7 +53,7 @@ const MarketCard: React.FC<MarketCardProps> = ({ market, accountPosition }) => {
                 <Tags tags={market.tags} />
                 {showNumberOfOpenDisputes && (
                     <OpenDisputeInfo
-                        numberOfOpenDisputes={market.isMarketClosedForDisputes ? 0 : market.numberOfDisputes}
+                        numberOfOpenDisputes={market.isMarketClosedForDisputes ? 0 : market.numberOfOpenDisputes}
                     >
                         {t('market.open-disputes-label')}
                     </OpenDisputeInfo>
