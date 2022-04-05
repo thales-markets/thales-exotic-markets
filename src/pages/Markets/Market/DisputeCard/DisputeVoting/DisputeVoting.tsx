@@ -149,6 +149,7 @@ const DisputeVoting: React.FC<DisputeVotingProps> = ({
                                             value={positionIndex}
                                             onChange={() => setSelectedPosition(positionIndex)}
                                             label={outcomePosition.position}
+                                            disabled={isSubmitting}
                                         />
                                     </PositionsContainer>
                                 );
