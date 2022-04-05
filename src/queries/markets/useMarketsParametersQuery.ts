@@ -4,7 +4,11 @@ import { bigNumberFormatter } from 'utils/formatters/ethers';
 import networkConnector from 'utils/networkConnector';
 import { NetworkId } from 'types/network';
 import { MarketsParameters } from 'types/markets';
-import { MAXIMUM_POSITIONS, MAXIMUM_TAGS, MINIMUM_TICKET_PRICE } from 'constants/markets';
+import { MAXIMUM_INPUT_CHARACTERS, MAXIMUM_POSITIONS, MAXIMUM_TAGS, MINIMUM_TICKET_PRICE } from 'constants/markets';
+
+// we need buffer because of contract handling of strings
+const INPUT_LENGTH_MULTIPLIER = 1.1;
+const POSITION_LENGTH_MULTIPLIER = 1.2;
 
 const useMarketsParametersQuery = (networkId: NetworkId, options?: UseQueryOptions<MarketsParameters>) => {
     return useQuery<MarketsParameters>(
@@ -24,6 +28,10 @@ const useMarketsParametersQuery = (networkId: NetworkId, options?: UseQueryOptio
                 owner: '',
                 maxNumberOfTags: MAXIMUM_TAGS,
                 minFixedTicketPrice: MINIMUM_TICKET_PRICE,
+                disputeStringLengthLimit: MAXIMUM_INPUT_CHARACTERS,
+                marketQuestionStringLimit: MAXIMUM_INPUT_CHARACTERS,
+                marketSourceStringLimit: MAXIMUM_INPUT_CHARACTERS,
+                marketPositionStringLimit: MAXIMUM_INPUT_CHARACTERS,
             };
             const marketManagerContract = networkConnector.marketManagerContract;
             if (marketManagerContract) {
@@ -41,6 +49,10 @@ const useMarketsParametersQuery = (networkId: NetworkId, options?: UseQueryOptio
                     owner,
                     maxNumberOfTags,
                     minFixedTicketPrice,
+                    disputeStringLengthLimit,
+                    marketQuestionStringLimit,
+                    marketSourceStringLimit,
+                    marketPositionStringLimit,
                 ] = await Promise.all([
                     marketManagerContract.fixedBondAmount(),
                     marketManagerContract.maximumPositionsAllowed(),
@@ -55,6 +67,10 @@ const useMarketsParametersQuery = (networkId: NetworkId, options?: UseQueryOptio
                     marketManagerContract.owner(),
                     marketManagerContract.maxNumberOfTags(),
                     marketManagerContract.minFixedTicketPrice(),
+                    marketManagerContract.disputeStringLengthLimit(),
+                    marketManagerContract.marketQuestionStringLimit(),
+                    marketManagerContract.marketSourceStringLimit(),
+                    marketManagerContract.marketPositionStringLimit(),
                 ]);
 
                 marketsParameters.fixedBondAmount = bigNumberFormatter(fixedBondAmount);
@@ -70,6 +86,18 @@ const useMarketsParametersQuery = (networkId: NetworkId, options?: UseQueryOptio
                 marketsParameters.owner = owner;
                 marketsParameters.maxNumberOfTags = Number(maxNumberOfTags);
                 marketsParameters.minFixedTicketPrice = bigNumberFormatter(minFixedTicketPrice);
+                marketsParameters.disputeStringLengthLimit = Math.round(
+                    Number(disputeStringLengthLimit) / INPUT_LENGTH_MULTIPLIER
+                );
+                marketsParameters.marketQuestionStringLimit = Math.round(
+                    Number(marketQuestionStringLimit) / INPUT_LENGTH_MULTIPLIER
+                );
+                marketsParameters.marketSourceStringLimit = Math.round(
+                    Number(marketSourceStringLimit) / INPUT_LENGTH_MULTIPLIER
+                );
+                marketsParameters.marketPositionStringLimit = Math.round(
+                    Number(marketPositionStringLimit) / POSITION_LENGTH_MULTIPLIER
+                );
             }
 
             return marketsParameters;

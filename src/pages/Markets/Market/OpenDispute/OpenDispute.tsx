@@ -11,7 +11,7 @@ import useMarketQuery from 'queries/markets/useMarketQuery';
 import { getIsWalletConnected, getNetworkId, getWalletAddress } from 'redux/modules/wallet';
 import { getIsAppReady } from 'redux/modules/app';
 import { RouteComponentProps } from 'react-router-dom';
-import { MarketData } from 'types/markets';
+import { MarketData, MarketsParameters } from 'types/markets';
 import networkConnector from 'utils/networkConnector';
 import { BigNumber, ethers } from 'ethers';
 import { checkAllowance } from 'utils/network';
@@ -29,6 +29,7 @@ import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
 import { formatCurrencyWithKey } from 'utils/formatters/number';
 import { BondInfo } from 'components/common';
 import BackToLink from 'pages/Markets/components/BackToLink';
+import useMarketsParametersQuery from 'queries/markets/useMarketsParametersQuery';
 
 type OpenDisputeProps = RouteComponentProps<{
     marketAddress: string;
@@ -81,6 +82,21 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
         }
         return false;
     }, [oracleCouncilMemberQuery.isSuccess, oracleCouncilMemberQuery.data]);
+
+    const marketsParametersQuery = useMarketsParametersQuery(networkId, {
+        enabled: isAppReady,
+    });
+
+    const marketsParameters: MarketsParameters | undefined = useMemo(() => {
+        if (marketsParametersQuery.isSuccess && marketsParametersQuery.data) {
+            return marketsParametersQuery.data as MarketsParameters;
+        }
+        return undefined;
+    }, [marketsParametersQuery.isSuccess, marketsParametersQuery.data]);
+
+    const disputeStringLengthLimit = marketsParameters
+        ? marketsParameters.disputeStringLengthLimit
+        : MAXIMUM_INPUT_CHARACTERS;
 
     const canOpenDispute =
         market &&
@@ -262,9 +278,9 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
                             label={t('market.dispute.reason-for-dispute-label')}
                             note={t('common.input-characters-note', {
                                 entered: reasonForDispute.length,
-                                max: MAXIMUM_INPUT_CHARACTERS,
+                                max: disputeStringLengthLimit,
                             })}
-                            maximumCharacters={MAXIMUM_INPUT_CHARACTERS}
+                            maximumCharacters={disputeStringLengthLimit}
                             disabled={isSubmitting || !canOpenDispute}
                         />
                         <ButtonContainer>

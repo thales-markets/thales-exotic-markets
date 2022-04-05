@@ -15,6 +15,7 @@ type PositionsProps = {
     onPositionAdd: () => void;
     disabled?: boolean;
     maxPositions: number;
+    maximumCharacters?: number;
 };
 
 const Positions: React.FC<PositionsProps> = ({
@@ -25,6 +26,7 @@ const Positions: React.FC<PositionsProps> = ({
     onPositionAdd,
     disabled,
     maxPositions,
+    maximumCharacters,
 }) => {
     const { t } = useTranslation();
 
@@ -51,6 +53,11 @@ const Positions: React.FC<PositionsProps> = ({
                         }}
                         showRemoveButton={enableRemovePosition}
                         disabled={disabled}
+                        maximumCharacters={maximumCharacters}
+                        note={t('common.input-characters-note', {
+                            entered: position.length,
+                            max: maximumCharacters,
+                        })}
                     />
                 );
             })}

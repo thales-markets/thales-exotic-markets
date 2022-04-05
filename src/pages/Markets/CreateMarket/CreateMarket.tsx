@@ -154,6 +154,16 @@ const CreateMarket: React.FC = () => {
     const maximumPositionsAllowed = marketsParameters ? marketsParameters.maximumPositionsAllowed : MAXIMUM_POSITIONS;
     const minFixedTicketPrice = marketsParameters ? marketsParameters.minFixedTicketPrice : MINIMUM_TICKET_PRICE;
 
+    const marketQuestionStringLimit = marketsParameters
+        ? marketsParameters.marketQuestionStringLimit
+        : MAXIMUM_INPUT_CHARACTERS;
+    const marketSourceStringLimit = marketsParameters
+        ? marketsParameters.marketSourceStringLimit
+        : MAXIMUM_INPUT_CHARACTERS;
+    const marketPositionStringLimit = marketsParameters
+        ? marketsParameters.marketPositionStringLimit
+        : MAXIMUM_INPUT_CHARACTERS;
+
     const isQuestionEntered = question.trim() !== '';
     const isDataSourceEntered = dataSource.trim() !== '';
     const isTicketPriceEntered =
@@ -424,9 +434,9 @@ const CreateMarket: React.FC = () => {
                         label={t('market.create-market.question-label')}
                         note={t('common.input-characters-note', {
                             entered: question.length,
-                            max: MAXIMUM_INPUT_CHARACTERS,
+                            max: marketQuestionStringLimit,
                         })}
-                        maximumCharacters={MAXIMUM_INPUT_CHARACTERS}
+                        maximumCharacters={marketQuestionStringLimit}
                         disabled={isSubmitting || creationRestrictedToOwner}
                     />
                     <TextAreaInput
@@ -435,9 +445,9 @@ const CreateMarket: React.FC = () => {
                         label={t('market.create-market.data-source-label')}
                         note={t('common.input-characters-note', {
                             entered: dataSource.length,
-                            max: MAXIMUM_INPUT_CHARACTERS,
+                            max: marketSourceStringLimit,
                         })}
-                        maximumCharacters={MAXIMUM_INPUT_CHARACTERS}
+                        maximumCharacters={marketSourceStringLimit}
                         disabled={isSubmitting || creationRestrictedToOwner}
                     />
                     <Positions
@@ -448,6 +458,7 @@ const CreateMarket: React.FC = () => {
                         label={t('market.create-market.positions-label')}
                         disabled={isSubmitting || creationRestrictedToOwner}
                         maxPositions={maximumPositionsAllowed}
+                        maximumCharacters={marketPositionStringLimit}
                     />
                     <DatetimePicker
                         selected={convertUTCToLocalDate(endOfPositioning)}

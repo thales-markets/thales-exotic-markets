@@ -6,6 +6,23 @@ export const exoticPositionalMarketManagerContract = {
     abi: [
         {
             anonymous: false,
+            inputs: [
+                { indexed: false, internalType: 'address', name: 'marketAddress', type: 'address' },
+                { indexed: false, internalType: 'string', name: 'marketQuestion', type: 'string' },
+                { indexed: false, internalType: 'string', name: 'marketSource', type: 'string' },
+                { indexed: false, internalType: 'uint256', name: 'endOfPositioning', type: 'uint256' },
+                { indexed: false, internalType: 'uint256', name: 'fixedTicketPrice', type: 'uint256' },
+                { indexed: false, internalType: 'bool', name: 'withdrawalAllowed', type: 'bool' },
+                { indexed: false, internalType: 'uint256[]', name: 'tags', type: 'uint256[]' },
+                { indexed: false, internalType: 'uint256', name: 'positionCount', type: 'uint256' },
+                { indexed: false, internalType: 'string[]', name: 'positionPhrases', type: 'string[]' },
+                { indexed: false, internalType: 'address', name: 'marketOwner', type: 'address' },
+            ],
+            name: 'CLMarketCreated',
+            type: 'event',
+        },
+        {
+            anonymous: false,
             inputs: [{ indexed: false, internalType: 'bool', name: 'creationRestrictedToOwner', type: 'bool' }],
             name: 'CreationRestrictedToOwnerChanged',
             type: 'event',
@@ -20,6 +37,18 @@ export const exoticPositionalMarketManagerContract = {
             anonymous: false,
             inputs: [{ indexed: false, internalType: 'address', name: '_exoticMastercopy', type: 'address' }],
             name: 'ExoticMarketMastercopyChanged',
+            type: 'event',
+        },
+        {
+            anonymous: false,
+            inputs: [{ indexed: false, internalType: 'address', name: 'exoticOpenBidMastercopy', type: 'address' }],
+            name: 'ExoticMarketOpenBidMastercopyChanged',
+            type: 'event',
+        },
+        {
+            anonymous: false,
+            inputs: [{ indexed: false, internalType: 'address', name: 'exoticRewards', type: 'address' }],
+            name: 'ExoticRewardsChanged',
             type: 'event',
         },
         {
@@ -53,6 +82,18 @@ export const exoticPositionalMarketManagerContract = {
         },
         {
             anonymous: false,
+            inputs: [{ indexed: false, internalType: 'uint256', name: 'marketPositionStringLimit', type: 'uint256' }],
+            name: 'MarketPositionStringLimitChanged',
+            type: 'event',
+        },
+        {
+            anonymous: false,
+            inputs: [{ indexed: false, internalType: 'uint256', name: 'marketQuestionStringLimit', type: 'uint256' }],
+            name: 'MarketQuestionStringLimitChanged',
+            type: 'event',
+        },
+        {
+            anonymous: false,
             inputs: [{ indexed: false, internalType: 'address', name: 'marketAddress', type: 'address' }],
             name: 'MarketReset',
             type: 'event',
@@ -64,6 +105,12 @@ export const exoticPositionalMarketManagerContract = {
                 { indexed: false, internalType: 'uint256', name: 'outcomePosition', type: 'uint256' },
             ],
             name: 'MarketResolved',
+            type: 'event',
+        },
+        {
+            anonymous: false,
+            inputs: [{ indexed: false, internalType: 'uint256', name: 'marketSourceStringLimit', type: 'uint256' }],
+            name: 'MarketSourceStringLimitChanged',
             type: 'event',
         },
         {
@@ -188,6 +235,12 @@ export const exoticPositionalMarketManagerContract = {
         },
         {
             anonymous: false,
+            inputs: [{ indexed: false, internalType: 'bool', name: 'openBidAllowed', type: 'bool' }],
+            name: 'OpenBidAllowedChanged',
+            type: 'event',
+        },
+        {
+            anonymous: false,
             inputs: [
                 { indexed: false, internalType: 'address', name: 'oldOwner', type: 'address' },
                 { indexed: false, internalType: 'address', name: 'newOwner', type: 'address' },
@@ -223,16 +276,6 @@ export const exoticPositionalMarketManagerContract = {
             anonymous: false,
             inputs: [{ indexed: false, internalType: 'uint256', name: 'resolverPercentage', type: 'uint256' }],
             name: 'ResolverPercentageChanged',
-            type: 'event',
-        },
-        {
-            anonymous: false,
-            inputs: [
-                { indexed: false, internalType: 'address', name: 'market', type: 'address' },
-                { indexed: false, internalType: 'address', name: 'disputorAddress', type: 'address' },
-                { indexed: false, internalType: 'uint256', name: 'amount', type: 'uint256' },
-            ],
-            name: 'RewardSentToDisputorForMarket',
             type: 'event',
         },
         {
@@ -410,6 +453,20 @@ export const exoticPositionalMarketManagerContract = {
         },
         {
             inputs: [],
+            name: 'exoticMarketOpenBidMastercopy',
+            outputs: [{ internalType: 'address', name: '', type: 'address' }],
+            stateMutability: 'view',
+            type: 'function',
+        },
+        {
+            inputs: [],
+            name: 'exoticRewards',
+            outputs: [{ internalType: 'address', name: '', type: 'address' }],
+            stateMutability: 'view',
+            type: 'function',
+        },
+        {
+            inputs: [],
             name: 'fixedBondAmount',
             outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
             stateMutability: 'view',
@@ -425,13 +482,6 @@ export const exoticPositionalMarketManagerContract = {
         {
             inputs: [{ internalType: 'address', name: '_marketAddress', type: 'address' }],
             name: 'getActiveMarketIndex',
-            outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
-            stateMutability: 'view',
-            type: 'function',
-        },
-        {
-            inputs: [{ internalType: 'address', name: '_market', type: 'address' }],
-            name: 'getMarketBondAmount',
             outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
             stateMutability: 'view',
             type: 'function',
@@ -480,6 +530,27 @@ export const exoticPositionalMarketManagerContract = {
             inputs: [],
             name: 'marketDataAddress',
             outputs: [{ internalType: 'address', name: '', type: 'address' }],
+            stateMutability: 'view',
+            type: 'function',
+        },
+        {
+            inputs: [],
+            name: 'marketPositionStringLimit',
+            outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+            stateMutability: 'view',
+            type: 'function',
+        },
+        {
+            inputs: [],
+            name: 'marketQuestionStringLimit',
+            outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+            stateMutability: 'view',
+            type: 'function',
+        },
+        {
+            inputs: [],
+            name: 'marketSourceStringLimit',
+            outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
             stateMutability: 'view',
             type: 'function',
         },
@@ -536,6 +607,13 @@ export const exoticPositionalMarketManagerContract = {
             inputs: [],
             name: 'numOfActiveMarkets',
             outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+            stateMutability: 'view',
+            type: 'function',
+        },
+        {
+            inputs: [],
+            name: 'openBidAllowed',
+            outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
             stateMutability: 'view',
             type: 'function',
         },
@@ -739,6 +817,20 @@ export const exoticPositionalMarketManagerContract = {
             type: 'function',
         },
         {
+            inputs: [{ internalType: 'address', name: '_exoticOpenBidMastercopy', type: 'address' }],
+            name: 'setExoticMarketOpenBidMastercopy',
+            outputs: [],
+            stateMutability: 'nonpayable',
+            type: 'function',
+        },
+        {
+            inputs: [{ internalType: 'address', name: '_exoticRewards', type: 'address' }],
+            name: 'setExoticRewards',
+            outputs: [],
+            stateMutability: 'nonpayable',
+            type: 'function',
+        },
+        {
             inputs: [{ internalType: 'uint256', name: '_bond', type: 'uint256' }],
             name: 'setFixedBondAmount',
             outputs: [],
@@ -748,6 +840,27 @@ export const exoticPositionalMarketManagerContract = {
         {
             inputs: [{ internalType: 'address', name: '_marketDataAddress', type: 'address' }],
             name: 'setMarketDataAddress',
+            outputs: [],
+            stateMutability: 'nonpayable',
+            type: 'function',
+        },
+        {
+            inputs: [{ internalType: 'uint256', name: '_marketPositionStringLimit', type: 'uint256' }],
+            name: 'setMarketPositionStringLimit',
+            outputs: [],
+            stateMutability: 'nonpayable',
+            type: 'function',
+        },
+        {
+            inputs: [{ internalType: 'uint256', name: '_marketQuestionStringLimit', type: 'uint256' }],
+            name: 'setMarketQuestionStringLimit',
+            outputs: [],
+            stateMutability: 'nonpayable',
+            type: 'function',
+        },
+        {
+            inputs: [{ internalType: 'uint256', name: '_marketSourceStringLimit', type: 'uint256' }],
+            name: 'setMarketSourceStringLimit',
             outputs: [],
             stateMutability: 'nonpayable',
             type: 'function',
@@ -783,6 +896,13 @@ export const exoticPositionalMarketManagerContract = {
         {
             inputs: [{ internalType: 'uint256', name: '_duration', type: 'uint256' }],
             name: 'setMinimumPositioningDuration',
+            outputs: [],
+            stateMutability: 'nonpayable',
+            type: 'function',
+        },
+        {
+            inputs: [{ internalType: 'bool', name: '_openBidAllowed', type: 'bool' }],
+            name: 'setOpenBidAllowed',
             outputs: [],
             stateMutability: 'nonpayable',
             type: 'function',
