@@ -117,7 +117,10 @@
         "your-claim-amount-label": "Your claim amount",
         "nothing-to-claim-label": "Nothing to claim",
         "winnings-claimed-label": "Winnings claimed",
+        "refund-claimed-label": "Refund claimed",
+        "claimed-label": "Claimed",
         "fees-bonds-distributed-label": "Fees and bonds distributed",
+        "bonds-distributed-label": "Bonds distributed",
         "no-winners-label": "No winners on this market",
         "no-winners-tooltip": "Since there are no winners on this market, everyone can claim their initial bid minus the fees.",
         "open-disputes-label": "Open disputes",
@@ -148,7 +151,8 @@
             "cancel-label": "Cancel",
             "cancel-market-label": "Cancel market",
             "cancel-progress-label": "Canceling in progress...",
-            "distribute-label": "Distribute fees and bonds",
+            "distribute-fees-bonds-label": "Distribute fees and bonds",
+            "distribute-bonds-label": "Distribute bonds",
             "distribute-progress-label": "Distributing in progress..."
         },
         "toast-messsage": {
@@ -165,7 +169,8 @@
             "vote-success": "Successfully voted",
             "cancel-market-success": "Market successfully canceled",
             "get-usd-success": "{{amount}} successfully minted",
-            "distribute-success": "Fees and bonds successfully sent"
+            "fees-bonds-distribute-success": "Fees and bonds successfully sent",
+            "bonds-distribute-success": "Bonds successfully sent"
         },
         "filter-label": {
             "global": {

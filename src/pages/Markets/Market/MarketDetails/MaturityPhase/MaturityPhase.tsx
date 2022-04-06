@@ -60,6 +60,11 @@ const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
     const isResolver = market.resolver === walletAddress;
 
     const feeEarnings = (isCreator ? market.creatorFee : 0) + (isResolver ? market.resolverFee : 0);
+    const showFeeData = market.canUsersClaim && !market.isPaused;
+    const isCancelled =
+        market.status === MarketStatus.CancelledConfirmed ||
+        market.status === MarketStatus.CancelledDisputed ||
+        market.status === MarketStatus.CancelledPendingConfirmation;
 
     const handleClaim = async () => {
         const { signer } = networkConnector;
@@ -111,7 +116,16 @@ const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
 
                 if (txResult && txResult.transactionHash) {
                     refetchMarketData(market.address, walletAddress);
-                    toast.update(id, getSuccessToastOptions(t('distribute-success')));
+                    toast.update(
+                        id,
+                        getSuccessToastOptions(
+                            t(
+                                `market.toast-messsage.${
+                                    isCancelled ? 'bonds-distribute-success' : 'fees-bonds-distribute-success'
+                                }`
+                            )
+                        )
+                    );
                     setIsDistributing(false);
                 }
             } catch (e) {
@@ -136,7 +150,19 @@ const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
         }
 
         if (userAlreadyClaimed) {
-            return <NothingToClaim>{t('market.winnings-claimed-label')}</NothingToClaim>;
+            return (
+                <NothingToClaim>
+                    {t(
+                        `market.${
+                            market.status === MarketStatus.CancelledConfirmed
+                                ? 'refund-claimed-label'
+                                : market.noWinners
+                                ? 'claimed-label'
+                                : 'winnings-claimed-label'
+                        }`
+                    )}
+                </NothingToClaim>
+            );
         }
 
         return (
@@ -215,41 +241,70 @@ const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
                 {t('market.ticket-price-label')}:{' '}
                 {formatCurrencyWithKey(PAYMENT_CURRENCY, market.ticketPrice, DEFAULT_CURRENCY_DECIMALS, true)}
             </MainInfo>
-            <FeesContainer>
-                <Info fontSize={18}>
-                    <InfoLabel>{t('market.creator-fee-label')}:</InfoLabel>
-                    <InfoContent>
-                        {formatCurrencyWithKey(PAYMENT_CURRENCY, market.creatorFee, DEFAULT_CURRENCY_DECIMALS, true)}
-                    </InfoContent>
-                </Info>
-                <Info fontSize={18}>
-                    <InfoLabel>{t('market.resolver-fee-label')}:</InfoLabel>
-                    <InfoContent>
-                        {formatCurrencyWithKey(PAYMENT_CURRENCY, market.resolverFee, DEFAULT_CURRENCY_DECIMALS, true)}
-                    </InfoContent>
-                </Info>
-                {(isCreator || isResolver) && (
-                    <MainInfo>
-                        {t('market.your-fee-label')}:{' '}
-                        {formatCurrencyWithKey(PAYMENT_CURRENCY, feeEarnings, DEFAULT_CURRENCY_DECIMALS, true)}
-                    </MainInfo>
-                )}
-                {!market.feesAndBondsClaimed ? (
-                    <DistributeButton
-                        disabled={isClaiming || isDistributing}
-                        onClick={handleDistribute}
-                        type="secondary"
-                    >
-                        {!isDistributing
-                            ? t('market.button.distribute-label')
-                            : t('market.button.distribute-progress-label')}
-                    </DistributeButton>
-                ) : (
-                    (isCreator || isResolver) && (
-                        <NothingToClaim marginTop={15}>{t('market.fees-bonds-distributed-label')}</NothingToClaim>
-                    )
-                )}
-            </FeesContainer>
+            {showFeeData && (
+                <FeesContainer>
+                    {!isCancelled && (
+                        <>
+                            <Info fontSize={18}>
+                                <InfoLabel>{t('market.creator-fee-label')}:</InfoLabel>
+                                <InfoContent>
+                                    {formatCurrencyWithKey(
+                                        PAYMENT_CURRENCY,
+                                        market.creatorFee,
+                                        DEFAULT_CURRENCY_DECIMALS,
+                                        true
+                                    )}
+                                </InfoContent>
+                            </Info>
+                            <Info fontSize={18}>
+                                <InfoLabel>{t('market.resolver-fee-label')}:</InfoLabel>
+                                <InfoContent>
+                                    {formatCurrencyWithKey(
+                                        PAYMENT_CURRENCY,
+                                        market.resolverFee,
+                                        DEFAULT_CURRENCY_DECIMALS,
+                                        true
+                                    )}
+                                </InfoContent>
+                            </Info>
+                            {(isCreator || isResolver) && (
+                                <MainInfo>
+                                    {t('market.your-fee-label')}:{' '}
+                                    {formatCurrencyWithKey(
+                                        PAYMENT_CURRENCY,
+                                        feeEarnings,
+                                        DEFAULT_CURRENCY_DECIMALS,
+                                        true
+                                    )}
+                                </MainInfo>
+                            )}
+                        </>
+                    )}
+                    {!market.feesAndBondsClaimed ? (
+                        <DistributeButton
+                            disabled={isClaiming || isDistributing}
+                            onClick={handleDistribute}
+                            type="secondary"
+                        >
+                            {!isDistributing
+                                ? t(
+                                      `market.button.${
+                                          isCancelled ? 'distribute-bonds-label' : 'distribute-fees-bonds-label'
+                                      }`
+                                  )
+                                : t('market.button.distribute-progress-label')}
+                        </DistributeButton>
+                    ) : (
+                        (isCreator || isResolver) && (
+                            <NothingToClaim marginTop={15}>
+                                {t(
+                                    `market.${isCancelled ? 'bonds-distributed-label' : 'fees-bonds-distributed-label'}`
+                                )}
+                            </NothingToClaim>
+                        )
+                    )}
+                </FeesContainer>
+            )}
             <ButtonContainer>
                 {market.noWinners && (
                     <ClaimInfo>
