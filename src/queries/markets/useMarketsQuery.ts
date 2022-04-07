@@ -25,8 +25,7 @@ const useMarketsQuery = (networkId: NetworkId, options?: UseQueryOptions<Markets
                 market.canUsersClaim =
                     market.isResolved &&
                     !market.isDisputed &&
-                    ((market.resolvedTime > 0 &&
-                        Date.now() > market.resolvedTime + Number(claimTimeoutDefaultPeriod) * 1000) ||
+                    ((market.resolvedTime > 0 && Date.now() > market.resolvedTime + market.claimTimeoutDefaultPeriod) ||
                         (market.backstopTimeout > 0 &&
                             market.resolvedTime > 0 &&
                             market.disputeClosedTime > 0 &&
@@ -42,7 +41,7 @@ const useMarketsQuery = (networkId: NetworkId, options?: UseQueryOptions<Markets
                             if (market.isDisputed) {
                                 market.status = MarketStatus.CancelledDisputed;
                             } else {
-                                if (market.canUsersClaim) {
+                                if (market.canUsersClaim || market.cancelledByCreator) {
                                     market.status = MarketStatus.CancelledConfirmed;
                                 } else {
                                     market.status = MarketStatus.CancelledPendingConfirmation;

@@ -1,3 +1,4 @@
+import Tooltip from 'components/Tooltip';
 import React from 'react';
 import styled from 'styled-components';
 import { FlexDivStart } from 'styles/common';
@@ -10,7 +11,7 @@ type ToggleProps = {
     onClick?: any;
     leftText?: string;
     rightText?: string;
-    isCentered?: boolean;
+    tooltip?: string;
 };
 
 const Toggle: React.FC<ToggleProps> = ({
@@ -20,24 +21,32 @@ const Toggle: React.FC<ToggleProps> = ({
     onClick,
     leftText,
     rightText,
-    isCentered,
+    tooltip,
 }) => {
+    const getToggleContent = () => (
+        <ToggleContainer
+            onClick={() => {
+                if (disabled) {
+                    return;
+                }
+                onClick();
+            }}
+            className={disabled ? 'toogle disabled' : 'toogle'}
+        >
+            {leftText && <ToggleText>{leftText}</ToggleText>}
+            <ToggleIcon isLeftOptionSelected={isLeftOptionSelected} />
+            {rightText && <ToggleText>{rightText}</ToggleText>}
+        </ToggleContainer>
+    );
+
     return (
         <FieldContainer>
             {label && <FieldLabel>{label}:</FieldLabel>}
-            <ToggleContainer
-                onClick={() => {
-                    if (disabled) {
-                        return;
-                    }
-                    onClick();
-                }}
-                className={disabled ? 'disabled' : ''}
-            >
-                {leftText && <ToggleText isCentered={isCentered}>{leftText}</ToggleText>}
-                <ToggleIcon isLeftOptionSelected={isLeftOptionSelected} />
-                {rightText && <ToggleText isCentered={isCentered}>{rightText}</ToggleText>}
-            </ToggleContainer>
+            {!!tooltip ? (
+                <Tooltip overlay={<span>{tooltip}</span>} component={getToggleContent()} />
+            ) : (
+                getToggleContent()
+            )}
         </FieldContainer>
     );
 };
@@ -56,7 +65,7 @@ const ToggleContainer = styled(FlexDivStart)`
     width: fit-content;
 `;
 
-const ToggleText = styled.span<{ isCentered?: boolean }>`
+const ToggleText = styled.span`
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
@@ -65,7 +74,6 @@ const ToggleText = styled.span<{ isCentered?: boolean }>`
     :first-child {
         text-align: end;
     }
-    width: ${(props) => (props.isCentered ? 'calc(50% - 25px)' : 'auto')};
     white-space: nowrap;
     @media (max-width: 575px) {
         white-space: break-spaces;

@@ -60,12 +60,8 @@ const Market: React.FC<MarketProps> = (props) => {
                 <>
                     <BackToLink link={buildHref(ROUTES.Markets.Home)} text={t('market.back-to-markets')} />
                     <MarketDetails market={market} />
-                    {market.canMarketBeResolved && !isOracleCouncilMember && (
-                        <ResolveMarket
-                            marketAddress={market.address}
-                            marketCreator={market.creator}
-                            positions={market.positions}
-                        />
+                    {market.canMarketBeResolved && !isOracleCouncilMember && !market.isPaused && (
+                        <ResolveMarket market={market} />
                     )}
                     <Disputes
                         marketAddress={marketAddress}

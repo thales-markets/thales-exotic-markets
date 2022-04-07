@@ -1,12 +1,12 @@
 import Button from 'components/Button';
-import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { getIsAppReady } from 'redux/modules/app';
 import { RootState } from 'redux/rootReducer';
 import styled from 'styled-components';
-import { FlexDivCentered, FlexDivColumn } from 'styles/common';
-import { AccountMarketData, MarketData } from 'types/markets';
+import { FlexDivColumn } from 'styles/common';
+import { AccountMarketData, MarketData, MarketsParameters } from 'types/markets';
 import { formatCurrencyWithKey, formatPercentage } from 'utils/formatters/number';
 import { PAYMENT_CURRENCY, DEFAULT_CURRENCY_DECIMALS } from 'constants/currency';
 import { getIsWalletConnected, getNetworkId, getWalletAddress } from 'redux/modules/wallet';
@@ -18,11 +18,14 @@ import ApprovalModal from 'components/ApprovalModal';
 import marketContract from 'utils/contracts/exoticPositionalMarketContract';
 import usePaymentTokenBalanceQuery from 'queries/wallet/usePaymentTokenBalanceQuery';
 import onboardConnector from 'utils/onboardConnector';
-import RadioButton from 'components/fields/RadioButton';
 import useAccountMarketDataQuery from 'queries/markets/useAccountMarketDataQuery';
 import { toast } from 'react-toastify';
 import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
 import { getRoi } from 'utils/markets';
+import { Info, InfoContent, InfoLabel, MainInfo, PositionContainer, PositionLabel, Positions } from 'components/common';
+import useMarketsParametersQuery from 'queries/markets/useMarketsParametersQuery';
+import Tooltip from 'components/Tooltip';
+import { refetchMarketData } from 'utils/queryConnector';
 
 type PositioningPhaseProps = {
     market: MarketData;
@@ -36,7 +39,7 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
     const isWalletConnected = useSelector((state: RootState) => getIsWalletConnected(state));
     const [hasAllowance, setAllowance] = useState<boolean>(false);
     const [isAllowing, setIsAllowing] = useState<boolean>(false);
-    const [isBuying, setIsBuying] = useState<boolean>(false);
+    const [isBidding, setIsBidding] = useState<boolean>(false);
     const [isWithdrawing, setIsWithdrawing] = useState<boolean>(false);
     const [isCanceling, setIsCanceling] = useState<boolean>(false);
     const [openApprovalModal, setOpenApprovalModal] = useState<boolean>(false);
@@ -46,6 +49,7 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
     const [currentPositionOnContract, setCurrentPositionOnContract] = useState<number>(0);
     const [positionOnContract, setPositionOnContract] = useState<number>(0);
     const [winningAmount, setWinningAmount] = useState<number>(0);
+    const [canWithdraw, setCanWithdraw] = useState<boolean>(false);
 
     const accountMarketDataQuery = useAccountMarketDataQuery(market.address, walletAddress, {
         enabled: isAppReady && isWalletConnected,
@@ -57,6 +61,7 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
             setPositionOnContract((accountMarketDataQuery.data as AccountMarketData).position);
             setWinningAmount((accountMarketDataQuery.data as AccountMarketData).winningAmount);
             setSelectedPosition((accountMarketDataQuery.data as AccountMarketData).position);
+            setCanWithdraw((accountMarketDataQuery.data as AccountMarketData).canWithdraw);
         }
     }, [accountMarketDataQuery.isSuccess, accountMarketDataQuery.data]);
 
@@ -70,18 +75,35 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
         }
     }, [paymentTokenBalanceQuery.isSuccess, paymentTokenBalanceQuery.data]);
 
+    const marketsParametersQuery = useMarketsParametersQuery(networkId, {
+        enabled: isAppReady,
+    });
+
+    const marketsParameters: MarketsParameters | undefined = useMemo(() => {
+        if (marketsParametersQuery.isSuccess && marketsParametersQuery.data) {
+            return marketsParametersQuery.data as MarketsParameters;
+        }
+        return undefined;
+    }, [marketsParametersQuery.isSuccess, marketsParametersQuery.data]);
+
+    const creatorPercentage = marketsParameters ? marketsParameters.creatorPercentage : 0;
+    const resolverPercentage = marketsParameters ? marketsParameters.resolverPercentage : 0;
+    const safeBoxPercentage = marketsParameters ? marketsParameters.safeBoxPercentage : 0;
+    const bidPercentage = creatorPercentage + resolverPercentage + safeBoxPercentage;
+    const withdrawalPercentage = marketsParameters ? marketsParameters.withdrawalPercentage : 0;
+
     const showTicketInfo = market.isTicketType && market.canUsersPlacePosition;
-    const showTicketBuy = showTicketInfo && currentPositionOnContract === 0;
+    const showTicketBid = showTicketInfo && currentPositionOnContract === 0;
     const showTicketChangePosition = showTicketInfo && currentPositionOnContract !== selectedPosition;
-    const showTicketWithdraw = showTicketInfo && market.isWithdrawalAllowed && currentPositionOnContract > 0;
+    const showTicketWithdraw = showTicketInfo && canWithdraw && currentPositionOnContract > 0;
     const showCancel = market.canCreatorCancelMarket && walletAddress.toLowerCase() === market.creator.toLowerCase();
 
     const insufficientBalance =
         Number(paymentTokenBalance) < Number(market.ticketPrice) || Number(paymentTokenBalance) === 0;
     const isPositionSelected = selectedPosition > 0;
 
-    const isBuyButtonDisabled =
-        isBuying ||
+    const isBidButtonDisabled =
+        isBidding ||
         isWithdrawing ||
         isCanceling ||
         !isWalletConnected ||
@@ -89,9 +111,9 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
         insufficientBalance ||
         !isPositionSelected;
     const isChangePositionButtonDisabled =
-        isBuying || isWithdrawing || isCanceling || !isWalletConnected || !isPositionSelected;
-    const isWithdrawButtonDisabled = isBuying || isWithdrawing || isCanceling || !isWalletConnected;
-    const isCancelButtonDisabled = isBuying || isWithdrawing || isCanceling || !isWalletConnected;
+        isBidding || isWithdrawing || isCanceling || !isWalletConnected || !isPositionSelected;
+    const isWithdrawButtonDisabled = isBidding || isWithdrawing || isCanceling || !isWalletConnected;
+    const isCancelButtonDisabled = isBidding || isWithdrawing || isCanceling || !isWalletConnected;
 
     useEffect(() => {
         const { paymentTokenContract, thalesBondsContract, signer } = networkConnector;
@@ -116,7 +138,7 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
                 getAllowance();
             }
         }
-    }, [walletAddress, isWalletConnected, hasAllowance, market.ticketPrice, isAllowing, isBuying, isWithdrawing]);
+    }, [walletAddress, isWalletConnected, hasAllowance, market.ticketPrice, isAllowing, isBidding, isWithdrawing]);
 
     const handleAllowance = async (approveAmount: BigNumber) => {
         const { paymentTokenContract, thalesBondsContract, signer } = networkConnector;
@@ -149,11 +171,11 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
         }
     };
 
-    const handleBuy = async () => {
+    const handleBid = async () => {
         const { signer } = networkConnector;
         if (signer) {
             const id = toast.loading(t('market.toast-messsage.transaction-pending'));
-            setIsBuying(true);
+            setIsBidding(true);
 
             try {
                 const marketContractWithSigner = new ethers.Contract(market.address, marketContract.abi, signer);
@@ -162,23 +184,24 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
                 const txResult = await tx.wait();
 
                 if (txResult && txResult.transactionHash) {
+                    refetchMarketData(market.address, walletAddress);
                     toast.update(
                         id,
                         getSuccessToastOptions(
                             t(
                                 `market.toast-messsage.${
-                                    showTicketBuy ? 'ticket-buy-success' : 'change-position-success'
+                                    showTicketBid ? 'ticket-bid-success' : 'change-position-success'
                                 }`
                             )
                         )
                     );
-                    setIsBuying(false);
+                    setIsBidding(false);
                     setCurrentPositionOnContract(selectedPosition);
                 }
             } catch (e) {
                 console.log(e);
                 toast.update(id, getErrorToastOptions(t('common.errors.unknown-error-try-again')));
-                setIsBuying(false);
+                setIsBidding(false);
             }
         }
     };
@@ -196,6 +219,7 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
                 const txResult = await tx.wait();
 
                 if (txResult && txResult.transactionHash) {
+                    refetchMarketData(market.address, walletAddress);
                     toast.update(id, getSuccessToastOptions(t('market.toast-messsage.withdraw-success')));
                     setIsWithdrawing(false);
                     setCurrentPositionOnContract(0);
@@ -222,6 +246,7 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
                 const txResult = await tx.wait();
 
                 if (txResult && txResult.transactionHash) {
+                    refetchMarketData(market.address, walletAddress);
                     toast.update(id, getSuccessToastOptions(t('market.toast-messsage.cancel-market-success')));
                     setIsCanceling(false);
                 }
@@ -241,7 +266,7 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
                 </MarketButton>
             );
         }
-        if (insufficientBalance && showTicketBuy) {
+        if (insufficientBalance && showTicketBid) {
             return (
                 <MarketButton type="secondary" disabled={true}>
                     {t(`common.errors.insufficient-balance`)}
@@ -255,7 +280,7 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
                 </MarketButton>
             );
         }
-        if (!hasAllowance && showTicketBuy) {
+        if (!hasAllowance && showTicketBid) {
             return (
                 <MarketButton type="secondary" disabled={isAllowing} onClick={() => setOpenApprovalModal(true)}>
                     {!isAllowing
@@ -266,18 +291,18 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
                 </MarketButton>
             );
         }
-        if (showTicketBuy) {
+        if (showTicketBid) {
             return (
-                <MarketButton type="secondary" disabled={isBuyButtonDisabled} onClick={handleBuy}>
-                    {!isBuying ? t('market.button.buy-label') : t('market.button.buy-progress-label')}
+                <MarketButton type="secondary" disabled={isBidButtonDisabled} onClick={handleBid}>
+                    {!isBidding ? t('market.button.bid-label') : t('market.button.bid-progress-label')}
                 </MarketButton>
             );
         }
         return (
             <>
                 {showTicketChangePosition && (
-                    <MarketButton type="secondary" disabled={isChangePositionButtonDisabled} onClick={handleBuy}>
-                        {!isBuying
+                    <MarketButton type="secondary" disabled={isChangePositionButtonDisabled} onClick={handleBid}>
+                        {!isBidding
                             ? t('market.button.change-position-label')
                             : t('market.button.change-position-progress-label')}
                     </MarketButton>
@@ -297,15 +322,14 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
         <>
             <Positions>
                 {market.positions.map((position: string, index: number) => (
-                    <Position key={position}>
-                        <RadioButton
-                            checked={index + 1 === selectedPosition}
-                            value={index + 1}
-                            onChange={() => setSelectedPosition(index + 1)}
-                            label={position}
-                            disabled={isBuying || isWithdrawing}
-                            isColumnDirection
-                        />
+                    <PositionContainer
+                        key={position}
+                        className={`${isBidding || isWithdrawing ? 'disabled' : ''} ${
+                            index + 1 === selectedPosition ? 'selected' : ''
+                        }`}
+                        onClick={() => setSelectedPosition(index + 1)}
+                    >
+                        <PositionLabel>{position}</PositionLabel>
                         <Info>
                             <InfoLabel>{t('market.pool-size-label')}:</InfoLabel>
                             <InfoContent>
@@ -328,20 +352,65 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
                                             : positionOnContract === index + 1
                                             ? winningAmount
                                             : market.winningAmountsNoPosition[index],
-                                        market.totalUsersTakenPositions > 1 ||
-                                            (market.totalUsersTakenPositions === 1 && positionOnContract === 0)
+                                        true
                                     )
                                 )}
                             </InfoContent>
+                            <Tooltip overlay={<RoiOverlayContainer>{t('market.roi-tooltip')}</RoiOverlayContainer>} />
                         </Info>
-                    </Position>
+                    </PositionContainer>
                 ))}
             </Positions>
             {showTicketInfo && (
-                <MainInfo>
-                    {t('market.ticket-price-label')}{' '}
-                    {formatCurrencyWithKey(PAYMENT_CURRENCY, market.ticketPrice, DEFAULT_CURRENCY_DECIMALS, true)}
-                </MainInfo>
+                <>
+                    <MainInfo>
+                        {t('market.ticket-price-label')}:{' '}
+                        {formatCurrencyWithKey(PAYMENT_CURRENCY, market.ticketPrice, DEFAULT_CURRENCY_DECIMALS, true)}
+                    </MainInfo>
+                    <Info>
+                        <InfoLabel>{t('market.bid-fee-label')}:</InfoLabel>
+                        <InfoContent>{bidPercentage}%</InfoContent>
+                        <Tooltip
+                            overlay={
+                                <FeesOverlayContainer>
+                                    <Trans
+                                        i18nKey="market.bid-fee-tooltip"
+                                        components={[<div key="1" />, <span key="2" />]}
+                                        values={{
+                                            bidPercentage,
+                                            creatorPercentage,
+                                            resolverPercentage,
+                                            safeBoxPercentage,
+                                        }}
+                                    />
+                                </FeesOverlayContainer>
+                            }
+                        />
+                    </Info>
+                    {market.isWithdrawalAllowed ? (
+                        <Info>
+                            <InfoLabel>{t('market.withdrawal-fee-label')}:</InfoLabel>
+                            <InfoContent>{withdrawalPercentage}%</InfoContent>
+                            <Tooltip
+                                overlay={
+                                    <FeesOverlayContainer>
+                                        <Trans
+                                            i18nKey="market.withdrawal-fee-tooltip"
+                                            components={[<div key="1" />, <span key="2" />]}
+                                            values={{
+                                                withdrawalPercentage,
+                                                creatorPercentage: withdrawalPercentage / 2,
+                                                safeBoxPercentage: withdrawalPercentage / 2,
+                                            }}
+                                        />
+                                    </FeesOverlayContainer>
+                                }
+                            />
+                        </Info>
+                    ) : (
+                        <Info>{t('market.withdrawal-not-allowed')}</Info>
+                    )}
+                </>
             )}
             <ButtonContainer>
                 {getButtons()}
@@ -366,40 +435,6 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
     );
 };
 
-const Positions = styled(FlexDivColumn)`
-    margin-bottom: 20px;
-`;
-
-const Position = styled(FlexDivColumn)`
-    margin-bottom: 35px;
-`;
-
-const Info = styled(FlexDivCentered)<{ fontSize?: number }>`
-    font-style: normal;
-    font-weight: 300;
-    font-size: ${(props) => props.fontSize || 25}px;
-    line-height: 100%;
-    color: ${(props) => props.theme.textColor.primary};
-    white-space: nowrap;
-`;
-
-const InfoLabel = styled.span`
-    margin-right: 6px;
-`;
-
-const InfoContent = styled.span`
-    font-weight: 700;
-`;
-
-const MainInfo = styled.span`
-    font-style: normal;
-    font-weight: bold;
-    font-size: 40px;
-    line-height: 55px;
-    text-align: center;
-    color: ${(props) => props.theme.textColor.primary};
-`;
-
 const ButtonContainer = styled(FlexDivColumn)`
     margin-top: 40px;
     margin-bottom: 40px;
@@ -407,12 +442,25 @@ const ButtonContainer = styled(FlexDivColumn)`
 `;
 
 const MarketButton = styled(Button)`
-    height: 32px;
-    font-size: 22px;
-    padding-top: 2px;
     :not(button:last-of-type) {
         margin-bottom: 10px;
     }
+`;
+
+const FeesOverlayContainer = styled(FlexDivColumn)`
+    text-align: start;
+    div {
+        margin-bottom: 5px;
+    }
+    span {
+        :last-of-type {
+            margin-bottom: 5px;
+        }
+    }
+`;
+
+const RoiOverlayContainer = styled(FlexDivColumn)`
+    text-align: justify;
 `;
 
 export default PositioningPhase;

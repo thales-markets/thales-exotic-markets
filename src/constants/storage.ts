@@ -6,4 +6,5 @@ export const LOCAL_STORAGE_KEYS = {
     FILTER_GLOBAL: 'filterGlobal',
     FILTER_MARKET_SEARCH: 'filterMarketSearch',
     FILTER_SHOW_OPEN_MARKETS: 'filterShowOpenMarkets',
+    FILTER_TAGS: 'filterTags',
 };

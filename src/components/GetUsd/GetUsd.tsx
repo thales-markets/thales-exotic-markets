@@ -99,11 +99,7 @@ const GetUsd: React.FC = () => {
 const Container = styled(FlexDivCentered)`
     position: relative;
     height: 28px;
-    @media (max-width: 767px) {
-        margin-bottom: 10px;
-    }
     button {
-        font-size: 18px;
         padding: 0 20px;
     }
 `;

@@ -12,25 +12,42 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
         QUERY_KEYS.Market(marketAddress),
         async () => {
             const contract = new ethers.Contract(marketAddress, marketContract.abi, networkConnector.provider);
-            const { marketDataContract, thalesOracleCouncilContract, marketManagerContract } = networkConnector;
+            const {
+                marketDataContract,
+                thalesOracleCouncilContract,
+                marketManagerContract,
+                thalesBondsContract,
+            } = networkConnector;
             const [
                 allMarketData,
                 isMarketClosedForDisputes,
                 numberOfDisputes,
                 numberOfOpenDisputes,
                 claimTimeoutDefaultPeriod,
+                cancelledByCreator,
                 winningAmountsNewUser,
                 winningAmountsNoPosition,
                 totalUsersTakenPositions,
+                winningAmountPerTicket,
+                noWinners,
+                allFees,
+                feesAndBondsClaimed,
+                creatorBond,
             ] = await Promise.all([
                 marketDataContract?.getAllMarketData(marketAddress),
                 thalesOracleCouncilContract?.isMarketClosedForDisputes(marketAddress),
                 thalesOracleCouncilContract?.marketTotalDisputes(marketAddress),
                 thalesOracleCouncilContract?.getMarketOpenDisputes(marketAddress),
                 marketManagerContract?.claimTimeoutDefaultPeriod(),
+                marketManagerContract?.cancelledByCreator(marketAddress),
                 contract?.getPotentialWinningAmountForAllPosition(true, 0),
                 contract?.getPotentialWinningAmountForAllPosition(false, 0),
                 contract?.totalUsersTakenPositions(),
+                contract?.getWinningAmountPerTicket(),
+                contract?.noWinners(),
+                contract?.getAllFees(),
+                contract?.feesAndBondsClaimed(),
+                thalesBondsContract?.getCreatorBondForMarket(marketAddress),
             ]);
 
             const [
@@ -66,6 +83,8 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                 disputeClosedTime,
                 canCreatorCancelMarket,
             ] = allMarketData;
+
+            const [creatorFee, resolverFee, safeBoxFee, totalFees] = allFees;
 
             const market: MarketData = {
                 address: marketAddress,
@@ -112,6 +131,16 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                     bigNumberFormatter(item)
                 ),
                 totalUsersTakenPositions: Number(totalUsersTakenPositions),
+                winningAmountPerTicket: bigNumberFormatter(winningAmountPerTicket),
+                noWinners,
+                numberOfParticipants: bigNumberFormatter(poolSize) / bigNumberFormatter(ticketPrice),
+                cancelledByCreator,
+                creatorBond: bigNumberFormatter(creatorBond),
+                creatorFee: bigNumberFormatter(creatorFee),
+                resolverFee: bigNumberFormatter(resolverFee),
+                safeBoxFee: bigNumberFormatter(safeBoxFee),
+                totalFees: bigNumberFormatter(totalFees),
+                feesAndBondsClaimed,
             };
 
             // TODO - needs refactoring
@@ -123,7 +152,7 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                         if (market.isDisputed) {
                             market.status = MarketStatus.CancelledDisputed;
                         } else {
-                            if (market.canUsersClaim) {
+                            if (market.canUsersClaim || market.cancelledByCreator) {
                                 market.status = MarketStatus.CancelledConfirmed;
                             } else {
                                 market.status = MarketStatus.CancelledPendingConfirmation;

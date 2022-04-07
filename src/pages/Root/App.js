@@ -151,7 +151,7 @@ const App = () => {
                                 )}
                             />
                             <Route exact path={ROUTES.Markets.Home}>
-                                <DappLayout>
+                                <DappLayout showSearch>
                                     <Markets />
                                 </DappLayout>
                             </Route>

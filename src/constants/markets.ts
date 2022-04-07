@@ -33,7 +33,7 @@ const maxDate = new Date();
 maxDate.setMonth(maxDate.getMonth() + 1);
 export const DATE_PICKER_MAX_DATE = maxDate; // 1 month from now
 
-export const MAXIMUM_INPUT_CHARACTERS = 100;
+export const MAXIMUM_INPUT_CHARACTERS = 200;
 
 export enum MarketStatus {
     Open = 'open',
@@ -96,4 +96,15 @@ export const DISPUTE_VOTED_OPTION_STATUS_MAP = {
     [DisputeVotingOption.ACCEPT_RESULT]: DisputeStatus.AcceptedSetResult,
     [DisputeVotingOption.ACCEPT_RESET]: DisputeStatus.AcceptedReset,
     [DisputeVotingOption.REFUSE_MATURE]: DisputeStatus.RefusedMature,
+};
+
+export const DISPUTE_STATUS_SORTING_MAP = {
+    [DisputeStatus.Open]: 0,
+    [DisputeStatus.AcceptedSlashed]: 1,
+    [DisputeStatus.AcceptedNotSlashed]: 1,
+    [DisputeStatus.AcceptedSetResult]: 1,
+    [DisputeStatus.AcceptedReset]: 2,
+    [DisputeStatus.RefusedMature]: 4,
+    [DisputeStatus.RefusedOnPositioning]: 5,
+    [DisputeStatus.Cancelled]: 6,
 };

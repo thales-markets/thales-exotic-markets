@@ -1,5 +1,4 @@
 import DatetimePicker from 'components/fields/DatetimePicker';
-import TextInput from 'components/fields/TextInput';
 import TextAreaInput from 'components/fields/TextAreaInput';
 import Toggle from 'components/fields/Toggle';
 import {
@@ -47,6 +46,8 @@ import WarningMessage from 'components/WarningMessage';
 import { BondInfo } from 'components/common';
 import BackToLink from '../components/BackToLink';
 import ROUTES from 'constants/routes';
+import RadioButton from 'components/fields/RadioButton';
+import { FieldLabel } from 'components/fields/common';
 
 const calculateMinTime = (currentDate: Date, minDate: Date) => {
     const isMinDateCurrentDate = isSameDay(currentDate, minDate);
@@ -54,6 +55,14 @@ const calculateMinTime = (currentDate: Date, minDate: Date) => {
         return minDate;
     }
     return startOfToday();
+};
+
+const calculateMaxTime = (currentDate: Date, maxDate: Date) => {
+    const isMaxDateCurrentDate = isSameDay(currentDate, maxDate);
+    if (isMaxDateCurrentDate) {
+        return maxDate;
+    }
+    return endOfToday();
 };
 
 const CreateMarket: React.FC = () => {
@@ -80,8 +89,10 @@ const CreateMarket: React.FC = () => {
     const [openApprovalModal, setOpenApprovalModal] = useState<boolean>(false);
     const [minTime, setMinTime] = useState<Date>(DATE_PICKER_MIN_DATE);
     const [minDate, setMinDate] = useState<Date>(DATE_PICKER_MIN_DATE);
+    const [maxTime, setMaxTime] = useState<Date>(DATE_PICKER_MAX_DATE);
     const [maxDate, setMaxDate] = useState<Date>(DATE_PICKER_MAX_DATE);
     const [isTicketPriceValid, setIsTicketPriceValid] = useState<boolean>(true);
+    const [initialPosition, setInitialPosition] = useState<number>(0);
 
     const marketsParametersQuery = useMarketsParametersQuery(networkId, {
         enabled: isAppReady,
@@ -101,7 +112,11 @@ const CreateMarket: React.FC = () => {
         const minTime = calculateMinTime(endOfPositioning, minDate);
         setMinTime(minTime);
         setMinDate(minDate);
-        setMaxDate(setMonth(minDate, minDate.getMonth() + 1));
+
+        const maxDate = setMonth(minDate, minDate.getMonth() + 1);
+        const maxTime = calculateMaxTime(endOfPositioning, maxDate);
+        setMaxTime(maxTime);
+        setMaxDate(maxDate);
     }, [minimumPositioningDuration]);
 
     const tagsQuery = useTagsQuery(networkId, {
@@ -139,17 +154,35 @@ const CreateMarket: React.FC = () => {
     const maximumPositionsAllowed = marketsParameters ? marketsParameters.maximumPositionsAllowed : MAXIMUM_POSITIONS;
     const minFixedTicketPrice = marketsParameters ? marketsParameters.minFixedTicketPrice : MINIMUM_TICKET_PRICE;
 
+    const marketQuestionStringLimit = marketsParameters
+        ? marketsParameters.marketQuestionStringLimit
+        : MAXIMUM_INPUT_CHARACTERS;
+    const marketSourceStringLimit = marketsParameters
+        ? marketsParameters.marketSourceStringLimit
+        : MAXIMUM_INPUT_CHARACTERS;
+    const marketPositionStringLimit = marketsParameters
+        ? marketsParameters.marketPositionStringLimit
+        : MAXIMUM_INPUT_CHARACTERS;
+
     const isQuestionEntered = question.trim() !== '';
     const isDataSourceEntered = dataSource.trim() !== '';
     const isTicketPriceEntered =
         (marketType === MarketType.TICKET && Number(ticketPrice) > 0) || marketType === MarketType.OPEN_BID;
     const arePositionsEntered = positions.every((position) => position.trim() !== '');
     const areTagsEntered = tags.length > 0;
-    const insufficientBalance =
-        Number(paymentTokenBalance) < Number(fixedBondAmount) || Number(paymentTokenBalance) === 0;
+    const isInitialPositionSelected = initialPosition > 0;
+
+    const requiredFunds =
+        marketType === MarketType.TICKET ? Number(fixedBondAmount) + Number(ticketPrice) : Number(fixedBondAmount);
+    const insufficientBalance = Number(paymentTokenBalance) < requiredFunds || Number(paymentTokenBalance) === 0;
 
     const areMarketDataEntered =
-        isQuestionEntered && isDataSourceEntered && isTicketPriceEntered && arePositionsEntered && areTagsEntered;
+        isQuestionEntered &&
+        isDataSourceEntered &&
+        isTicketPriceEntered &&
+        arePositionsEntered &&
+        areTagsEntered &&
+        isInitialPositionSelected;
 
     const isButtonDisabled =
         isSubmitting ||
@@ -167,7 +200,7 @@ const CreateMarket: React.FC = () => {
             const addressToApprove = thalesBondsContract.address;
             const getAllowance = async () => {
                 try {
-                    const parsedAmount = ethers.utils.parseEther(Number(fixedBondAmount).toString());
+                    const parsedAmount = ethers.utils.parseEther(Number(requiredFunds).toString());
                     const allowance = await checkAllowance(
                         parsedAmount,
                         paymentTokenContractWithSigner,
@@ -183,7 +216,7 @@ const CreateMarket: React.FC = () => {
                 getAllowance();
             }
         }
-    }, [walletAddress, isWalletConnected, hasAllowance, fixedBondAmount, isAllowing]);
+    }, [walletAddress, isWalletConnected, hasAllowance, requiredFunds, isAllowing]);
 
     const handleAllowance = async (approveAmount: BigNumber) => {
         const { paymentTokenContract, thalesBondsContract, signer } = networkConnector;
@@ -239,6 +272,7 @@ const CreateMarket: React.FC = () => {
                     isWithdrawalAllowed,
                     formmatedTags,
                     positions.length,
+                    initialPosition,
                     positions
                 );
                 const txResult = await tx.wait();
@@ -275,6 +309,9 @@ const CreateMarket: React.FC = () => {
         }
         if (!areTagsEntered) {
             return t(`common.errors.enter-tags`);
+        }
+        if (!isInitialPositionSelected) {
+            return t(`common.errors.select-initial-position`);
         }
     };
 
@@ -324,18 +361,21 @@ const CreateMarket: React.FC = () => {
 
     const addPosition = () => {
         setPositions([...positions, '']);
+        setInitialPosition(0);
     };
 
     const removePosition = (index: number) => {
         const newPostions = [...positions];
         newPostions.splice(index, 1);
         setPositions(newPostions);
+        setInitialPosition(0);
     };
 
     const setPositionText = (index: number, text: string) => {
         const newPostions = [...positions];
         newPostions[index] = text;
         setPositions(newPostions);
+        setInitialPosition(0);
     };
 
     const addTag = (tag: Tag) => {
@@ -366,6 +406,8 @@ const CreateMarket: React.FC = () => {
         setEndOfPositioning(convertLocalToUTCDate(minDate > date ? minDate : maxDate < date ? maxDate : date));
         const minTime = calculateMinTime(date, minDate);
         setMinTime(minTime);
+        const maxTime = calculateMaxTime(date, maxDate);
+        setMaxTime(maxTime);
     };
 
     useEffect(() => {
@@ -392,20 +434,20 @@ const CreateMarket: React.FC = () => {
                         label={t('market.create-market.question-label')}
                         note={t('common.input-characters-note', {
                             entered: question.length,
-                            max: MAXIMUM_INPUT_CHARACTERS,
+                            max: marketQuestionStringLimit,
                         })}
-                        maximumCharacters={MAXIMUM_INPUT_CHARACTERS}
+                        maximumCharacters={marketQuestionStringLimit}
                         disabled={isSubmitting || creationRestrictedToOwner}
                     />
-                    <TextInput
+                    <TextAreaInput
                         value={dataSource}
                         onChange={setDataSource}
                         label={t('market.create-market.data-source-label')}
                         note={t('common.input-characters-note', {
                             entered: dataSource.length,
-                            max: MAXIMUM_INPUT_CHARACTERS,
+                            max: marketSourceStringLimit,
                         })}
-                        maximumCharacters={MAXIMUM_INPUT_CHARACTERS}
+                        maximumCharacters={marketSourceStringLimit}
                         disabled={isSubmitting || creationRestrictedToOwner}
                     />
                     <Positions
@@ -416,6 +458,7 @@ const CreateMarket: React.FC = () => {
                         label={t('market.create-market.positions-label')}
                         disabled={isSubmitting || creationRestrictedToOwner}
                         maxPositions={maximumPositionsAllowed}
+                        maximumCharacters={marketPositionStringLimit}
                     />
                     <DatetimePicker
                         selected={convertUTCToLocalDate(endOfPositioning)}
@@ -423,7 +466,7 @@ const CreateMarket: React.FC = () => {
                         label={t('market.create-market.positioning-end-label')}
                         disabled={isSubmitting || creationRestrictedToOwner}
                         minTime={minTime}
-                        maxTime={endOfToday()}
+                        maxTime={maxTime}
                         minDate={minDate}
                         maxDate={maxDate}
                     />
@@ -435,6 +478,7 @@ const CreateMarket: React.FC = () => {
                         label={t('market.create-market.type-label')}
                         leftText={t('market.create-market.type-options.ticket')}
                         rightText={t('market.create-market.type-options.open-bid')}
+                        tooltip={t('market.create-market.type-tooltip')}
                         // disabled={isSubmitting || creationRestrictedToOwner}
                         disabled={true}
                     />
@@ -475,6 +519,24 @@ const CreateMarket: React.FC = () => {
                         disabled={isSubmitting || creationRestrictedToOwner}
                         maxTags={maxNumberOfTags}
                     />
+                    <YourPostionsContainer>
+                        <FieldLabel>{t('market.create-market.your-initial-position-label')}:</FieldLabel>
+                        <YourPostions>
+                            {positions.map((position: string, index: number) => {
+                                const positionIndex = index + 1;
+                                return (
+                                    <RadioButton
+                                        checked={positionIndex === initialPosition}
+                                        value={positionIndex}
+                                        onChange={() => setInitialPosition(positionIndex)}
+                                        label={position.trim() === '' ? '...' : position}
+                                        disabled={isSubmitting || creationRestrictedToOwner}
+                                        key={`yourPositionKey${position}${index}`}
+                                    />
+                                );
+                            })}
+                        </YourPostions>
+                    </YourPostionsContainer>
                     <ButtonContainer>
                         <BondInfo>
                             {t('market.create-market.bond-info', {
@@ -493,7 +555,7 @@ const CreateMarket: React.FC = () => {
             </ContentWrapper>
             {openApprovalModal && (
                 <ApprovalModal
-                    defaultAmount={fixedBondAmount}
+                    defaultAmount={requiredFunds}
                     tokenSymbol={PAYMENT_CURRENCY}
                     isAllowing={isAllowing}
                     onSubmit={handleAllowance}
@@ -526,9 +588,18 @@ const Form = styled(FlexDivColumn)`
     height: fit-content;
 `;
 
-const CreateMarketButton = styled(Button)`
-    height: 32px;
+const YourPostionsContainer = styled(FlexDivColumn)`
+    border-top: 2px solid ${(props) => props.theme.borderColor.primary};
+    padding-top: 10px;
 `;
+
+const YourPostions = styled(FlexDivColumn)`
+    label {
+        align-self: start;
+    }
+`;
+
+const CreateMarketButton = styled(Button)``;
 
 const ButtonContainer = styled(FlexDivColumn)`
     margin: 40px 0 0 0;

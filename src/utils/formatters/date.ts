@@ -44,6 +44,12 @@ export const formattedDuration = (
     if (duration.hours) {
         return `${duration.hours} ${
             duration.hours > 1 ? dateTimeTranslationMap['hours'] : dateTimeTranslationMap['hour']
+        } ${
+            duration.minutes
+                ? `${duration.minutes} ${
+                      duration.minutes > 1 ? dateTimeTranslationMap['minutes'] : dateTimeTranslationMap['minute']
+                  }`
+                : ''
         }`;
     }
     if (duration.minutes) {

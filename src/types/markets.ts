@@ -30,10 +30,13 @@ export type MarketInfo = {
     canUsersClaim: boolean;
     disputeClosedTime: number;
     claimTimeoutDefaultPeriod: number;
+    poolSize: number;
+    numberOfParticipants: number;
+    noWinners: boolean;
+    cancelledByCreator: boolean;
 };
 
 export type MarketData = MarketInfo & {
-    poolSize: number;
     claimablePoolSize: number;
     poolSizePerPosition: number[];
     canUsersPlacePosition: boolean;
@@ -46,6 +49,13 @@ export type MarketData = MarketInfo & {
     winningAmountsNewUser: number[];
     winningAmountsNoPosition: number[];
     totalUsersTakenPositions: number;
+    winningAmountPerTicket: number;
+    creatorBond: number;
+    creatorFee: number;
+    resolverFee: number;
+    safeBoxFee: number;
+    totalFees: number;
+    feesAndBondsClaimed: number;
 };
 
 export type Markets = MarketInfo[];
@@ -55,6 +65,8 @@ export type AccountMarketData = {
     claimAmount: number;
     canClaim: boolean;
     winningAmount: number;
+    canWithdraw: boolean;
+    userAlreadyClaimedAmount: number;
 };
 
 export type SortOptionType = {
@@ -76,6 +88,10 @@ export type MarketsParameters = {
     owner: string;
     maxNumberOfTags: number;
     minFixedTicketPrice: number;
+    disputeStringLengthLimit: number;
+    marketQuestionStringLimit: number;
+    marketSourceStringLimit: number;
+    marketPositionStringLimit: number;
 };
 
 export type TagInfo = {
@@ -94,6 +110,10 @@ export type DisputeInfo = {
     disputer: string;
     reasonForDispute: string;
     isInPositioningPhase: boolean;
+    disputeCode: number;
+    status: DisputeStatus;
+    statusSortingIndex: number;
+    isOpenForVoting: boolean;
 };
 
 export type Disputes = DisputeInfo[];

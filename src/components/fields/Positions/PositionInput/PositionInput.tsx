@@ -1,7 +1,7 @@
-import { Input } from 'components/fields/common';
+import { FieldNote, Input } from 'components/fields/common';
 import React from 'react';
 import styled from 'styled-components';
-import { FlexDivStart } from 'styles/common';
+import { FlexDivColumn, FlexDivStart } from 'styles/common';
 
 type PositionInputProps = {
     value: string;
@@ -10,6 +10,8 @@ type PositionInputProps = {
     onChange: (event: string) => void;
     onRemove: () => void;
     showRemoveButton: boolean;
+    maximumCharacters?: number;
+    note?: string;
 };
 
 const PositionInput: React.FC<PositionInputProps> = ({
@@ -19,18 +21,24 @@ const PositionInput: React.FC<PositionInputProps> = ({
     onChange,
     onRemove,
     showRemoveButton,
+    maximumCharacters,
+    note,
     ...rest
 }) => {
     return (
         <Container className={disabled ? 'disabled' : ''}>
-            <StyledInput
-                {...rest}
-                value={value}
-                type="text"
-                onChange={(event) => onChange(event.target.value)}
-                placeholder={placeholder}
-                disabled={disabled}
-            />
+            <InputContainer>
+                <StyledInput
+                    {...rest}
+                    value={value}
+                    type="text"
+                    onChange={(event) => onChange(event.target.value)}
+                    placeholder={placeholder}
+                    disabled={disabled}
+                    maxLength={maximumCharacters}
+                />
+                {note && <FieldNote>{note}</FieldNote>}
+            </InputContainer>
             {showRemoveButton && <RemoveIcon onClick={onRemove} />}
         </Container>
     );
@@ -38,7 +46,7 @@ const PositionInput: React.FC<PositionInputProps> = ({
 
 const Container = styled(FlexDivStart)`
     color: ${(props) => props.theme.textColor.primary};
-    margin-bottom: 15px;
+    margin-bottom: 5px;
     align-items: center;
     &.disabled {
         i {
@@ -47,6 +55,11 @@ const Container = styled(FlexDivStart)`
             pointer-events: none;
         }
     }
+`;
+
+export const InputContainer = styled(FlexDivColumn)`
+    flex: initial;
+    position: relative;
 `;
 
 const StyledInput = styled(Input)`
@@ -60,7 +73,7 @@ const StyledInput = styled(Input)`
 const RemoveIcon = styled.i`
     font-size: 18px;
     margin-left: 10px;
-    margin-top: 2px;
+    margin-top: -14px;
     cursor: pointer;
     &:before {
         font-family: Icons !important;

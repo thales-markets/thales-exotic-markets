@@ -49,6 +49,7 @@ const Container = styled.label`
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
+    -o-user-select: none;
     user-select: none;
     input:checked ~ .checkmark {
         background-color: transparent;

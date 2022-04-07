@@ -1,45 +1,26 @@
 import Button from 'components/Button';
 import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
-import useAccountDisputeDataQuery from 'queries/markets/useAccountDisputeDataQuery';
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { getIsAppReady } from 'redux/modules/app';
-import { getIsWalletConnected, getWalletAddress } from 'redux/modules/wallet';
-import { RootState } from 'redux/rootReducer';
 import styled from 'styled-components';
 import { FlexDivColumn } from 'styles/common';
-import { AccountDisputeData, DisputeInfo } from 'types/markets';
+import { DisputeInfo } from 'types/markets';
 import networkConnector from 'utils/networkConnector';
 
 type DisputeOverviewProps = {
     disputeInfo: DisputeInfo;
     status?: string;
+    canDisputorClaimbackBondFromUnclosedDispute: boolean;
 };
 
-const DisputeOverview: React.FC<DisputeOverviewProps> = ({ disputeInfo, status }) => {
+const DisputeOverview: React.FC<DisputeOverviewProps> = ({
+    disputeInfo,
+    status,
+    canDisputorClaimbackBondFromUnclosedDispute,
+}) => {
     const { t } = useTranslation();
-    const isAppReady = useSelector((state: RootState) => getIsAppReady(state));
-    const walletAddress = useSelector((state: RootState) => getWalletAddress(state)) || '';
-    const isWalletConnected = useSelector((state: RootState) => getIsWalletConnected(state));
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-
-    const accountDisputeDataQuery = useAccountDisputeDataQuery(
-        disputeInfo.market,
-        disputeInfo.disputeNumber,
-        walletAddress,
-        {
-            enabled: isAppReady && isWalletConnected,
-        }
-    );
-
-    const canDisputorClaimbackBondFromUnclosedDispute: boolean = useMemo(() => {
-        if (accountDisputeDataQuery.isSuccess && accountDisputeDataQuery.data) {
-            return (accountDisputeDataQuery.data as AccountDisputeData).canDisputorClaimbackBondFromUnclosedDispute;
-        }
-        return false;
-    }, [accountDisputeDataQuery.isSuccess, accountDisputeDataQuery.data]);
 
     const handleClaim = async () => {
         const { thalesOracleCouncilContract, signer } = networkConnector;
@@ -92,8 +73,15 @@ const DisputeOverview: React.FC<DisputeOverviewProps> = ({ disputeInfo, status }
 };
 
 const Container = styled(FlexDivColumn)`
-    padding-right: 20px;
-    padding-left: 20px;
+    margin-left: 20px;
+    width: 280px;
+    @media (max-width: 991px) {
+        :not(:last-child) {
+            margin-bottom: 20px;
+        }
+        margin-right: 20px;
+        width: auto;
+    }
 `;
 
 const Overview = styled(FlexDivColumn)`
@@ -102,17 +90,20 @@ const Overview = styled(FlexDivColumn)`
 
 const Label = styled.span`
     font-weight: bold;
-    font-size: 25px;
+    font-size: 20px;
     line-height: 100%;
     margin-bottom: 10px;
 `;
 
 const Content = styled.span`
-    font-size: 18px;
-    line-height: 25px;
+    font-size: 15px;
+    line-height: 20px;
     text-align: justify;
-    margin-bottom: 20px;
     word-wrap: break-word;
+    white-space: break-spaces;
+    :not(:last-child) {
+        margin-bottom: 15px;
+    }
 `;
 
 const StatusContainer = styled(FlexDivColumn)`
@@ -120,12 +111,13 @@ const StatusContainer = styled(FlexDivColumn)`
 `;
 
 const Status = styled(Content)`
-    margin-bottom: 0px;
+    margin-bottom: 0px !important;
 `;
 
 const ClaimButton = styled(Button)`
+    font-size: 15px;
+    padding: 2px 10px;
     margin-top: 5px;
-    font-size: 18px;
     min-height: 26px;
 `;
 

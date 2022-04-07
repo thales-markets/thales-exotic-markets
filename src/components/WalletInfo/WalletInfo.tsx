@@ -98,6 +98,10 @@ const Container = styled(FlexDivCentered)`
     position: relative;
     height: 28px;
     justify-content: end;
+    min-width: 254px;
+    @media (max-width: 767px) {
+        min-width: auto;
+    }
 `;
 
 const WalletContainer = styled(FlexDivRowCentered)`

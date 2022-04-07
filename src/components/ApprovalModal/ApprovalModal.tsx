@@ -103,9 +103,7 @@ const ButtonContainer = styled(FlexDivCentered)`
     margin: 30px 0 10px 0;
 `;
 
-const ModalButton = styled(Button)`
-    height: 32px;
-`;
+const ModalButton = styled(Button)``;
 
 const CheckboxContainer = styled(FlexDivCentered)`
     margin: 40px 0 5px 0;

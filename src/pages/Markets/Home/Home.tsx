@@ -1,17 +1,16 @@
 import Button from 'components/Button';
 import SimpleLoader from 'components/SimpleLoader';
-import Search from 'components/Search';
 import { DEFAULT_SEARCH_DEBOUNCE_MS } from 'constants/defaults';
 import useDebouncedMemo from 'hooks/useDebouncedMemo';
 import useMarketsQuery from 'queries/markets/useMarketsQuery';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { getIsAppReady } from 'redux/modules/app';
 import { getIsWalletConnected, getNetworkId, getWalletAddress } from 'redux/modules/wallet';
 import { RootState } from 'redux/rootReducer';
 import styled from 'styled-components';
-import { FlexDivCentered, FlexDivColumn, FlexDivColumnCentered, FlexDivRow, FlexDivStart } from 'styles/common';
+import { FlexDivColumn, FlexDivColumnCentered, FlexDivRow, FlexDivStart } from 'styles/common';
 import {
     AccountPosition,
     AccountPositionsMap,
@@ -28,7 +27,7 @@ import { TagLabel } from '../components/Tags/Tags';
 import MarketsGrid from './MarketsGrid';
 import { navigateTo } from 'utils/routes';
 import ROUTES from 'constants/routes';
-import { GlobalFilterEnum, SortDirection, DEFAULT_SORT_BY, MarketStatus } from 'constants/markets';
+import { GlobalFilterEnum, SortDirection, DEFAULT_SORT_BY } from 'constants/markets';
 import SortOption from '../components/SortOption';
 import useTagsQuery from 'queries/markets/useTagsQuery';
 import useAccountPositionsQuery from 'queries/markets/useAccountPositionsQuery';
@@ -36,6 +35,7 @@ import useMarketsParametersQuery from 'queries/markets/useMarketsParametersQuery
 import Toggle from 'components/fields/Toggle';
 import { LOCAL_STORAGE_KEYS } from 'constants/storage';
 import useLocalStorage from 'hooks/useLocalStorage';
+import { isClaimAvailable } from 'utils/markets';
 
 const Home: React.FC = () => {
     const { t } = useTranslation();
@@ -58,7 +58,7 @@ const Home: React.FC = () => {
         id: 0,
         label: t('market.filter-label.all'),
     };
-    const [tagFilter, setTagFilter] = useState<TagInfo>(allTagsFilterItem);
+    const [tagFilter, setTagFilter] = useLocalStorage(LOCAL_STORAGE_KEYS.FILTER_TAGS, allTagsFilterItem);
 
     const marketsParametersQuery = useMarketsParametersQuery(networkId, {
         enabled: isAppReady,
@@ -133,13 +133,7 @@ const Home: React.FC = () => {
     const accountClaimsCount = useMemo(() => {
         return tagsFilteredMarkets.filter((market: MarketInfo) => {
             const accountPosition: AccountPosition = accountPositions[market.address];
-            return (
-                !!accountPosition &&
-                market.canUsersClaim &&
-                accountPosition.position > 0 &&
-                (accountPosition.position === market.winningPosition ||
-                    market.status === MarketStatus.CancelledConfirmed)
-            );
+            return isClaimAvailable(market, accountPosition);
         }).length;
     }, [tagsFilteredMarkets, accountPositions]);
 
@@ -190,13 +184,7 @@ const Home: React.FC = () => {
             case GlobalFilterEnum.Claim:
                 filteredMarkets = filteredMarkets.filter((market: MarketInfo) => {
                     const accountPosition: AccountPosition = accountPositions[market.address];
-                    return (
-                        !!accountPosition &&
-                        market.canUsersClaim &&
-                        accountPosition.position > 0 &&
-                        (accountPosition.position === market.winningPosition ||
-                            market.status === MarketStatus.CancelledConfirmed)
-                    );
+                    return isClaimAvailable(market, accountPosition);
                 });
                 break;
             default:
@@ -246,20 +234,6 @@ const Home: React.FC = () => {
 
     return (
         <Container>
-            <SearchContainer>
-                <Search text={marketSearch} handleChange={setMarketSearch} />
-            </SearchContainer>
-            <ToggleContainer>
-                <Toggle
-                    isLeftOptionSelected={showOpenMarkets}
-                    onClick={() => {
-                        setShowOpenMarkets(!showOpenMarkets);
-                    }}
-                    leftText={t('market.open-markets-label')}
-                    rightText={t('market.resolved-markets-label')}
-                    isCentered
-                />
-            </ToggleContainer>
             <FiltersContainer>
                 <GlobalFiltersContainer>
                     {Object.values(GlobalFilterEnum).map((filterItem) => {
@@ -305,6 +279,33 @@ const Home: React.FC = () => {
                         );
                     })}
                 </GlobalFiltersContainer>
+                <ToggleContainer>
+                    <Toggle
+                        isLeftOptionSelected={showOpenMarkets}
+                        onClick={() => {
+                            setShowOpenMarkets(!showOpenMarkets);
+                        }}
+                        leftText={t('market.open-markets-label')}
+                        rightText={t('market.resolved-markets-label')}
+                    />
+                </ToggleContainer>
+            </FiltersContainer>
+            <FiltersContainer>
+                <TagsContainer>
+                    <TagLabel>{t('market.tags-label')}:</TagLabel>
+                    {availableTags.map((tag: TagInfo) => {
+                        return (
+                            <TagButton
+                                disabled={false}
+                                selected={tagFilter.id === tag.id}
+                                onClick={() => setTagFilter(tagFilter.id === tag.id ? allTagsFilterItem : tag)}
+                                key={tag.label}
+                            >
+                                {tag.label}
+                            </TagButton>
+                        );
+                    })}
+                </TagsContainer>
                 {!creationRestrictedToOwner && (
                     <ButtonsContainer>
                         <Button
@@ -317,23 +318,10 @@ const Home: React.FC = () => {
                     </ButtonsContainer>
                 )}
             </FiltersContainer>
-            <TagsContainer>
-                <TagLabel>{t('market.tags-label')}:</TagLabel>
-                {availableTags.map((tag: TagInfo) => {
-                    return (
-                        <TagButton
-                            disabled={false}
-                            selected={tagFilter.id === tag.id}
-                            onClick={() => setTagFilter(tagFilter.id === tag.id ? allTagsFilterItem : tag)}
-                            key={tag.label}
-                        >
-                            {tag.label}
-                        </TagButton>
-                    );
-                })}
-            </TagsContainer>
             {marketsQuery.isLoading ? (
-                <SimpleLoader />
+                <LoaderContainer>
+                    <SimpleLoader />
+                </LoaderContainer>
             ) : marketsList.length === 0 ? (
                 <NoMarketsContainer>
                     <NoMarketsLabel>{t('market.no-markets-found')}</NoMarketsLabel>
@@ -361,20 +349,33 @@ const Container = styled(FlexDivColumn)`
     width: 100%;
 `;
 
-const SearchContainer = styled(FlexDivCentered)`
-    margin-top: 30px;
-`;
-
-const ToggleContainer = styled(FlexDivCentered)`
-    margin-top: 20px;
-    margin-bottom: 10px;
+const ToggleContainer = styled(FlexDivColumn)`
+    align-items: end;
     span {
         text-transform: uppercase;
+        margin-bottom: 5px;
+    }
+    > div {
+        margin-bottom: 0px;
+    }
+    .toogle {
+        font-size: 15px;
+        line-height: 102.6%;
+        padding-bottom: 5px;
+        margin-bottom: 10px;
+        height: 36px;
+        align-items: center;
+    }
+    i {
+        margin-top: 4px;
     }
 `;
 
 const FiltersContainer = styled(FlexDivRow)`
-    margin-bottom: 20px;
+    margin-bottom: 4px;
+    :first-child {
+        margin-top: 50px;
+    }
 `;
 
 const GlobalFiltersContainer = styled(FlexDivStart)`
@@ -384,12 +385,14 @@ const GlobalFiltersContainer = styled(FlexDivStart)`
 
 const ButtonsContainer = styled(FlexDivColumn)`
     align-items: end;
+    margin-bottom: 14px;
 `;
 
 const TagsContainer = styled(FlexDivStart)`
     flex-wrap: wrap;
     align-items: center;
     margin-bottom: 10px;
+    margin-right: 20px;
 `;
 
 const NoMarketsContainer = styled(FlexDivColumnCentered)`
@@ -400,13 +403,17 @@ const NoMarketsContainer = styled(FlexDivColumnCentered)`
     font-size: 28px;
     line-height: 100%;
     button {
-        height: 32px;
         padding-top: 1px;
     }
 `;
 
 const NoMarketsLabel = styled.span`
     margin-bottom: 30px;
+`;
+
+const LoaderContainer = styled(FlexDivColumn)`
+    position: relative;
+    min-height: 300px;
 `;
 
 export default Home;

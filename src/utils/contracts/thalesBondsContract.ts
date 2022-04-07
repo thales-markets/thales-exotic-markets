@@ -8,6 +8,15 @@ export const thalesBondsContract = {
             anonymous: false,
             inputs: [
                 { indexed: false, internalType: 'address', name: 'market', type: 'address' },
+                { indexed: false, internalType: 'uint256', name: 'amount', type: 'uint256' },
+            ],
+            name: 'BondTransferredFromCreatorToResolver',
+            type: 'event',
+        },
+        {
+            anonymous: false,
+            inputs: [
+                { indexed: false, internalType: 'address', name: 'market', type: 'address' },
                 { indexed: false, internalType: 'address', name: 'account', type: 'address' },
                 { indexed: false, internalType: 'uint256', name: 'amount', type: 'uint256' },
             ],
@@ -99,11 +108,25 @@ export const thalesBondsContract = {
             type: 'function',
         },
         {
+            inputs: [{ internalType: 'address', name: '_market', type: 'address' }],
+            name: 'getCreatorBondForMarket',
+            outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+            stateMutability: 'view',
+            type: 'function',
+        },
+        {
             inputs: [
                 { internalType: 'address', name: '_market', type: 'address' },
                 { internalType: 'address', name: '_disputorAddress', type: 'address' },
             ],
             name: 'getDisputorBondForMarket',
+            outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+            stateMutability: 'view',
+            type: 'function',
+        },
+        {
+            inputs: [{ internalType: 'address', name: '_market', type: 'address' }],
+            name: 'getResolverBondForMarket',
             outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
             stateMutability: 'view',
             type: 'function',
@@ -124,6 +147,13 @@ export const thalesBondsContract = {
             type: 'function',
         },
         {
+            inputs: [{ internalType: 'address', name: '_market', type: 'address' }],
+            name: 'issueBondsBackToCreatorAndResolver',
+            outputs: [],
+            stateMutability: 'nonpayable',
+            type: 'function',
+        },
+        {
             inputs: [{ internalType: 'address', name: '', type: 'address' }],
             name: 'marketBond',
             outputs: [
@@ -134,6 +164,13 @@ export const thalesBondsContract = {
                 { internalType: 'uint256', name: 'disputorsTotalBond', type: 'uint256' },
                 { internalType: 'uint256', name: 'disputorsCount', type: 'uint256' },
             ],
+            stateMutability: 'view',
+            type: 'function',
+        },
+        {
+            inputs: [{ internalType: 'address', name: '', type: 'address' }],
+            name: 'marketFunds',
+            outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
             stateMutability: 'view',
             type: 'function',
         },
@@ -177,6 +214,8 @@ export const thalesBondsContract = {
                 { internalType: 'address', name: '_market', type: 'address' },
                 { internalType: 'address', name: '_account', type: 'address' },
                 { internalType: 'uint256', name: '_amount', type: 'uint256' },
+                { internalType: 'uint256', name: '_bondToReduce', type: 'uint256' },
+                { internalType: 'address', name: '_disputorAddress', type: 'address' },
             ],
             name: 'sendBondFromMarketToUser',
             outputs: [],
@@ -208,6 +247,17 @@ export const thalesBondsContract = {
         {
             inputs: [
                 { internalType: 'address', name: '_market', type: 'address' },
+                { internalType: 'address', name: '_account', type: 'address' },
+                { internalType: 'uint256', name: '_amount', type: 'uint256' },
+            ],
+            name: 'sendOpenDisputeBondFromMarketToDisputor',
+            outputs: [],
+            stateMutability: 'nonpayable',
+            type: 'function',
+        },
+        {
+            inputs: [
+                { internalType: 'address', name: '_market', type: 'address' },
                 { internalType: 'address', name: '_resolverAddress', type: 'address' },
                 { internalType: 'uint256', name: '_amount', type: 'uint256' },
             ],
@@ -231,8 +281,35 @@ export const thalesBondsContract = {
             type: 'function',
         },
         {
+            inputs: [{ internalType: 'address', name: '_market', type: 'address' }],
+            name: 'transferCreatorToResolverBonds',
+            outputs: [],
+            stateMutability: 'nonpayable',
+            type: 'function',
+        },
+        {
+            inputs: [
+                { internalType: 'address', name: '_account', type: 'address' },
+                { internalType: 'uint256', name: '_amount', type: 'uint256' },
+            ],
+            name: 'transferFromMarket',
+            outputs: [],
+            stateMutability: 'nonpayable',
+            type: 'function',
+        },
+        {
             inputs: [{ internalType: 'address', name: 'proxyAddress', type: 'address' }],
             name: 'transferOwnershipAtInit',
+            outputs: [],
+            stateMutability: 'nonpayable',
+            type: 'function',
+        },
+        {
+            inputs: [
+                { internalType: 'address', name: '_account', type: 'address' },
+                { internalType: 'uint256', name: '_amount', type: 'uint256' },
+            ],
+            name: 'transferToMarket',
             outputs: [],
             stateMutability: 'nonpayable',
             type: 'function',

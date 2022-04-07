@@ -149,6 +149,7 @@ const DisputeVoting: React.FC<DisputeVotingProps> = ({
                                             value={positionIndex}
                                             onChange={() => setSelectedPosition(positionIndex)}
                                             label={outcomePosition.position}
+                                            disabled={isSubmitting}
                                         />
                                     </PositionsContainer>
                                 );
@@ -168,7 +169,7 @@ const Container = styled(FlexDivColumn)`
 
 const Title = styled.span`
     font-weight: bold;
-    font-size: 25px;
+    font-size: 20px;
     line-height: 100%;
     margin-bottom: 20px;
 `;
@@ -180,6 +181,7 @@ const VoteOptionsContainer = styled.div`
         line-height: 20px;
         margin-bottom: 6px;
         white-space: break-spaces;
+        height: auto;
     }
     span {
         :after {
@@ -201,8 +203,9 @@ const PositionsContainer = styled(VoteOptionsContainer)`
 
 const VoteButton = styled(Button)`
     font-size: 15px;
-    padding: 4px 10px;
-    margin-top: 10px;
+    padding: 2px 10px;
+    margin-top: 5px;
+    min-height: 26px;
 `;
 
 export default DisputeVoting;

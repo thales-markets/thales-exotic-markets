@@ -1,3 +1,4 @@
+import SimpleLoader from 'components/SimpleLoader';
 import useDisputesQuery from 'queries/markets/useDisputesQuery';
 import useOracleCouncilMemberQuery from 'queries/oracleCouncil/useOracleCouncilMemberQuery';
 import React, { useMemo } from 'react';
@@ -44,17 +45,23 @@ const Disputes: React.FC<DisputesProps> = ({ marketAddress, positions, winningPo
 
     return (
         <Container>
-            {disputes.map((dispute: DisputeInfo) => (
-                <DisputeCard
-                    key={dispute.id}
-                    disputeInfo={dispute}
-                    isOracleCouncilMember={isOracleCouncilMember}
-                    positions={positions}
-                    winningPosition={winningPosition}
-                >
-                    {dispute}
-                </DisputeCard>
-            ))}
+            {disputesQuery.isLoading ? (
+                <LoaderContainer>
+                    <SimpleLoader />
+                </LoaderContainer>
+            ) : (
+                disputes.map((dispute: DisputeInfo) => (
+                    <DisputeCard
+                        key={dispute.id}
+                        disputeInfo={dispute}
+                        isOracleCouncilMember={isOracleCouncilMember}
+                        positions={positions}
+                        winningPosition={winningPosition}
+                    >
+                        {dispute}
+                    </DisputeCard>
+                ))
+            )}
         </Container>
     );
 };
@@ -62,6 +69,11 @@ const Disputes: React.FC<DisputesProps> = ({ marketAddress, positions, winningPo
 const Container = styled(FlexDivColumn)`
     margin-top: 40px;
     width: 100%;
+`;
+
+const LoaderContainer = styled(FlexDivColumn)`
+    position: relative;
+    min-height: 300px;
 `;
 
 export default Disputes;

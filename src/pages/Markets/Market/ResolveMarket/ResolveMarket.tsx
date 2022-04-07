@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'redux/rootReducer';
 import { getIsWalletConnected, getNetworkId, getWalletAddress } from 'redux/modules/wallet';
 import { getIsAppReady } from 'redux/modules/app';
-import { MarketsParameters } from 'types/markets';
+import { MarketData, MarketsParameters } from 'types/markets';
 import useMarketsParametersQuery from 'queries/markets/useMarketsParametersQuery';
 import networkConnector from 'utils/networkConnector';
 import { BigNumber, ethers } from 'ethers';
@@ -22,14 +22,13 @@ import { toast } from 'react-toastify';
 import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
 import { formatCurrencyWithKey } from 'utils/formatters/number';
 import { BondInfo } from 'components/common';
+import { refetchMarketData } from 'utils/queryConnector';
 
 type ResolveMarketProps = {
-    marketAddress: string;
-    positions: string[];
-    marketCreator: string;
+    market: MarketData;
 };
 
-const ResolveMarket: React.FC<ResolveMarketProps> = ({ marketAddress, positions, marketCreator }) => {
+const ResolveMarket: React.FC<ResolveMarketProps> = ({ market }) => {
     const { t } = useTranslation();
     const isAppReady = useSelector((state: RootState) => getIsAppReady(state));
     const walletAddress = useSelector((state: RootState) => getWalletAddress(state)) || '';
@@ -42,7 +41,7 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ marketAddress, positions,
     const [paymentTokenBalance, setPaymentTokenBalance] = useState<number | string>('');
     const [openApprovalModal, setOpenApprovalModal] = useState<boolean>(false);
 
-    const outcomePositions = [...positions, t('common.cancel')];
+    const outcomePositions = [...market.positions, t('common.cancel')];
 
     const marketsParametersQuery = useMarketsParametersQuery(networkId, {
         enabled: isAppReady,
@@ -70,13 +69,13 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ marketAddress, positions,
     const isOutcomePositionSelected = outcomePosition >= 0;
     const insufficientBalance =
         Number(paymentTokenBalance) < Number(fixedBondAmount) || Number(paymentTokenBalance) === 0;
-    const isMarketCreator = marketCreator === walletAddress;
+    const isResolverBondDeposited = market.creator === walletAddress && market.creatorBond > 0;
 
     const isButtonDisabled =
         isSubmitting ||
         !isWalletConnected ||
         !isOutcomePositionSelected ||
-        ((!hasAllowance || insufficientBalance) && !isMarketCreator);
+        ((!hasAllowance || insufficientBalance) && !isResolverBondDeposited);
 
     useEffect(() => {
         const { paymentTokenContract, thalesBondsContract, signer } = networkConnector;
@@ -143,10 +142,11 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ marketAddress, positions,
             try {
                 const marketManagerContractWithSigner = marketManagerContract.connect(signer);
 
-                const tx = await marketManagerContractWithSigner.resolveMarket(marketAddress, outcomePosition);
+                const tx = await marketManagerContractWithSigner.resolveMarket(market.address, outcomePosition);
                 const txResult = await tx.wait();
 
                 if (txResult && txResult.transactionHash) {
+                    refetchMarketData(market.address, walletAddress);
                     toast.update(id, getSuccessToastOptions(t('market.toast-messsage.resolve-market-success')));
                     setIsSubmitting(false);
                 }
@@ -166,7 +166,7 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ marketAddress, positions,
                 </MarketButton>
             );
         }
-        if (insufficientBalance && !isMarketCreator) {
+        if (insufficientBalance && !isResolverBondDeposited) {
             return (
                 <MarketButton type="secondary" disabled={true}>
                     {t(`common.errors.insufficient-balance`)}
@@ -180,7 +180,7 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ marketAddress, positions,
                 </MarketButton>
             );
         }
-        if (!hasAllowance && !isMarketCreator) {
+        if (!hasAllowance && !isResolverBondDeposited) {
             return (
                 <MarketButton type="secondary" disabled={isAllowing} onClick={() => setOpenApprovalModal(true)}>
                     {!isAllowing
@@ -214,12 +214,13 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ marketAddress, positions,
                             label={position}
                             disabled={isSubmitting}
                             key={position}
+                            tooltip={positionIndex === 0 ? t('market.resolve-market.cancel-tooltip') : undefined}
                         />
                     );
                 })}
             </Positions>
             <ButtonContainer>
-                {!isMarketCreator && (
+                {!isResolverBondDeposited && (
                     <BondInfo>
                         {t('market.resolve-market.bond-info', {
                             amount: formatCurrencyWithKey(
@@ -261,10 +262,10 @@ const Title = styled(FlexDivColumn)`
     align-items: center;
     font-style: normal;
     font-weight: bold;
-    font-size: 45px;
+    font-size: 25px;
     line-height: 100%;
     text-align: center;
-    margin-bottom: 40px;
+    margin-bottom: 35px;
 `;
 
 const Positions = styled(FlexDivColumn)`
@@ -273,9 +274,7 @@ const Positions = styled(FlexDivColumn)`
     }
 `;
 
-const MarketButton = styled(Button)`
-    height: 32px;
-`;
+const MarketButton = styled(Button)``;
 
 const ButtonContainer = styled(FlexDivColumn)`
     margin: 40px 0 0 0;

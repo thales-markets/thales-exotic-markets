@@ -8,6 +8,10 @@ import { FlexDivColumnCentered, FlexDivRow } from 'styles/common';
 import { AccountPosition, MarketInfo } from 'types/markets';
 import { MarketStatus as MarketStatusEnum } from 'constants/markets';
 import OpenDisputeInfo from 'pages/Markets/components/OpenDisputeInfo';
+import { formatCurrencyWithKey } from 'utils/formatters/number';
+import { DEFAULT_CURRENCY_DECIMALS, PAYMENT_CURRENCY } from 'constants/currency';
+import { Info, InfoContent, InfoLabel } from 'components/common';
+import { isClaimAvailable } from 'utils/markets';
 
 type MarketCardProps = {
     market: MarketInfo;
@@ -17,16 +21,11 @@ type MarketCardProps = {
 const MarketCard: React.FC<MarketCardProps> = ({ market, accountPosition }) => {
     const { t } = useTranslation();
 
-    const isClaimAvailable =
-        !!accountPosition &&
-        market.canUsersClaim &&
-        accountPosition.position > 0 &&
-        (accountPosition.position === market.winningPosition || market.status === MarketStatusEnum.CancelledConfirmed);
-
+    const claimAvailable = isClaimAvailable(market, accountPosition);
     const showNumberOfOpenDisputes = !market.canUsersClaim;
 
     return (
-        <Container isClaimAvailable={isClaimAvailable}>
+        <Container isClaimAvailable={claimAvailable}>
             <MarketTitle>{market.question}</MarketTitle>
             <Positions>
                 {market.positions.map((position: string, index: number) => (
@@ -43,7 +42,13 @@ const MarketCard: React.FC<MarketCardProps> = ({ market, accountPosition }) => {
                     </Position>
                 ))}
             </Positions>
-            <MarketStatus market={market} fontWeight={700} isClaimAvailable={isClaimAvailable} />
+            <Info fontSize={18} marginBottom={15}>
+                <InfoLabel>{t('market.ticket-price-label')}:</InfoLabel>
+                <InfoContent>
+                    {formatCurrencyWithKey(PAYMENT_CURRENCY, market.ticketPrice, DEFAULT_CURRENCY_DECIMALS, true)}
+                </InfoContent>
+            </Info>
+            <MarketStatus market={market} fontWeight={700} isClaimAvailable={claimAvailable} />
             <CardFooter>
                 <Tags tags={market.tags} />
                 {showNumberOfOpenDisputes && (
@@ -54,6 +59,18 @@ const MarketCard: React.FC<MarketCardProps> = ({ market, accountPosition }) => {
                     </OpenDisputeInfo>
                 )}
             </CardFooter>
+            <PoolInfoFooter>
+                <Info>
+                    <InfoLabel>{t('market.total-pool-size-label')}:</InfoLabel>
+                    <InfoContent>
+                        {formatCurrencyWithKey(PAYMENT_CURRENCY, market.poolSize, DEFAULT_CURRENCY_DECIMALS, true)}
+                    </InfoContent>
+                </Info>
+                <Info>
+                    <InfoLabel>{t('market.number-of-participants-label')}:</InfoLabel>
+                    <InfoContent>{market.numberOfParticipants}</InfoContent>
+                </Info>
+            </PoolInfoFooter>
         </Container>
     );
 };
@@ -67,6 +84,8 @@ const Container = styled(FlexDivColumnCentered)<{ isClaimAvailable: boolean }>`
     margin: 8px 4px 8px 4px;
     &:hover {
         background: ${(props) => props.theme.background.secondary};
+        border-color: transparent;
+        background-origin: border-box;
     }
 `;
 
@@ -113,8 +132,13 @@ const Checkmark = styled.span`
 `;
 
 const CardFooter = styled(FlexDivRow)`
-    margin-top: 25px;
+    margin-top: 20px;
     align-items: end;
+`;
+
+const PoolInfoFooter = styled(FlexDivColumnCentered)`
+    font-size: 15px;
+    margin-top: 10px;
 `;
 
 export default MarketCard;

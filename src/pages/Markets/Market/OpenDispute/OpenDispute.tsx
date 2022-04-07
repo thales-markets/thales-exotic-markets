@@ -11,7 +11,7 @@ import useMarketQuery from 'queries/markets/useMarketQuery';
 import { getIsWalletConnected, getNetworkId, getWalletAddress } from 'redux/modules/wallet';
 import { getIsAppReady } from 'redux/modules/app';
 import { RouteComponentProps } from 'react-router-dom';
-import { MarketData } from 'types/markets';
+import { MarketData, MarketsParameters } from 'types/markets';
 import networkConnector from 'utils/networkConnector';
 import { BigNumber, ethers } from 'ethers';
 import { checkAllowance } from 'utils/network';
@@ -29,6 +29,7 @@ import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
 import { formatCurrencyWithKey } from 'utils/formatters/number';
 import { BondInfo } from 'components/common';
 import BackToLink from 'pages/Markets/components/BackToLink';
+import useMarketsParametersQuery from 'queries/markets/useMarketsParametersQuery';
 
 type OpenDisputeProps = RouteComponentProps<{
     marketAddress: string;
@@ -82,11 +83,27 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
         return false;
     }, [oracleCouncilMemberQuery.isSuccess, oracleCouncilMemberQuery.data]);
 
+    const marketsParametersQuery = useMarketsParametersQuery(networkId, {
+        enabled: isAppReady,
+    });
+
+    const marketsParameters: MarketsParameters | undefined = useMemo(() => {
+        if (marketsParametersQuery.isSuccess && marketsParametersQuery.data) {
+            return marketsParametersQuery.data as MarketsParameters;
+        }
+        return undefined;
+    }, [marketsParametersQuery.isSuccess, marketsParametersQuery.data]);
+
+    const disputeStringLengthLimit = marketsParameters
+        ? marketsParameters.disputeStringLengthLimit
+        : MAXIMUM_INPUT_CHARACTERS;
+
     const canOpenDispute =
         market &&
         !market.isMarketClosedForDisputes &&
         !isOracleCouncilMember &&
-        walletAddress.toLowerCase() !== market.creator.toLowerCase();
+        walletAddress.toLowerCase() !== market.creator.toLowerCase() &&
+        !market.isPaused;
 
     const disputePrice = market ? market.disputePrice : 0;
 
@@ -220,6 +237,9 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
     };
 
     const getDisputesDisabledMessage = () => {
+        if (market && market.isPaused) {
+            return t('market.dispute.disputes-disabled-message.market-paused');
+        }
         if (market && market.isMarketClosedForDisputes) {
             return t('market.dispute.disputes-disabled-message.market-closed');
         }
@@ -238,16 +258,29 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
                 <>
                     <BackToLink link={buildMarketLink(marketAddress)} text={t('market.back-to-market')} />
                     <Form>
-                        <Title>{t('market.dispute.open-dispute-title', { question: market.question })}</Title>
+                        <Title>
+                            {t(
+                                market.isResolved
+                                    ? 'market.dispute.open-dispute-maturity-title'
+                                    : 'market.dispute.open-dispute-title',
+                                { question: market.question }
+                            )}
+                        </Title>
+                        {market.isResolved && (
+                            <Info>
+                                {t('market.dispute.current-result-label')}:{' '}
+                                {market.positions[market.winningPosition - 1]}
+                            </Info>
+                        )}
                         <TextAreaInput
                             value={reasonForDispute}
                             onChange={setReasonForDispute}
                             label={t('market.dispute.reason-for-dispute-label')}
                             note={t('common.input-characters-note', {
                                 entered: reasonForDispute.length,
-                                max: MAXIMUM_INPUT_CHARACTERS,
+                                max: disputeStringLengthLimit,
                             })}
-                            maximumCharacters={MAXIMUM_INPUT_CHARACTERS}
+                            maximumCharacters={disputeStringLengthLimit}
                             disabled={isSubmitting || !canOpenDispute}
                         />
                         <ButtonContainer>
@@ -297,7 +330,15 @@ const Title = styled(FlexDivColumn)`
     font-size: 25px;
     line-height: 100%;
     text-align: center;
-    margin-bottom: 80px;
+    margin-bottom: 60px;
+`;
+
+const Info = styled(FlexDivColumn)`
+    font-style: normal;
+    font-weight: bold;
+    font-size: 25px;
+    line-height: 100%;
+    margin-bottom: 20px;
 `;
 
 const Form = styled(FlexDivColumn)`
@@ -309,9 +350,7 @@ const Form = styled(FlexDivColumn)`
     width: 100%;
 `;
 
-const DisputeButton = styled(Button)`
-    height: 32px;
-`;
+const DisputeButton = styled(Button)``;
 
 const ButtonContainer = styled(FlexDivColumn)`
     margin: 20px 0 0 0;
