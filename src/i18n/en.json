@@ -234,7 +234,8 @@
         "resolve-market": {
             "title": "Resolve market",
             "cancel-tooltip": "If the market is not created according to the guidelines, use this option to cancel the market. Resolving a market with this position will allow anyone who placed a bid on the market to claim a full refund.",
-            "bond-info": "In order to resolve market you need to deposit a bond of {{amount}}."
+            "bond-info": "<0><0>In order to resolve the market, you need to deposit a bond of {{amount}} which will be used in case of a dispute.</0><0>If your result is not disputed and the market is formally resolved with your outcome, the bond will be returned to you.</0><0>{{resolverPercentage}}% of each bid goes to the market resolver in case the market is not cancelled.</0></0>",
+            "creator-bond-info": "<0><0>As a market creator, you don't need to submit a new bond, your initial bond will be used in case of a dispute.</0><0>{{resolverPercentage}}% of each bid goes to the market resolver in case the market is not cancelled.</0></0>"
         },
         "dispute": {
             "open-dispute-title": "Open dispute on the market \"{{question}}\"",

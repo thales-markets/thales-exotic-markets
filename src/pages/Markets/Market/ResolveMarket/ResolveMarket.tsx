@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { FlexDivColumn } from 'styles/common';
 import Button from 'components/Button';
@@ -65,6 +65,7 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ market }) => {
     }, [paymentTokenBalanceQuery.isSuccess, paymentTokenBalanceQuery.data]);
 
     const fixedBondAmount = marketsParameters ? marketsParameters.fixedBondAmount : 0;
+    const resolverPercentage = marketsParameters ? marketsParameters.resolverPercentage : 0;
 
     const isOutcomePositionSelected = outcomePosition >= 0;
     const insufficientBalance =
@@ -220,18 +221,29 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ market }) => {
                 })}
             </Positions>
             <ButtonContainer>
-                {!isResolverBondDeposited && (
-                    <BondInfo>
-                        {t('market.resolve-market.bond-info', {
+                <BondInfo>
+                    <Trans
+                        i18nKey={
+                            isResolverBondDeposited
+                                ? 'market.resolve-market.creator-bond-info'
+                                : 'market.resolve-market.bond-info'
+                        }
+                        components={[
+                            <ul key="1">
+                                <li key="0" />
+                            </ul>,
+                        ]}
+                        values={{
                             amount: formatCurrencyWithKey(
                                 PAYMENT_CURRENCY,
                                 fixedBondAmount,
                                 DEFAULT_CURRENCY_DECIMALS,
                                 true
                             ),
-                        })}
-                    </BondInfo>
-                )}
+                            resolverPercentage,
+                        }}
+                    />
+                </BondInfo>
                 {getSubmitButton()}
             </ButtonContainer>
             {openApprovalModal && (
