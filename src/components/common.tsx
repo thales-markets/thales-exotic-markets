@@ -12,6 +12,7 @@ export const BondInfo = styled(FlexDivColumn)`
         list-style: initial;
     }
     li {
+        line-height: 16px;
         margin-bottom: 8px;
     }
 `;

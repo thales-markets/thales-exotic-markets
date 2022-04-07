@@ -12,7 +12,7 @@ import {
     MINIMUM_TICKET_PRICE,
 } from 'constants/markets';
 import React, { useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { FlexDivColumn, FlexDivRow } from 'styles/common';
 import { Tag } from 'react-tag-autocomplete';
@@ -153,6 +153,9 @@ const CreateMarket: React.FC = () => {
     const maxNumberOfTags = marketsParameters ? marketsParameters.maxNumberOfTags : MAXIMUM_TAGS;
     const maximumPositionsAllowed = marketsParameters ? marketsParameters.maximumPositionsAllowed : MAXIMUM_POSITIONS;
     const minFixedTicketPrice = marketsParameters ? marketsParameters.minFixedTicketPrice : MINIMUM_TICKET_PRICE;
+
+    const creatorPercentage = marketsParameters ? marketsParameters.creatorPercentage : 0;
+    const withdrawalPercentage = marketsParameters ? marketsParameters.withdrawalPercentage : 0;
 
     const marketQuestionStringLimit = marketsParameters
         ? marketsParameters.marketQuestionStringLimit
@@ -539,14 +542,24 @@ const CreateMarket: React.FC = () => {
                     </YourPostionsContainer>
                     <ButtonContainer>
                         <BondInfo>
-                            {t('market.create-market.bond-info', {
-                                amount: formatCurrencyWithKey(
-                                    PAYMENT_CURRENCY,
-                                    fixedBondAmount,
-                                    DEFAULT_CURRENCY_DECIMALS,
-                                    true
-                                ),
-                            })}
+                            <Trans
+                                i18nKey={'market.create-market.bond-info'}
+                                components={[
+                                    <ul key="1">
+                                        <li key="0" />
+                                    </ul>,
+                                ]}
+                                values={{
+                                    amount: formatCurrencyWithKey(
+                                        PAYMENT_CURRENCY,
+                                        fixedBondAmount,
+                                        DEFAULT_CURRENCY_DECIMALS,
+                                        true
+                                    ),
+                                    bidPercentage: creatorPercentage,
+                                    withdrawalPercentage: withdrawalPercentage / 2,
+                                }}
+                            />
                         </BondInfo>
                         {getSubmitButton()}
                     </ButtonContainer>

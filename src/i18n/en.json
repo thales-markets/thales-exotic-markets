@@ -228,7 +228,7 @@
                 "create-market-label": "Create market",
                 "create-market-progress-label": "Creating in progress..."
             },
-            "bond-info": "In order to create market you need to deposit a bond of {{amount}}.",
+            "bond-info": "<0><0>In order to create a market, you need to deposit a bond of {{amount}} which will be used in case of a dispute.</0><0>If the market is resolved without an accepted dispute, the bond will be returned to you.</0><0>{{bidPercentage}}% of each bid goes to the market creator in case the market is not cancelled.</0><0>{{withdrawalPercentage}}% of each withdrawal is paid to the market creator.</0></0>",
             "creation-disabled-message": "Market creation is disabled, only owner can create markets."
         },
         "resolve-market": {
@@ -246,7 +246,7 @@
             "reason-for-dispute-label": "Reason for dispute",
             "vote-label": "Vote",
             "results-label": "Results",
-            "open-dispute-bond-info": "In order to open dispute you need to deposit a bond of {{amount}}.",
+            "open-dispute-bond-info": "<0><0>In order to open a dispute, you need to deposit a bond of {{amount}}.</0><0>In case the dispute is accepted, you will receive your bond back.</0></0>",
             "disputes-disabled-message": {
                 "market-paused": "The market is paused.",
                 "market-closed": "The market is closed for disputes.",

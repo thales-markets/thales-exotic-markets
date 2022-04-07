@@ -1,6 +1,6 @@
 import TextAreaInput from 'components/fields/TextAreaInput';
 import React, { useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { FlexDivColumn } from 'styles/common';
 import Button from 'components/Button';
@@ -285,14 +285,22 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
                         />
                         <ButtonContainer>
                             <BondInfo>
-                                {t('market.dispute.open-dispute-bond-info', {
-                                    amount: formatCurrencyWithKey(
-                                        PAYMENT_CURRENCY,
-                                        disputePrice,
-                                        DEFAULT_CURRENCY_DECIMALS,
-                                        true
-                                    ),
-                                })}
+                                <Trans
+                                    i18nKey={'market.dispute.open-dispute-bond-info'}
+                                    components={[
+                                        <ul key="1">
+                                            <li key="0" />
+                                        </ul>,
+                                    ]}
+                                    values={{
+                                        amount: formatCurrencyWithKey(
+                                            PAYMENT_CURRENCY,
+                                            disputePrice,
+                                            DEFAULT_CURRENCY_DECIMALS,
+                                            true
+                                        ),
+                                    }}
+                                />
                             </BondInfo>
                             {getSubmitButton()}
                         </ButtonContainer>
