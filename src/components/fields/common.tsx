@@ -11,7 +11,7 @@ export const FieldLabel = styled.label`
     font-style: normal;
     font-weight: bold;
     font-size: 25px;
-    line-height: 34px;
+    line-height: 32px;
     color: ${(props) => props.theme.textColor.primary};
     margin-bottom: 6px;
     display: flex;

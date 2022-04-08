@@ -5,7 +5,7 @@ import useDebouncedMemo from 'hooks/useDebouncedMemo';
 import useMarketsQuery from 'queries/markets/useMarketsQuery';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getIsAppReady } from 'redux/modules/app';
 import { getIsWalletConnected, getNetworkId, getWalletAddress } from 'redux/modules/wallet';
 import { RootState } from 'redux/rootReducer';
@@ -36,17 +36,19 @@ import Toggle from 'components/fields/Toggle';
 import { LOCAL_STORAGE_KEYS } from 'constants/storage';
 import useLocalStorage from 'hooks/useLocalStorage';
 import { isClaimAvailable } from 'utils/markets';
+import { getMarketSearch, setMarketSearch } from 'redux/modules/market';
 
 const Home: React.FC = () => {
     const { t } = useTranslation();
+    const dispatch = useDispatch();
     const isAppReady = useSelector((state: RootState) => getIsAppReady(state));
     const networkId = useSelector((state: RootState) => getNetworkId(state));
     const walletAddress = useSelector((state: RootState) => getWalletAddress(state)) || '';
     const isWalletConnected = useSelector((state: RootState) => getIsWalletConnected(state));
+    const marketSearch = useSelector((state: RootState) => getMarketSearch(state));
     const [globalFilter, setGlobalFilter] = useLocalStorage(LOCAL_STORAGE_KEYS.FILTER_GLOBAL, GlobalFilterEnum.All);
     const [sortDirection, setSortDirection] = useLocalStorage(LOCAL_STORAGE_KEYS.SORT_DIRECTION, SortDirection.ASC);
     const [sortBy, setSortBy] = useLocalStorage(LOCAL_STORAGE_KEYS.SORT_BY, DEFAULT_SORT_BY);
-    const [marketSearch, setMarketSearch] = useLocalStorage(LOCAL_STORAGE_KEYS.FILTER_MARKET_SEARCH, '');
     const [showOpenMarkets, setShowOpenMarkets] = useLocalStorage(LOCAL_STORAGE_KEYS.FILTER_SHOW_OPEN_MARKETS, true);
 
     const sortOptions: SortOptionType[] = [
@@ -226,8 +228,8 @@ const Home: React.FC = () => {
     const resetFilters = () => {
         setGlobalFilter(GlobalFilterEnum.All);
         setTagFilter(allTagsFilterItem);
-        setMarketSearch('');
         setShowOpenMarkets(true);
+        dispatch(setMarketSearch(''));
     };
 
     const marketsList = globalFilteredMarkets;
