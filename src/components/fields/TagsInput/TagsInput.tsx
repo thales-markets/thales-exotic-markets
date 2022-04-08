@@ -1,10 +1,11 @@
 import React from 'react';
-import { FieldContainer, FieldLabel } from '../common';
+import { FieldContainer, FieldLabel, OverlayContainer } from '../common';
 import ReactTags, { Tag } from 'react-tag-autocomplete';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import TagButton from 'components/TagButton';
 import { FlexDivColumn, FlexDivStart } from 'styles/common';
+import Tooltip from 'components/Tooltip';
 
 type TagsInputProps = {
     tags: Tag[];
@@ -14,6 +15,7 @@ type TagsInputProps = {
     maxTags: number;
     onTagAdd: (tag: Tag) => void;
     onTagRemove: (i: number) => void;
+    tooltip?: string;
 };
 
 const TagsInput: React.FC<TagsInputProps> = ({
@@ -24,6 +26,7 @@ const TagsInput: React.FC<TagsInputProps> = ({
     maxTags,
     onTagAdd,
     onTagRemove,
+    tooltip,
 }) => {
     const { t } = useTranslation();
 
@@ -31,7 +34,19 @@ const TagsInput: React.FC<TagsInputProps> = ({
 
     return (
         <FieldContainer>
-            {label && <FieldLabel>{label}:</FieldLabel>}
+            {label && (
+                <FieldLabel>
+                    {label}
+                    {tooltip && (
+                        <Tooltip
+                            overlay={<OverlayContainer>{tooltip}</OverlayContainer>}
+                            iconFontSize={20}
+                            marginLeft={4}
+                            top={0}
+                        />
+                    )}
+                </FieldLabel>
+            )}
             <TagsContainer isInputDisabled={tags.length >= maxTags} className={disabled ? 'disabled' : ''}>
                 <ReactTags
                     tags={tags}

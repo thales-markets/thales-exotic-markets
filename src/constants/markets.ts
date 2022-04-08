@@ -26,12 +26,13 @@ export const MAXIMUM_POSITIONS = 5;
 export const MAXIMUM_TAGS = 5;
 export const MINIMUM_TICKET_PRICE = 1;
 
+export const DATE_PICKER_MAX_LENGTH_MONTHS = 1;
 export const TODAYS_DATE = new Date();
 export const DATE_PICKER_MIN_DATE = TODAYS_DATE; // today's date
 
 const maxDate = new Date();
-maxDate.setMonth(maxDate.getMonth() + 1);
-export const DATE_PICKER_MAX_DATE = maxDate; // 1 month from now
+maxDate.setMonth(maxDate.getMonth() + DATE_PICKER_MAX_LENGTH_MONTHS);
+export const DATE_PICKER_MAX_DATE = maxDate; // 2 month from now
 
 export const MAXIMUM_INPUT_CHARACTERS = 200;
 

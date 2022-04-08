@@ -202,24 +202,33 @@
                 }
             },
             "question-label": "Question",
+            "question-tooltip": "The question that defines a market.",
             "data-source-label": "Data source",
+            "data-source-tooltip": "Market data sources, can basically be a url linking to a page that will show the result on maturity.",
             "positions-label": "Positions",
+            "positions-tooltip": "Positions participants can assume. Up to {{max}} positions.",
             "your-initial-position-label": "Your initial position",
+            "your-initial-position-tooltip": "Selecting the initial position you will provide initial liquidity for the market. The initial amount deducted from your account is the same as the ticket price.",
             "add-position-label": "ADD position",
             "positioning-end-label": "Positioning end (UTC)",
+            "positioning-end-tooltip": "The length of the positioning phase has to be at least {{min}} hours and must not be more than {{max}} month.",
             "type-label": "Type",
-            "type-tooltip": "Only ticket type is available now",
+            "type-tooltip": "For Fixed ticket market one wallet can buy only one ticket and choose a single position. For Open bid market one wallet can enter multiple bids and spread the bids across multiple positions.",
+            "type-toggle-tooltip": "Only ticket type is available now",
             "type-options": {
-                "ticket": "Ticket",
+                "ticket": "Fixed ticket",
                 "open-bid": "Open bid"
             },
             "ticket-price-label": "Ticket price",
+            "ticket-price-tooltip": "The price of a fixed entry bid.",
             "withdraw-label": "Withdrawals",
+            "withdraw-tooltip": "If enabled, {{withdrawalPercentage}}% of each withdrawal is paid to the market creator.",
             "withdraw-options": {
                 "enabled": "Enabled",
                 "disabled": "Disabled"
             },
-            "tags-label": "Tags (maximum {{max}})",
+            "tags-label": "Tags",
+            "tags-tooltip": "Select at least one tag and up to {{max}}. Tags will be used for easier market discovery.",
             "description": {
                 "title": "Guidelines",
                 "text": "<0>Every market must be created according to the following guidelines. The list of guidelines is preliminary and after Oracle Council is voted in its their duty to complement it and update it as new edge cases are discovered.</0><0>Not adhering to these guidelines can be a subject of a dispute:</0><1><0>Market question has to be precise, written in English language and free of any ambiguity</0><0>Market has to be mainstream and verifiable via data sources parameter.</0><0>The list of available positions has to be mutually fully exclusive and capture the full range of potential outcomes</0><0>End of positioning phase has to be before the event actually starts</0><0>End of positioning must not be more than 1 month into the future</0><0>Market resolution/question should not be more than 2 months into the future</0><0>The market must not be theoretically resolvable with any of the offered positions before the end of positioning</0><0>No morbid, racist, death related markets or otherwise malicious markets are allowed and will be disputed and slashed</0><0>The market has to be linkable to at least one of the offered tags maintained by Oracle Council</0><0>No duplicated markets should be created. Its ok to create more markets around the same event, but with a different sentiment (different question and/or positions)</0></1><2>Tags available for market creation</2>"
@@ -228,7 +237,7 @@
                 "create-market-label": "Create market",
                 "create-market-progress-label": "Creating in progress..."
             },
-            "bond-info": "<0><0>In order to create a market, you need to deposit a bond of {{amount}} which will be used in case of a dispute.</0><0>If the market is resolved without an accepted dispute, the bond will be returned to you.</0><0>{{bidPercentage}}% of each bid goes to the market creator in case the market is not cancelled.</0><0>{{withdrawalPercentage}}% of each withdrawal is paid to the market creator.</0></0>",
+            "bond-info": "<0><0>In order to create a market, you need to deposit a bond of {{amount}} which will be used in case of a dispute and initial liquidity in the amount of the ticket price.</0><0>If the market is resolved without an accepted dispute, the bond will be returned to you.</0><0>{{bidPercentage}}% of each bid goes to the market creator in case the market is not cancelled.</0><0>{{withdrawalPercentage}}% of each withdrawal is paid to the market creator.</0></0>",
             "creation-disabled-message": "Market creation is disabled, only owner can create markets."
         },
         "resolve-market": {

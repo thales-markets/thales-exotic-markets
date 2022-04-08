@@ -1,11 +1,12 @@
 import React from 'react';
-import { FieldContainer, FieldLabel } from '../common';
+import { FieldContainer, FieldLabel, OverlayContainer } from '../common';
 import { useTranslation } from 'react-i18next';
 import { MINIMUM_POSITIONS } from 'constants/markets';
 import PositionInput from './PositionInput';
 import styled from 'styled-components';
 import { FlexDivCentered, FlexDivStart } from 'styles/common';
 import FieldValidationMessage from 'components/FieldValidationMessage';
+import Tooltip from 'components/Tooltip';
 
 type PositionsProps = {
     positions: string[];
@@ -16,6 +17,7 @@ type PositionsProps = {
     disabled?: boolean;
     maxPositions: number;
     maximumCharacters?: number;
+    tooltip?: string;
 };
 
 const Positions: React.FC<PositionsProps> = ({
@@ -27,6 +29,7 @@ const Positions: React.FC<PositionsProps> = ({
     disabled,
     maxPositions,
     maximumCharacters,
+    tooltip,
 }) => {
     const { t } = useTranslation();
 
@@ -38,7 +41,19 @@ const Positions: React.FC<PositionsProps> = ({
 
     return (
         <FieldContainer>
-            {label && <FieldLabel>{label}:</FieldLabel>}
+            {label && (
+                <FieldLabel>
+                    {label}
+                    {tooltip && (
+                        <Tooltip
+                            overlay={<OverlayContainer>{tooltip}</OverlayContainer>}
+                            iconFontSize={20}
+                            marginLeft={4}
+                            top={0}
+                        />
+                    )}
+                </FieldLabel>
+            )}
             {positions.map((position: string, index: number) => {
                 return (
                     <PositionInput
