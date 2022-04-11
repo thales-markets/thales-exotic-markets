@@ -175,3 +175,17 @@ export type AccountPositions = AccountPosition[];
 export type AccountPositionsMap = {
     [market: string]: AccountPosition;
 };
+
+export type MarketTransactionType = 'bid' | 'changePosition' | 'withdrawal' | 'claim';
+
+export type MarketTransaction = {
+    hash: string;
+    type: MarketTransactionType;
+    account: string;
+    timestamp: number;
+    amount: number | string;
+    blockNumber: number;
+    position: string;
+};
+
+export type MarketTransactions = MarketTransaction[];

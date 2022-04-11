@@ -76,7 +76,8 @@
         "select-date": "Select date...",
         "tags-placeholder": "Search tags...",
         "remove-tag-tooltip": "Click to remove tag",
-        "input-characters-note": "{{entered }} / {{max}}"
+        "input-characters-note": "{{entered }} / {{max}}",
+        "view": "View"
     },
     "footer": {
         "all-rights-reserved": "© {{year}} eXoticV ALL RIGHTS RESERVED."
@@ -143,7 +144,7 @@
             "change-position-label": "Change position",
             "change-position-progress-label": "Changing in progress...",
             "withdraw-label": "Withdraw",
-            "withdraw-progress-label": "Withdraw in progress...",
+            "withdraw-progress-label": "Withdrawal in progress...",
             "resolve-market-label": "Resolve market",
             "resolve-market-progress-label": "Resolving in progress...",
             "claim-label": "Claim",
@@ -294,6 +295,20 @@
             "voting-warning-message": {
                 "winning-position-mismatch": "Winning position mismatch. The other council member set the initial winning position. Use the initial winning position or vote for reset.",
                 "first-member-change-position": "You can not change the initial winning position. Other council members also voted for the same result. Use the initial winning position or vote for reset."
+            }
+        },
+        "table": {
+            "title": "Recent activity",
+            "date-time-col": "date | time",
+            "type-col": "type",
+            "position-col": "position",
+            "amount-col": "amount",
+            "tx-status-col": "tx status",
+            "type": {
+                "bid": "Bid",
+                "withdrawal": "Withdrawal",
+                "changePosition": "Change position",
+                "claim": "Claim"
             }
         }
     }

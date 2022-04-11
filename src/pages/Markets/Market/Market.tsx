@@ -17,6 +17,7 @@ import BackToLink from '../components/BackToLink';
 import Disputes from './Disputes';
 import MarketDetails from './MarketDetails';
 import ResolveMarket from './ResolveMarket';
+import Transactions from './Transactions';
 
 type MarketProps = RouteComponentProps<{
     marketAddress: string;
@@ -63,6 +64,7 @@ const Market: React.FC<MarketProps> = (props) => {
                     {market.canMarketBeResolved && !isOracleCouncilMember && !market.isPaused && (
                         <ResolveMarket market={market} />
                     )}
+                    <Transactions marketAddress={marketAddress} />
                     <Disputes
                         marketAddress={marketAddress}
                         positions={market.positions}
