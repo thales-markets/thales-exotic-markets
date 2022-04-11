@@ -129,22 +129,6 @@ const TableRow = styled(FlexDiv)`
     line-height: 100%;
     letter-spacing: 0.25px;
     border-bottom: 2px dotted ${(props) => props.theme.borderColor.primary};
-    @media (max-width: 512px) {
-        font-size: 10px;
-        & > div {
-            justify-content: center;
-            text-align: center;
-            img {
-                width: 40px;
-            }
-        }
-        & > div:last-child {
-            padding-right: 0;
-        }
-        & > div:first-child {
-            padding-left: 6px;
-        }
-    }
 `;
 
 const TableRowHead = styled(TableRow)`
@@ -162,6 +146,20 @@ const TableCell = styled(FlexDivCentered)`
     &:last-child {
         padding-right: 18px;
     }
+    @media (max-width: 767px) {
+        font-size: 12px;
+    }
+    @media (max-width: 512px) {
+        font-size: 10px;
+        justify-content: center;
+        text-align: center;
+        &:first-child {
+            padding-left: 6px;
+        }
+        &:last-child {
+            padding-right: 0;
+        }
+    }
 `;
 
 const TableCellHead = styled(TableCell)`
@@ -169,17 +167,10 @@ const TableCellHead = styled(TableCell)`
     font-size: 15px;
     letter-spacing: 0.5px;
     @media (max-width: 767px) {
-        span {
-            display: none;
-        }
+        font-size: 13px;
     }
     @media (max-width: 512px) {
         font-size: 10px;
-        justify-content: center;
-        text-align: center;
-        &:last-child {
-            padding-right: 0;
-        }
     }
     user-select: none;
 `;
