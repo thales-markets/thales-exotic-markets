@@ -130,6 +130,13 @@ export const exoticPositionalMarketContract = {
         },
         {
             inputs: [],
+            name: 'canIssueFees',
+            outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
+            stateMutability: 'view',
+            type: 'function',
+        },
+        {
+            inputs: [],
             name: 'canMarketBeResolved',
             outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
             stateMutability: 'view',
@@ -662,6 +669,13 @@ export const exoticPositionalMarketContract = {
             inputs: [],
             name: 'withdrawalAllowed',
             outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
+            stateMutability: 'view',
+            type: 'function',
+        },
+        {
+            inputs: [],
+            name: 'withdrawalPeriod',
+            outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
             stateMutability: 'view',
             type: 'function',
         },

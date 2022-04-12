@@ -55,7 +55,7 @@ export type MarketData = MarketInfo & {
     resolverFee: number;
     safeBoxFee: number;
     totalFees: number;
-    feesAndBondsClaimed: number;
+    canIssueFees: boolean;
 };
 
 export type Markets = MarketInfo[];
