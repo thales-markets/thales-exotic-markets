@@ -1,6 +1,6 @@
 export const exoticPositionalMarketDataContract = {
     addresses: {
-        10: '',
+        10: '0x7B3241C61889185188E3B444abEf7298fAe6B1E1',
         69: '0x6fb9914e1777f4c034b2813cdc035682ea62df0c',
     },
     abi: [

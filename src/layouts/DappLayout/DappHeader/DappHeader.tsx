@@ -2,10 +2,9 @@ import GetUsd from 'components/GetUsd';
 import Logo from 'components/Logo';
 import Search from 'components/Search';
 import WalletInfo from 'components/WalletInfo';
-import { LOCAL_STORAGE_KEYS } from 'constants/storage';
-import useLocalStorage from 'hooks/useLocalStorage';
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { getMarketSearch, setMarketSearch } from 'redux/modules/market';
 import { getNetworkId } from 'redux/modules/wallet';
 import { RootState } from 'redux/rootReducer';
 import styled from 'styled-components';
@@ -17,14 +16,17 @@ type DappHeaderProps = {
 };
 
 const DappHeader: React.FC<DappHeaderProps> = ({ showSearch }) => {
+    const dispatch = useDispatch();
     const networkId = useSelector((state: RootState) => getNetworkId(state));
-    const [marketSearch, setMarketSearch] = useLocalStorage(LOCAL_STORAGE_KEYS.FILTER_MARKET_SEARCH, '');
+    const marketSearch = useSelector((state: RootState) => getMarketSearch(state));
 
     return (
         <Container>
             <Logo />
             <RightContainer>
-                {showSearch && <Search text={marketSearch} handleChange={setMarketSearch} />}
+                {showSearch && (
+                    <Search text={marketSearch} handleChange={(value) => dispatch(setMarketSearch(value))} />
+                )}
                 {networkId === NetworkIdByName.OptimsimKovan && <GetUsd />}
                 <WalletInfo />
             </RightContainer>

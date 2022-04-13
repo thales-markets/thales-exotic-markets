@@ -1,11 +1,20 @@
 import styled from 'styled-components';
 import { FlexDivCentered, FlexDivColumn } from 'styles/common';
 
-export const BondInfo = styled.div`
+export const BondInfo = styled(FlexDivColumn)`
     font-size: 15px;
     font-weight: 700;
     margin-bottom: 20px;
     text-align: center;
+    text-align: justify;
+    max-width: 500px;
+    ul {
+        list-style: initial;
+    }
+    li {
+        line-height: 16px;
+        margin-bottom: 8px;
+    }
 `;
 
 export const Info = styled(FlexDivCentered)<{ fontSize?: number; marginTop?: number; marginBottom?: number }>`

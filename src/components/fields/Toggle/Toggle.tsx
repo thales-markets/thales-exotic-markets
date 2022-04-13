@@ -2,7 +2,7 @@ import Tooltip from 'components/Tooltip';
 import React from 'react';
 import styled from 'styled-components';
 import { FlexDivStart } from 'styles/common';
-import { FieldContainer, FieldLabel } from '../common';
+import { FieldContainer, FieldLabel, OverlayContainer } from '../common';
 
 type ToggleProps = {
     isLeftOptionSelected: boolean;
@@ -12,6 +12,7 @@ type ToggleProps = {
     leftText?: string;
     rightText?: string;
     tooltip?: string;
+    toggleTooltip?: string;
 };
 
 const Toggle: React.FC<ToggleProps> = ({
@@ -22,6 +23,7 @@ const Toggle: React.FC<ToggleProps> = ({
     leftText,
     rightText,
     tooltip,
+    toggleTooltip,
 }) => {
     const getToggleContent = () => (
         <ToggleContainer
@@ -41,9 +43,21 @@ const Toggle: React.FC<ToggleProps> = ({
 
     return (
         <FieldContainer>
-            {label && <FieldLabel>{label}:</FieldLabel>}
-            {!!tooltip ? (
-                <Tooltip overlay={<span>{tooltip}</span>} component={getToggleContent()} />
+            {label && (
+                <FieldLabel>
+                    {label}
+                    {tooltip && (
+                        <Tooltip
+                            overlay={<OverlayContainer>{tooltip}</OverlayContainer>}
+                            iconFontSize={20}
+                            marginLeft={4}
+                            top={0}
+                        />
+                    )}
+                </FieldLabel>
+            )}
+            {!!toggleTooltip ? (
+                <Tooltip overlay={<span>{toggleTooltip}</span>} component={getToggleContent()} />
             ) : (
                 getToggleContent()
             )}
@@ -89,4 +103,5 @@ const ToggleIcon = styled.i<{ isLeftOptionSelected: boolean }>`
         color: ${(props) => props.theme.textColor.primary};
     }
 `;
+
 export default Toggle;

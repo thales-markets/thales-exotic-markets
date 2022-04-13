@@ -3,6 +3,7 @@ import TextAreaInput from 'components/fields/TextAreaInput';
 import Toggle from 'components/fields/Toggle';
 import {
     DATE_PICKER_MAX_DATE,
+    DATE_PICKER_MAX_LENGTH_MONTHS,
     DATE_PICKER_MIN_DATE,
     DEFAULT_POSITIONING_DURATION,
     MarketType,
@@ -12,7 +13,7 @@ import {
     MINIMUM_TICKET_PRICE,
 } from 'constants/markets';
 import React, { useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { FlexDivColumn, FlexDivRow } from 'styles/common';
 import { Tag } from 'react-tag-autocomplete';
@@ -40,14 +41,15 @@ import useTagsQuery from 'queries/markets/useTagsQuery';
 import { buildHref, buildMarketLink, navigateTo } from 'utils/routes';
 import { toast } from 'react-toastify';
 import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
-import { formatCurrencyWithKey } from 'utils/formatters/number';
+import { formatCurrency, formatCurrencyWithKey } from 'utils/formatters/number';
 import { endOfToday, isSameDay, setMonth, startOfToday } from 'date-fns';
 import WarningMessage from 'components/WarningMessage';
 import { BondInfo } from 'components/common';
 import BackToLink from '../components/BackToLink';
 import ROUTES from 'constants/routes';
 import RadioButton from 'components/fields/RadioButton';
-import { FieldLabel } from 'components/fields/common';
+import { FieldLabel, OverlayContainer } from 'components/fields/common';
+import Tooltip from 'components/Tooltip';
 
 const calculateMinTime = (currentDate: Date, minDate: Date) => {
     const isMinDateCurrentDate = isSameDay(currentDate, minDate);
@@ -113,7 +115,7 @@ const CreateMarket: React.FC = () => {
         setMinTime(minTime);
         setMinDate(minDate);
 
-        const maxDate = setMonth(minDate, minDate.getMonth() + 1);
+        const maxDate = setMonth(minDate, minDate.getMonth() + DATE_PICKER_MAX_LENGTH_MONTHS);
         const maxTime = calculateMaxTime(endOfPositioning, maxDate);
         setMaxTime(maxTime);
         setMaxDate(maxDate);
@@ -153,6 +155,9 @@ const CreateMarket: React.FC = () => {
     const maxNumberOfTags = marketsParameters ? marketsParameters.maxNumberOfTags : MAXIMUM_TAGS;
     const maximumPositionsAllowed = marketsParameters ? marketsParameters.maximumPositionsAllowed : MAXIMUM_POSITIONS;
     const minFixedTicketPrice = marketsParameters ? marketsParameters.minFixedTicketPrice : MINIMUM_TICKET_PRICE;
+
+    const creatorPercentage = marketsParameters ? marketsParameters.creatorPercentage : 0;
+    const withdrawalPercentage = marketsParameters ? marketsParameters.withdrawalPercentage : 0;
 
     const marketQuestionStringLimit = marketsParameters
         ? marketsParameters.marketQuestionStringLimit
@@ -432,6 +437,7 @@ const CreateMarket: React.FC = () => {
                         value={question}
                         onChange={setQuestion}
                         label={t('market.create-market.question-label')}
+                        tooltip={t('market.create-market.question-tooltip')}
                         note={t('common.input-characters-note', {
                             entered: question.length,
                             max: marketQuestionStringLimit,
@@ -443,6 +449,7 @@ const CreateMarket: React.FC = () => {
                         value={dataSource}
                         onChange={setDataSource}
                         label={t('market.create-market.data-source-label')}
+                        tooltip={t('market.create-market.data-source-tooltip')}
                         note={t('common.input-characters-note', {
                             entered: dataSource.length,
                             max: marketSourceStringLimit,
@@ -456,6 +463,7 @@ const CreateMarket: React.FC = () => {
                         onPositionRemove={removePosition}
                         onPositionChange={setPositionText}
                         label={t('market.create-market.positions-label')}
+                        tooltip={t('market.create-market.positions-tooltip', { max: maximumPositionsAllowed })}
                         disabled={isSubmitting || creationRestrictedToOwner}
                         maxPositions={maximumPositionsAllowed}
                         maximumCharacters={marketPositionStringLimit}
@@ -464,6 +472,10 @@ const CreateMarket: React.FC = () => {
                         selected={convertUTCToLocalDate(endOfPositioning)}
                         onChange={handleEndOfPositioningChange}
                         label={t('market.create-market.positioning-end-label')}
+                        tooltip={t('market.create-market.positioning-end-tooltip', {
+                            min: formatCurrency(minimumPositioningDuration / 60 / 60, DEFAULT_CURRENCY_DECIMALS, true),
+                            max: DATE_PICKER_MAX_LENGTH_MONTHS,
+                        })}
                         disabled={isSubmitting || creationRestrictedToOwner}
                         minTime={minTime}
                         maxTime={maxTime}
@@ -478,6 +490,7 @@ const CreateMarket: React.FC = () => {
                         label={t('market.create-market.type-label')}
                         leftText={t('market.create-market.type-options.ticket')}
                         rightText={t('market.create-market.type-options.open-bid')}
+                        toggleTooltip={t('market.create-market.type-toggle-tooltip')}
                         tooltip={t('market.create-market.type-tooltip')}
                         // disabled={isSubmitting || creationRestrictedToOwner}
                         disabled={true}
@@ -487,6 +500,7 @@ const CreateMarket: React.FC = () => {
                             value={ticketPrice}
                             onChange={(_, value) => setTicketPrice(value)}
                             label={t('market.create-market.ticket-price-label')}
+                            tooltip={t('market.create-market.ticket-price-tooltip')}
                             currencyLabel={PAYMENT_CURRENCY}
                             disabled={isSubmitting || creationRestrictedToOwner}
                             showValidation={!isTicketPriceValid}
@@ -506,6 +520,9 @@ const CreateMarket: React.FC = () => {
                             setIsWithdrawalAllowed(!isWithdrawalAllowed);
                         }}
                         label={t('market.create-market.withdraw-label')}
+                        tooltip={t('market.create-market.withdraw-tooltip', {
+                            withdrawalPercentage: withdrawalPercentage / 2,
+                        })}
                         leftText={t('market.create-market.withdraw-options.enabled')}
                         rightText={t('market.create-market.withdraw-options.disabled')}
                         disabled={isSubmitting || creationRestrictedToOwner}
@@ -516,11 +533,24 @@ const CreateMarket: React.FC = () => {
                         onTagAdd={addTag}
                         onTagRemove={removeTag}
                         label={t('market.create-market.tags-label', { max: maxNumberOfTags })}
+                        tooltip={t('market.create-market.tags-tooltip', { max: maxNumberOfTags })}
                         disabled={isSubmitting || creationRestrictedToOwner}
                         maxTags={maxNumberOfTags}
                     />
                     <YourPostionsContainer>
-                        <FieldLabel>{t('market.create-market.your-initial-position-label')}:</FieldLabel>
+                        <FieldLabel>
+                            {t('market.create-market.your-initial-position-label')}
+                            <Tooltip
+                                overlay={
+                                    <OverlayContainer>
+                                        {t('market.create-market.your-initial-position-tooltip')}
+                                    </OverlayContainer>
+                                }
+                                iconFontSize={20}
+                                marginLeft={4}
+                                top={0}
+                            />
+                        </FieldLabel>
                         <YourPostions>
                             {positions.map((position: string, index: number) => {
                                 const positionIndex = index + 1;
@@ -539,14 +569,24 @@ const CreateMarket: React.FC = () => {
                     </YourPostionsContainer>
                     <ButtonContainer>
                         <BondInfo>
-                            {t('market.create-market.bond-info', {
-                                amount: formatCurrencyWithKey(
-                                    PAYMENT_CURRENCY,
-                                    fixedBondAmount,
-                                    DEFAULT_CURRENCY_DECIMALS,
-                                    true
-                                ),
-                            })}
+                            <Trans
+                                i18nKey={'market.create-market.bond-info'}
+                                components={[
+                                    <ul key="1">
+                                        <li key="0" />
+                                    </ul>,
+                                ]}
+                                values={{
+                                    amount: formatCurrencyWithKey(
+                                        PAYMENT_CURRENCY,
+                                        fixedBondAmount,
+                                        DEFAULT_CURRENCY_DECIMALS,
+                                        true
+                                    ),
+                                    bidPercentage: creatorPercentage,
+                                    withdrawalPercentage: withdrawalPercentage / 2,
+                                }}
+                            />
                         </BondInfo>
                         {getSubmitButton()}
                     </ButtonContainer>

@@ -1,8 +1,9 @@
 import FieldValidationMessage from 'components/FieldValidationMessage';
+import Tooltip from 'components/Tooltip';
 import { DEFAULT_TOKEN_DECIMALS } from 'constants/defaults';
 import React, { ChangeEvent } from 'react';
 import styled from 'styled-components';
-import { CurrencyLabel, FieldContainer, FieldLabel, FieldNote, Input } from '../common';
+import { CurrencyLabel, FieldContainer, FieldLabel, FieldNote, Input, OverlayContainer } from '../common';
 
 type NumericInputProps = {
     value: string | number;
@@ -16,6 +17,7 @@ type NumericInputProps = {
     showValidation?: boolean;
     validationMessage?: string;
     currencyLabel?: string;
+    tooltip?: string;
 };
 
 const INVALID_CHARS = ['-', '+', 'e'];
@@ -32,6 +34,7 @@ const NumericInput: React.FC<NumericInputProps> = ({
     showValidation,
     validationMessage,
     currencyLabel,
+    tooltip,
     ...rest
 }) => {
     const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -50,7 +53,19 @@ const NumericInput: React.FC<NumericInputProps> = ({
 
     return (
         <FieldContainer>
-            {label && <FieldLabel>{label}:</FieldLabel>}
+            {label && (
+                <FieldLabel>
+                    {label}
+                    {tooltip && (
+                        <Tooltip
+                            overlay={<OverlayContainer>{tooltip}</OverlayContainer>}
+                            iconFontSize={20}
+                            marginLeft={4}
+                            top={0}
+                        />
+                    )}
+                </FieldLabel>
+            )}
             <StyledInput
                 {...rest}
                 value={value}

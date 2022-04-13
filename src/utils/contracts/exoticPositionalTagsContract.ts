@@ -1,6 +1,6 @@
 export const exoticPositionalTagsContract = {
     addresses: {
-        10: '',
+        10: '0xd550bD32B434bA870642F94710eb220f542Ed3F3',
         69: '0x912e29c66291e10565df22b2857EACC2Ea6A84A1',
     },
     abi: [

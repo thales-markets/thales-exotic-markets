@@ -55,7 +55,7 @@ export type MarketData = MarketInfo & {
     resolverFee: number;
     safeBoxFee: number;
     totalFees: number;
-    feesAndBondsClaimed: number;
+    canIssueFees: boolean;
 };
 
 export type Markets = MarketInfo[];
@@ -175,3 +175,17 @@ export type AccountPositions = AccountPosition[];
 export type AccountPositionsMap = {
     [market: string]: AccountPosition;
 };
+
+export type MarketTransactionType = 'bid' | 'changePosition' | 'withdrawal' | 'claim';
+
+export type MarketTransaction = {
+    hash: string;
+    type: MarketTransactionType;
+    account: string;
+    timestamp: number;
+    amount: number | string;
+    blockNumber: number;
+    position: string;
+};
+
+export type MarketTransactions = MarketTransaction[];

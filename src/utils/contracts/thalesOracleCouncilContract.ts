@@ -1,6 +1,6 @@
 export const thalesOracleCouncilContract = {
     addresses: {
-        10: '',
+        10: '0xDF3eefC2ED0F31947a67f0e817DfD92717630E38',
         69: '0x61118647A361CBaFE9119D5d7e08Be5026A20dC4',
     },
     abi: [

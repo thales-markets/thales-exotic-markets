@@ -1,6 +1,7 @@
 import FieldValidationMessage from 'components/FieldValidationMessage';
+import Tooltip from 'components/Tooltip';
 import React from 'react';
-import { FieldContainer, FieldLabel, FieldNote, Input } from '../common';
+import { FieldContainer, FieldLabel, FieldNote, Input, OverlayContainer } from '../common';
 
 type TextInputProps = {
     value: string;
@@ -12,6 +13,7 @@ type TextInputProps = {
     showValidation?: boolean;
     validationMessage?: string;
     maximumCharacters?: number;
+    tooltip?: string;
 };
 
 const TextInput: React.FC<TextInputProps> = ({
@@ -24,11 +26,24 @@ const TextInput: React.FC<TextInputProps> = ({
     showValidation,
     validationMessage,
     maximumCharacters,
+    tooltip,
     ...rest
 }) => {
     return (
         <FieldContainer>
-            {label && <FieldLabel>{label}:</FieldLabel>}
+            {label && (
+                <FieldLabel>
+                    {label}
+                    {tooltip && (
+                        <Tooltip
+                            overlay={<OverlayContainer>{tooltip}</OverlayContainer>}
+                            iconFontSize={20}
+                            marginLeft={4}
+                            top={0}
+                        />
+                    )}
+                </FieldLabel>
+            )}
             <Input
                 {...rest}
                 value={value}

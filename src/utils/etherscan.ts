@@ -1,8 +1,8 @@
 import { NetworkId } from 'types/network';
 
 export const EtherscanNetworkNameById: Record<NetworkId, string> = {
-    // 10: 'optimistic',
-    69: 'optimistic-kovan',
+    10: 'optimistic',
+    69: 'kovan-optimistic',
 };
 
 const getEtherscanBaseURL = (networkId: NetworkId) => {

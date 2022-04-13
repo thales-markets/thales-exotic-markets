@@ -2,9 +2,10 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import ReactDatePicker, { ReactDatePickerProps } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { FieldContainer, FieldLabel } from '../common';
+import { FieldContainer, FieldLabel, OverlayContainer } from '../common';
 import styled from 'styled-components';
 import { FlexDivColumn } from 'styles/common';
+import Tooltip from 'components/Tooltip';
 
 type DatetimePickerProps = ReactDatePickerProps & {
     label?: string;
@@ -13,6 +14,7 @@ type DatetimePickerProps = ReactDatePickerProps & {
     maxTime: Date;
     minDate: Date;
     maxDate: Date;
+    tooltip?: string;
 };
 
 export const DatetimePicker: React.FC<DatetimePickerProps> = ({
@@ -22,13 +24,26 @@ export const DatetimePicker: React.FC<DatetimePickerProps> = ({
     maxTime,
     minDate,
     maxDate,
+    tooltip,
     ...rest
 }) => {
     const { t } = useTranslation();
 
     return (
         <FieldContainer>
-            {label && <FieldLabel>{label}:</FieldLabel>}
+            {label && (
+                <FieldLabel>
+                    {label}
+                    {tooltip && (
+                        <Tooltip
+                            overlay={<OverlayContainer>{tooltip}</OverlayContainer>}
+                            iconFontSize={20}
+                            marginLeft={4}
+                            top={0}
+                        />
+                    )}
+                </FieldLabel>
+            )}
             <DatePickerContainer className={disabled ? 'disabled' : ''}>
                 <ReactDatePicker
                     dateFormat="MMM d, yyyy | HH:mm"

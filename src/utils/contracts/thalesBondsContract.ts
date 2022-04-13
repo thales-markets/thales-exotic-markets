@@ -1,6 +1,6 @@
 export const thalesBondsContract = {
     addresses: {
-        10: '',
+        10: '0x160Ca569999601bca06109D42d561D85D6Bb4b57',
         69: '0xFA58e022acD77EE4f373b508c8265000A4f22994',
     },
     abi: [

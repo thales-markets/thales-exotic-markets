@@ -112,11 +112,7 @@ const useDisputeQuery = (
                 return {
                     disputeContractData,
                     disputeVotes,
-                    disputeVotingResults: orderBy(
-                        disputeVotingResults,
-                        ['numberOfVotes', 'votingOption'],
-                        ['desc', 'asc']
-                    ),
+                    disputeVotingResults: orderBy(disputeVotingResults, ['votingOption'], ['asc']),
                     status,
                     isOpenForVoting,
                 };
