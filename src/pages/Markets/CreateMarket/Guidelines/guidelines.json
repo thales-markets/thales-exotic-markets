@@ -9,7 +9,7 @@
     },
     {
         "text": "The list of available positions has to be mutually fully exclusive and capture the full range of potential outcomes",
-        "tooltip": ""
+        "tooltip": "eg market question: Will the price of ETH be above or below $10000 USD on July 15th? <ul><li>Above</li><li>Below</li><ul> doesn't capture the full range of outcomes since ETH could be exactly $10000 on July 15th"
     },
     {
         "text": "End of positioning phase has to be before the event actually starts",
@@ -25,8 +25,7 @@
     },
     {
         "text": "Markets that are trivially manipulatable like easily inflatable statistics are not allowed",
-        "tooltip": "eg market question: Will Elon Musk have 20M Twitter followers by xx/xx/xx date? (This would be an unacceptable market since some one can create a bot that makes millions of Twitter accounts and follows Elon from all of them) 
-"
+        "tooltip": "eg market question: Will Elon Musk have 20M Twitter followers by xx/xx/xx date? (This would be an unacceptable market since some one can create a bot that makes millions of Twitter accounts and follows Elon from all of them)"
     },
     {
         "text": "No morbid, racist, death related markets or otherwise malicious markets are allowed and will be disputed and slashed",
