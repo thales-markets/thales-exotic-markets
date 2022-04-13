@@ -1,0 +1,46 @@
+[
+    {
+        "text": "Market question has to be precise, written in English language and free of any ambiguity",
+        "tooltip": ""
+    },
+    {
+        "text": "Market has to be mainstream and verifiable via data sources parameter",
+        "tooltip": "Definition of Mainstream - something that is recognized internationally or recognized industry wide within one of the available tags"
+    },
+    {
+        "text": "The list of available positions has to be mutually fully exclusive and capture the full range of potential outcomes",
+        "tooltip": "eg market question: Will the price of ETH be above or below $10000 USD on July 15th? \n - Above\n - Below\n doesn't capture the full range of outcomes since ETH could be exactly $10000 on July 15th"
+    },
+    {
+        "text": "End of positioning phase has to be before the event actually starts",
+        "tooltip": ""
+    },
+    {
+        "text": "End of positioning must not be more than 1 month into the future",
+        "tooltip": ""
+    },
+    {
+        "text": "Market resolution/question should not be more than 6 months into the future",
+        "tooltip": ""
+    },
+    {
+        "text": "Markets that are trivially manipulatable like easily inflatable statistics are not allowed",
+        "tooltip": "eg market question: Will Elon Musk have 20M Twitter followers by xx/xx/xx date? (This would be an unacceptable market since some one can create a bot that makes millions of Twitter accounts and follows Elon from all of them)"
+    },
+    {
+        "text": "No morbid, racist, death related markets or otherwise malicious markets are allowed and will be disputed and slashed",
+        "tooltip": ""
+    },
+    {
+        "text": "The market has to be linkable to at least one of the offered tags maintained by Oracle Council",
+        "tooltip": ""
+    },
+    {
+        "text": "No duplicated markets should be created. Its ok to create more markets around the same event, but with a different sentiment (different question and/or positions)",
+        "tooltip": ""
+    },
+    {
+        "text": "Any names/labels used in the market question and in the available Positional options must be sited in the Market Data Source",
+        "tooltip": ""
+    }
+]

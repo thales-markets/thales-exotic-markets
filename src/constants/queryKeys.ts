@@ -3,6 +3,12 @@ import { NetworkId } from 'types/network';
 export const QUERY_KEYS = {
     Markets: (networkId: NetworkId) => ['markets', networkId],
     Market: (marketAddress: string) => ['market', marketAddress],
+    MarketTransactions: (marketAddress: string, networkId: NetworkId) => [
+        'market',
+        'transactions',
+        marketAddress,
+        networkId,
+    ],
     AccountMarketData: (marketAddress: string, walletAddress: string) => ['market', marketAddress, walletAddress],
     MarketsParameters: (networkId: NetworkId) => ['markets', 'parameters', networkId],
     Tags: (networkId: NetworkId) => ['tags', networkId],

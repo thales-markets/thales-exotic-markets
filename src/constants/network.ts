@@ -4,7 +4,7 @@ export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 export type NetworkMapper = Record<number, number>;
 
 export const L1_TO_L2_NETWORK_MAPPER: NetworkMapper = {
-    // 1: 10,
+    1: 10,
     42: 69,
 };
 

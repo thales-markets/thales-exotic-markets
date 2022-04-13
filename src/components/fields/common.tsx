@@ -11,9 +11,10 @@ export const FieldLabel = styled.label`
     font-style: normal;
     font-weight: bold;
     font-size: 25px;
-    line-height: 34px;
+    line-height: 32px;
     color: ${(props) => props.theme.textColor.primary};
     margin-bottom: 6px;
+    display: flex;
 `;
 
 export const CurrencyLabel = styled.label`
@@ -100,4 +101,8 @@ export const FieldNote = styled(FlexDivEnd)`
     line-height: 16px;
     color: ${(props) => props.theme.textColor.primary};
     margin-top: 4px;
+`;
+
+export const OverlayContainer = styled(FlexDivColumn)`
+    text-align: justify;
 `;

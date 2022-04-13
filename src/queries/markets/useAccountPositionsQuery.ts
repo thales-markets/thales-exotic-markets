@@ -15,6 +15,7 @@ const useAccountPositionsQuery = (
         async () => {
             const positions: AccountPositions = await thalesData.exoticMarkets.positions({
                 account: walletAddress,
+                network: networkId,
             });
 
             const positionsMap: AccountPositionsMap = keyBy(positions, 'market');

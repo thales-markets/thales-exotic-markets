@@ -8,6 +8,7 @@ import { RootState } from 'redux/rootReducer';
 import styled from 'styled-components';
 import { FlexDivColumn } from 'styles/common';
 import { Tags, TagInfo } from 'types/markets';
+import Guidelines from '../Guidelines';
 
 const Description: React.FC = () => {
     const { t } = useTranslation();
@@ -39,13 +40,7 @@ const Description: React.FC = () => {
             <Text>
                 <Trans
                     i18nKey="market.create-market.description.text"
-                    components={[
-                        <p key="0" />,
-                        <ul key="1">
-                            <li key="0" />
-                        </ul>,
-                        <h2 key="2" />,
-                    ]}
+                    components={[<p key="0" />, <Guidelines key="1" />, <h2 key="2" />]}
                 />
                 {getTagList()}
             </Text>

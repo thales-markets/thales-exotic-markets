@@ -21,7 +21,7 @@ const Tooltip: React.FC<TooltipProps> = ({ component, overlay, iconFontSize, mar
     );
 };
 
-const Container = styled.div`
+const Container = styled.span`
     position: relative;
     width: fit-content;
 `;

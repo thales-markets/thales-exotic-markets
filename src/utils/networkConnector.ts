@@ -42,9 +42,9 @@ const networkConnector: NetworkConnector = {
 };
 
 const initializeContract = (contract: any, networkSettings: NetworkSettings) =>
-    contract.addresses[networkSettings.networkId || NetworkIdByName.OptimsimKovan] !== ''
+    contract.addresses[networkSettings.networkId || NetworkIdByName.OptimsimMainnet] !== ''
         ? new ethers.Contract(
-              contract.addresses[networkSettings.networkId || NetworkIdByName.OptimsimKovan],
+              contract.addresses[networkSettings.networkId || NetworkIdByName.OptimsimMainnet],
               contract.abi,
               networkConnector.provider
           )

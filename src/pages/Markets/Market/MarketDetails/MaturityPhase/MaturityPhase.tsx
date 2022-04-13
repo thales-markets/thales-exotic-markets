@@ -280,7 +280,7 @@ const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
                             )}
                         </>
                     )}
-                    {!market.feesAndBondsClaimed ? (
+                    {market.canIssueFees ? (
                         <DistributeButton
                             disabled={isClaiming || isDistributing}
                             onClick={handleDistribute}
