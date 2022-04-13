@@ -238,7 +238,7 @@
                 "create-market-label": "Create market",
                 "create-market-progress-label": "Creating in progress..."
             },
-            "bond-info": "<0><0>In order to create a market, you need to deposit a bond of {{amount}} which will be used in case of a dispute and initial liquidity in the amount of the ticket price.</0><0>If the market is resolved without an accepted dispute, the bond will be returned to you.</0><0>{{bidPercentage}}% of each bid goes to the market creator in case the market is not cancelled.</0><0>{{withdrawalPercentage}}% of each withdrawal is paid to the market creator.</0></0>",
+            "bond-info": "<0><0>As a creator, you will earn {{bidPercentage}}% of each bid (should the market resolve regularly) and {{withdrawalPercentage}}% of each withdrawal.</0><0>In order to create a market, you need to deposit a bond of {{amount}} sUSD which serves as a guarantee that you have created a market by adhering to the guidelines maintained by the Oracle Council.</0><0>Your bond can be slashed if a dispute is accepted on your market not following the guidelines.</0></0>",
             "creation-disabled-message": "Market creation is disabled, only owner can create markets."
         },
         "resolve-market": {
