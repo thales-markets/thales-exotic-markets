@@ -20,11 +20,11 @@
         "tooltip": ""
     },
     {
-        "text": "Market resolution/question should not be more than 2 months into the future",
+        "text": "Market resolution/question should not be more than 6 months into the future",
         "tooltip": ""
     },
     {
-        "text": "The market must not be theoretically resolvable with any of the offered positions before the end of positioning",
+        "text": "Markets that are trivially manipulatable like easily inflatable statistics are not allowed",
         "tooltip": ""
     },
     {
@@ -38,5 +38,8 @@
     {
         "text": "No duplicated markets should be created. Its ok to create more markets around the same event, but with a different sentiment (different question and/or positions)",
         "tooltip": ""
-    }
+    },
+    {
+        "text": "Any names/labels used in the market question and in the available options must be sited in the Market Data Source",
+        "tooltip": ""
 ]
