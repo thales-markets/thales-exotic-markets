@@ -19,7 +19,7 @@ export const NetworkNameById: Record<NetworkId, string> = {
 
 export const InfuraNetworkNameById: Record<NetworkId, string> = {
     10: 'optimism-mainnet',
-    69: 'optimsim-kovan',
+    69: 'optimism-kovan',
 };
 
 export const hasEthereumInjected = () => !!window.ethereum;
