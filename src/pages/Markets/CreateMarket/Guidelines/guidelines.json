@@ -1,0 +1,42 @@
+[
+    {
+        "text": "Market question has to be precise, written in English language and free of any ambiguity",
+        "tooltip": ""
+    },
+    {
+        "text": "Market has to be mainstream and verifiable via data sources parameter",
+        "tooltip": ""
+    },
+    {
+        "text": "The list of available positions has to be mutually fully exclusive and capture the full range of potential outcomes",
+        "tooltip": ""
+    },
+    {
+        "text": "End of positioning phase has to be before the event actually starts",
+        "tooltip": ""
+    },
+    {
+        "text": "End of positioning must not be more than 1 month into the future",
+        "tooltip": ""
+    },
+    {
+        "text": "Market resolution/question should not be more than 2 months into the future",
+        "tooltip": ""
+    },
+    {
+        "text": "The market must not be theoretically resolvable with any of the offered positions before the end of positioning",
+        "tooltip": ""
+    },
+    {
+        "text": "No morbid, racist, death related markets or otherwise malicious markets are allowed and will be disputed and slashed",
+        "tooltip": ""
+    },
+    {
+        "text": "The market has to be linkable to at least one of the offered tags maintained by Oracle Council",
+        "tooltip": ""
+    },
+    {
+        "text": "No duplicated markets should be created. Its ok to create more markets around the same event, but with a different sentiment (different question and/or positions)",
+        "tooltip": ""
+    }
+]
