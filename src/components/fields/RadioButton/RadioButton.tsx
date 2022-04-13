@@ -83,7 +83,6 @@ const Container = styled.label`
         cursor: default;
     }
     align-self: center;
-    justify-content: center;
 `;
 
 const Checkmark = styled.span`
