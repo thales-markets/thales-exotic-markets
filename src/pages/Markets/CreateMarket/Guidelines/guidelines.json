@@ -5,7 +5,7 @@
     },
     {
         "text": "Market has to be mainstream and verifiable via data sources parameter",
-        "tooltip": ""
+        "tooltip": "Definition of Mainstream - something that is recognized internationally or recognized industry wide within one of the available tags"
     },
     {
         "text": "The list of available positions has to be mutually fully exclusive and capture the full range of potential outcomes",
@@ -25,7 +25,8 @@
     },
     {
         "text": "Markets that are trivially manipulatable like easily inflatable statistics are not allowed",
-        "tooltip": ""
+        "tooltip": "eg market question: Will Elon Musk have 20M Twitter followers by xx/xx/xx date? (This would be an unacceptable market since some one can create a bot that makes millions of Twitter accounts and follows Elon from all of them) 
+"
     },
     {
         "text": "No morbid, racist, death related markets or otherwise malicious markets are allowed and will be disputed and slashed",
@@ -40,7 +41,7 @@
         "tooltip": ""
     },
     {
-        "text": "Any names/labels used in the market question and in the available options must be sited in the Market Data Source",
+        "text": "Any names/labels used in the market question and in the available Positional options must be sited in the Market Data Source",
         "tooltip": ""
     }
 ]
