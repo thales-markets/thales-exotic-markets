@@ -309,7 +309,8 @@
                 "withdrawal": "Withdrawal",
                 "changePosition": "Change position",
                 "claim": "Claim"
-            }
+            },
+            "no-results": "No transactions associated with this market."
         }
     }
 }
