@@ -32,8 +32,8 @@
         "tooltip": ""
     },
     {
-        "text": "The market has to be linkable to at least one of the offered tags maintained by Oracle Council",
-        "tooltip": ""
+        "text": "The market has to be linkable to at least one of the offered tags maintained by Oracle Council and must be correctly tagged",
+        "tooltip": "eg marekt question: Who will win the 2024 US Presidential elections? \n TAGS: \n - Crypto\n - Pop-culture\n This market would be disputable since it isn't tagged correctly\n Correct TAG:\n - Political Elections"
     },
     {
         "text": "No duplicated markets should be created. Its ok to create more markets around the same event, but with a different sentiment (different question and/or positions)",
