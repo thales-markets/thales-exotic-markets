@@ -38,20 +38,6 @@ onboard-custom {
 }
 
 /* react-modal */
-.modal-content {
-    padding: 0px;
-    max-width: 500px;
-    width: 100%;
-    height: fit-content;
-    border: none;
-    background: transparent;
-    top: calc(50% - 250px);
-    left: calc(50% - 250px);
-    position: relative;
-}
-
-@media (max-width: 500px) {
-    .modal-content {
-        left: 0;
-    }
+.ReactModal__Body--open {
+    overflow-y: hidden;
 }

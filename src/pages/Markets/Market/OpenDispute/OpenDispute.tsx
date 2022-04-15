@@ -2,7 +2,7 @@ import TextAreaInput from 'components/fields/TextAreaInput';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { FlexDivColumn } from 'styles/common';
+import { FlexDivColumn, FlexDivStart } from 'styles/common';
 import Button from 'components/Button';
 import { MAXIMUM_INPUT_CHARACTERS } from 'constants/markets';
 import { useSelector } from 'react-redux';
@@ -27,9 +27,10 @@ import WarningMessage from 'components/WarningMessage';
 import { toast } from 'react-toastify';
 import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
 import { formatCurrencyWithKey } from 'utils/formatters/number';
-import { BondInfo } from 'components/common';
+import { BondInfo, InfoContent, InfoLabel } from 'components/common';
 import BackToLink from 'pages/Markets/components/BackToLink';
 import useMarketsParametersQuery from 'queries/markets/useMarketsParametersQuery';
+import GuidelinesModal from 'pages/Markets/components/GuidelinesModal';
 
 type OpenDisputeProps = RouteComponentProps<{
     marketAddress: string;
@@ -47,6 +48,7 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
     const [reasonForDispute, setReasonForDispute] = useState<string>('');
     const [paymentTokenBalance, setPaymentTokenBalance] = useState<number | string>('');
     const [openApprovalModal, setOpenApprovalModal] = useState<boolean>(false);
+    const [openGuidelinesModal, setOpenGuidelinesModal] = useState<boolean>(false);
 
     const { params } = props.match;
     const marketAddress = params && params.marketAddress ? params.marketAddress : '';
@@ -106,6 +108,7 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
         !market.isPaused;
 
     const disputePrice = market ? market.disputePrice : 0;
+    const arbitraryRewardForDisputor = market ? market.arbitraryRewardForDisputor : 0;
 
     const isReasonForDisputeEntered = reasonForDispute.trim() !== '';
     const insufficientBalance = Number(paymentTokenBalance) < Number(disputePrice) || Number(paymentTokenBalance) === 0;
@@ -267,10 +270,20 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
                             )}
                         </Title>
                         {market.isResolved && (
-                            <Info>
-                                {t('market.dispute.current-result-label')}:{' '}
-                                {market.positions[market.winningPosition - 1]}
-                            </Info>
+                            <CurrentResultInfo>
+                                <InfoLabel>{t('market.dispute.current-result-label')}:</InfoLabel>
+                                <CurrentResultContent>
+                                    {market.positions[market.winningPosition - 1]}
+                                </CurrentResultContent>
+                            </CurrentResultInfo>
+                        )}
+                        {!market.isResolved && (
+                            <OpenDisputeNote>
+                                {t('market.dispute.open-dispute-note-label')}{' '}
+                                <GuidelinesNote onClick={() => setOpenGuidelinesModal(true)}>
+                                    {t('common.guidelines')}.
+                                </GuidelinesNote>
+                            </OpenDisputeNote>
                         )}
                         <TextAreaInput
                             value={reasonForDispute}
@@ -299,6 +312,18 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
                                             DEFAULT_CURRENCY_DECIMALS,
                                             true
                                         ),
+                                        minReward: formatCurrencyWithKey(
+                                            PAYMENT_CURRENCY,
+                                            arbitraryRewardForDisputor,
+                                            DEFAULT_CURRENCY_DECIMALS,
+                                            true
+                                        ),
+                                        maxReward: formatCurrencyWithKey(
+                                            PAYMENT_CURRENCY,
+                                            disputePrice,
+                                            DEFAULT_CURRENCY_DECIMALS,
+                                            true
+                                        ),
                                     }}
                                 />
                             </BondInfo>
@@ -315,6 +340,7 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
                             onClose={() => setOpenApprovalModal(false)}
                         />
                     )}
+                    {openGuidelinesModal && <GuidelinesModal onClose={() => setOpenGuidelinesModal(false)} />}
                 </>
             ) : (
                 <SimpleLoader />
@@ -341,12 +367,32 @@ const Title = styled(FlexDivColumn)`
     margin-bottom: 60px;
 `;
 
-const Info = styled(FlexDivColumn)`
+const CurrentResultInfo = styled(FlexDivStart)`
     font-style: normal;
     font-weight: bold;
     font-size: 25px;
     line-height: 100%;
     margin-bottom: 20px;
+`;
+
+const CurrentResultContent = styled(InfoContent)`
+    color: ${(props) => props.theme.textColor.secondary};
+    font-style: italic;
+`;
+
+const OpenDisputeNote = styled(FlexDivStart)`
+    font-style: normal;
+    font-size: 18px;
+    line-height: 20px;
+    margin-bottom: 20px;
+    display: inline;
+    text-align: justify;
+`;
+
+const GuidelinesNote = styled.span`
+    font-style: italic;
+    font-weight: bold;
+    cursor: pointer;
 `;
 
 const Form = styled(FlexDivColumn)`

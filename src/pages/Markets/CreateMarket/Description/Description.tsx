@@ -77,6 +77,10 @@ const Text = styled(FlexDivColumn)`
         margin-left: 30px;
         margin-bottom: 15px;
     }
+    li {
+        margin-bottom: 10px;
+        line-height: 23px;
+    }
     h2 {
         margin-top: 15px;
         margin-bottom: 15px;

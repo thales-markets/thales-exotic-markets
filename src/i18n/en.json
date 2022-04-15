@@ -77,7 +77,8 @@
         "tags-placeholder": "Search tags...",
         "remove-tag-tooltip": "Click to remove tag",
         "input-characters-note": "{{entered }} / {{max}}",
-        "view": "View"
+        "view": "View",
+        "guidelines": "guidelines"
     },
     "footer": {
         "all-rights-reserved": "© {{year}} eXoticV ALL RIGHTS RESERVED."
@@ -238,25 +239,27 @@
                 "create-market-label": "Create market",
                 "create-market-progress-label": "Creating in progress..."
             },
-            "bond-info": "<0><0>As a creator, you will earn {{bidPercentage}}% of each bid (should the market resolve regularly) and {{withdrawalPercentage}}% of each withdrawal.</0><0>In order to create a market, you need to deposit a bond of {{amount}} sUSD which serves as a guarantee that you have created a market by adhering to the guidelines maintained by the Oracle Council.</0><0>Your bond can be slashed if a dispute is accepted on your market not following the guidelines.</0></0>",
+            "bond-info": "<0><0>As a creator, you will earn {{bidPercentage}}% of each bid (should the market resolve regularly) and {{withdrawalPercentage}}% of each withdrawal.</0><0>In order to create a market, you need to deposit a bond of {{amount}} which serves as a guarantee that you have created a market by adhering to the guidelines maintained by the Oracle Council.</0><0>Your bond can be slashed if a dispute is accepted on your market not following the guidelines.</0></0>",
             "creation-disabled-message": "Market creation is disabled, only owner can create markets."
         },
         "resolve-market": {
-            "title": "Resolve market",
+            "title": "Choose a position to resolve the market with",
             "cancel-tooltip": "If the market is not created according to the guidelines, use this option to cancel the market. Resolving a market with this position will allow anyone who placed a bid on the market to claim a full refund.",
-            "bond-info": "<0><0>In order to resolve the market, you need to deposit a bond of {{amount}} which will be used in case of a dispute.</0><0>If your result is not disputed and the market is formally resolved with your outcome, the bond will be returned to you.</0><0>{{resolverPercentage}}% of each bid goes to the market resolver in case the market is not cancelled.</0></0>",
+            "bond-info": "<0><0>In order to resolve the market, you need to deposit a bond of {{amount}} which will be used in case of a dispute.</0><0>If your result is not disputed and the market is formally resolved with your position, the bond will be returned to you.</0><0>{{resolverPercentage}}% of each bid goes to the market resolver in case the market is not cancelled.</0></0>",
             "creator-bond-info": "<0><0>As a market creator, you don't need to submit a new bond, your initial bond will be used in case of a dispute.</0><0>{{resolverPercentage}}% of each bid goes to the market resolver in case the market is not cancelled.</0></0>"
         },
         "dispute": {
             "open-dispute-title": "Open dispute on the market \"{{question}}\"",
             "open-dispute-maturity-title": "Open dispute on the result of the market \"{{question}}\"",
             "current-result-label": "Current result",
+            "open-dispute-note-label": "You can dispute a market in the positioning phase if it did not adhere to the following",
+            "open-dispute-modal-title": "Guidelines",
             "disputer-label": "Disputer",
             "status-label": "Status",
             "reason-for-dispute-label": "Reason for dispute",
             "vote-label": "Vote",
             "results-label": "Results",
-            "open-dispute-bond-info": "<0><0>In order to open a dispute, you need to deposit a bond of {{amount}}.</0><0>In case the dispute is accepted, you will receive your bond back.</0></0>",
+            "open-dispute-bond-info": "<0><0>In order to open a dispute, you need to deposit a bond of {{amount}}.</0><0>If Oracle Council finds that your dispute was unjustified your bond will be slashed.</0><0>If Oracle Council accepts your dispute you will get your bond back and a reward in the range of {{minReward}} to {{maxReward}}.</0></0>",
             "disputes-disabled-message": {
                 "market-paused": "The market is paused.",
                 "market-closed": "The market is closed for disputes.",
