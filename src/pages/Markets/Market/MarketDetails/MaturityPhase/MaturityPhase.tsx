@@ -42,7 +42,7 @@ const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
 
     useEffect(() => {
         if (accountMarketDataQuery.isSuccess && accountMarketDataQuery.data) {
-            setAccountMarketData(accountMarketDataQuery.data as AccountMarketData);
+            setAccountMarketData(accountMarketDataQuery.data);
         }
     }, [accountMarketDataQuery.isSuccess, accountMarketDataQuery.data]);
 

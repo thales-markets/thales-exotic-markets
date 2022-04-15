@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { getIsAppReady } from 'redux/modules/app';
 import { getIsWalletConnected, getNetworkId, getWalletAddress } from 'redux/modules/wallet';
@@ -34,27 +34,27 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
     const networkId = useSelector((state: RootState) => getNetworkId(state));
     const walletAddress = useSelector((state: RootState) => getWalletAddress(state)) || '';
     const isWalletConnected = useSelector((state: RootState) => getIsWalletConnected(state));
+    const [isOracleCouncilMember, setIsOracleCouncilMember] = useState<boolean>(true);
+    const [isClaimAvailable, setIsClaimAvailable] = useState<boolean>(false);
 
     const oracleCouncilMemberQuery = useOracleCouncilMemberQuery(walletAddress, networkId, {
         enabled: isAppReady && isWalletConnected,
     });
 
-    const isOracleCouncilMember: boolean = useMemo(() => {
-        if (oracleCouncilMemberQuery.isSuccess) {
-            return oracleCouncilMemberQuery.data as boolean;
+    useEffect(() => {
+        if (oracleCouncilMemberQuery.isSuccess && oracleCouncilMemberQuery.data !== undefined) {
+            setIsOracleCouncilMember(oracleCouncilMemberQuery.data);
         }
-        return true;
     }, [oracleCouncilMemberQuery.isSuccess, oracleCouncilMemberQuery.data]);
 
     const accountMarketDataQuery = useAccountMarketDataQuery(market.address, walletAddress, {
         enabled: isAppReady && isWalletConnected,
     });
 
-    const isClaimAvailable: boolean = useMemo(() => {
-        if (accountMarketDataQuery.isSuccess && accountMarketDataQuery.data) {
-            return (accountMarketDataQuery.data as AccountMarketData).canClaim && !market.isPaused;
+    useEffect(() => {
+        if (accountMarketDataQuery.isSuccess && accountMarketDataQuery.data !== undefined) {
+            setIsClaimAvailable((accountMarketDataQuery.data as AccountMarketData).canClaim && !market.isPaused);
         }
-        return false;
     }, [accountMarketDataQuery.isSuccess, accountMarketDataQuery.data]);
 
     const canOpenDispute =

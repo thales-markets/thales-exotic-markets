@@ -1,6 +1,6 @@
 import { DisputeStatus } from 'constants/markets';
 import useDisputeQuery from 'queries/markets/useDisputeQuery';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { getIsAppReady } from 'redux/modules/app';
@@ -35,6 +35,11 @@ const DisputeCard: React.FC<DisputeCardProps> = ({
     const walletAddress = useSelector((state: RootState) => getWalletAddress(state)) || '';
     const isWalletConnected = useSelector((state: RootState) => getIsWalletConnected(state));
     const [isActive, setIsActive] = useState<boolean>(disputeInfo.status === DisputeStatus.Open);
+    const [disputeData, setDisputeData] = useState<DisputeData | undefined>(undefined);
+    const [
+        canDisputorClaimbackBondFromUnclosedDispute,
+        setCanDisputorClaimbackBondFromUnclosedDispute,
+    ] = useState<boolean>(false);
 
     const outcomePositions = [t('common.cancel'), ...positions];
 
@@ -42,11 +47,10 @@ const DisputeCard: React.FC<DisputeCardProps> = ({
         enabled: isAppReady,
     });
 
-    const disputeData: DisputeData | undefined = useMemo(() => {
-        if (disputeQuery.isSuccess) {
-            return disputeQuery.data as DisputeData | undefined;
+    useEffect(() => {
+        if (disputeQuery.isSuccess && disputeQuery.data) {
+            setDisputeData(disputeQuery.data);
         }
-        return undefined;
     }, [disputeQuery.isSuccess, disputeQuery.data]);
 
     const { voteOnContract, positionOnContract } = useMemo(() => {
@@ -76,11 +80,12 @@ const DisputeCard: React.FC<DisputeCardProps> = ({
         }
     );
 
-    const canDisputorClaimbackBondFromUnclosedDispute: boolean = useMemo(() => {
+    useEffect(() => {
         if (accountDisputeDataQuery.isSuccess && accountDisputeDataQuery.data) {
-            return (accountDisputeDataQuery.data as AccountDisputeData).canDisputorClaimbackBondFromUnclosedDispute;
+            setCanDisputorClaimbackBondFromUnclosedDispute(
+                (accountDisputeDataQuery.data as AccountDisputeData).canDisputorClaimbackBondFromUnclosedDispute
+            );
         }
-        return false;
     }, [accountDisputeDataQuery.isSuccess, accountDisputeDataQuery.data]);
 
     const showDisputeVoting = isOracleCouncilMember && disputeData && disputeData.isOpenForVoting;

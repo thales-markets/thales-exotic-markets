@@ -12,7 +12,7 @@ import {
     MAXIMUM_TAGS,
     MINIMUM_TICKET_PRICE,
 } from 'constants/markets';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { FlexDivColumn, FlexDivRow } from 'styles/common';
@@ -95,16 +95,16 @@ const CreateMarket: React.FC = () => {
     const [maxDate, setMaxDate] = useState<Date>(DATE_PICKER_MAX_DATE);
     const [isTicketPriceValid, setIsTicketPriceValid] = useState<boolean>(true);
     const [initialPosition, setInitialPosition] = useState<number>(0);
+    const [marketsParameters, setMarketsParameters] = useState<MarketsParameters | undefined>(undefined);
 
     const marketsParametersQuery = useMarketsParametersQuery(networkId, {
         enabled: isAppReady,
     });
 
-    const marketsParameters: MarketsParameters | undefined = useMemo(() => {
+    useEffect(() => {
         if (marketsParametersQuery.isSuccess && marketsParametersQuery.data) {
-            return marketsParametersQuery.data as MarketsParameters;
+            setMarketsParameters(marketsParametersQuery.data);
         }
-        return undefined;
     }, [marketsParametersQuery.isSuccess, marketsParametersQuery.data]);
 
     const minimumPositioningDuration = marketsParameters ? marketsParameters.minimumPositioningDuration : 0;
@@ -143,7 +143,7 @@ const CreateMarket: React.FC = () => {
     });
 
     useEffect(() => {
-        if (paymentTokenBalanceQuery.isSuccess) {
+        if (paymentTokenBalanceQuery.isSuccess && paymentTokenBalanceQuery.data !== undefined) {
             setPaymentTokenBalance(Number(paymentTokenBalanceQuery.data));
         }
     }, [paymentTokenBalanceQuery.isSuccess, paymentTokenBalanceQuery.data]);

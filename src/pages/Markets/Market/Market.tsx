@@ -2,7 +2,7 @@ import SimpleLoader from 'components/SimpleLoader';
 import ROUTES from 'constants/routes';
 import useMarketQuery from 'queries/markets/useMarketQuery';
 import useOracleCouncilMemberQuery from 'queries/oracleCouncil/useOracleCouncilMemberQuery';
-import React, { useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
@@ -29,6 +29,8 @@ const Market: React.FC<MarketProps> = (props) => {
     const networkId = useSelector((state: RootState) => getNetworkId(state));
     const walletAddress = useSelector((state: RootState) => getWalletAddress(state)) || '';
     const isWalletConnected = useSelector((state: RootState) => getIsWalletConnected(state));
+    const [market, setMarket] = useState<MarketData | undefined>(undefined);
+    const [isOracleCouncilMember, setIsOracleCouncilMember] = useState<boolean>(true);
 
     const { params } = props.match;
     const marketAddress = params && params.marketAddress ? params.marketAddress : '';
@@ -37,22 +39,20 @@ const Market: React.FC<MarketProps> = (props) => {
         enabled: isAppReady,
     });
 
-    const market: MarketData | undefined = useMemo(() => {
+    useEffect(() => {
         if (marketQuery.isSuccess && marketQuery.data) {
-            return marketQuery.data as MarketData;
+            setMarket(marketQuery.data);
         }
-        return undefined;
     }, [marketQuery.isSuccess, marketQuery.data]);
 
     const oracleCouncilMemberQuery = useOracleCouncilMemberQuery(walletAddress, networkId, {
         enabled: isAppReady && isWalletConnected,
     });
 
-    const isOracleCouncilMember: boolean = useMemo(() => {
-        if (oracleCouncilMemberQuery.isSuccess) {
-            return oracleCouncilMemberQuery.data as boolean;
+    useEffect(() => {
+        if (oracleCouncilMemberQuery.isSuccess && oracleCouncilMemberQuery.data !== undefined) {
+            setIsOracleCouncilMember(oracleCouncilMemberQuery.data);
         }
-        return true;
     }, [oracleCouncilMemberQuery.isSuccess, oracleCouncilMemberQuery.data]);
 
     return (

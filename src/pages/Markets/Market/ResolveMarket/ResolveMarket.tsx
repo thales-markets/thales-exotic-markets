@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { FlexDivColumn } from 'styles/common';
@@ -40,6 +40,7 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ market }) => {
     const [outcomePosition, setOutcomePosition] = useState<number>(-1);
     const [paymentTokenBalance, setPaymentTokenBalance] = useState<number | string>('');
     const [openApprovalModal, setOpenApprovalModal] = useState<boolean>(false);
+    const [marketsParameters, setMarketsParameters] = useState<MarketsParameters | undefined>(undefined);
 
     const outcomePositions = [...market.positions, t('common.cancel')];
 
@@ -47,11 +48,10 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ market }) => {
         enabled: isAppReady,
     });
 
-    const marketsParameters: MarketsParameters | undefined = useMemo(() => {
+    useEffect(() => {
         if (marketsParametersQuery.isSuccess && marketsParametersQuery.data) {
-            return marketsParametersQuery.data as MarketsParameters;
+            setMarketsParameters(marketsParametersQuery.data);
         }
-        return undefined;
     }, [marketsParametersQuery.isSuccess, marketsParametersQuery.data]);
 
     const paymentTokenBalanceQuery = usePaymentTokenBalanceQuery(walletAddress, networkId, {
@@ -59,7 +59,7 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ market }) => {
     });
 
     useEffect(() => {
-        if (paymentTokenBalanceQuery.isSuccess) {
+        if (paymentTokenBalanceQuery.isSuccess && paymentTokenBalanceQuery.data !== undefined) {
             setPaymentTokenBalance(Number(paymentTokenBalanceQuery.data));
         }
     }, [paymentTokenBalanceQuery.isSuccess, paymentTokenBalanceQuery.data]);

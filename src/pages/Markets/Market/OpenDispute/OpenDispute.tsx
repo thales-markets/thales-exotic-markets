@@ -1,5 +1,5 @@
 import TextAreaInput from 'components/fields/TextAreaInput';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { FlexDivColumn, FlexDivStart } from 'styles/common';
@@ -49,6 +49,9 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
     const [paymentTokenBalance, setPaymentTokenBalance] = useState<number | string>('');
     const [openApprovalModal, setOpenApprovalModal] = useState<boolean>(false);
     const [openGuidelinesModal, setOpenGuidelinesModal] = useState<boolean>(false);
+    const [market, setMarket] = useState<MarketData | undefined>(undefined);
+    const [isOracleCouncilMember, setIsOracleCouncilMember] = useState<boolean>(false);
+    const [marketsParameters, setMarketsParameters] = useState<MarketsParameters | undefined>(undefined);
 
     const { params } = props.match;
     const marketAddress = params && params.marketAddress ? params.marketAddress : '';
@@ -57,11 +60,10 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
         enabled: isAppReady,
     });
 
-    const market: MarketData | undefined = useMemo(() => {
+    useEffect(() => {
         if (marketQuery.isSuccess && marketQuery.data) {
-            return marketQuery.data as MarketData;
+            setMarket(marketQuery.data);
         }
-        return undefined;
     }, [marketQuery.isSuccess, marketQuery.data]);
 
     const paymentTokenBalanceQuery = usePaymentTokenBalanceQuery(walletAddress, networkId, {
@@ -69,7 +71,7 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
     });
 
     useEffect(() => {
-        if (paymentTokenBalanceQuery.isSuccess) {
+        if (paymentTokenBalanceQuery.isSuccess && paymentTokenBalanceQuery.data !== undefined) {
             setPaymentTokenBalance(Number(paymentTokenBalanceQuery.data));
         }
     }, [paymentTokenBalanceQuery.isSuccess, paymentTokenBalanceQuery.data]);
@@ -78,22 +80,20 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
         enabled: isAppReady && isWalletConnected,
     });
 
-    const isOracleCouncilMember: boolean = useMemo(() => {
-        if (oracleCouncilMemberQuery.isSuccess) {
-            return oracleCouncilMemberQuery.data as boolean;
+    useEffect(() => {
+        if (oracleCouncilMemberQuery.isSuccess && oracleCouncilMemberQuery.data !== undefined) {
+            setIsOracleCouncilMember(oracleCouncilMemberQuery.data);
         }
-        return false;
     }, [oracleCouncilMemberQuery.isSuccess, oracleCouncilMemberQuery.data]);
 
     const marketsParametersQuery = useMarketsParametersQuery(networkId, {
         enabled: isAppReady,
     });
 
-    const marketsParameters: MarketsParameters | undefined = useMemo(() => {
+    useEffect(() => {
         if (marketsParametersQuery.isSuccess && marketsParametersQuery.data) {
-            return marketsParametersQuery.data as MarketsParameters;
+            setMarketsParameters(marketsParametersQuery.data);
         }
-        return undefined;
     }, [marketsParametersQuery.isSuccess, marketsParametersQuery.data]);
 
     const disputeStringLengthLimit = marketsParameters

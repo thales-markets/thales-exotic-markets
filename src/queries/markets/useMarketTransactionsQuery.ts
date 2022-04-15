@@ -8,29 +8,34 @@ import networkConnector from 'utils/networkConnector';
 const useMarketTransactionsQuery = (
     marketAddress: string,
     networkId: NetworkId,
-    options?: UseQueryOptions<MarketTransactions>
+    options?: UseQueryOptions<MarketTransactions | undefined>
 ) => {
-    return useQuery<MarketTransactions>(
+    return useQuery<MarketTransactions | undefined>(
         QUERY_KEYS.MarketTransactions(marketAddress, networkId),
         async () => {
-            const { marketDataContract } = networkConnector;
+            try {
+                const { marketDataContract } = networkConnector;
 
-            const [marketTransactions, marketData] = await Promise.all([
-                thalesData.exoticMarkets.marketTransactions({
-                    market: marketAddress,
-                    network: networkId,
-                }),
-                marketDataContract?.getAllMarketData(marketAddress),
-            ]);
+                const [marketTransactions, marketData] = await Promise.all([
+                    thalesData.exoticMarkets.marketTransactions({
+                        market: marketAddress,
+                        network: networkId,
+                    }),
+                    marketDataContract?.getAllMarketData(marketAddress),
+                ]);
 
-            const marketPositions = marketData[10];
+                const marketPositions = marketData[10];
 
-            const mappedMarketTransactions = marketTransactions.map((tx: MarketTransaction) => {
-                tx.position = marketPositions[Number(tx.position) - 1];
-                return tx;
-            });
+                const mappedMarketTransactions = marketTransactions.map((tx: MarketTransaction) => {
+                    tx.position = marketPositions[Number(tx.position) - 1];
+                    return tx;
+                });
 
-            return mappedMarketTransactions;
+                return mappedMarketTransactions;
+            } catch (e) {
+                console.log(e);
+                return undefined;
+            }
         },
         {
             refetchInterval: 5000,

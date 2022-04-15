@@ -1,5 +1,5 @@
 import Button from 'components/Button';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { getIsAppReady } from 'redux/modules/app';
@@ -50,6 +50,7 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
     const [positionOnContract, setPositionOnContract] = useState<number>(0);
     const [winningAmount, setWinningAmount] = useState<number>(0);
     const [canWithdraw, setCanWithdraw] = useState<boolean>(false);
+    const [marketsParameters, setMarketsParameters] = useState<MarketsParameters | undefined>(undefined);
 
     const accountMarketDataQuery = useAccountMarketDataQuery(market.address, walletAddress, {
         enabled: isAppReady && isWalletConnected,
@@ -70,7 +71,7 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
     });
 
     useEffect(() => {
-        if (paymentTokenBalanceQuery.isSuccess) {
+        if (paymentTokenBalanceQuery.isSuccess && paymentTokenBalanceQuery.data !== undefined) {
             setPaymentTokenBalance(paymentTokenBalanceQuery.data);
         }
     }, [paymentTokenBalanceQuery.isSuccess, paymentTokenBalanceQuery.data]);
@@ -79,11 +80,10 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
         enabled: isAppReady,
     });
 
-    const marketsParameters: MarketsParameters | undefined = useMemo(() => {
+    useEffect(() => {
         if (marketsParametersQuery.isSuccess && marketsParametersQuery.data) {
-            return marketsParametersQuery.data as MarketsParameters;
+            setMarketsParameters(marketsParametersQuery.data);
         }
-        return undefined;
     }, [marketsParametersQuery.isSuccess, marketsParametersQuery.data]);
 
     const creatorPercentage = marketsParameters ? marketsParameters.creatorPercentage : 0;

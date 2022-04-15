@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
@@ -9,6 +9,7 @@ import { orderBy } from 'lodash';
 import useMarketTransactionsQuery from 'queries/markets/useMarketTransactionsQuery';
 import TransactionsTable from 'pages/Markets/components/TransactionsTable';
 import { FlexDivColumn } from 'styles/common';
+import { MarketTransactions } from 'types/markets';
 
 type TransactionsProps = {
     marketAddress: string;
@@ -18,26 +19,19 @@ const Transactions: React.FC<TransactionsProps> = ({ marketAddress }) => {
     const { t } = useTranslation();
     const isAppReady = useSelector((state: RootState) => getIsAppReady(state));
     const networkId = useSelector((state: RootState) => getNetworkId(state));
+    const [marketTransactions, setMarketTransactions] = useState<MarketTransactions>([]);
 
     const marketTransactionsQuery = useMarketTransactionsQuery(marketAddress, networkId, {
         enabled: isAppReady,
     });
 
-    const marketTransactions = useMemo(
-        () =>
-            marketTransactionsQuery.isSuccess && marketTransactionsQuery.data
-                ? orderBy(marketTransactionsQuery.data, ['timestamp', 'blockNumber'], ['desc', 'desc'])
-                : [],
-        [marketTransactionsQuery.data, marketTransactionsQuery.isSuccess]
-    );
-
-    // const filteredTransactions = useMemo(
-    //     () =>
-    //         filter === TransactionFilterEnum.ALL
-    //             ? userTokenTransactions
-    //             : userTokenTransactions.filter((tx: TokenTransaction) => tx.type === filter),
-    //     [userTokenTransactions, filter]
-    // );
+    useEffect(() => {
+        if (marketTransactionsQuery.isSuccess && marketTransactionsQuery.data) {
+            setMarketTransactions(
+                orderBy(marketTransactionsQuery.data, ['timestamp', 'blockNumber'], ['desc', 'desc'])
+            );
+        }
+    }, [marketTransactionsQuery.isSuccess, marketTransactionsQuery.data]);
 
     const noResults = marketTransactions.length === 0;
 
