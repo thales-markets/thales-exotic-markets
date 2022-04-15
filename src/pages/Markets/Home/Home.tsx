@@ -50,7 +50,7 @@ const Home: React.FC = () => {
     const [sortDirection, setSortDirection] = useLocalStorage(LOCAL_STORAGE_KEYS.SORT_DIRECTION, SortDirection.ASC);
     const [sortBy, setSortBy] = useLocalStorage(LOCAL_STORAGE_KEYS.SORT_BY, DEFAULT_SORT_BY);
     const [showOpenMarkets, setShowOpenMarkets] = useLocalStorage(LOCAL_STORAGE_KEYS.FILTER_SHOW_OPEN_MARKETS, true);
-    const [markets, setMarkets] = useState<Markets>([]);
+    const [lastValidMarkets, setLastValidMarkets] = useState<Markets>([]);
     const [accountPositions, setAccountPositions] = useState<AccountPositionsMap>({});
     const [marketsParameters, setMarketsParameters] = useState<MarketsParameters | undefined>(undefined);
 
@@ -84,8 +84,15 @@ const Home: React.FC = () => {
 
     useEffect(() => {
         if (marketsQuery.isSuccess && marketsQuery.data) {
-            setMarkets(marketsQuery.data);
+            setLastValidMarkets(marketsQuery.data);
         }
+    }, [marketsQuery.isSuccess, marketsQuery.data]);
+
+    const markets: Markets = useMemo(() => {
+        if (marketsQuery.isSuccess && marketsQuery.data) {
+            return marketsQuery.data as Markets;
+        }
+        return lastValidMarkets;
     }, [marketsQuery.isSuccess, marketsQuery.data]);
 
     const tagsQuery = useTagsQuery(networkId, {
