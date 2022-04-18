@@ -46,5 +46,9 @@
     {
         "text": "Any names/labels used in the market question and in the available Positional options must be sited in the Market Data Source",
         "tooltip": ""
+    },
+    {
+        "text": "Markets may be resolved as soon as theoretically possible, but cannot be resolved before this threshold is met",
+        "tooltip": "market eg: Will Brazil win the FIFA World Cup in 2022?\n - YES\n - NO\n This market may not be resolved until Brazil is either eliminated from the world cup or until the final match has concluded"
     }
 ]
