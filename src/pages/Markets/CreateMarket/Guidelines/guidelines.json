@@ -16,6 +16,10 @@
         "tooltip": ""
     },
     {
+        "text": "Markets that are resolvable before the positioning phase has come to pass, are considered void and all participants will receive a refund on their tickets. This is to prevent new entrants who know the results, from selecting a winning position before the market creator is able to resolve the market",
+        "tooltip": "market eg: Will ETH hit $xxxx price by xx/xx/xx date? With the Positional Phase set to end 2weeks from the date of market creation.\n - YES\n - NO\n If ETH hits the target price before the end of the Positional Phase (2 weeks), the market must be resolved as [cancelled] by the market creator. Any other resolution will be subject to dispute and slashing"
+    },
+    {
         "text": "End of positioning must not be more than 1 month into the future",
         "tooltip": ""
     },
@@ -42,5 +46,9 @@
     {
         "text": "Any names/labels used in the market question and in the available Positional options must be sited in the Market Data Source",
         "tooltip": ""
+    },
+    {
+        "text": "Markets may be resolved as soon as theoretically possible, but cannot be resolved before this threshold is met",
+        "tooltip": "market eg: Will Brazil win the FIFA World Cup in 2022?\n - YES\n - NO\n This market may not be resolved until Brazil is either eliminated from the world cup or until the final match has concluded"
     }
 ]
