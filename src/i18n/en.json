@@ -189,20 +189,6 @@
         "no-markets-found": "No markets found",
         "view-all-markets": "View all markets",
         "create-market": {
-            "header": {
-                "step-title": {
-                    "deposit-bond": "Deposit bond",
-                    "create-market": "Create market",
-                    "launch-market": "Launch market"
-                },
-                "button": {
-                    "deposit-label": "Deposit",
-                    "start-label": "Start"
-                },
-                "info": {
-                    "deposit-bond": "Bond deposit"
-                }
-            },
             "question-label": "Question",
             "question-tooltip": "The question that defines a market.",
             "data-source-label": "Data source",
@@ -240,7 +226,12 @@
                 "create-market-progress-label": "Creating in progress..."
             },
             "bond-info": "<0><0>As a creator, you will earn {{bidPercentage}}% of each bid (should the market resolve regularly) and {{withdrawalPercentage}}% of each withdrawal.</0><0>In order to create a market, you need to deposit a bond of {{amount}} which serves as a guarantee that you have created a market by adhering to the guidelines maintained by the Oracle Council.</0><0>Your bond can be slashed if a dispute is accepted on your market not following the guidelines.</0></0>",
-            "creation-disabled-message": "Market creation is disabled, only owner can create markets."
+            "creation-disabled-message": "Market creation is disabled, only owner can create markets.",
+            "modal": {
+                "title": "Create market",
+                "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+                "button-label": "Proceed"
+            }
         },
         "resolve-market": {
             "title": "Choose a position to resolve the market with",

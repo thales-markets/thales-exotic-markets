@@ -50,6 +50,7 @@ import ROUTES from 'constants/routes';
 import RadioButton from 'components/fields/RadioButton';
 import { FieldLabel, OverlayContainer } from 'components/fields/common';
 import Tooltip from 'components/Tooltip';
+import CreateMarketModal from './CreateMarketModal';
 
 const calculateMinTime = (currentDate: Date, minDate: Date) => {
     const isMinDateCurrentDate = isSameDay(currentDate, minDate);
@@ -89,6 +90,7 @@ const CreateMarket: React.FC = () => {
     const [suggestions, setSuggestions] = useState<Tag[]>([]);
     const [paymentTokenBalance, setPaymentTokenBalance] = useState<number | string>('');
     const [openApprovalModal, setOpenApprovalModal] = useState<boolean>(false);
+    const [openCreateMarketModal, setOpenCreateMarketModal] = useState<boolean>(false);
     const [minTime, setMinTime] = useState<Date>(DATE_PICKER_MIN_DATE);
     const [minDate, setMinDate] = useState<Date>(DATE_PICKER_MIN_DATE);
     const [maxTime, setMaxTime] = useState<Date>(DATE_PICKER_MAX_DATE);
@@ -356,7 +358,7 @@ const CreateMarket: React.FC = () => {
             );
         }
         return (
-            <CreateMarketButton disabled={isButtonDisabled} onClick={handleSubmit}>
+            <CreateMarketButton disabled={isButtonDisabled} onClick={() => setOpenCreateMarketModal(true)}>
                 {!isSubmitting
                     ? t('market.create-market.button.create-market-label')
                     : t('market.create-market.button.create-market-progress-label')}
@@ -600,6 +602,13 @@ const CreateMarket: React.FC = () => {
                     isAllowing={isAllowing}
                     onSubmit={handleAllowance}
                     onClose={() => setOpenApprovalModal(false)}
+                />
+            )}
+            {openCreateMarketModal && (
+                <CreateMarketModal
+                    isSubmitting={isSubmitting}
+                    onSubmit={handleSubmit}
+                    onClose={() => setOpenCreateMarketModal(false)}
                 />
             )}
         </Container>
