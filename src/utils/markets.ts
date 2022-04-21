@@ -12,3 +12,43 @@ export const isClaimAvailable = (market: MarketInfo, accountPosition?: AccountPo
     (accountPosition.position === market.winningPosition ||
         market.status === MarketStatus.CancelledConfirmed ||
         market.noWinners);
+
+export const getMarketStatus = (market: MarketInfo) => {
+    if (market.isPaused) {
+        return MarketStatus.Paused;
+    } else {
+        if (market.isResolved) {
+            if (market.winningPosition === 0) {
+                if (market.isDisputed) {
+                    return MarketStatus.CancelledDisputed;
+                } else {
+                    if (market.canUsersClaim || market.cancelledByCreator) {
+                        return MarketStatus.CancelledConfirmed;
+                    } else {
+                        return MarketStatus.CancelledPendingConfirmation;
+                    }
+                }
+            } else {
+                if (market.isDisputed) {
+                    return MarketStatus.ResolvedDisputed;
+                } else {
+                    if (market.canUsersClaim) {
+                        return MarketStatus.ResolvedConfirmed;
+                    } else {
+                        return MarketStatus.ResolvedPendingConfirmation;
+                    }
+                }
+            }
+        } else {
+            if (market.canMarketBeResolved) {
+                return MarketStatus.ResolvePending;
+            } else {
+                if (market.isDisputed && Date.now() > market.endOfPositioning) {
+                    return MarketStatus.ResolvePendingDisputed;
+                } else {
+                    return MarketStatus.Open;
+                }
+            }
+        }
+    }
+};

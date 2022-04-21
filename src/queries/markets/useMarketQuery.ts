@@ -5,7 +5,8 @@ import { BigNumberish, ethers } from 'ethers';
 import networkConnector from 'utils/networkConnector';
 import { bigNumberFormatter } from 'utils/formatters/ethers';
 import { MarketStatus } from 'constants/markets';
-import marketContract from 'utils/contracts/exoticPositionalMarketContract';
+import marketContract from 'utils/contracts/exoticPositionalTicketMarketContract';
+import { getMarketStatus } from 'utils/markets';
 
 const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketData | undefined>) => {
     return useQuery<MarketData | undefined>(
@@ -26,10 +27,7 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                     numberOfOpenDisputes,
                     claimTimeoutDefaultPeriod,
                     cancelledByCreator,
-                    winningAmountsNewUser,
-                    winningAmountsNoPosition,
                     totalUsersTakenPositions,
-                    winningAmountPerTicket,
                     noWinners,
                     allFees,
                     canIssueFees,
@@ -41,10 +39,7 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                     thalesOracleCouncilContract?.getMarketOpenDisputes(marketAddress),
                     marketManagerContract?.claimTimeoutDefaultPeriod(),
                     marketManagerContract?.cancelledByCreator(marketAddress),
-                    contract?.getPotentialWinningAmountForAllPosition(true, 0),
-                    contract?.getPotentialWinningAmountForAllPosition(false, 0),
                     contract?.totalUsersTakenPositions(),
-                    contract?.getWinningAmountPerTicket(),
                     contract?.noWinners(),
                     contract?.getAllFees(),
                     contract?.canIssueFees(),
@@ -127,14 +122,8 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                     fixedBondAmount: bigNumberFormatter(fixedBondAmount),
                     safeBoxLowAmount: bigNumberFormatter(safeBoxLowAmount),
                     arbitraryRewardForDisputor: bigNumberFormatter(arbitraryRewardForDisputor),
-                    winningAmountsNewUser: winningAmountsNewUser.map((item: BigNumberish) => bigNumberFormatter(item)),
-                    winningAmountsNoPosition: winningAmountsNoPosition.map((item: BigNumberish) =>
-                        bigNumberFormatter(item)
-                    ),
-                    totalUsersTakenPositions: Number(totalUsersTakenPositions),
-                    winningAmountPerTicket: bigNumberFormatter(winningAmountPerTicket),
                     noWinners,
-                    numberOfParticipants: bigNumberFormatter(poolSize) / bigNumberFormatter(ticketPrice),
+                    numberOfParticipants: Number(totalUsersTakenPositions),
                     cancelledByCreator,
                     creatorBond: bigNumberFormatter(creatorBond),
                     creatorFee: bigNumberFormatter(creatorFee),
@@ -144,43 +133,28 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                     canIssueFees,
                 };
 
-                // TODO - needs refactoring
-                if (market.isPaused) {
-                    market.status = MarketStatus.Paused;
-                } else {
-                    if (market.isResolved) {
-                        if (market.winningPosition === 0) {
-                            if (market.isDisputed) {
-                                market.status = MarketStatus.CancelledDisputed;
-                            } else {
-                                if (market.canUsersClaim || market.cancelledByCreator) {
-                                    market.status = MarketStatus.CancelledConfirmed;
-                                } else {
-                                    market.status = MarketStatus.CancelledPendingConfirmation;
-                                }
-                            }
-                        } else {
-                            if (market.isDisputed) {
-                                market.status = MarketStatus.ResolvedDisputed;
-                            } else {
-                                if (market.canUsersClaim) {
-                                    market.status = MarketStatus.ResolvedConfirmed;
-                                } else {
-                                    market.status = MarketStatus.ResolvedPendingConfirmation;
-                                }
-                            }
-                        }
-                    } else {
-                        if (market.canMarketBeResolved) {
-                            market.status = MarketStatus.ResolvePending;
-                        } else {
-                            if (market.isDisputed && Date.now() > market.endOfPositioning) {
-                                market.status = MarketStatus.ResolvePendingDisputed;
-                            } else {
-                                market.status = MarketStatus.Open;
-                            }
-                        }
-                    }
+                market.status = getMarketStatus(market);
+
+                if (market.isTicketType) {
+                    const [
+                        winningAmountsNewUser,
+                        winningAmountsNoPosition,
+                        winningAmountPerTicket,
+                    ] = await Promise.all([
+                        contract?.getPotentialWinningAmountForAllPosition(true, 0),
+                        contract?.getPotentialWinningAmountForAllPosition(false, 0),
+                        contract?.getWinningAmountPerTicket(),
+                    ]);
+
+                    market.fixedMarketData = {
+                        winningAmountsNewUser: winningAmountsNewUser.map((item: BigNumberish) =>
+                            bigNumberFormatter(item)
+                        ),
+                        winningAmountsNoPosition: winningAmountsNoPosition.map((item: BigNumberish) =>
+                            bigNumberFormatter(item)
+                        ),
+                        winningAmountPerTicket: bigNumberFormatter(winningAmountPerTicket),
+                    };
                 }
 
                 return market;

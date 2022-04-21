@@ -3,8 +3,8 @@ import QUERY_KEYS from 'constants/queryKeys';
 import { MarketInfo, Markets } from 'types/markets';
 import { NetworkId } from 'types/network';
 import thalesData from 'thales-data';
-import { MarketStatus } from 'constants/markets';
 import networkConnector from 'utils/networkConnector';
+import { getMarketStatus } from 'utils/markets';
 
 const useMarketsQuery = (networkId: NetworkId, options?: UseQueryOptions<Markets | undefined>) => {
     return useQuery<Markets | undefined>(
@@ -34,44 +34,7 @@ const useMarketsQuery = (networkId: NetworkId, options?: UseQueryOptions<Markets
                                 Date.now() > market.disputeClosedTime + market.backstopTimeout));
 
                     market.isMarketClosedForDisputes = market.marketClosedForDisputes && market.canUsersClaim;
-
-                    if (market.isPaused) {
-                        market.status = MarketStatus.Paused;
-                    } else {
-                        if (market.isResolved) {
-                            if (market.winningPosition === 0) {
-                                if (market.isDisputed) {
-                                    market.status = MarketStatus.CancelledDisputed;
-                                } else {
-                                    if (market.canUsersClaim || market.cancelledByCreator) {
-                                        market.status = MarketStatus.CancelledConfirmed;
-                                    } else {
-                                        market.status = MarketStatus.CancelledPendingConfirmation;
-                                    }
-                                }
-                            } else {
-                                if (market.isDisputed) {
-                                    market.status = MarketStatus.ResolvedDisputed;
-                                } else {
-                                    if (market.canUsersClaim) {
-                                        market.status = MarketStatus.ResolvedConfirmed;
-                                    } else {
-                                        market.status = MarketStatus.ResolvedPendingConfirmation;
-                                    }
-                                }
-                            }
-                        } else {
-                            if (market.canMarketBeResolved) {
-                                market.status = MarketStatus.ResolvePending;
-                            } else {
-                                if (market.isDisputed && Date.now() > market.endOfPositioning) {
-                                    market.status = MarketStatus.ResolvePendingDisputed;
-                                } else {
-                                    market.status = MarketStatus.Open;
-                                }
-                            }
-                        }
-                    }
+                    market.status = getMarketStatus(market);
 
                     return market;
                 });
