@@ -9,7 +9,7 @@
     },
     {
         "text": "The list of available positions has to be mutually fully exclusive and capture the full range of potential outcomes",
-        "tooltip": "eg market question: Will the price of ETH be above or below $10000 USD on July 15th? \n - Above\n - Below\n doesn't capture the full range of outcomes since ETH could be exactly $10000 on July 15th"
+        "tooltip": "eg market question: Will the price of ETH be above or below $10000 USD on July 15th? \n - Above\n - Below\n \n Doesn't capture the full range of outcomes since ETH could be exactly $10000 on July 15th"
     },
     {
         "text": "End of positioning phase has to be before the event actually starts",
@@ -17,7 +17,7 @@
     },
     {
         "text": "Markets that are resolvable before the positioning phase has come to pass, are considered void and all participants will receive a refund on their tickets. This is to prevent new entrants who know the results, from selecting a winning position before the market creator is able to resolve the market",
-        "tooltip": "market eg: Will ETH hit $xxxx price by xx/xx/xx date? With the Positional Phase set to end 2weeks from the date of market creation.\n - YES\n - NO\n If ETH hits the target price before the end of the Positional Phase (2 weeks), the market must be resolved as [cancelled] by the market creator. Any other resolution will be subject to dispute and slashing"
+        "tooltip": "market eg: Will ETH hit $xxxx price by xx/xx/xx date? With the Positional Phase set to end 2weeks from the date of market creation.\n - YES\n - NO\n \n If ETH hits the target price before the end of the Positional Phase (2 weeks), the market must be resolved as [cancelled] by the market creator. Any other resolution will be subject to dispute and slashing"
     },
     {
         "text": "End of positioning must not be more than 1 month into the future",
@@ -37,7 +37,7 @@
     },
     {
         "text": "The market has to be linkable to at least one of the offered tags maintained by Oracle Council and must be correctly tagged",
-        "tooltip": "eg marekt question: Who will win the 2024 US Presidential elections? \n TAGS: \n - Crypto\n - Pop-culture\n This market would be disputable since it isn't tagged correctly\n Correct TAG:\n - Political Elections"
+        "tooltip": "eg marekt question: Who will win the 2024 US Presidential elections? \n TAGS: \n - Crypto\n - Pop-culture\n \n This market would be disputable since it isn't tagged correctly\n \n Correct TAG:\n - Political Elections"
     },
     {
         "text": "No duplicated markets should be created. Its ok to create more markets around the same event, but with a different sentiment (different question and/or positions)",
@@ -48,7 +48,11 @@
         "tooltip": ""
     },
     {
+        "text": "Data source must be a URL link and specific to the event or market that is being tracked and shouldn't be generic",
+        "tooltip": "For a Basketball event, the link should reflect the game being tracked and not just 'NBA.com' for example'\n \n For a crypto market, the URL must point to the asset being tracked like [coinbase.com/ETH-USD] and not simply [coinbase.com] for example" 
+    },
+    {
         "text": "Markets may be resolved as soon as theoretically possible, but cannot be resolved before this threshold is met",
-        "tooltip": "market eg: Will Brazil win the FIFA World Cup in 2022?\n - YES\n - NO\n This market may not be resolved until Brazil is either eliminated from the world cup or until the final match has concluded"
+        "tooltip": "market eg: Will Brazil win the FIFA World Cup in 2022?\n - YES\n - NO\n \n This market may not be resolved until Brazil is either eliminated from the world cup or until the final match has concluded"
     }
 ]
