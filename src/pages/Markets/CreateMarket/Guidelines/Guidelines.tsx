@@ -13,8 +13,8 @@ const Guidelines: React.FC = () => {
                     {guideline.tooltip.trim() !== '' && (
                         <Tooltip
                             overlay={<OverlayContainer>{guideline.tooltip}</OverlayContainer>}
-                            iconFontSize={16}
-                            marginLeft={4}
+                            iconFontSize={18}
+                            marginLeft={2}
                         />
                     )}
                 </li>

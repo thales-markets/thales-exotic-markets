@@ -73,11 +73,11 @@ const StyledInput = styled(Input)`
 const RemoveIcon = styled.i`
     font-size: 18px;
     margin-left: 10px;
-    margin-top: -14px;
+    margin-top: -18px;
     cursor: pointer;
     &:before {
-        font-family: Icons !important;
-        content: '\\0076';
+        font-family: ExoticIcons !important;
+        content: '\\004F';
         color: ${(props) => props.theme.textColor.primary};
     }
 `;

@@ -376,7 +376,7 @@ const ToggleContainer = styled(FlexDivColumn)`
         align-items: center;
     }
     i {
-        margin-top: 4px;
+        margin-top: -9px;
     }
 `;
 

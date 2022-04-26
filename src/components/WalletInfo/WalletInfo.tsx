@@ -209,8 +209,8 @@ const CloseIcon = styled.i`
     top: 6px;
     right: 10px;
     &:before {
-        font-family: Icons !important;
-        content: '\\0076';
+        font-family: ExoticIcons !important;
+        content: '\\004F';
         color: ${(props) => props.theme.button.textColor.primary};
     }
 `;

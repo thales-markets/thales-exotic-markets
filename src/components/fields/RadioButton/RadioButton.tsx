@@ -39,8 +39,8 @@ const RadioButton: React.FC<RadioButtonProps> = ({
             {tooltip && (
                 <Tooltip
                     overlay={<OverlayContainer>{tooltip}</OverlayContainer>}
-                    iconFontSize={20}
-                    marginLeft={6}
+                    iconFontSize={23}
+                    marginLeft={4}
                     top={-2}
                 />
             )}

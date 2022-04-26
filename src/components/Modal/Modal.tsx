@@ -76,11 +76,11 @@ const Title = styled(FlexDiv)`
 
 const CloseIcon = styled.i`
     font-size: 18px;
-    margin-top: 2px;
+    margin-top: 1px;
     cursor: pointer;
     &:before {
-        font-family: Icons !important;
-        content: '\\0076';
+        font-family: ExoticIcons !important;
+        content: '\\004F';
         color: ${(props) => props.theme.textColor.primary};
     }
 `;

@@ -27,15 +27,15 @@ const Container = styled.span`
 `;
 
 const InfoIcon = styled.i<{ iconFontSize?: number; marginLeft?: number; top?: number }>`
-    font-size: ${(props) => props.iconFontSize || 15}px;
+    font-size: ${(props) => props.iconFontSize || 17}px;
     font-weight: normal;
     cursor: pointer;
     position: relative;
-    margin-left: ${(props) => props.marginLeft || 2}px;
+    margin-left: ${(props) => props.marginLeft || 0}px;
     top: ${(props) => props.top || -1}px;
     &:before {
-        font-family: Thales !important;
-        content: '\\0043';
+        font-family: ExoticIcons !important;
+        content: '\\0044';
         color: ${(props) => props.theme.textColor.primary};
     }
 `;

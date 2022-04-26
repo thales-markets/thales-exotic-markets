@@ -548,8 +548,8 @@ const CreateMarket: React.FC = () => {
                                         {t('market.create-market.your-initial-position-tooltip')}
                                     </OverlayContainer>
                                 }
-                                iconFontSize={20}
-                                marginLeft={4}
+                                iconFontSize={23}
+                                marginLeft={2}
                                 top={0}
                             />
                         </FieldLabel>

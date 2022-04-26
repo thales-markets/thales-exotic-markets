@@ -59,8 +59,8 @@ const NumericInput: React.FC<NumericInputProps> = ({
                     {tooltip && (
                         <Tooltip
                             overlay={<OverlayContainer>{tooltip}</OverlayContainer>}
-                            iconFontSize={20}
-                            marginLeft={4}
+                            iconFontSize={23}
+                            marginLeft={2}
                             top={0}
                         />
                     )}
