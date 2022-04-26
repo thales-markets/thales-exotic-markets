@@ -51,6 +51,7 @@ import RadioButton from 'components/fields/RadioButton';
 import { FieldLabel, OverlayContainer } from 'components/fields/common';
 import Tooltip from 'components/Tooltip';
 import CreateMarketModal from './CreateMarketModal';
+import isAbsoluteUrl from 'is-absolute-url';
 
 const calculateMinTime = (currentDate: Date, minDate: Date) => {
     const isMinDateCurrentDate = isSameDay(currentDate, minDate);
@@ -173,6 +174,8 @@ const CreateMarket: React.FC = () => {
 
     const isQuestionEntered = question.trim() !== '';
     const isDataSourceEntered = dataSource.trim() !== '';
+    const isDataSourceValid =
+        dataSource.trim() === '' || (isAbsoluteUrl(dataSource) && dataSource.toLowerCase().startsWith('https'));
     const isTicketPriceEntered =
         (marketType === MarketType.TICKET && Number(ticketPrice) > 0) || marketType === MarketType.OPEN_BID;
     const arePositionsEntered = positions.every((position) => position.trim() !== '');
@@ -198,7 +201,8 @@ const CreateMarket: React.FC = () => {
         !areMarketDataEntered ||
         insufficientBalance ||
         creationRestrictedToOwner ||
-        !isTicketPriceValid;
+        !isTicketPriceValid ||
+        !isDataSourceValid;
 
     useEffect(() => {
         const { paymentTokenContract, thalesBondsContract, signer } = networkConnector;
@@ -346,6 +350,9 @@ const CreateMarket: React.FC = () => {
         if (!areMarketDataEntered) {
             return <CreateMarketButton disabled={true}>{getEnterMarketDataMessage()}</CreateMarketButton>;
         }
+        if (!isDataSourceValid) {
+            return <CreateMarketButton disabled={true}>{t(`common.errors.invalid-data-source`)}</CreateMarketButton>;
+        }
         if (!hasAllowance) {
             return (
                 <CreateMarketButton disabled={isAllowing} onClick={() => setOpenApprovalModal(true)}>
@@ -458,6 +465,8 @@ const CreateMarket: React.FC = () => {
                         })}
                         maximumCharacters={marketSourceStringLimit}
                         disabled={isSubmitting || creationRestrictedToOwner}
+                        showValidation={!isDataSourceValid}
+                        validationMessage={t(`common.errors.invalid-data-source-extended`)}
                     />
                     <Positions
                         positions={positions}

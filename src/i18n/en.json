@@ -44,6 +44,8 @@
             "select-result": "Select result",
             "invalid-ticket-price": "Invalid ticket price",
             "invalid-ticket-price-min": "The minimum ticket price is {{min}}",
+            "invalid-data-source": "Invalid data source",
+            "invalid-data-source-extended": "Data source is invalid. Data source must be a safe URL with https prefix.",
             "insufficient-balance-wallet": "Please ensure your wallet has sufficient {{currencyKey}}",
             "invalid-slippage": "Invalid slippage",
             "user-rejected-tx": "User rejected transaction"
@@ -192,7 +194,7 @@
             "question-label": "Question",
             "question-tooltip": "The question that defines a market.",
             "data-source-label": "Data source",
-            "data-source-tooltip": "Market data sources, can basically be a url linking to a page that will show the result on maturity.",
+            "data-source-tooltip": "Market data sources, must be a url linking to a page that will show the result on maturity.",
             "positions-label": "Positions",
             "positions-tooltip": "Positions participants can assume. Up to {{max}} positions.",
             "your-initial-position-label": "Your initial position",
