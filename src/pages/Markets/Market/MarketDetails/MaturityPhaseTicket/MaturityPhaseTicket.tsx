@@ -281,29 +281,31 @@ const MaturityPhaseTicket: React.FC<MaturityPhaseTicketProps> = ({ market }) => 
                             )}
                         </>
                     )}
-                    {market.canIssueFees ? (
-                        <DistributeButton
-                            disabled={isClaiming || isDistributing}
-                            onClick={handleDistribute}
-                            type="secondary"
-                        >
-                            {!isDistributing
-                                ? t(
-                                      `market.button.${
-                                          isCancelled ? 'distribute-bonds-label' : 'distribute-fees-bonds-label'
+                    {market.canIssueFees
+                        ? isWalletConnected && (
+                              <DistributeButton
+                                  disabled={isClaiming || isDistributing}
+                                  onClick={handleDistribute}
+                                  type="secondary"
+                              >
+                                  {!isDistributing
+                                      ? t(
+                                            `market.button.${
+                                                isCancelled ? 'distribute-bonds-label' : 'distribute-fees-bonds-label'
+                                            }`
+                                        )
+                                      : t('market.button.distribute-progress-label')}
+                              </DistributeButton>
+                          )
+                        : (isCreator || isResolver) && (
+                              <NothingToClaim marginTop={15}>
+                                  {t(
+                                      `market.${
+                                          isCancelled ? 'bonds-distributed-label' : 'fees-bonds-distributed-label'
                                       }`
-                                  )
-                                : t('market.button.distribute-progress-label')}
-                        </DistributeButton>
-                    ) : (
-                        (isCreator || isResolver) && (
-                            <NothingToClaim marginTop={15}>
-                                {t(
-                                    `market.${isCancelled ? 'bonds-distributed-label' : 'fees-bonds-distributed-label'}`
-                                )}
-                            </NothingToClaim>
-                        )
-                    )}
+                                  )}
+                              </NothingToClaim>
+                          )}
                 </FeesContainer>
             )}
             <ButtonContainer>
