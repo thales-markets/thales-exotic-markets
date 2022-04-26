@@ -11,6 +11,7 @@ import {
     MAXIMUM_POSITIONS,
     MAXIMUM_TAGS,
     MINIMUM_TICKET_PRICE,
+    MAXIMUM_TICKET_PRICE,
 } from 'constants/markets';
 import React, { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -158,6 +159,7 @@ const CreateMarket: React.FC = () => {
     const maxNumberOfTags = marketsParameters ? marketsParameters.maxNumberOfTags : MAXIMUM_TAGS;
     const maximumPositionsAllowed = marketsParameters ? marketsParameters.maximumPositionsAllowed : MAXIMUM_POSITIONS;
     const minFixedTicketPrice = marketsParameters ? marketsParameters.minFixedTicketPrice : MINIMUM_TICKET_PRICE;
+    const maxFixedTicketPrice = marketsParameters ? marketsParameters.maxFixedTicketPrice : MAXIMUM_TICKET_PRICE;
 
     const creatorPercentage = marketsParameters ? marketsParameters.creatorPercentage : 0;
     const withdrawalPercentage = marketsParameters ? marketsParameters.withdrawalPercentage : 0;
@@ -427,7 +429,9 @@ const CreateMarket: React.FC = () => {
     useEffect(() => {
         setIsTicketPriceValid(
             (marketType === MarketType.TICKET && Number(ticketPrice) === 0) ||
-                (Number(ticketPrice) > 0 && Number(ticketPrice) >= minFixedTicketPrice) ||
+                (Number(ticketPrice) > 0 &&
+                    Number(ticketPrice) >= minFixedTicketPrice &&
+                    Number(ticketPrice) <= maxFixedTicketPrice) ||
                 marketType === MarketType.OPEN_BID
         );
     }, [ticketPrice, marketType]);
@@ -515,10 +519,16 @@ const CreateMarket: React.FC = () => {
                             currencyLabel={PAYMENT_CURRENCY}
                             disabled={isSubmitting || creationRestrictedToOwner}
                             showValidation={!isTicketPriceValid}
-                            validationMessage={t(`common.errors.invalid-ticket-price-min`, {
+                            validationMessage={t(`common.errors.invalid-ticket-price-extended`, {
                                 min: formatCurrencyWithKey(
                                     PAYMENT_CURRENCY,
                                     minFixedTicketPrice,
+                                    DEFAULT_CURRENCY_DECIMALS,
+                                    true
+                                ),
+                                max: formatCurrencyWithKey(
+                                    PAYMENT_CURRENCY,
+                                    maxFixedTicketPrice,
                                     DEFAULT_CURRENCY_DECIMALS,
                                     true
                                 ),

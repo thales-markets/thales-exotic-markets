@@ -4,7 +4,13 @@ import { bigNumberFormatter } from 'utils/formatters/ethers';
 import networkConnector from 'utils/networkConnector';
 import { NetworkId } from 'types/network';
 import { MarketsParameters } from 'types/markets';
-import { MAXIMUM_INPUT_CHARACTERS, MAXIMUM_POSITIONS, MAXIMUM_TAGS, MINIMUM_TICKET_PRICE } from 'constants/markets';
+import {
+    MAXIMUM_INPUT_CHARACTERS,
+    MAXIMUM_POSITIONS,
+    MAXIMUM_TAGS,
+    MINIMUM_TICKET_PRICE,
+    MAXIMUM_TICKET_PRICE,
+} from 'constants/markets';
 
 // we need buffer because of contract handling of strings
 const INPUT_LENGTH_MULTIPLIER = 1.1;
@@ -29,6 +35,7 @@ const useMarketsParametersQuery = (networkId: NetworkId, options?: UseQueryOptio
                     owner: '',
                     maxNumberOfTags: MAXIMUM_TAGS,
                     minFixedTicketPrice: MINIMUM_TICKET_PRICE,
+                    maxFixedTicketPrice: MAXIMUM_TICKET_PRICE,
                     disputeStringLengthLimit: MAXIMUM_INPUT_CHARACTERS,
                     marketQuestionStringLimit: MAXIMUM_INPUT_CHARACTERS,
                     marketSourceStringLimit: MAXIMUM_INPUT_CHARACTERS,
@@ -50,6 +57,7 @@ const useMarketsParametersQuery = (networkId: NetworkId, options?: UseQueryOptio
                         owner,
                         maxNumberOfTags,
                         minFixedTicketPrice,
+                        maxFixedTicketPrice,
                         disputeStringLengthLimit,
                         marketQuestionStringLimit,
                         marketSourceStringLimit,
@@ -68,6 +76,7 @@ const useMarketsParametersQuery = (networkId: NetworkId, options?: UseQueryOptio
                         marketManagerContract.owner(),
                         marketManagerContract.maxNumberOfTags(),
                         marketManagerContract.minFixedTicketPrice(),
+                        marketManagerContract.maxFixedTicketPrice(),
                         marketManagerContract.disputeStringLengthLimit(),
                         marketManagerContract.marketQuestionStringLimit(),
                         marketManagerContract.marketSourceStringLimit(),
@@ -87,6 +96,7 @@ const useMarketsParametersQuery = (networkId: NetworkId, options?: UseQueryOptio
                     marketsParameters.owner = owner;
                     marketsParameters.maxNumberOfTags = Number(maxNumberOfTags);
                     marketsParameters.minFixedTicketPrice = bigNumberFormatter(minFixedTicketPrice);
+                    marketsParameters.maxFixedTicketPrice = bigNumberFormatter(maxFixedTicketPrice);
                     marketsParameters.disputeStringLengthLimit = Math.round(
                         Number(disputeStringLengthLimit) / INPUT_LENGTH_MULTIPLIER
                     );

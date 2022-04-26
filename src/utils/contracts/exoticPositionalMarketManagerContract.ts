@@ -24,6 +24,7 @@ export const exoticPositionalMarketManagerContract = {
             anonymous: false,
             inputs: [
                 { indexed: false, internalType: 'uint256', name: 'minFixedTicketPrice', type: 'uint256' },
+                { indexed: false, internalType: 'uint256', name: 'maxFixedTicketPrice', type: 'uint256' },
                 { indexed: false, internalType: 'uint256', name: 'disputePrice', type: 'uint256' },
                 { indexed: false, internalType: 'uint256', name: 'fixedBondAmount', type: 'uint256' },
                 { indexed: false, internalType: 'uint256', name: 'safeBoxLowAmount', type: 'uint256' },
@@ -431,6 +432,13 @@ export const exoticPositionalMarketManagerContract = {
         },
         {
             inputs: [],
+            name: 'maxFixedTicketPrice',
+            outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+            stateMutability: 'view',
+            type: 'function',
+        },
+        {
+            inputs: [],
             name: 'maxNumberOfTags',
             outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
             stateMutability: 'view',
@@ -638,6 +646,7 @@ export const exoticPositionalMarketManagerContract = {
         {
             inputs: [
                 { internalType: 'uint256', name: '_minFixedTicketPrice', type: 'uint256' },
+                { internalType: 'uint256', name: '_maxFixedTicketPrice', type: 'uint256' },
                 { internalType: 'uint256', name: '_disputePrice', type: 'uint256' },
                 { internalType: 'uint256', name: '_fixedBondAmount', type: 'uint256' },
                 { internalType: 'uint256', name: '_safeBoxLowAmount', type: 'uint256' },

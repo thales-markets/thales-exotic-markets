@@ -98,6 +98,7 @@ export type MarketsParameters = {
     owner: string;
     maxNumberOfTags: number;
     minFixedTicketPrice: number;
+    maxFixedTicketPrice: number;
     disputeStringLengthLimit: number;
     marketQuestionStringLimit: number;
     marketSourceStringLimit: number;
