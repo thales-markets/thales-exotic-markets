@@ -628,6 +628,7 @@ const CreateMarket: React.FC = () => {
                     isSubmitting={isSubmitting}
                     onSubmit={handleSubmit}
                     onClose={() => setOpenCreateMarketModal(false)}
+                    fixedBondAmount={fixedBondAmount}
                 />
             )}
         </Container>
