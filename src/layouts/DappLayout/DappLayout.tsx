@@ -11,6 +11,7 @@ import DappHeader from './DappHeader';
 import Loader from 'components/Loader';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import DappFooter from './DappFooter';
 
 type DappLayoutProps = {
     showSearch?: boolean;
@@ -30,6 +31,7 @@ const DappLayout: React.FC<DappLayoutProps> = ({ children, showSearch }) => {
                         <Wrapper>
                             <DappHeader showSearch={showSearch} />
                             {children}
+                            <DappFooter />
                         </Wrapper>
                         <ToastContainer theme={'colored'} />
                     </Background>

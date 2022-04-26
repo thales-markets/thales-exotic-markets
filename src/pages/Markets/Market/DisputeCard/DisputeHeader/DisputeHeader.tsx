@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { FlexDivRow } from 'styles/common';
 import { DisputeInfo } from 'types/markets';
-import { ReactComponent as ArrowDownIcon } from 'assets/images/arrow-down.svg';
 
 type DisputeHeaderProps = {
     disputeInfo: DisputeInfo;
@@ -39,7 +38,7 @@ const DisputeHeader: React.FC<DisputeHeaderProps> = ({
                       )
                     : ''}
             </Info>
-            <StyledArrowDown />
+            <ArrowDownIcon />
         </Container>
     );
 };
@@ -78,13 +77,18 @@ const Info = styled.span`
     }
 `;
 
-const StyledArrowDown = styled(ArrowDownIcon)`
+const ArrowDownIcon = styled.i`
+    font-size: 25px;
     position: absolute;
     top: 0;
     right: 0;
-    margin: 18px 30px 0 0;
-    height: 25px;
-    width: 25px;
+    cursor: pointer;
+    margin: 24px 30px 0 0;
+    &:before {
+        font-family: ExoticIcons !important;
+        content: '\\004D';
+        color: ${(props) => props.theme.textColor.primary};
+    }
 `;
 
 export default DisputeHeader;

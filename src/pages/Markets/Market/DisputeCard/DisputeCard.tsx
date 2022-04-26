@@ -12,7 +12,6 @@ import { DisputeInfo, DisputeData, AccountDisputeData } from 'types/markets';
 import DisputeOverview from './DisputeOverview';
 import DisputeVoting from './DisputeVoting';
 import DisputeVotingResults from './DisputeVotingResults';
-import { ReactComponent as ArrowUpIcon } from 'assets/images/arrow-up.svg';
 import DisputeHeader from './DisputeHeader';
 import useAccountDisputeDataQuery from 'queries/markets/useAccountDisputeDataQuery';
 
@@ -126,7 +125,7 @@ const DisputeCard: React.FC<DisputeCardProps> = ({
                             )}
                         </VotingContainer>
                     )}
-                    <StyledArrowUp onClick={() => setIsActive(false)} />
+                    <ArrowUpIcon onClick={() => setIsActive(false)} />
                 </Container>
             ) : (
                 <DisputeHeader
@@ -162,15 +161,29 @@ const Container = styled(FlexDivRow)`
     }
 `;
 
-const StyledArrowUp = styled(ArrowUpIcon)`
+const ArrowUpIcon = styled.i`
+    font-size: 25px;
     position: absolute;
     top: 0;
     right: 0;
-    margin: 18px 30px 0 0;
     cursor: pointer;
-    height: 25px;
-    width: 25px;
+    margin: 24px 30px 0 0;
+    &:before {
+        font-family: ExoticIcons !important;
+        content: '\\004C';
+        color: ${(props) => props.theme.textColor.primary};
+    }
 `;
+
+// const StyledArrowUp = styled(ArrowUpIcon)`
+//     position: absolute;
+//     top: 0;
+//     right: 0;
+//     margin: 18px 30px 0 0;
+//     cursor: pointer;
+//     height: 25px;
+//     width: 25px;
+// `;
 
 const VotingContainer = styled(FlexDivRow)`
     margin-right: 20px;

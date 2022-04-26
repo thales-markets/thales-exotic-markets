@@ -80,7 +80,8 @@
         "remove-tag-tooltip": "Click to remove tag",
         "input-characters-note": "{{entered }} / {{max}}",
         "view": "View",
-        "guidelines": "guidelines"
+        "guidelines": "guidelines",
+        "built-on": "Built on"
     },
     "footer": {
         "all-rights-reserved": "© {{year}} eXoticV ALL RIGHTS RESERVED."
