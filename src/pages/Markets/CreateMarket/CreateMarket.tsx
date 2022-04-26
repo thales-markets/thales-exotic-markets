@@ -52,7 +52,7 @@ import RadioButton from 'components/fields/RadioButton';
 import { FieldLabel, OverlayContainer } from 'components/fields/common';
 import Tooltip from 'components/Tooltip';
 import CreateMarketModal from './CreateMarketModal';
-import isAbsoluteUrl from 'is-absolute-url';
+import { isValidHttpsUrl } from 'utils/markets';
 
 const calculateMinTime = (currentDate: Date, minDate: Date) => {
     const isMinDateCurrentDate = isSameDay(currentDate, minDate);
@@ -176,8 +176,7 @@ const CreateMarket: React.FC = () => {
 
     const isQuestionEntered = question.trim() !== '';
     const isDataSourceEntered = dataSource.trim() !== '';
-    const isDataSourceValid =
-        dataSource.trim() === '' || (isAbsoluteUrl(dataSource) && dataSource.toLowerCase().startsWith('https'));
+    const isDataSourceValid = dataSource.trim() === '' || isValidHttpsUrl(dataSource);
     const isTicketPriceEntered =
         (marketType === MarketType.TICKET && Number(ticketPrice) > 0) || marketType === MarketType.OPEN_BID;
     const arePositionsEntered = positions.every((position) => position.trim() !== '');

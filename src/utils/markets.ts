@@ -52,3 +52,15 @@ export const getMarketStatus = (market: MarketInfo) => {
         }
     }
 };
+
+export const isValidHttpsUrl = (text: string) => {
+    let url;
+
+    try {
+        url = new URL(text);
+    } catch (_) {
+        return false;
+    }
+
+    return url.protocol === 'https:';
+};

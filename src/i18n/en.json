@@ -45,7 +45,7 @@
             "invalid-ticket-price": "Invalid ticket price",
             "invalid-ticket-price-extended": "The ticket price must be between {{min}} and {{max}}",
             "invalid-data-source": "Invalid data source",
-            "invalid-data-source-extended": "Data source is invalid. Data source must be a safe URL with https prefix.",
+            "invalid-data-source-extended": "Data source is invalid. Data source must be a URL with https prefix.",
             "insufficient-balance-wallet": "Please ensure your wallet has sufficient {{currencyKey}}",
             "invalid-slippage": "Invalid slippage",
             "user-rejected-tx": "User rejected transaction"
