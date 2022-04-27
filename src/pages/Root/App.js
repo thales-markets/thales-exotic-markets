@@ -19,6 +19,7 @@ import ROUTES from 'constants/routes';
 import Theme from 'layouts/Theme';
 import DappLayout from 'layouts/DappLayout';
 import HomeLayout from 'layouts/HomeLayout';
+import { useMatomo } from '@datapunt/matomo-tracker-react';
 
 const Home = lazy(() => import('pages/Home'));
 const Markets = lazy(() => import('pages/Markets/Home'));
@@ -28,6 +29,7 @@ const OpenDispute = lazy(() => import('pages/Markets/Market/OpenDispute'));
 
 const App = () => {
     const dispatch = useDispatch();
+    const { trackPageView } = useMatomo();
     const isAppReady = useSelector((state) => getIsAppReady(state));
     const [selectedWallet, setSelectedWallet] = useLocalStorage(LOCAL_STORAGE_KEYS.SELECTED_WALLET, '');
     const networkId = useSelector((state) => getNetworkId(state));
@@ -120,6 +122,10 @@ const App = () => {
             onboardConnector.onboard.walletSelect(selectedWallet);
         }
     }, [isAppReady, onboardConnector.onboard, selectedWallet]);
+
+    useEffect(() => {
+        trackPageView();
+    }, []);
 
     return (
         <Theme>

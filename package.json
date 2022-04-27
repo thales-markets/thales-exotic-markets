@@ -3,6 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "dependencies": {
+        "@datapunt/matomo-tracker-react": "^0.5.1",
         "@eth-optimism/contracts": "^0.5.14",
         "@metamask/detect-provider": "^1.2.0",
         "@reduxjs/toolkit": "^1.7.2",
