@@ -1,6 +1,6 @@
 import { DisputeStatus } from 'constants/markets';
 import useDisputeQuery from 'queries/markets/useDisputeQuery';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { getIsAppReady } from 'redux/modules/app';
@@ -12,7 +12,6 @@ import { DisputeInfo, DisputeData, AccountDisputeData } from 'types/markets';
 import DisputeOverview from './DisputeOverview';
 import DisputeVoting from './DisputeVoting';
 import DisputeVotingResults from './DisputeVotingResults';
-import { ReactComponent as ArrowUpIcon } from 'assets/images/arrow-up.svg';
 import DisputeHeader from './DisputeHeader';
 import useAccountDisputeDataQuery from 'queries/markets/useAccountDisputeDataQuery';
 
@@ -35,6 +34,11 @@ const DisputeCard: React.FC<DisputeCardProps> = ({
     const walletAddress = useSelector((state: RootState) => getWalletAddress(state)) || '';
     const isWalletConnected = useSelector((state: RootState) => getIsWalletConnected(state));
     const [isActive, setIsActive] = useState<boolean>(disputeInfo.status === DisputeStatus.Open);
+    const [disputeData, setDisputeData] = useState<DisputeData | undefined>(undefined);
+    const [
+        canDisputorClaimbackBondFromUnclosedDispute,
+        setCanDisputorClaimbackBondFromUnclosedDispute,
+    ] = useState<boolean>(false);
 
     const outcomePositions = [t('common.cancel'), ...positions];
 
@@ -42,11 +46,10 @@ const DisputeCard: React.FC<DisputeCardProps> = ({
         enabled: isAppReady,
     });
 
-    const disputeData: DisputeData | undefined = useMemo(() => {
-        if (disputeQuery.isSuccess) {
-            return disputeQuery.data as DisputeData | undefined;
+    useEffect(() => {
+        if (disputeQuery.isSuccess && disputeQuery.data) {
+            setDisputeData(disputeQuery.data);
         }
-        return undefined;
     }, [disputeQuery.isSuccess, disputeQuery.data]);
 
     const { voteOnContract, positionOnContract } = useMemo(() => {
@@ -76,11 +79,12 @@ const DisputeCard: React.FC<DisputeCardProps> = ({
         }
     );
 
-    const canDisputorClaimbackBondFromUnclosedDispute: boolean = useMemo(() => {
+    useEffect(() => {
         if (accountDisputeDataQuery.isSuccess && accountDisputeDataQuery.data) {
-            return (accountDisputeDataQuery.data as AccountDisputeData).canDisputorClaimbackBondFromUnclosedDispute;
+            setCanDisputorClaimbackBondFromUnclosedDispute(
+                (accountDisputeDataQuery.data as AccountDisputeData).canDisputorClaimbackBondFromUnclosedDispute
+            );
         }
-        return false;
     }, [accountDisputeDataQuery.isSuccess, accountDisputeDataQuery.data]);
 
     const showDisputeVoting = isOracleCouncilMember && disputeData && disputeData.isOpenForVoting;
@@ -121,7 +125,7 @@ const DisputeCard: React.FC<DisputeCardProps> = ({
                             )}
                         </VotingContainer>
                     )}
-                    <StyledArrowUp onClick={() => setIsActive(false)} />
+                    <ArrowUpIcon onClick={() => setIsActive(false)} />
                 </Container>
             ) : (
                 <DisputeHeader
@@ -157,15 +161,29 @@ const Container = styled(FlexDivRow)`
     }
 `;
 
-const StyledArrowUp = styled(ArrowUpIcon)`
+const ArrowUpIcon = styled.i`
+    font-size: 25px;
     position: absolute;
     top: 0;
     right: 0;
-    margin: 18px 30px 0 0;
     cursor: pointer;
-    height: 25px;
-    width: 25px;
+    margin: 24px 30px 0 0;
+    &:before {
+        font-family: ExoticIcons !important;
+        content: '\\004C';
+        color: ${(props) => props.theme.textColor.primary};
+    }
 `;
+
+// const StyledArrowUp = styled(ArrowUpIcon)`
+//     position: absolute;
+//     top: 0;
+//     right: 0;
+//     margin: 18px 30px 0 0;
+//     cursor: pointer;
+//     height: 25px;
+//     width: 25px;
+// `;
 
 const VotingContainer = styled(FlexDivRow)`
     margin-right: 20px;

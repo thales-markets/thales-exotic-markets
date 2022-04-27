@@ -38,12 +38,12 @@ const Link = styled(FlexDivCentered)`
 `;
 
 const LeftIcon = styled.i`
-    font-size: 24px;
+    font-size: 25px;
     margin-right: 4px;
-    margin-top: 4px;
+    margin-top: -2px;
     &:before {
-        font-family: HomepageIcons !important;
-        content: '\\0048';
+        font-family: ExoticIcons !important;
+        content: '\\0041';
         color: ${(props) => props.theme.textColor.primary};
     }
 `;

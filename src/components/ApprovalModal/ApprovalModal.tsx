@@ -72,8 +72,12 @@ export const ApprovalModal: React.FC<ApprovalModalProps> = ({
     }, [amount]);
 
     return (
-        <Modal title={t('common.enable-wallet-access.approve-label', { currencyKey: tokenSymbol })} onClose={onClose}>
-            <FlexDivColumnCentered>
+        <Modal
+            title={t('common.enable-wallet-access.approve-label', { currencyKey: tokenSymbol })}
+            onClose={onClose}
+            shouldCloseOnOverlayClick={false}
+        >
+            <Container>
                 <CheckboxContainer>
                     <Checkbox
                         disabled={isAllowing}
@@ -94,10 +98,17 @@ export const ApprovalModal: React.FC<ApprovalModalProps> = ({
                     validationMessage={t('common.errors.invalid-amount-max', { max: maxApproveAmount })}
                 />
                 <ButtonContainer>{getSubmitButton()}</ButtonContainer>
-            </FlexDivColumnCentered>
+            </Container>
         </Modal>
     );
 };
+
+const Container = styled(FlexDivColumnCentered)`
+    width: 450px;
+    @media (max-width: 575px) {
+        width: auto;
+    }
+`;
 
 const ButtonContainer = styled(FlexDivCentered)`
     margin: 30px 0 10px 0;

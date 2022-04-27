@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { FlexDivColumn } from 'styles/common';
@@ -40,6 +40,7 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ market }) => {
     const [outcomePosition, setOutcomePosition] = useState<number>(-1);
     const [paymentTokenBalance, setPaymentTokenBalance] = useState<number | string>('');
     const [openApprovalModal, setOpenApprovalModal] = useState<boolean>(false);
+    const [marketsParameters, setMarketsParameters] = useState<MarketsParameters | undefined>(undefined);
 
     const outcomePositions = [...market.positions, t('common.cancel')];
 
@@ -47,11 +48,10 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ market }) => {
         enabled: isAppReady,
     });
 
-    const marketsParameters: MarketsParameters | undefined = useMemo(() => {
+    useEffect(() => {
         if (marketsParametersQuery.isSuccess && marketsParametersQuery.data) {
-            return marketsParametersQuery.data as MarketsParameters;
+            setMarketsParameters(marketsParametersQuery.data);
         }
-        return undefined;
     }, [marketsParametersQuery.isSuccess, marketsParametersQuery.data]);
 
     const paymentTokenBalanceQuery = usePaymentTokenBalanceQuery(walletAddress, networkId, {
@@ -59,12 +59,12 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ market }) => {
     });
 
     useEffect(() => {
-        if (paymentTokenBalanceQuery.isSuccess) {
+        if (paymentTokenBalanceQuery.isSuccess && paymentTokenBalanceQuery.data !== undefined) {
             setPaymentTokenBalance(Number(paymentTokenBalanceQuery.data));
         }
     }, [paymentTokenBalanceQuery.isSuccess, paymentTokenBalanceQuery.data]);
 
-    const fixedBondAmount = marketsParameters ? marketsParameters.fixedBondAmount : 0;
+    const fixedBondAmount = market.fixedBondAmount;
     const resolverPercentage = marketsParameters ? marketsParameters.resolverPercentage : 0;
 
     const isOutcomePositionSelected = outcomePosition >= 0;
@@ -162,28 +162,20 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ market }) => {
     const getSubmitButton = () => {
         if (!isWalletConnected) {
             return (
-                <MarketButton type="secondary" onClick={() => onboardConnector.connectWallet()}>
+                <MarketButton onClick={() => onboardConnector.connectWallet()}>
                     {t('common.wallet.connect-your-wallet')}
                 </MarketButton>
             );
         }
         if (insufficientBalance && !isResolverBondDeposited) {
-            return (
-                <MarketButton type="secondary" disabled={true}>
-                    {t(`common.errors.insufficient-balance`)}
-                </MarketButton>
-            );
+            return <MarketButton disabled={true}>{t(`common.errors.insufficient-balance`)}</MarketButton>;
         }
         if (!isOutcomePositionSelected) {
-            return (
-                <MarketButton type="secondary" disabled={true}>
-                    {t(`common.errors.select-outcome`)}
-                </MarketButton>
-            );
+            return <MarketButton disabled={true}>{t(`common.errors.select-position`)}</MarketButton>;
         }
         if (!hasAllowance && !isResolverBondDeposited) {
             return (
-                <MarketButton type="secondary" disabled={isAllowing} onClick={() => setOpenApprovalModal(true)}>
+                <MarketButton disabled={isAllowing} onClick={() => setOpenApprovalModal(true)}>
                     {!isAllowing
                         ? t('common.enable-wallet-access.approve-label', { currencyKey: PAYMENT_CURRENCY })
                         : t('common.enable-wallet-access.approve-progress-label', {
@@ -193,7 +185,7 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ market }) => {
             );
         }
         return (
-            <MarketButton type="secondary" disabled={isButtonDisabled} onClick={handleSubmit}>
+            <MarketButton disabled={isButtonDisabled} onClick={handleSubmit}>
                 {!isSubmitting
                     ? t('market.button.resolve-market-label')
                     : t('market.button.resolve-market-progress-label')}
@@ -203,7 +195,7 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ market }) => {
 
     return (
         <Container>
-            <Title>{t('market.resolve-market.title')}</Title>
+            <Title>{t('market.resolve-market.title')}:</Title>
             <Positions>
                 {outcomePositions.map((position: string, index: number) => {
                     const positionIndex = (index + 1) % outcomePositions.length;
@@ -262,12 +254,11 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ market }) => {
 const Container = styled(FlexDivColumn)`
     margin-top: 40px;
     align-items: center;
-    background: ${(props) => props.theme.button.background.primary};
+    border: 2px solid ${(props) => props.theme.borderColor.primary};
     border-radius: 25px;
     flex: initial;
     padding: 30px 20px 40px 20px;
     width: 100%;
-    background: ;
 `;
 
 const Title = styled(FlexDivColumn)`

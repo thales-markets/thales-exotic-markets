@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { getIsAppReady } from 'redux/modules/app';
 import { getIsWalletConnected, getNetworkId, getWalletAddress } from 'redux/modules/wallet';
@@ -14,8 +14,9 @@ import { formatCurrencyWithKey } from 'utils/formatters/number';
 import { PAYMENT_CURRENCY, DEFAULT_CURRENCY_DECIMALS } from 'constants/currency';
 import SPAAnchor from 'components/SPAAnchor';
 import { buildOpenDisputeLink } from 'utils/routes';
-import MaturityPhase from './MaturityPhase';
-import PositioningPhase from './PositioningPhase';
+import MaturityPhaseTicket from './MaturityPhaseTicket';
+import PositioningPhaseTicket from './PositioningPhaseTicket';
+import PositioningPhaseOpenBid from './PositioningPhaseOpenBid';
 import useOracleCouncilMemberQuery from 'queries/oracleCouncil/useOracleCouncilMemberQuery';
 import { MarketStatus as MarketStatusEnum } from 'constants/markets';
 import OpenDisputeInfo from 'pages/Markets/components/OpenDisputeInfo';
@@ -34,27 +35,27 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
     const networkId = useSelector((state: RootState) => getNetworkId(state));
     const walletAddress = useSelector((state: RootState) => getWalletAddress(state)) || '';
     const isWalletConnected = useSelector((state: RootState) => getIsWalletConnected(state));
+    const [isOracleCouncilMember, setIsOracleCouncilMember] = useState<boolean>(true);
+    const [isClaimAvailable, setIsClaimAvailable] = useState<boolean>(false);
 
     const oracleCouncilMemberQuery = useOracleCouncilMemberQuery(walletAddress, networkId, {
         enabled: isAppReady && isWalletConnected,
     });
 
-    const isOracleCouncilMember: boolean = useMemo(() => {
-        if (oracleCouncilMemberQuery.isSuccess) {
-            return oracleCouncilMemberQuery.data as boolean;
+    useEffect(() => {
+        if (oracleCouncilMemberQuery.isSuccess && oracleCouncilMemberQuery.data !== undefined) {
+            setIsOracleCouncilMember(oracleCouncilMemberQuery.data);
         }
-        return true;
     }, [oracleCouncilMemberQuery.isSuccess, oracleCouncilMemberQuery.data]);
 
     const accountMarketDataQuery = useAccountMarketDataQuery(market.address, walletAddress, {
         enabled: isAppReady && isWalletConnected,
     });
 
-    const isClaimAvailable: boolean = useMemo(() => {
-        if (accountMarketDataQuery.isSuccess && accountMarketDataQuery.data) {
-            return (accountMarketDataQuery.data as AccountMarketData).canClaim && !market.isPaused;
+    useEffect(() => {
+        if (accountMarketDataQuery.isSuccess && accountMarketDataQuery.data !== undefined) {
+            setIsClaimAvailable((accountMarketDataQuery.data as AccountMarketData).canClaim && !market.isPaused);
         }
-        return false;
     }, [accountMarketDataQuery.isSuccess, accountMarketDataQuery.data]);
 
     const canOpenDispute =
@@ -70,8 +71,16 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
             <MarketTitle fontSize={25} marginBottom={40}>
                 {market.question}
             </MarketTitle>
-            {market.status === MarketStatusEnum.Open && <PositioningPhase market={market} />}
-            {market.status !== MarketStatusEnum.Open && <MaturityPhase market={market} />}
+
+            {market.isTicketType && market.status === MarketStatusEnum.Open && (
+                <PositioningPhaseTicket market={market} />
+            )}
+            {market.isTicketType && market.status !== MarketStatusEnum.Open && <MaturityPhaseTicket market={market} />}
+
+            {!market.isTicketType && market.status === MarketStatusEnum.Open && (
+                <PositioningPhaseOpenBid market={market} />
+            )}
+
             <StatusSourceContainer>
                 <StatusSourceInfo />
                 <MarketStatus market={market} fontSize={25} fontWeight={700} isClaimAvailable={isClaimAvailable} />

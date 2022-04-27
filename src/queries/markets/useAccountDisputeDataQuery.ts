@@ -7,25 +7,30 @@ const useAccountDisputeDataQuery = (
     marketAddress: string,
     dispute: number,
     walletAddress: string,
-    options?: UseQueryOptions<AccountDisputeData>
+    options?: UseQueryOptions<AccountDisputeData | undefined>
 ) => {
-    return useQuery<AccountDisputeData>(
+    return useQuery<AccountDisputeData | undefined>(
         QUERY_KEYS.AccountDisputeData(marketAddress, dispute, walletAddress),
         async () => {
-            const { thalesOracleCouncilContract } = networkConnector;
-            if (thalesOracleCouncilContract) {
-                const [canDisputorClaimbackBondFromUnclosedDispute] = await Promise.all([
-                    thalesOracleCouncilContract.canDisputorClaimbackBondFromUnclosedDispute(
-                        marketAddress,
-                        dispute,
-                        walletAddress
-                    ),
-                ]);
-                return {
-                    canDisputorClaimbackBondFromUnclosedDispute,
-                };
+            try {
+                const { thalesOracleCouncilContract } = networkConnector;
+                if (thalesOracleCouncilContract) {
+                    const [canDisputorClaimbackBondFromUnclosedDispute] = await Promise.all([
+                        thalesOracleCouncilContract.canDisputorClaimbackBondFromUnclosedDispute(
+                            marketAddress,
+                            dispute,
+                            walletAddress
+                        ),
+                    ]);
+                    return {
+                        canDisputorClaimbackBondFromUnclosedDispute,
+                    };
+                }
+                return { canDisputorClaimbackBondFromUnclosedDispute: false };
+            } catch (e) {
+                console.log(e);
+                return undefined;
             }
-            return { canDisputorClaimbackBondFromUnclosedDispute: false };
         },
         {
             refetchInterval: 5000,

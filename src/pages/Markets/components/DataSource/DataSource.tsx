@@ -3,7 +3,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { FlexDivCentered } from 'styles/common';
-import isAbsoluteUrl from 'is-absolute-url';
+import { isValidHttpsUrl } from 'utils/markets';
 
 type DataSourceProps = {
     dataSource: string;
@@ -15,7 +15,7 @@ const DataSource: React.FC<DataSourceProps> = ({ dataSource }) => {
     return (
         <Tooltip
             overlay={
-                isAbsoluteUrl(dataSource) ? (
+                isValidHttpsUrl(dataSource) ? (
                     <Link target="_blank" rel="noreferrer" href={dataSource}>
                         {dataSource}
                     </Link>

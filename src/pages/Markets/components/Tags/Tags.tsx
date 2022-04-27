@@ -1,5 +1,5 @@
 import useTagsQuery from 'queries/markets/useTagsQuery';
-import React, { useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { getIsAppReady } from 'redux/modules/app';
@@ -18,16 +18,16 @@ const Tags: React.FC<TagsProps> = ({ tags, labelFontSize }) => {
     const { t } = useTranslation();
     const isAppReady = useSelector((state: RootState) => getIsAppReady(state));
     const networkId = useSelector((state: RootState) => getNetworkId(state));
+    const [availableTags, setAvailableTags] = useState<TagList>([]);
 
     const tagsQuery = useTagsQuery(networkId, {
         enabled: isAppReady,
     });
 
-    const availableTags: TagList = useMemo(() => {
+    useEffect(() => {
         if (tagsQuery.isSuccess && tagsQuery.data) {
-            return tagsQuery.data as TagList;
+            setAvailableTags(tagsQuery.data);
         }
-        return [];
     }, [tagsQuery.isSuccess, tagsQuery.data]);
 
     return (

@@ -47,8 +47,8 @@ const CloseIcon = styled.i`
     margin-bottom: -2px;
     margin-left: 20px;
     &:before {
-        font-family: Icons !important;
-        content: '\\0076';
+        font-family: ExoticIcons !important;
+        content: '\\004F';
         color: #e53720;
     }
 `;

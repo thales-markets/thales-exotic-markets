@@ -199,18 +199,17 @@ const NoResultContainer = styled(TableRow)`
 `;
 
 const SortIcon = styled.i<{ selected: boolean; sortDirection: SortDirection }>`
-    font-size: ${(props) => (props.selected && props.sortDirection !== SortDirection.NONE ? 10 : 13)}px;
-    margin-left: 4px;
+    font-size: ${(props) => (props.selected && props.sortDirection !== SortDirection.NONE ? 22 : 19)}px;
     &:before {
-        font-family: Icons !important;
+        font-family: ExoticIcons !important;
         content: ${(props) =>
             props.selected
                 ? props.sortDirection === SortDirection.ASC
-                    ? "'\\0068'"
+                    ? "'\\0046'"
                     : props.sortDirection === SortDirection.DESC
-                    ? "'\\006B'"
-                    : "'\\006A'"
-                : "'\\006A'"};
+                    ? "'\\0047'"
+                    : "'\\0045'"
+                : "'\\0045'"};
         color: ${(props) => props.theme.textColor.primary};
     }
 `;

@@ -46,7 +46,7 @@ const Input = styled.input`
 
 const IconWrapper = styled.div`
     border-radius: 30px;
-    background: ${(props) => props.theme.button.background.secondary};
+    background: ${(props) => props.theme.button.textColor.primary};
     position: absolute;
     width: 22px;
     height: 22px;
@@ -55,13 +55,14 @@ const IconWrapper = styled.div`
 `;
 
 const SearchIcon = styled.i`
-    font-size: 19px;
+    font-size: 25px;
     position: absolute;
-    left: 2px;
+    top: -3px;
+    left: -3px;
     &:before {
-        font-family: SidebarIcons !important;
-        content: '\\0066';
-        color: ${(props) => props.theme.button.textColor.primary};
+        font-family: ExoticIcons !important;
+        content: '\\0042';
+        color: ${(props) => props.theme.button.background.secondary};
     }
 `;
 

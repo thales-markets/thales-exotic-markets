@@ -1,4 +1,4 @@
-export const exoticPositionalMarketContract = {
+export const exoticPositionalTicketMarketContract = {
     abi: [
         {
             anonymous: false,
@@ -682,4 +682,4 @@ export const exoticPositionalMarketContract = {
     ],
 };
 
-export default exoticPositionalMarketContract;
+export default exoticPositionalTicketMarketContract;

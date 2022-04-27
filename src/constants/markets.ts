@@ -24,7 +24,8 @@ export const DEFAULT_POSITIONING_DURATION = 10 * 24 * 60 * 60 * 1000; // 10 days
 export const MINIMUM_POSITIONS = 2;
 export const MAXIMUM_POSITIONS = 5;
 export const MAXIMUM_TAGS = 5;
-export const MINIMUM_TICKET_PRICE = 1;
+export const MINIMUM_TICKET_PRICE = 10;
+export const MAXIMUM_TICKET_PRICE = 1000;
 
 export const DATE_PICKER_MAX_LENGTH_MONTHS = 1;
 export const TODAYS_DATE = new Date();

@@ -1,7 +1,7 @@
 import SimpleLoader from 'components/SimpleLoader';
 import useDisputesQuery from 'queries/markets/useDisputesQuery';
 import useOracleCouncilMemberQuery from 'queries/oracleCouncil/useOracleCouncilMemberQuery';
-import React, { useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { getIsAppReady } from 'redux/modules/app';
 import { getIsWalletConnected, getNetworkId, getWalletAddress } from 'redux/modules/wallet';
@@ -22,25 +22,25 @@ const Disputes: React.FC<DisputesProps> = ({ marketAddress, positions, winningPo
     const networkId = useSelector((state: RootState) => getNetworkId(state));
     const walletAddress = useSelector((state: RootState) => getWalletAddress(state)) || '';
     const isWalletConnected = useSelector((state: RootState) => getIsWalletConnected(state));
+    const [isOracleCouncilMember, setIsOracleCouncilMember] = useState<boolean>(false);
+    const [disputes, setDisputes] = useState<DisputeList>([]);
 
     const disputesQuery = useDisputesQuery(marketAddress, networkId, { enabled: isAppReady });
 
-    const disputes: DisputeList = useMemo(() => {
+    useEffect(() => {
         if (disputesQuery.isSuccess && disputesQuery.data) {
-            return disputesQuery.data as DisputeList;
+            setDisputes(disputesQuery.data);
         }
-        return [];
     }, [disputesQuery.isSuccess, disputesQuery.data]);
 
     const oracleCouncilMemberQuery = useOracleCouncilMemberQuery(walletAddress, networkId, {
         enabled: isAppReady && isWalletConnected,
     });
 
-    const isOracleCouncilMember: boolean = useMemo(() => {
-        if (oracleCouncilMemberQuery.isSuccess) {
-            return oracleCouncilMemberQuery.data as boolean;
+    useEffect(() => {
+        if (oracleCouncilMemberQuery.isSuccess && oracleCouncilMemberQuery.data !== undefined) {
+            setIsOracleCouncilMember(oracleCouncilMemberQuery.data);
         }
-        return false;
     }, [oracleCouncilMemberQuery.isSuccess, oracleCouncilMemberQuery.data]);
 
     return (

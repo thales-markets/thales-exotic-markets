@@ -3,7 +3,7 @@ import SimpleLoader from 'components/SimpleLoader';
 import { DEFAULT_SEARCH_DEBOUNCE_MS } from 'constants/defaults';
 import useDebouncedMemo from 'hooks/useDebouncedMemo';
 import useMarketsQuery from 'queries/markets/useMarketsQuery';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { getIsAppReady } from 'redux/modules/app';
@@ -50,6 +50,9 @@ const Home: React.FC = () => {
     const [sortDirection, setSortDirection] = useLocalStorage(LOCAL_STORAGE_KEYS.SORT_DIRECTION, SortDirection.ASC);
     const [sortBy, setSortBy] = useLocalStorage(LOCAL_STORAGE_KEYS.SORT_BY, DEFAULT_SORT_BY);
     const [showOpenMarkets, setShowOpenMarkets] = useLocalStorage(LOCAL_STORAGE_KEYS.FILTER_SHOW_OPEN_MARKETS, true);
+    const [lastValidMarkets, setLastValidMarkets] = useState<Markets>([]);
+    const [accountPositions, setAccountPositions] = useState<AccountPositionsMap>({});
+    const [marketsParameters, setMarketsParameters] = useState<MarketsParameters | undefined>(undefined);
 
     const sortOptions: SortOptionType[] = [
         { id: 1, title: t('market.time-remaining-label') },
@@ -61,16 +64,16 @@ const Home: React.FC = () => {
         label: t('market.filter-label.all'),
     };
     const [tagFilter, setTagFilter] = useLocalStorage(LOCAL_STORAGE_KEYS.FILTER_TAGS, allTagsFilterItem);
+    const [availableTags, setAvailableTags] = useState<Tags>([allTagsFilterItem]);
 
     const marketsParametersQuery = useMarketsParametersQuery(networkId, {
         enabled: isAppReady,
     });
 
-    const marketsParameters: MarketsParameters | undefined = useMemo(() => {
+    useEffect(() => {
         if (marketsParametersQuery.isSuccess && marketsParametersQuery.data) {
-            return marketsParametersQuery.data as MarketsParameters;
+            setMarketsParameters(marketsParametersQuery.data);
         }
-        return undefined;
     }, [marketsParametersQuery.isSuccess, marketsParametersQuery.data]);
 
     const creationRestrictedToOwner = marketsParameters
@@ -79,33 +82,37 @@ const Home: React.FC = () => {
 
     const marketsQuery = useMarketsQuery(networkId, { enabled: isAppReady });
 
+    useEffect(() => {
+        if (marketsQuery.isSuccess && marketsQuery.data) {
+            setLastValidMarkets(marketsQuery.data);
+        }
+    }, [marketsQuery.isSuccess, marketsQuery.data]);
+
     const markets: Markets = useMemo(() => {
         if (marketsQuery.isSuccess && marketsQuery.data) {
             return marketsQuery.data as Markets;
         }
-        return [];
+        return lastValidMarkets;
     }, [marketsQuery.isSuccess, marketsQuery.data]);
 
     const tagsQuery = useTagsQuery(networkId, {
         enabled: isAppReady,
     });
 
-    const availableTags: Tags = useMemo(() => {
+    useEffect(() => {
         if (tagsQuery.isSuccess && tagsQuery.data) {
-            return [allTagsFilterItem, ...(tagsQuery.data as Tags)];
+            setAvailableTags([allTagsFilterItem, ...(tagsQuery.data as Tags)]);
         }
-        return [allTagsFilterItem];
     }, [tagsQuery.isSuccess, tagsQuery.data]);
 
     const accountPositionsQuery = useAccountPositionsQuery(walletAddress, networkId, {
         enabled: isAppReady && isWalletConnected,
     });
 
-    const accountPositions: AccountPositionsMap = useMemo(() => {
+    useEffect(() => {
         if (accountPositionsQuery.isSuccess && accountPositionsQuery.data) {
-            return accountPositionsQuery.data as AccountPositionsMap;
+            setAccountPositions(accountPositionsQuery.data);
         }
-        return {};
     }, [accountPositionsQuery.isSuccess, accountPositionsQuery.data]);
 
     const searchFilteredMarkets = useDebouncedMemo(
@@ -369,7 +376,7 @@ const ToggleContainer = styled(FlexDivColumn)`
         align-items: center;
     }
     i {
-        margin-top: 4px;
+        margin-top: -9px;
     }
 `;
 
@@ -377,6 +384,11 @@ const FiltersContainer = styled(FlexDivRow)`
     margin-bottom: 4px;
     :first-child {
         margin-top: 50px;
+    }
+    @media (max-width: 767px) {
+        :first-child {
+            margin-top: 60px;
+        }
     }
 `;
 

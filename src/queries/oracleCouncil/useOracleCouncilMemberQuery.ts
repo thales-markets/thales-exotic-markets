@@ -6,17 +6,24 @@ import { NetworkId } from 'types/network';
 const useOracleCouncilMemberQuery = (
     walletAddress: string,
     networkId: NetworkId,
-    options?: UseQueryOptions<boolean>
+    options?: UseQueryOptions<boolean | undefined>
 ) => {
-    return useQuery<boolean>(
+    return useQuery<boolean | undefined>(
         QUERY_KEYS.OracleCouncilMember(walletAddress, networkId),
         async () => {
-            const { thalesOracleCouncilContract } = networkConnector;
-            if (thalesOracleCouncilContract) {
-                const isOracleCouncilMember = await thalesOracleCouncilContract.isOracleCouncilMember(walletAddress);
-                return isOracleCouncilMember;
+            try {
+                const { thalesOracleCouncilContract } = networkConnector;
+                if (thalesOracleCouncilContract) {
+                    const isOracleCouncilMember = await thalesOracleCouncilContract.isOracleCouncilMember(
+                        walletAddress
+                    );
+                    return isOracleCouncilMember;
+                }
+                return false;
+            } catch (e) {
+                console.log(e);
+                return undefined;
             }
-            return false;
         },
         {
             refetchInterval: 5000,

@@ -10,6 +10,18 @@ export const QUERY_KEYS = {
         networkId,
     ],
     AccountMarketData: (marketAddress: string, walletAddress: string) => ['market', marketAddress, walletAddress],
+    AccountMarketTicketData: (marketAddress: string, walletAddress: string) => [
+        'market',
+        'ticket',
+        marketAddress,
+        walletAddress,
+    ],
+    AccountMarketOpenBidData: (marketAddress: string, walletAddress: string) => [
+        'market',
+        'openBid',
+        marketAddress,
+        walletAddress,
+    ],
     MarketsParameters: (networkId: NetworkId) => ['markets', 'parameters', networkId],
     Tags: (networkId: NetworkId) => ['tags', networkId],
     Disputes: (marketAddress: string, networkId: NetworkId) => ['disputes', marketAddress, networkId],
