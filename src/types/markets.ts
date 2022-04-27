@@ -36,6 +36,12 @@ export type MarketInfo = {
     cancelledByCreator: boolean;
 };
 
+export type FixedMarketData = {
+    winningAmountsNewUser: number[];
+    winningAmountsNoPosition: number[];
+    winningAmountPerTicket: number;
+};
+
 export type MarketData = MarketInfo & {
     claimablePoolSize: number;
     poolSizePerPosition: number[];
@@ -46,27 +52,31 @@ export type MarketData = MarketInfo & {
     fixedBondAmount: number;
     safeBoxLowAmount: number;
     arbitraryRewardForDisputor: number;
-    winningAmountsNewUser: number[];
-    winningAmountsNoPosition: number[];
-    totalUsersTakenPositions: number;
-    winningAmountPerTicket: number;
     creatorBond: number;
     creatorFee: number;
     resolverFee: number;
     safeBoxFee: number;
     totalFees: number;
     canIssueFees: boolean;
+    fixedMarketData?: FixedMarketData;
 };
 
 export type Markets = MarketInfo[];
 
 export type AccountMarketData = {
-    position: number;
     claimAmount: number;
     canClaim: boolean;
     winningAmount: number;
     canWithdraw: boolean;
     userAlreadyClaimedAmount: number;
+};
+
+export type AccountMarketTicketData = AccountMarketData & {
+    position: number;
+};
+
+export type AccountMarketOpenBidData = AccountMarketData & {
+    userPositions: number[];
 };
 
 export type SortOptionType = {
@@ -88,6 +98,7 @@ export type MarketsParameters = {
     owner: string;
     maxNumberOfTags: number;
     minFixedTicketPrice: number;
+    maxFixedTicketPrice: number;
     disputeStringLengthLimit: number;
     marketQuestionStringLimit: number;
     marketSourceStringLimit: number;

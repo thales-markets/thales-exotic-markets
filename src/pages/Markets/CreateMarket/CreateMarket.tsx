@@ -11,8 +11,9 @@ import {
     MAXIMUM_POSITIONS,
     MAXIMUM_TAGS,
     MINIMUM_TICKET_PRICE,
+    MAXIMUM_TICKET_PRICE,
 } from 'constants/markets';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { FlexDivColumn, FlexDivRow } from 'styles/common';
@@ -50,6 +51,8 @@ import ROUTES from 'constants/routes';
 import RadioButton from 'components/fields/RadioButton';
 import { FieldLabel, OverlayContainer } from 'components/fields/common';
 import Tooltip from 'components/Tooltip';
+import CreateMarketModal from './CreateMarketModal';
+import { isValidHttpsUrl } from 'utils/markets';
 
 const calculateMinTime = (currentDate: Date, minDate: Date) => {
     const isMinDateCurrentDate = isSameDay(currentDate, minDate);
@@ -89,22 +92,23 @@ const CreateMarket: React.FC = () => {
     const [suggestions, setSuggestions] = useState<Tag[]>([]);
     const [paymentTokenBalance, setPaymentTokenBalance] = useState<number | string>('');
     const [openApprovalModal, setOpenApprovalModal] = useState<boolean>(false);
+    const [openCreateMarketModal, setOpenCreateMarketModal] = useState<boolean>(false);
     const [minTime, setMinTime] = useState<Date>(DATE_PICKER_MIN_DATE);
     const [minDate, setMinDate] = useState<Date>(DATE_PICKER_MIN_DATE);
     const [maxTime, setMaxTime] = useState<Date>(DATE_PICKER_MAX_DATE);
     const [maxDate, setMaxDate] = useState<Date>(DATE_PICKER_MAX_DATE);
     const [isTicketPriceValid, setIsTicketPriceValid] = useState<boolean>(true);
     const [initialPosition, setInitialPosition] = useState<number>(0);
+    const [marketsParameters, setMarketsParameters] = useState<MarketsParameters | undefined>(undefined);
 
     const marketsParametersQuery = useMarketsParametersQuery(networkId, {
         enabled: isAppReady,
     });
 
-    const marketsParameters: MarketsParameters | undefined = useMemo(() => {
+    useEffect(() => {
         if (marketsParametersQuery.isSuccess && marketsParametersQuery.data) {
-            return marketsParametersQuery.data as MarketsParameters;
+            setMarketsParameters(marketsParametersQuery.data);
         }
-        return undefined;
     }, [marketsParametersQuery.isSuccess, marketsParametersQuery.data]);
 
     const minimumPositioningDuration = marketsParameters ? marketsParameters.minimumPositioningDuration : 0;
@@ -143,7 +147,7 @@ const CreateMarket: React.FC = () => {
     });
 
     useEffect(() => {
-        if (paymentTokenBalanceQuery.isSuccess) {
+        if (paymentTokenBalanceQuery.isSuccess && paymentTokenBalanceQuery.data !== undefined) {
             setPaymentTokenBalance(Number(paymentTokenBalanceQuery.data));
         }
     }, [paymentTokenBalanceQuery.isSuccess, paymentTokenBalanceQuery.data]);
@@ -155,6 +159,7 @@ const CreateMarket: React.FC = () => {
     const maxNumberOfTags = marketsParameters ? marketsParameters.maxNumberOfTags : MAXIMUM_TAGS;
     const maximumPositionsAllowed = marketsParameters ? marketsParameters.maximumPositionsAllowed : MAXIMUM_POSITIONS;
     const minFixedTicketPrice = marketsParameters ? marketsParameters.minFixedTicketPrice : MINIMUM_TICKET_PRICE;
+    const maxFixedTicketPrice = marketsParameters ? marketsParameters.maxFixedTicketPrice : MAXIMUM_TICKET_PRICE;
 
     const creatorPercentage = marketsParameters ? marketsParameters.creatorPercentage : 0;
     const withdrawalPercentage = marketsParameters ? marketsParameters.withdrawalPercentage : 0;
@@ -171,6 +176,7 @@ const CreateMarket: React.FC = () => {
 
     const isQuestionEntered = question.trim() !== '';
     const isDataSourceEntered = dataSource.trim() !== '';
+    const isDataSourceValid = dataSource.trim() === '' || isValidHttpsUrl(dataSource);
     const isTicketPriceEntered =
         (marketType === MarketType.TICKET && Number(ticketPrice) > 0) || marketType === MarketType.OPEN_BID;
     const arePositionsEntered = positions.every((position) => position.trim() !== '');
@@ -196,7 +202,8 @@ const CreateMarket: React.FC = () => {
         !areMarketDataEntered ||
         insufficientBalance ||
         creationRestrictedToOwner ||
-        !isTicketPriceValid;
+        !isTicketPriceValid ||
+        !isDataSourceValid;
 
     useEffect(() => {
         const { paymentTokenContract, thalesBondsContract, signer } = networkConnector;
@@ -344,6 +351,9 @@ const CreateMarket: React.FC = () => {
         if (!areMarketDataEntered) {
             return <CreateMarketButton disabled={true}>{getEnterMarketDataMessage()}</CreateMarketButton>;
         }
+        if (!isDataSourceValid) {
+            return <CreateMarketButton disabled={true}>{t(`common.errors.invalid-data-source`)}</CreateMarketButton>;
+        }
         if (!hasAllowance) {
             return (
                 <CreateMarketButton disabled={isAllowing} onClick={() => setOpenApprovalModal(true)}>
@@ -356,7 +366,7 @@ const CreateMarket: React.FC = () => {
             );
         }
         return (
-            <CreateMarketButton disabled={isButtonDisabled} onClick={handleSubmit}>
+            <CreateMarketButton disabled={isButtonDisabled} onClick={() => setOpenCreateMarketModal(true)}>
                 {!isSubmitting
                     ? t('market.create-market.button.create-market-label')
                     : t('market.create-market.button.create-market-progress-label')}
@@ -418,7 +428,9 @@ const CreateMarket: React.FC = () => {
     useEffect(() => {
         setIsTicketPriceValid(
             (marketType === MarketType.TICKET && Number(ticketPrice) === 0) ||
-                (Number(ticketPrice) > 0 && Number(ticketPrice) >= minFixedTicketPrice) ||
+                (Number(ticketPrice) > 0 &&
+                    Number(ticketPrice) >= minFixedTicketPrice &&
+                    Number(ticketPrice) <= maxFixedTicketPrice) ||
                 marketType === MarketType.OPEN_BID
         );
     }, [ticketPrice, marketType]);
@@ -456,6 +468,8 @@ const CreateMarket: React.FC = () => {
                         })}
                         maximumCharacters={marketSourceStringLimit}
                         disabled={isSubmitting || creationRestrictedToOwner}
+                        showValidation={!isDataSourceValid}
+                        validationMessage={t(`common.errors.invalid-data-source-extended`)}
                     />
                     <Positions
                         positions={positions}
@@ -504,10 +518,16 @@ const CreateMarket: React.FC = () => {
                             currencyLabel={PAYMENT_CURRENCY}
                             disabled={isSubmitting || creationRestrictedToOwner}
                             showValidation={!isTicketPriceValid}
-                            validationMessage={t(`common.errors.invalid-ticket-price-min`, {
+                            validationMessage={t(`common.errors.invalid-ticket-price-extended`, {
                                 min: formatCurrencyWithKey(
                                     PAYMENT_CURRENCY,
                                     minFixedTicketPrice,
+                                    DEFAULT_CURRENCY_DECIMALS,
+                                    true
+                                ),
+                                max: formatCurrencyWithKey(
+                                    PAYMENT_CURRENCY,
+                                    maxFixedTicketPrice,
                                     DEFAULT_CURRENCY_DECIMALS,
                                     true
                                 ),
@@ -546,8 +566,8 @@ const CreateMarket: React.FC = () => {
                                         {t('market.create-market.your-initial-position-tooltip')}
                                     </OverlayContainer>
                                 }
-                                iconFontSize={20}
-                                marginLeft={4}
+                                iconFontSize={23}
+                                marginLeft={2}
                                 top={0}
                             />
                         </FieldLabel>
@@ -600,6 +620,14 @@ const CreateMarket: React.FC = () => {
                     isAllowing={isAllowing}
                     onSubmit={handleAllowance}
                     onClose={() => setOpenApprovalModal(false)}
+                />
+            )}
+            {openCreateMarketModal && (
+                <CreateMarketModal
+                    isSubmitting={isSubmitting}
+                    onSubmit={handleSubmit}
+                    onClose={() => setOpenCreateMarketModal(false)}
+                    fixedBondAmount={fixedBondAmount}
                 />
             )}
         </Container>

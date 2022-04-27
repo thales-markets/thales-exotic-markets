@@ -49,8 +49,8 @@ const Toggle: React.FC<ToggleProps> = ({
                     {tooltip && (
                         <Tooltip
                             overlay={<OverlayContainer>{tooltip}</OverlayContainer>}
-                            iconFontSize={20}
-                            marginLeft={4}
+                            iconFontSize={23}
+                            marginLeft={2}
                             top={0}
                         />
                     )}
@@ -95,11 +95,12 @@ const ToggleText = styled.span`
 `;
 
 const ToggleIcon = styled.i<{ isLeftOptionSelected: boolean }>`
-    font-size: 48px;
+    font-size: 54px;
     margin: 0 6px;
+    margin-top: -3px;
     &:before {
-        font-family: SidebarIcons !important;
-        content: ${(props) => (props.isLeftOptionSelected ? "'\\006C'" : "'\\006B'")};
+        font-family: ExoticIcons !important;
+        content: ${(props) => (props.isLeftOptionSelected ? "'\\0048'" : "'\\0049'")};
         color: ${(props) => props.theme.textColor.primary};
     }
 `;

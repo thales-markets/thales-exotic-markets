@@ -6,7 +6,8 @@
             "disconnect-wallet": "Disconnect wallet",
             "wallet-options": "Wallet options",
             "get-usd": "Get {{amount}}",
-            "get-usd-progress": "Minting {{amount}}..."
+            "get-usd-progress": "Minting {{amount}}...",
+            "disclaimer": "By connecting a wallet you acknowledge that you have read and understand the Exotic Markets <a target=\"_blank\" href={{link}}>disclaimer</a> and agree to its conditions of use."
         },
         "enable-wallet-access": {
             "approve-label": "Approve {{currencyKey}}",
@@ -43,7 +44,9 @@
             "select-outcome": "Select outcome",
             "select-result": "Select result",
             "invalid-ticket-price": "Invalid ticket price",
-            "invalid-ticket-price-min": "The minimum ticket price is {{min}}",
+            "invalid-ticket-price-extended": "The ticket price must be between {{min}} and {{max}}",
+            "invalid-data-source": "Invalid data source",
+            "invalid-data-source-extended": "Data source is invalid. Data source must be a URL with https prefix.",
             "insufficient-balance-wallet": "Please ensure your wallet has sufficient {{currencyKey}}",
             "invalid-slippage": "Invalid slippage",
             "user-rejected-tx": "User rejected transaction"
@@ -77,7 +80,9 @@
         "tags-placeholder": "Search tags...",
         "remove-tag-tooltip": "Click to remove tag",
         "input-characters-note": "{{entered }} / {{max}}",
-        "view": "View"
+        "view": "View",
+        "guidelines": "guidelines",
+        "built-on": "Built on"
     },
     "footer": {
         "all-rights-reserved": "© {{year}} eXoticV ALL RIGHTS RESERVED."
@@ -188,24 +193,10 @@
         "no-markets-found": "No markets found",
         "view-all-markets": "View all markets",
         "create-market": {
-            "header": {
-                "step-title": {
-                    "deposit-bond": "Deposit bond",
-                    "create-market": "Create market",
-                    "launch-market": "Launch market"
-                },
-                "button": {
-                    "deposit-label": "Deposit",
-                    "start-label": "Start"
-                },
-                "info": {
-                    "deposit-bond": "Bond deposit"
-                }
-            },
             "question-label": "Question",
             "question-tooltip": "The question that defines a market.",
             "data-source-label": "Data source",
-            "data-source-tooltip": "Market data sources, can basically be a url linking to a page that will show the result on maturity.",
+            "data-source-tooltip": "Market data sources, must be a url linking to a page that will show the result on maturity.",
             "positions-label": "Positions",
             "positions-tooltip": "Positions participants can assume. Up to {{max}} positions.",
             "your-initial-position-label": "Your initial position",
@@ -238,25 +229,32 @@
                 "create-market-label": "Create market",
                 "create-market-progress-label": "Creating in progress..."
             },
-            "bond-info": "<0><0>As a creator, you will earn {{bidPercentage}}% of each bid (should the market resolve regularly) and {{withdrawalPercentage}}% of each withdrawal.</0><0>In order to create a market, you need to deposit a bond of {{amount}} sUSD which serves as a guarantee that you have created a market by adhering to the guidelines maintained by the Oracle Council.</0><0>Your bond can be slashed if a dispute is accepted on your market not following the guidelines.</0></0>",
-            "creation-disabled-message": "Market creation is disabled, only owner can create markets."
+            "bond-info": "<0><0>As a creator, you will earn {{bidPercentage}}% of each bid (should the market resolve regularly) and {{withdrawalPercentage}}% of each withdrawal.</0><0>In order to create a market, you need to deposit a bond of {{amount}} which serves as a guarantee that you have created a market by adhering to the guidelines maintained by the Oracle Council.</0><0>Your bond can be slashed if a dispute is accepted on your market not following the guidelines.</0></0>",
+            "creation-disabled-message": "Market creation is disabled, only owner can create markets.",
+            "modal": {
+                "title": "Create market",
+                "text": "<0>In order to create a market, users must post a bond of {{amount}}. By creating this market you are subjecting your bond to potential slashing if the market question does not adhere to the guidelines displayed. The guidelines can also be found on <0 />.</0><1>If you do not understand any of the written guidelines or how they are applied, it is encouraged that you do not proceed and seek feedback from the community in the <0 />.</1><2>It is highly recommended that users read up on <0 /> before creating any markets as to avoid the potential of being slashed for the posted bond.</2><3>Once a Market is created there is no way for Thales to stop any disputes against the deployed market. All disputes are settled by the Oracle Council who act independently of Thales in judging whether a dispute is valid or not, therefore caution is urged!</3>",
+                "button-label": "Proceed"
+            }
         },
         "resolve-market": {
-            "title": "Resolve market",
+            "title": "Choose a position to resolve the market with",
             "cancel-tooltip": "If the market is not created according to the guidelines, use this option to cancel the market. Resolving a market with this position will allow anyone who placed a bid on the market to claim a full refund.",
-            "bond-info": "<0><0>In order to resolve the market, you need to deposit a bond of {{amount}} which will be used in case of a dispute.</0><0>If your result is not disputed and the market is formally resolved with your outcome, the bond will be returned to you.</0><0>{{resolverPercentage}}% of each bid goes to the market resolver in case the market is not cancelled.</0></0>",
+            "bond-info": "<0><0>In order to resolve the market, you need to deposit a bond of {{amount}} which will be used in case of a dispute.</0><0>If your result is not disputed and the market is formally resolved with your position, the bond will be returned to you.</0><0>{{resolverPercentage}}% of each bid goes to the market resolver in case the market is not cancelled.</0></0>",
             "creator-bond-info": "<0><0>As a market creator, you don't need to submit a new bond, your initial bond will be used in case of a dispute.</0><0>{{resolverPercentage}}% of each bid goes to the market resolver in case the market is not cancelled.</0></0>"
         },
         "dispute": {
             "open-dispute-title": "Open dispute on the market \"{{question}}\"",
             "open-dispute-maturity-title": "Open dispute on the result of the market \"{{question}}\"",
             "current-result-label": "Current result",
+            "open-dispute-note-label": "You can dispute a market in the positioning phase if it did not adhere to the following",
+            "open-dispute-modal-title": "Guidelines",
             "disputer-label": "Disputer",
             "status-label": "Status",
             "reason-for-dispute-label": "Reason for dispute",
             "vote-label": "Vote",
             "results-label": "Results",
-            "open-dispute-bond-info": "<0><0>In order to open a dispute, you need to deposit a bond of {{amount}}.</0><0>In case the dispute is accepted, you will receive your bond back.</0></0>",
+            "open-dispute-bond-info": "<0><0>In order to open a dispute, you need to deposit a bond of {{amount}}.</0><0>If Oracle Council finds that your dispute was unjustified your bond will be slashed.</0><0>If Oracle Council accepts your dispute you will get your bond back and a reward in the range of {{minReward}} to {{maxReward}}.</0></0>",
             "disputes-disabled-message": {
                 "market-paused": "The market is paused.",
                 "market-closed": "The market is closed for disputes.",
@@ -309,7 +307,8 @@
                 "withdrawal": "Withdrawal",
                 "changePosition": "Change position",
                 "claim": "Claim"
-            }
+            },
+            "no-results": "No transactions associated with this market."
         }
     }
 }

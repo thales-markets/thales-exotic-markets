@@ -8,19 +8,24 @@ import { keyBy } from 'lodash';
 const useAccountPositionsQuery = (
     walletAddress: string,
     networkId: NetworkId,
-    options?: UseQueryOptions<AccountPositionsMap>
+    options?: UseQueryOptions<AccountPositionsMap | undefined>
 ) => {
-    return useQuery<AccountPositionsMap>(
+    return useQuery<AccountPositionsMap | undefined>(
         QUERY_KEYS.AccountPositions(walletAddress, networkId),
         async () => {
-            const positions: AccountPositions = await thalesData.exoticMarkets.positions({
-                account: walletAddress,
-                network: networkId,
-            });
+            try {
+                const positions: AccountPositions = await thalesData.exoticMarkets.positions({
+                    account: walletAddress,
+                    network: networkId,
+                });
 
-            const positionsMap: AccountPositionsMap = keyBy(positions, 'market');
+                const positionsMap: AccountPositionsMap = keyBy(positions, 'market');
 
-            return positionsMap;
+                return positionsMap;
+            } catch (e) {
+                console.log(e);
+                return undefined;
+            }
         },
         {
             refetchInterval: 5000,

@@ -5,23 +5,36 @@ import ReactModal from 'react-modal';
 
 type ModalProps = {
     title: string;
+    shouldCloseOnOverlayClick?: boolean;
     onClose: () => void;
 };
 
 ReactModal.setAppElement('#root');
 
-export const Modal: React.FC<ModalProps> = ({ title, onClose, children }) => {
+const customStyles = {
+    content: {
+        top: '50%',
+        left: '50%',
+        right: 'auto',
+        bottom: 'auto',
+        marginRight: '-50%',
+        transform: 'translate(-50%, -50%)',
+        padding: '0px',
+        background: 'transparent',
+        border: 'none',
+    },
+    overlay: {
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+};
+
+export const Modal: React.FC<ModalProps> = ({ title, onClose, children, shouldCloseOnOverlayClick }) => {
     return (
         <ReactModal
             isOpen
             onRequestClose={onClose}
-            shouldCloseOnOverlayClick={false}
-            className="modal-content"
-            style={{
-                overlay: {
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                },
-            }}
+            shouldCloseOnOverlayClick={shouldCloseOnOverlayClick}
+            style={customStyles}
         >
             <Container>
                 <Header>
@@ -43,6 +56,9 @@ const Container = styled.div`
     @media (max-width: 575px) {
         padding: 25px 20px 35px 20px;
     }
+    overflow-y: auto;
+    max-height: 100vh;
+    height: fit-content;
 `;
 
 const Header = styled(FlexDivRow)`
@@ -59,11 +75,12 @@ const Title = styled(FlexDiv)`
 `;
 
 const CloseIcon = styled.i`
-    font-size: 20px;
+    font-size: 18px;
+    margin-top: 1px;
     cursor: pointer;
     &:before {
-        font-family: Icons !important;
-        content: '\\0076';
+        font-family: ExoticIcons !important;
+        content: '\\004F';
         color: ${(props) => props.theme.textColor.primary};
     }
 `;

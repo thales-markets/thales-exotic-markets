@@ -30,6 +30,22 @@ onboard-custom {
     color: #f6f6fe !important;
 }
 
+.bn-onboard-custom.bn-onboard-select-description a {
+    color: #f983a5;
+}
+
+.bn-onboard-custom.bn-onboard-select-description a:hover {
+    text-decoration: underline;
+}
+
+.bn-onboard-custom.bn-onboard-select-wallet-definition a {
+    color: #f983a5 !important;
+}
+
+.bn-onboard-custom.bn-onboard-select-wallet-definition a:hover {
+    text-decoration: underline;
+}
+
 /* react-toastify notifications */
 #root {
     --toastify-text-color-light: #6c438a;
@@ -38,20 +54,6 @@ onboard-custom {
 }
 
 /* react-modal */
-.modal-content {
-    padding: 0px;
-    max-width: 500px;
-    width: 100%;
-    height: fit-content;
-    border: none;
-    background: transparent;
-    top: calc(50% - 250px);
-    left: calc(50% - 250px);
-    position: relative;
-}
-
-@media (max-width: 500px) {
-    .modal-content {
-        left: 0;
-    }
+.ReactModal__Body--open {
+    overflow-y: hidden;
 }

@@ -23,8 +23,8 @@ const useDisputeQuery = (
     return useQuery<DisputeData | undefined>(
         QUERY_KEYS.Dispute(marketAddress, dispute, networkId),
         async () => {
-            const { thalesOracleCouncilContract } = networkConnector;
-            if (thalesOracleCouncilContract) {
+            try {
+                const { thalesOracleCouncilContract } = networkConnector;
                 const [
                     disputeVotes,
                     contractData,
@@ -40,13 +40,13 @@ const useDisputeQuery = (
                         dispute: dispute,
                         network: networkId,
                     }),
-                    thalesOracleCouncilContract.getDispute(marketAddress, dispute),
-                    thalesOracleCouncilContract.isMarketClosedForDisputes(marketAddress),
-                    thalesOracleCouncilContract.isDisputeOpen(marketAddress, dispute),
-                    thalesOracleCouncilContract.isOpenDisputeCancelled(marketAddress, dispute),
-                    thalesOracleCouncilContract.disputeWinningPositionChoosen(marketAddress, dispute),
-                    thalesOracleCouncilContract.firstMemberThatChoseWinningPosition(marketAddress),
-                    thalesOracleCouncilContract.disputeVotesCount(
+                    thalesOracleCouncilContract?.getDispute(marketAddress, dispute),
+                    thalesOracleCouncilContract?.isMarketClosedForDisputes(marketAddress),
+                    thalesOracleCouncilContract?.isDisputeOpen(marketAddress, dispute),
+                    thalesOracleCouncilContract?.isOpenDisputeCancelled(marketAddress, dispute),
+                    thalesOracleCouncilContract?.disputeWinningPositionChoosen(marketAddress, dispute),
+                    thalesOracleCouncilContract?.firstMemberThatChoseWinningPosition(marketAddress),
+                    thalesOracleCouncilContract?.disputeVotesCount(
                         marketAddress,
                         dispute,
                         DisputeVotingOption.ACCEPT_RESULT
@@ -116,8 +116,10 @@ const useDisputeQuery = (
                     status,
                     isOpenForVoting,
                 };
+            } catch (e) {
+                console.log(e);
+                return undefined;
             }
-            return undefined;
         },
         {
             refetchInterval: 5000,

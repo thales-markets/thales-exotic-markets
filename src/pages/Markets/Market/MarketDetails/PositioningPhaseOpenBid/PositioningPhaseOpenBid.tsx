@@ -1,24 +1,24 @@
 import Button from 'components/Button';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { getIsAppReady } from 'redux/modules/app';
 import { RootState } from 'redux/rootReducer';
 import styled from 'styled-components';
 import { FlexDivColumn } from 'styles/common';
-import { AccountMarketData, MarketData, MarketsParameters } from 'types/markets';
+import { MarketData, MarketsParameters } from 'types/markets';
 import { formatCurrencyWithKey, formatPercentage } from 'utils/formatters/number';
 import { PAYMENT_CURRENCY, DEFAULT_CURRENCY_DECIMALS } from 'constants/currency';
 import { getIsWalletConnected, getNetworkId, getWalletAddress } from 'redux/modules/wallet';
 import { checkAllowance } from 'utils/network';
-import { BigNumber, ethers } from 'ethers';
+import { BigNumber, BigNumberish, ethers } from 'ethers';
 import networkConnector from 'utils/networkConnector';
 import { MAX_GAS_LIMIT } from 'constants/network';
 import ApprovalModal from 'components/ApprovalModal';
-import marketContract from 'utils/contracts/exoticPositionalMarketContract';
+import marketContract from 'utils/contracts/exoticPositionalOpenBidMarketContract';
 import usePaymentTokenBalanceQuery from 'queries/wallet/usePaymentTokenBalanceQuery';
 import onboardConnector from 'utils/onboardConnector';
-import useAccountMarketDataQuery from 'queries/markets/useAccountMarketDataQuery';
+import useAccountMarketOpenBidDataQuery from 'queries/markets/useAccountMarketOpenBidDataQuery';
 import { toast } from 'react-toastify';
 import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
 import { getRoi } from 'utils/markets';
@@ -27,11 +27,11 @@ import useMarketsParametersQuery from 'queries/markets/useMarketsParametersQuery
 import Tooltip from 'components/Tooltip';
 import { refetchMarketData } from 'utils/queryConnector';
 
-type PositioningPhaseProps = {
+type PositioningPhaseOpenBidProps = {
     market: MarketData;
 };
 
-const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
+const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ market }) => {
     const { t } = useTranslation();
     const networkId = useSelector((state: RootState) => getNetworkId(state));
     const isAppReady = useSelector((state: RootState) => getIsAppReady(state));
@@ -44,24 +44,29 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
     const [isCanceling, setIsCanceling] = useState<boolean>(false);
     const [openApprovalModal, setOpenApprovalModal] = useState<boolean>(false);
     const [paymentTokenBalance, setPaymentTokenBalance] = useState<number | string>('');
-    const [selectedPosition, setSelectedPosition] = useState<number>(0);
+    const [selectedPositions, setSelectedPositions] = useState<number[]>(new Array(market.positions.length).fill(0));
     // we need two positionOnContract, one is set on success, the second one only from query
-    const [currentPositionOnContract, setCurrentPositionOnContract] = useState<number>(0);
-    const [positionOnContract, setPositionOnContract] = useState<number>(0);
+    const [currentPositionsOnContract, setCurrentPositionsOnContract] = useState<number[]>(
+        new Array(market.positions.length).fill(0)
+    );
+    const [positionsOnContract, setPositionsOnContract] = useState<number[]>(
+        new Array(market.positions.length).fill(0)
+    );
     const [winningAmount, setWinningAmount] = useState<number>(0);
     const [canWithdraw, setCanWithdraw] = useState<boolean>(false);
+    const [marketsParameters, setMarketsParameters] = useState<MarketsParameters | undefined>(undefined);
 
-    const accountMarketDataQuery = useAccountMarketDataQuery(market.address, walletAddress, {
+    const accountMarketDataQuery = useAccountMarketOpenBidDataQuery(market.address, walletAddress, {
         enabled: isAppReady && isWalletConnected,
     });
 
     useEffect(() => {
         if (accountMarketDataQuery.isSuccess && accountMarketDataQuery.data) {
-            setCurrentPositionOnContract((accountMarketDataQuery.data as AccountMarketData).position);
-            setPositionOnContract((accountMarketDataQuery.data as AccountMarketData).position);
-            setWinningAmount((accountMarketDataQuery.data as AccountMarketData).winningAmount);
-            setSelectedPosition((accountMarketDataQuery.data as AccountMarketData).position);
-            setCanWithdraw((accountMarketDataQuery.data as AccountMarketData).canWithdraw);
+            setCurrentPositionsOnContract(accountMarketDataQuery.data.userPositions);
+            setPositionsOnContract(accountMarketDataQuery.data.userPositions);
+            setWinningAmount(accountMarketDataQuery.data.winningAmount);
+            setSelectedPositions(accountMarketDataQuery.data.userPositions);
+            setCanWithdraw(accountMarketDataQuery.data.canWithdraw);
         }
     }, [accountMarketDataQuery.isSuccess, accountMarketDataQuery.data]);
 
@@ -70,7 +75,7 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
     });
 
     useEffect(() => {
-        if (paymentTokenBalanceQuery.isSuccess) {
+        if (paymentTokenBalanceQuery.isSuccess && paymentTokenBalanceQuery.data !== undefined) {
             setPaymentTokenBalance(paymentTokenBalanceQuery.data);
         }
     }, [paymentTokenBalanceQuery.isSuccess, paymentTokenBalanceQuery.data]);
@@ -79,11 +84,10 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
         enabled: isAppReady,
     });
 
-    const marketsParameters: MarketsParameters | undefined = useMemo(() => {
+    useEffect(() => {
         if (marketsParametersQuery.isSuccess && marketsParametersQuery.data) {
-            return marketsParametersQuery.data as MarketsParameters;
+            setMarketsParameters(marketsParametersQuery.data);
         }
-        return undefined;
     }, [marketsParametersQuery.isSuccess, marketsParametersQuery.data]);
 
     const creatorPercentage = marketsParameters ? marketsParameters.creatorPercentage : 0;
@@ -92,15 +96,16 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
     const bidPercentage = creatorPercentage + resolverPercentage + safeBoxPercentage;
     const withdrawalPercentage = marketsParameters ? marketsParameters.withdrawalPercentage : 0;
 
-    const showTicketInfo = market.isTicketType && market.canUsersPlacePosition;
-    const showTicketBid = showTicketInfo && currentPositionOnContract === 0;
-    const showTicketChangePosition = showTicketInfo && currentPositionOnContract !== selectedPosition;
-    const showTicketWithdraw = showTicketInfo && canWithdraw && currentPositionOnContract > 0;
+    const showTicketInfo = market.canUsersPlacePosition;
+    const showTicketBid = showTicketInfo && currentPositionsOnContract.every((position) => Number(position) === 0);
+    // const showTicketChangePosition = showTicketInfo && currentPositionOnContract !== selectedPosition;
+    const showTicketWithdraw =
+        showTicketInfo && canWithdraw && currentPositionsOnContract.some((position) => Number(position) > 0);
     const showCancel = market.canCreatorCancelMarket && walletAddress.toLowerCase() === market.creator.toLowerCase();
 
     const insufficientBalance =
         Number(paymentTokenBalance) < Number(market.ticketPrice) || Number(paymentTokenBalance) === 0;
-    const isPositionSelected = selectedPosition > 0;
+    const isPositionSelected = selectedPositions.some((position) => Number(position) > 0);
 
     const isBidButtonDisabled =
         isBidding ||
@@ -110,8 +115,8 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
         !hasAllowance ||
         insufficientBalance ||
         !isPositionSelected;
-    const isChangePositionButtonDisabled =
-        isBidding || isWithdrawing || isCanceling || !isWalletConnected || !isPositionSelected;
+    // const isChangePositionButtonDisabled =
+    //     isBidding || isWithdrawing || isCanceling || !isWalletConnected || !isPositionSelected;
     const isWithdrawButtonDisabled = isBidding || isWithdrawing || isCanceling || !isWalletConnected;
     const isCancelButtonDisabled = isBidding || isWithdrawing || isCanceling || !isWalletConnected;
 
@@ -180,7 +185,17 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
             try {
                 const marketContractWithSigner = new ethers.Contract(market.address, marketContract.abi, signer);
 
-                const tx = await marketContractWithSigner.takeAPosition(selectedPosition);
+                const formattedPositions: number[] = [];
+                const formattedAmounts: BigNumberish[] = [];
+
+                selectedPositions.forEach((position, index) => {
+                    if (Number(position) > 0) {
+                        formattedPositions.push(index + 1);
+                        formattedAmounts.push(ethers.utils.parseEther(Number(position).toString()));
+                    }
+                });
+
+                const tx = await marketContractWithSigner.takeOpenBidPositions(formattedPositions, formattedAmounts);
                 const txResult = await tx.wait();
 
                 if (txResult && txResult.transactionHash) {
@@ -196,7 +211,7 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
                         )
                     );
                     setIsBidding(false);
-                    setCurrentPositionOnContract(selectedPosition);
+                    setCurrentPositionsOnContract(selectedPositions);
                 }
             } catch (e) {
                 console.log(e);
@@ -222,8 +237,8 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
                     refetchMarketData(market.address, walletAddress);
                     toast.update(id, getSuccessToastOptions(t('market.toast-messsage.withdraw-success')));
                     setIsWithdrawing(false);
-                    setCurrentPositionOnContract(0);
-                    setSelectedPosition(0);
+                    setCurrentPositionsOnContract(new Array(market.positions.length).fill(0));
+                    setSelectedPositions(new Array(market.positions.length).fill(0));
                 }
             } catch (e) {
                 console.log(e);
@@ -300,13 +315,13 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
         }
         return (
             <>
-                {showTicketChangePosition && (
+                {/* {showTicketChangePosition && (
                     <MarketButton type="secondary" disabled={isChangePositionButtonDisabled} onClick={handleBid}>
                         {!isBidding
                             ? t('market.button.change-position-label')
                             : t('market.button.change-position-progress-label')}
                     </MarketButton>
-                )}
+                )} */}
                 {showTicketWithdraw && (
                     <MarketButton type="secondary" disabled={isWithdrawButtonDisabled} onClick={handleWithdraw}>
                         {!isWithdrawing
@@ -325,9 +340,13 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
                     <PositionContainer
                         key={position}
                         className={`${isBidding || isWithdrawing ? 'disabled' : ''} ${
-                            index + 1 === selectedPosition ? 'selected' : ''
+                            Number(selectedPositions[index] > 0) ? 'selected' : ''
                         }`}
-                        onClick={() => setSelectedPosition(index + 1)}
+                        onClick={() => {
+                            const newSelectedPositions = [...selectedPositions];
+                            newSelectedPositions[index] = 10;
+                            setSelectedPositions(newSelectedPositions);
+                        }}
                     >
                         <PositionLabel>{position}</PositionLabel>
                         <Info>
@@ -347,11 +366,15 @@ const PositioningPhase: React.FC<PositioningPhaseProps> = ({ market }) => {
                                 {formatPercentage(
                                     getRoi(
                                         market.ticketPrice,
-                                        positionOnContract === 0
-                                            ? market.winningAmountsNewUser[index]
-                                            : positionOnContract === index + 1
+                                        positionsOnContract.some((position) => Number(position) > 0)
+                                            ? market.fixedMarketData
+                                                ? market.fixedMarketData.winningAmountsNewUser[index]
+                                                : 0
+                                            : Number(positionsOnContract[index] > 0)
                                             ? winningAmount
-                                            : market.winningAmountsNoPosition[index],
+                                            : market.fixedMarketData
+                                            ? market.fixedMarketData.winningAmountsNoPosition[index]
+                                            : 0,
                                         true
                                     )
                                 )}
@@ -463,4 +486,4 @@ const RoiOverlayContainer = styled(FlexDivColumn)`
     text-align: justify;
 `;
 
-export default PositioningPhase;
+export default PositioningPhaseOpenBid;

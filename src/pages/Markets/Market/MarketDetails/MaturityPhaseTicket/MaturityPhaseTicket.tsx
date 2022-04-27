@@ -2,17 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { FlexDivCentered, FlexDivColumn } from 'styles/common';
-import { AccountMarketData, MarketData } from 'types/markets';
+import { AccountMarketTicketData, MarketData } from 'types/markets';
 import { formatCurrencyWithKey, formatPercentage } from 'utils/formatters/number';
 import { PAYMENT_CURRENCY, DEFAULT_CURRENCY_DECIMALS } from 'constants/currency';
 import { RootState } from 'redux/rootReducer';
 import { getIsAppReady } from 'redux/modules/app';
 import { getIsWalletConnected, getWalletAddress } from 'redux/modules/wallet';
 import { useSelector } from 'react-redux';
-import useAccountMarketDataQuery from 'queries/markets/useAccountMarketDataQuery';
+import useAccountMarketTicketDataQuery from 'queries/markets/useAccountMarketTicketDataQuery';
 import onboardConnector from 'utils/onboardConnector';
 import networkConnector from 'utils/networkConnector';
-import marketContract from 'utils/contracts/exoticPositionalMarketContract';
+import marketContract from 'utils/contracts/exoticPositionalTicketMarketContract';
 import { ethers } from 'ethers';
 import Button from 'components/Button';
 import { MarketStatus } from 'constants/markets';
@@ -23,26 +23,26 @@ import { Info, InfoContent, InfoLabel, MainInfo, PositionContainer, PositionLabe
 import { refetchMarketData } from 'utils/queryConnector';
 import Tooltip from 'components/Tooltip';
 
-type MaturityPhaseProps = {
+type MaturityPhaseTicketProps = {
     market: MarketData;
 };
 
-const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
+const MaturityPhaseTicket: React.FC<MaturityPhaseTicketProps> = ({ market }) => {
     const { t } = useTranslation();
     const isAppReady = useSelector((state: RootState) => getIsAppReady(state));
     const walletAddress = useSelector((state: RootState) => getWalletAddress(state)) || '';
     const isWalletConnected = useSelector((state: RootState) => getIsWalletConnected(state));
-    const [accountMarketData, setAccountMarketData] = useState<AccountMarketData | undefined>(undefined);
+    const [accountMarketData, setAccountMarketData] = useState<AccountMarketTicketData | undefined>(undefined);
     const [isClaiming, setIsClaiming] = useState<boolean>(false);
     const [isDistributing, setIsDistributing] = useState<boolean>(false);
 
-    const accountMarketDataQuery = useAccountMarketDataQuery(market.address, walletAddress, {
+    const accountMarketDataQuery = useAccountMarketTicketDataQuery(market.address, walletAddress, {
         enabled: isAppReady && isWalletConnected,
     });
 
     useEffect(() => {
         if (accountMarketDataQuery.isSuccess && accountMarketDataQuery.data) {
-            setAccountMarketData(accountMarketDataQuery.data as AccountMarketData);
+            setAccountMarketData(accountMarketDataQuery.data);
         }
     }, [accountMarketDataQuery.isSuccess, accountMarketDataQuery.data]);
 
@@ -213,7 +213,7 @@ const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
                                 <InfoContent>
                                     {formatCurrencyWithKey(
                                         PAYMENT_CURRENCY,
-                                        market.winningAmountPerTicket,
+                                        market.fixedMarketData ? market.fixedMarketData.winningAmountPerTicket : 0,
                                         DEFAULT_CURRENCY_DECIMALS,
                                         true
                                     )}
@@ -227,8 +227,9 @@ const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
                                     {formatPercentage(
                                         getRoi(
                                             market.ticketPrice,
-                                            market.winningAmountPerTicket,
-                                            market.winningAmountPerTicket > 0
+                                            market.fixedMarketData ? market.fixedMarketData.winningAmountPerTicket : 0,
+                                            !!market.fixedMarketData &&
+                                                market.fixedMarketData.winningAmountPerTicket > 0
                                         )
                                     )}
                                 </InfoContent>
@@ -280,29 +281,31 @@ const MaturityPhase: React.FC<MaturityPhaseProps> = ({ market }) => {
                             )}
                         </>
                     )}
-                    {market.canIssueFees ? (
-                        <DistributeButton
-                            disabled={isClaiming || isDistributing}
-                            onClick={handleDistribute}
-                            type="secondary"
-                        >
-                            {!isDistributing
-                                ? t(
-                                      `market.button.${
-                                          isCancelled ? 'distribute-bonds-label' : 'distribute-fees-bonds-label'
+                    {market.canIssueFees
+                        ? isWalletConnected && (
+                              <DistributeButton
+                                  disabled={isClaiming || isDistributing}
+                                  onClick={handleDistribute}
+                                  type="secondary"
+                              >
+                                  {!isDistributing
+                                      ? t(
+                                            `market.button.${
+                                                isCancelled ? 'distribute-bonds-label' : 'distribute-fees-bonds-label'
+                                            }`
+                                        )
+                                      : t('market.button.distribute-progress-label')}
+                              </DistributeButton>
+                          )
+                        : (isCreator || isResolver) && (
+                              <NothingToClaim marginTop={15}>
+                                  {t(
+                                      `market.${
+                                          isCancelled ? 'bonds-distributed-label' : 'fees-bonds-distributed-label'
                                       }`
-                                  )
-                                : t('market.button.distribute-progress-label')}
-                        </DistributeButton>
-                    ) : (
-                        (isCreator || isResolver) && (
-                            <NothingToClaim marginTop={15}>
-                                {t(
-                                    `market.${isCancelled ? 'bonds-distributed-label' : 'fees-bonds-distributed-label'}`
-                                )}
-                            </NothingToClaim>
-                        )
-                    )}
+                                  )}
+                              </NothingToClaim>
+                          )}
                 </FeesContainer>
             )}
             <ButtonContainer>
@@ -377,4 +380,4 @@ const NoWinnersOverlayContainer = styled(FlexDivColumn)`
     text-align: justify;
 `;
 
-export default MaturityPhase;
+export default MaturityPhaseTicket;

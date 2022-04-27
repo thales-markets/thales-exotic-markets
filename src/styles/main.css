@@ -143,6 +143,20 @@ table {
     font-family: 'Nunito' !important;
     font-style: normal;
     -webkit-tap-highlight-color: transparent;
+    scrollbar-color: #f6f6fe #c4b3d0;
+    scrollbar-width: thin;
+}
+
+*::-webkit-scrollbar {
+    border-radius: 8px;
+    width: 10px;
+}
+*::-webkit-scrollbar-track {
+    background: #c4b3d0;
+}
+*::-webkit-scrollbar-thumb {
+    border-radius: 8px;
+    background: #f6f6fe;
 }
 
 input::-webkit-outer-spin-button,

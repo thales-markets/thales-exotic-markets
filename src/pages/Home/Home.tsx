@@ -57,13 +57,13 @@ const DappButtonContainer = styled(FlexDivRow)`
 `;
 
 const RightIcon = styled.i`
-    font-size: 25px;
+    font-size: 28px;
     font-weight: 700;
     margin-left: 10px;
-    margin-top: -1px;
+    margin-top: -2px;
     &:before {
-        font-family: HomepageIcons !important;
-        content: '\\004a';
+        font-family: ExoticIcons !important;
+        content: '\\004B';
         color: ${(props) => props.theme.button.textColor.primary};
     }
 `;
