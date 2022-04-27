@@ -295,7 +295,7 @@ const CreateMarket: React.FC = () => {
                     const rawData = txResult.events[txResult.events.length - 1];
                     if (rawData && rawData.decode) {
                         const marketData = rawData.decode(rawData.data);
-                        navigateTo(buildMarketLink(marketData.marketAddress));
+                        navigateTo(buildMarketLink(marketData.marketAddress, true));
                     }
                 }
             } catch (e) {

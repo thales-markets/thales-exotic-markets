@@ -13,8 +13,8 @@ export const navigateTo = (path: string, replacePath = false, scrollToTop = fals
 
 export const buildHref = (route: string) => `${ifIpfsDeployment ? '#' : ''}${route}`;
 
-export const buildMarketLink = (marketAddress: string) =>
-    `${ifIpfsDeployment ? '#' : ''}${ROUTES.Markets.Home}/${marketAddress}`;
+export const buildMarketLink = (marketAddress: string, excludeSlash = false) =>
+    `${ifIpfsDeployment && !excludeSlash ? '#' : ''}${ROUTES.Markets.Home}/${marketAddress}`;
 
 export const buildOpenDisputeLink = (marketAddress: string) => `${buildMarketLink(marketAddress)}/open-dispute`;
 

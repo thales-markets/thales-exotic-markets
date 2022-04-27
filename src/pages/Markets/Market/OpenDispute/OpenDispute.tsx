@@ -192,7 +192,7 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
                 if (txResult && txResult.transactionHash) {
                     toast.update(id, getSuccessToastOptions(t('market.toast-messsage.open-dispute-success')));
                     setIsSubmitting(false);
-                    navigateTo(buildMarketLink(marketAddress));
+                    navigateTo(buildMarketLink(marketAddress, true));
                 }
             } catch (e) {
                 console.log(e);
