@@ -5,11 +5,11 @@
     },
     {
         "text": "Market has to be mainstream and verifiable via data sources parameter",
-        "tooltip": "Definition of Mainstream - something that is recognized internationally or recognized industry wide within one of the available tags"
+        "tooltip": "Definition of Mainstream\n \n - something that is recognized internationally or recognized industry wide within one of the available tags"
     },
     {
         "text": "The list of available positions has to be mutually fully exclusive and capture the full range of potential outcomes",
-        "tooltip": "eg market question: Will the price of ETH be above or below $10000 USD on July 15th? \n - Above\n - Below\n \n Doesn't capture the full range of outcomes since ETH could be exactly $10000 on July 15th"
+        "tooltip": "eg market question: Will the price of ETH be above or below $10000 USD on July 15th? \n - Above\n - Below\n \n Doesn't capture the full range of outcomes since ETH could be exactly $10000 on July 15th 00:00 UTC"
     },
     {
         "text": "End of positioning phase has to be before the event actually starts",
@@ -29,7 +29,7 @@
     },
     {
         "text": "Markets that are trivially manipulatable like easily inflatable statistics are not allowed",
-        "tooltip": "eg market question: Will Elon Musk have 20M Twitter followers by xx/xx/xx date? (This would be an unacceptable market since some one can create a bot that makes millions of Twitter accounts and follows Elon from all of them)"
+        "tooltip": "eg market question: Will Elon Musk have 20M Twitter followers by xx/xx/xx date?\n (This would be an unacceptable market since some one can create a bot that makes millions of Twitter accounts and follows Elon from all of them)"
     },
     {
         "text": "No morbid, racist, death related markets or otherwise malicious markets are allowed and will be disputed and slashed",
@@ -49,7 +49,7 @@
     },
     {
         "text": "Data source must be a URL link and specific to the event or market that is being tracked and shouldn't be generic",
-        "tooltip": "For a Basketball event, the link should reflect the game being tracked and not just 'NBA.com' for example'\n \n For a crypto market, the URL must point to the asset being tracked like [coinbase.com/ETH-USD] and not simply [coinbase.com] for example" 
+        "tooltip": "Eg:\n For a Basketball event, the link should reflect the game being tracked and not just [NBA.com]\n \n Eg:\n For a crypto market, the URL must point to the asset being tracked like [coinbase.com/ETH-USD] and not simply [coinbase.com]\n \n The same applies to any other event or market question related to any of the available tags" 
     },
     {
         "text": "Markets may be resolved as soon as theoretically possible, but cannot be resolved before this threshold is met",
