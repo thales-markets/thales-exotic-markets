@@ -356,7 +356,7 @@ const CreateMarket: React.FC = () => {
         }
         if (!hasAllowance) {
             return (
-                <CreateMarketButton disabled={isAllowing} onClick={handleSubmit}>
+                <CreateMarketButton disabled={isAllowing} onClick={() => setOpenApprovalModal(true)}>
                     {!isAllowing
                         ? t('common.enable-wallet-access.approve-label', { currencyKey: PAYMENT_CURRENCY })
                         : t('common.enable-wallet-access.approve-progress-label', {
@@ -366,7 +366,7 @@ const CreateMarket: React.FC = () => {
             );
         }
         return (
-            <CreateMarketButton disabled={isButtonDisabled} onClick={() => setOpenCreateMarketModal(true)}>
+            <CreateMarketButton disabled={isButtonDisabled} onClick={handleSubmit}>
                 {!isSubmitting
                     ? t('market.create-market.button.create-market-label')
                     : t('market.create-market.button.create-market-progress-label')}
