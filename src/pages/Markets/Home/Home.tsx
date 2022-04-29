@@ -56,7 +56,8 @@ const Home: React.FC = () => {
 
     const sortOptions: SortOptionType[] = [
         { id: 1, title: t('market.time-remaining-label') },
-        // { id: 2, title: t('market.question-label') },
+        { id: 2, title: t('market.pool-size-label') },
+        { id: 3, title: t('market.ticket-price-label') },
     ];
 
     const allTagsFilterItem: TagInfo = {
@@ -205,7 +206,9 @@ const Home: React.FC = () => {
                 case 1:
                     return sortByField(a, b, sortDirection, 'endOfPositioning');
                 case 2:
-                    return sortByField(a, b, sortDirection, 'question');
+                    return sortByField(a, b, sortDirection, 'poolSize');
+                case 3:
+                    return sortByField(a, b, sortDirection, 'ticketPrice');
                 default:
                     return 0;
             }
@@ -274,6 +277,20 @@ const Home: React.FC = () => {
                             </GlobalFilter>
                         );
                     })}
+                </GlobalFiltersContainer>
+                <ToggleContainer>
+                    <Toggle
+                        isLeftOptionSelected={showOpenMarkets}
+                        onClick={() => {
+                            setShowOpenMarkets(!showOpenMarkets);
+                        }}
+                        leftText={t('market.open-markets-label')}
+                        rightText={t('market.resolved-markets-label')}
+                    />
+                </ToggleContainer>
+            </FiltersContainer>
+            <FiltersContainer>
+                <GlobalFiltersContainer>
                     {sortOptions.map((sortOption) => {
                         return (
                             <SortOption
@@ -288,16 +305,17 @@ const Home: React.FC = () => {
                         );
                     })}
                 </GlobalFiltersContainer>
-                <ToggleContainer>
-                    <Toggle
-                        isLeftOptionSelected={showOpenMarkets}
-                        onClick={() => {
-                            setShowOpenMarkets(!showOpenMarkets);
-                        }}
-                        leftText={t('market.open-markets-label')}
-                        rightText={t('market.resolved-markets-label')}
-                    />
-                </ToggleContainer>
+                {!creationRestrictedToOwner && (
+                    <ButtonsContainer>
+                        <Button
+                            onClick={() => {
+                                navigateTo(ROUTES.Markets.CreateMarket);
+                            }}
+                        >
+                            {t('market.button.create-market-label')}
+                        </Button>
+                    </ButtonsContainer>
+                )}
             </FiltersContainer>
             <FiltersContainer>
                 <TagsContainer>
@@ -315,17 +333,6 @@ const Home: React.FC = () => {
                         );
                     })}
                 </TagsContainer>
-                {!creationRestrictedToOwner && (
-                    <ButtonsContainer>
-                        <Button
-                            onClick={() => {
-                                navigateTo(ROUTES.Markets.CreateMarket);
-                            }}
-                        >
-                            {t('market.button.create-market-label')}
-                        </Button>
-                    </ButtonsContainer>
-                )}
             </FiltersContainer>
             {marketsQuery.isLoading ? (
                 <LoaderContainer>
@@ -371,7 +378,7 @@ const ToggleContainer = styled(FlexDivColumn)`
         font-size: 15px;
         line-height: 102.6%;
         padding-bottom: 5px;
-        margin-bottom: 10px;
+        margin-bottom: 5px;
         height: 36px;
         align-items: center;
     }

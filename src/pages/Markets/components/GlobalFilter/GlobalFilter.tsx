@@ -39,7 +39,7 @@ const Container = styled(FlexDivRowCentered)`
     color: ${(props) => props.theme.textColor.primary};
     margin-right: 30px;
     padding-bottom: 5px;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
 `;
 
 const Label = styled.div`

@@ -92,7 +92,7 @@ const CreateMarket: React.FC = () => {
     const [suggestions, setSuggestions] = useState<Tag[]>([]);
     const [paymentTokenBalance, setPaymentTokenBalance] = useState<number | string>('');
     const [openApprovalModal, setOpenApprovalModal] = useState<boolean>(false);
-    const [openCreateMarketModal, setOpenCreateMarketModal] = useState<boolean>(false);
+    const [openCreateMarketModal, setOpenCreateMarketModal] = useState<boolean>(true);
     const [minTime, setMinTime] = useState<Date>(DATE_PICKER_MIN_DATE);
     const [minDate, setMinDate] = useState<Date>(DATE_PICKER_MIN_DATE);
     const [maxTime, setMaxTime] = useState<Date>(DATE_PICKER_MAX_DATE);
@@ -295,7 +295,7 @@ const CreateMarket: React.FC = () => {
                     const rawData = txResult.events[txResult.events.length - 1];
                     if (rawData && rawData.decode) {
                         const marketData = rawData.decode(rawData.data);
-                        navigateTo(buildMarketLink(marketData.marketAddress));
+                        navigateTo(buildMarketLink(marketData.marketAddress, true));
                     }
                 }
             } catch (e) {
@@ -356,7 +356,7 @@ const CreateMarket: React.FC = () => {
         }
         if (!hasAllowance) {
             return (
-                <CreateMarketButton disabled={isAllowing} onClick={() => setOpenApprovalModal(true)}>
+                <CreateMarketButton disabled={isAllowing} onClick={handleSubmit}>
                     {!isAllowing
                         ? t('common.enable-wallet-access.approve-label', { currencyKey: PAYMENT_CURRENCY })
                         : t('common.enable-wallet-access.approve-progress-label', {
@@ -625,7 +625,6 @@ const CreateMarket: React.FC = () => {
             {openCreateMarketModal && (
                 <CreateMarketModal
                     isSubmitting={isSubmitting}
-                    onSubmit={handleSubmit}
                     onClose={() => setOpenCreateMarketModal(false)}
                     fixedBondAmount={fixedBondAmount}
                 />
