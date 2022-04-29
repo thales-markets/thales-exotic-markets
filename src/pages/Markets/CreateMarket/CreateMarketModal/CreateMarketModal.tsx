@@ -14,17 +14,11 @@ import { DEFAULT_CURRENCY_DECIMALS, PAYMENT_CURRENCY } from 'constants/currency'
 
 type CreateMarketModalProps = {
     isSubmitting: boolean;
-    onSubmit: () => void;
     onClose: () => void;
     fixedBondAmount: number | string;
 };
 
-export const CreateMarketModal: React.FC<CreateMarketModalProps> = ({
-    isSubmitting,
-    onSubmit,
-    onClose,
-    fixedBondAmount,
-}) => {
+export const CreateMarketModal: React.FC<CreateMarketModalProps> = ({ isSubmitting, onClose, fixedBondAmount }) => {
     const { t } = useTranslation();
     const isWalletConnected = useSelector((state: RootState) => getIsWalletConnected(state));
 
@@ -39,13 +33,7 @@ export const CreateMarketModal: React.FC<CreateMarketModalProps> = ({
             );
         }
         return (
-            <ModalButton
-                disabled={isButtonDisabled}
-                onClick={() => {
-                    onClose();
-                    onSubmit();
-                }}
-            >
+            <ModalButton disabled={isButtonDisabled} onClick={onClose}>
                 {t('market.create-market.modal.button-label')}
             </ModalButton>
         );
