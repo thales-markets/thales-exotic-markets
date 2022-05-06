@@ -52,9 +52,9 @@ const NumericInput: React.FC<NumericInputProps> = ({
     };
 
     return (
-        <FieldContainer>
+        <FieldContainer className="field-container">
             {label && (
-                <FieldLabel>
+                <FieldLabel className="field-label">
                     {label}
                     {tooltip && (
                         <Tooltip
@@ -83,7 +83,11 @@ const NumericInput: React.FC<NumericInputProps> = ({
                 max={max || 'any'}
                 step={step || 'any'}
             />
-            {currencyLabel && <CurrencyLabel className={disabled ? 'disabled' : ''}>{currencyLabel}</CurrencyLabel>}
+            {currencyLabel && (
+                <CurrencyLabel className={`currency-label ${disabled ? 'disabled' : ''}`}>
+                    {currencyLabel}
+                </CurrencyLabel>
+            )}
             <FieldValidationMessage showValidation={showValidation} message={validationMessage} />
             {note && <FieldNote>{note}</FieldNote>}
         </FieldContainer>

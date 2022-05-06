@@ -85,6 +85,12 @@ export const PositionContainer = styled(FlexDivColumn)`
     }
 `;
 
+export const PositionOpenBidContainer = styled(PositionContainer)`
+    :hover:not(.disabled):not(.maturity) {
+        transform: none;
+    }
+`;
+
 export const Position = styled.span`
     align-self: center;
     display: block;
