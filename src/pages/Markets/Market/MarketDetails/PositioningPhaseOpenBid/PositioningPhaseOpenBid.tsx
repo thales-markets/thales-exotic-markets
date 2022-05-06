@@ -221,7 +221,7 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
         }
     };
 
-    const handleWithdraw = async () => {
+    const handleWithdraw = async (position: number) => {
         const { signer } = networkConnector;
         if (signer) {
             const id = toast.loading(t('market.toast-messsage.transaction-pending'));
@@ -230,7 +230,7 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
             try {
                 const marketContractWithSigner = new ethers.Contract(market.address, marketContract.abi, signer);
 
-                const tx = await marketContractWithSigner.withdraw();
+                const tx = await marketContractWithSigner.withdraw(position);
                 const txResult = await tx.wait();
 
                 if (txResult && txResult.transactionHash) {
@@ -323,7 +323,11 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                     </MarketButton>
                 )}
                 {showWithdraw && (
-                    <MarketButton type="secondary" disabled={isWithdrawButtonDisabled} onClick={handleWithdraw}>
+                    <MarketButton
+                        type="secondary"
+                        disabled={isWithdrawButtonDisabled}
+                        onClick={() => handleWithdraw(0)}
+                    >
                         {!isWithdrawing
                             ? t('market.button.withdraw-label')
                             : t('market.button.withdraw-progress-label')}
@@ -354,6 +358,8 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                             }}
                             currencyLabel={PAYMENT_CURRENCY}
                             selected={Number(selectedPositions[index]) > 0}
+                            showWithdraw={showWithdraw && Number(currentPositionsOnContract[index]) > 0}
+                            onWithdrawClick={() => handleWithdraw(index + 1)}
                         />
                         <Info>
                             <InfoLabel>{t('market.pool-size-label')}:</InfoLabel>

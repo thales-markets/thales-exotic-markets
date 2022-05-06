@@ -86,6 +86,7 @@ export const PositionContainer = styled(FlexDivColumn)`
 `;
 
 export const PositionOpenBidContainer = styled(PositionContainer)`
+    cursor: default;
     :hover:not(.disabled):not(.maturity) {
         transform: none;
     }
