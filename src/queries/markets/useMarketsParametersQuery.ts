@@ -40,6 +40,7 @@ const useMarketsParametersQuery = (networkId: NetworkId, options?: UseQueryOptio
                     marketQuestionStringLimit: MAXIMUM_INPUT_CHARACTERS,
                     marketSourceStringLimit: MAXIMUM_INPUT_CHARACTERS,
                     marketPositionStringLimit: MAXIMUM_INPUT_CHARACTERS,
+                    openBidAllowed: false,
                 };
                 const marketManagerContract = networkConnector.marketManagerContract;
                 if (marketManagerContract) {
@@ -62,6 +63,7 @@ const useMarketsParametersQuery = (networkId: NetworkId, options?: UseQueryOptio
                         marketQuestionStringLimit,
                         marketSourceStringLimit,
                         marketPositionStringLimit,
+                        openBidAllowed,
                     ] = await Promise.all([
                         marketManagerContract.fixedBondAmount(),
                         marketManagerContract.maximumPositionsAllowed(),
@@ -81,6 +83,7 @@ const useMarketsParametersQuery = (networkId: NetworkId, options?: UseQueryOptio
                         marketManagerContract.marketQuestionStringLimit(),
                         marketManagerContract.marketSourceStringLimit(),
                         marketManagerContract.marketPositionStringLimit(),
+                        marketManagerContract.openBidAllowed(),
                     ]);
 
                     marketsParameters.fixedBondAmount = bigNumberFormatter(fixedBondAmount);
@@ -109,6 +112,7 @@ const useMarketsParametersQuery = (networkId: NetworkId, options?: UseQueryOptio
                     marketsParameters.marketPositionStringLimit = Math.round(
                         Number(marketPositionStringLimit) / POSITION_LENGTH_MULTIPLIER
                     );
+                    marketsParameters.openBidAllowed = openBidAllowed;
                 }
 
                 return marketsParameters;

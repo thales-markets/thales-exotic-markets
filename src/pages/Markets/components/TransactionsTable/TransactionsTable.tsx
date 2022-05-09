@@ -52,7 +52,11 @@ export const TransactionsTable: FC<TransactionsTableProps> = memo(({ transaction
                         sortType: 'basic',
                         accessor: 'amount',
                         Cell: (cellProps: CellProps<MarketTransaction, MarketTransaction['amount']>) => (
-                            <p>{formatCurrencyWithKey(PAYMENT_CURRENCY, cellProps.cell.value)}</p>
+                            <p>
+                                {Number(cellProps.cell.value) > 0
+                                    ? formatCurrencyWithKey(PAYMENT_CURRENCY, cellProps.cell.value)
+                                    : '-'}
+                            </p>
                         ),
                         width: 150,
                         sortable: true,

@@ -42,7 +42,9 @@ const useAccountMarketOpenBidDataQuery = (
                         contractWithSigner.canUserWithdraw(walletAddress),
                         contractWithSigner.userAlreadyClaimed(walletAddress),
                     ]);
-                    marketData.userPositions = userPositions.map((userPosition: BigNumberish) => Number(userPosition));
+                    marketData.userPositions = userPositions.map((userPosition: BigNumberish) =>
+                        bigNumberFormatter(userPosition)
+                    );
                     marketData.claimAmount = bigNumberFormatter(claimAmount);
                     marketData.canClaim = canClaim;
                     marketData.winningAmount = bigNumberFormatter(winningAmount);
