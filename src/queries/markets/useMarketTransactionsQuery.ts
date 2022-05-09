@@ -27,7 +27,12 @@ const useMarketTransactionsQuery = (
                 const marketPositions = marketData[10];
 
                 const mappedMarketTransactions = marketTransactions.map((tx: MarketTransaction) => {
-                    tx.position = marketPositions[Number(tx.position) - 1];
+                    tx.position =
+                        tx.type === 'resetMarketResult' || tx.type === 'claimRefund' || tx.type === 'openDispute'
+                            ? '-'
+                            : Number(tx.position) === 0
+                            ? 'Cancel'
+                            : marketPositions[Number(tx.position) - 1];
                     return tx;
                 });
 

@@ -53,6 +53,7 @@ import { FieldLabel, OverlayContainer } from 'components/fields/common';
 import Tooltip from 'components/Tooltip';
 import CreateMarketModal from './CreateMarketModal';
 import { isValidHttpsUrl } from 'utils/markets';
+import BidInput from 'components/fields/BidInput';
 
 const calculateMinTime = (currentDate: Date, minDate: Date) => {
     const isMinDateCurrentDate = isSameDay(currentDate, minDate);
@@ -99,6 +100,7 @@ const CreateMarket: React.FC = () => {
     const [maxDate, setMaxDate] = useState<Date>(DATE_PICKER_MAX_DATE);
     const [isTicketPriceValid, setIsTicketPriceValid] = useState<boolean>(true);
     const [initialPosition, setInitialPosition] = useState<number>(0);
+    const [initialPositions, setInitialPositions] = useState<number[]>(new Array(2).fill(0));
     const [marketsParameters, setMarketsParameters] = useState<MarketsParameters | undefined>(undefined);
 
     const marketsParametersQuery = useMarketsParametersQuery(networkId, {
@@ -174,6 +176,8 @@ const CreateMarket: React.FC = () => {
         ? marketsParameters.marketPositionStringLimit
         : MAXIMUM_INPUT_CHARACTERS;
 
+    const openBidAllowed = marketsParameters && marketsParameters.openBidAllowed;
+
     const isQuestionEntered = question.trim() !== '';
     const isDataSourceEntered = dataSource.trim() !== '';
     const isDataSourceValid = dataSource.trim() === '' || isValidHttpsUrl(dataSource);
@@ -181,10 +185,15 @@ const CreateMarket: React.FC = () => {
         (marketType === MarketType.TICKET && Number(ticketPrice) > 0) || marketType === MarketType.OPEN_BID;
     const arePositionsEntered = positions.every((position) => position.trim() !== '');
     const areTagsEntered = tags.length > 0;
-    const isInitialPositionSelected = initialPosition > 0;
+    const isInitialPositionSelected =
+        (initialPosition > 0 && marketType === MarketType.TICKET) ||
+        (initialPositions.some((position) => Number(position) > 0) && marketType === MarketType.OPEN_BID);
 
+    const initialPositionsSum = initialPositions.reduce((a, b) => a + b, 0);
     const requiredFunds =
-        marketType === MarketType.TICKET ? Number(fixedBondAmount) + Number(ticketPrice) : Number(fixedBondAmount);
+        marketType === MarketType.TICKET
+            ? Number(fixedBondAmount) + Number(ticketPrice)
+            : Number(fixedBondAmount) + Number(initialPositionsSum);
     const insufficientBalance = Number(paymentTokenBalance) < requiredFunds || Number(paymentTokenBalance) === 0;
 
     const areMarketDataEntered =
@@ -274,6 +283,9 @@ const CreateMarket: React.FC = () => {
                 const parsedTicketPrice = ethers.utils.parseEther(
                     (marketType === MarketType.TICKET ? ticketPrice : 0).toString()
                 );
+                const parsedInitialPositions = initialPositions.map((position) =>
+                    ethers.utils.parseEther(position.toString())
+                );
                 const formmatedTags = tags.map((tag) => tag.id);
 
                 const tx = await marketManagerContractWithSigner.createExoticMarket(
@@ -284,7 +296,7 @@ const CreateMarket: React.FC = () => {
                     isWithdrawalAllowed,
                     formmatedTags,
                     positions.length,
-                    initialPosition,
+                    marketType === MarketType.TICKET ? [initialPosition] : parsedInitialPositions,
                     positions
                 );
                 const txResult = await tx.wait();
@@ -323,7 +335,9 @@ const CreateMarket: React.FC = () => {
             return t(`common.errors.enter-tags`);
         }
         if (!isInitialPositionSelected) {
-            return t(`common.errors.select-initial-position`);
+            return marketType === MarketType.TICKET
+                ? t(`common.errors.select-initial-position`)
+                : t(`common.errors.select-initial-positions`);
         }
     };
 
@@ -356,7 +370,7 @@ const CreateMarket: React.FC = () => {
         }
         if (!hasAllowance) {
             return (
-                <CreateMarketButton disabled={isAllowing} onClick={handleSubmit}>
+                <CreateMarketButton disabled={isAllowing} onClick={() => setOpenApprovalModal(true)}>
                     {!isAllowing
                         ? t('common.enable-wallet-access.approve-label', { currencyKey: PAYMENT_CURRENCY })
                         : t('common.enable-wallet-access.approve-progress-label', {
@@ -366,7 +380,7 @@ const CreateMarket: React.FC = () => {
             );
         }
         return (
-            <CreateMarketButton disabled={isButtonDisabled} onClick={() => setOpenCreateMarketModal(true)}>
+            <CreateMarketButton disabled={isButtonDisabled} onClick={handleSubmit}>
                 {!isSubmitting
                     ? t('market.create-market.button.create-market-label')
                     : t('market.create-market.button.create-market-progress-label')}
@@ -377,6 +391,7 @@ const CreateMarket: React.FC = () => {
     const addPosition = () => {
         setPositions([...positions, '']);
         setInitialPosition(0);
+        setInitialPositions(new Array(positions.length + 1).fill(0));
     };
 
     const removePosition = (index: number) => {
@@ -384,6 +399,7 @@ const CreateMarket: React.FC = () => {
         newPostions.splice(index, 1);
         setPositions(newPostions);
         setInitialPosition(0);
+        setInitialPositions(new Array(newPostions.length).fill(0));
     };
 
     const setPositionText = (index: number, text: string) => {
@@ -391,6 +407,7 @@ const CreateMarket: React.FC = () => {
         newPostions[index] = text;
         setPositions(newPostions);
         setInitialPosition(0);
+        setInitialPositions(new Array(newPostions.length).fill(0));
     };
 
     const addTag = (tag: Tag) => {
@@ -504,10 +521,9 @@ const CreateMarket: React.FC = () => {
                         label={t('market.create-market.type-label')}
                         leftText={t('market.create-market.type-options.ticket')}
                         rightText={t('market.create-market.type-options.open-bid')}
-                        toggleTooltip={t('market.create-market.type-toggle-tooltip')}
+                        toggleTooltip={openBidAllowed ? undefined : t('market.create-market.type-toggle-tooltip')}
                         tooltip={t('market.create-market.type-tooltip')}
-                        // disabled={isSubmitting || creationRestrictedToOwner}
-                        disabled={true}
+                        disabled={!openBidAllowed || isSubmitting || creationRestrictedToOwner}
                     />
                     {marketType === MarketType.TICKET && (
                         <NumericInput
@@ -559,11 +575,15 @@ const CreateMarket: React.FC = () => {
                     />
                     <YourPostionsContainer>
                         <FieldLabel>
-                            {t('market.create-market.your-initial-position-label')}
+                            {marketType === MarketType.TICKET
+                                ? t('market.create-market.your-initial-position-label')
+                                : t('market.create-market.your-initial-positions-label')}
                             <Tooltip
                                 overlay={
                                     <OverlayContainer>
-                                        {t('market.create-market.your-initial-position-tooltip')}
+                                        {marketType === MarketType.TICKET
+                                            ? t('market.create-market.your-initial-position-tooltip')
+                                            : t('market.create-market.your-initial-positions-tooltip')}
                                     </OverlayContainer>
                                 }
                                 iconFontSize={23}
@@ -571,10 +591,10 @@ const CreateMarket: React.FC = () => {
                                 top={0}
                             />
                         </FieldLabel>
-                        <YourPostions>
+                        <YourPostions isTicketType={marketType === MarketType.TICKET}>
                             {positions.map((position: string, index: number) => {
                                 const positionIndex = index + 1;
-                                return (
+                                return marketType === MarketType.TICKET ? (
                                     <RadioButton
                                         checked={positionIndex === initialPosition}
                                         value={positionIndex}
@@ -582,6 +602,19 @@ const CreateMarket: React.FC = () => {
                                         label={position.trim() === '' ? '...' : position}
                                         disabled={isSubmitting || creationRestrictedToOwner}
                                         key={`yourPositionKey${position}${index}`}
+                                    />
+                                ) : (
+                                    <BidInput
+                                        value={initialPositions[index]}
+                                        label={position.trim() === '' ? '...' : position}
+                                        disabled={isSubmitting || creationRestrictedToOwner}
+                                        key={`yourPositionKey${position}${index}`}
+                                        onChange={(_, value) => {
+                                            const newInitialPositions = [...initialPositions];
+                                            newInitialPositions[index] = Number(value);
+                                            setInitialPositions(newInitialPositions);
+                                        }}
+                                        currencyLabel={PAYMENT_CURRENCY}
                                     />
                                 );
                             })}
@@ -660,9 +693,9 @@ const YourPostionsContainer = styled(FlexDivColumn)`
     padding-top: 10px;
 `;
 
-const YourPostions = styled(FlexDivColumn)`
+const YourPostions = styled(FlexDivColumn)<{ isTicketType: boolean }>`
     label {
-        align-self: start;
+        align-self: ${(props) => (props.isTicketType ? 'start' : 'center')};
     }
 `;
 
