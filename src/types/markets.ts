@@ -188,7 +188,15 @@ export type AccountPositionsMap = {
     [market: string]: AccountPosition;
 };
 
-export type MarketTransactionType = 'bid' | 'changePosition' | 'withdrawal' | 'claim';
+export type MarketTransactionType =
+    | 'bid'
+    | 'changePosition'
+    | 'withdrawal'
+    | 'claim'
+    | 'claimRefund'
+    | 'resolveMarket'
+    | 'resetMarketResult'
+    | 'openDispute';
 
 export type MarketTransaction = {
     hash: string;

@@ -309,7 +309,11 @@
                 "bid": "Bid",
                 "withdrawal": "Withdrawal",
                 "changePosition": "Change position",
-                "claim": "Claim"
+                "claim": "Claim",
+                "claimRefund": "Claim refund",
+                "resolveMarket": "Resolve market",
+                "resetMakretresult": "Reset market result",
+                "openDispute": "Open dispute"
             },
             "no-results": "No transactions associated with this market."
         }
