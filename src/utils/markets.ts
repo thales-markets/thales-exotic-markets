@@ -19,7 +19,7 @@ export const getMarketStatus = (market: MarketInfo) => {
     } else {
         if (market.isResolved) {
             if (market.winningPosition === 0) {
-                if (market.isDisputed) {
+                if (market.isDisputed && market.numberOfOpenDisputes > 0) {
                     return MarketStatus.CancelledDisputed;
                 } else {
                     if (market.canUsersClaim || market.cancelledByCreator) {

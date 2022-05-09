@@ -62,9 +62,10 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
         !market.isMarketClosedForDisputes &&
         !isOracleCouncilMember &&
         walletAddress.toLowerCase() !== market.creator.toLowerCase() &&
-        !market.isPaused;
+        !market.isPaused &&
+        market.status !== MarketStatusEnum.CancelledConfirmed;
 
-    const showNumberOfOpenDisputes = !market.canUsersClaim;
+    const showNumberOfOpenDisputes = !market.canUsersClaim && market.status !== MarketStatusEnum.CancelledConfirmed;
 
     return (
         <MarketContainer>

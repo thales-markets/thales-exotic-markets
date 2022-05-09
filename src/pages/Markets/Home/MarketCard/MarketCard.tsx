@@ -22,7 +22,7 @@ const MarketCard: React.FC<MarketCardProps> = ({ market, accountPosition }) => {
     const { t } = useTranslation();
 
     const claimAvailable = isClaimAvailable(market, accountPosition);
-    const showNumberOfOpenDisputes = !market.canUsersClaim;
+    const showNumberOfOpenDisputes = !market.canUsersClaim && market.status !== MarketStatusEnum.CancelledConfirmed;
 
     return (
         <Container isClaimAvailable={claimAvailable}>
