@@ -312,7 +312,7 @@
                 "claim": "Claim",
                 "claimRefund": "Claim refund",
                 "resolveMarket": "Resolve market",
-                "resetMakretResult": "Reset market result",
+                "resetMarketResult": "Reset market result",
                 "openDispute": "Open dispute"
             },
             "no-results": "No transactions associated with this market."
