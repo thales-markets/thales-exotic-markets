@@ -264,7 +264,7 @@ export const exoticPositionalMarketManagerContract = {
                 { internalType: 'bool', name: '_withdrawalAllowed', type: 'bool' },
                 { internalType: 'uint256[]', name: '_tags', type: 'uint256[]' },
                 { internalType: 'uint256', name: '_positionCount', type: 'uint256' },
-                { internalType: 'uint256', name: '_positionOfCreator', type: 'uint256' },
+                { internalType: 'uint256[]', name: '_positionsOfCreator', type: 'uint256[]' },
                 { internalType: 'string[]', name: '_positionPhrases', type: 'string[]' },
             ],
             name: 'createExoticMarket',

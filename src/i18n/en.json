@@ -38,6 +38,7 @@
             "enter-tags": "Enter tags",
             "enter-reason-for-dispute": "Enter reason for dispute",
             "select-initial-position": "Select initial position",
+            "select-initial-positions": "Select initial position(s)",
             "select-position": "Select position",
             "different-position": "Positions must be different",
             "select-vote": "Select vote",
@@ -200,7 +201,9 @@
             "positions-label": "Positions",
             "positions-tooltip": "Positions participants can assume. Up to {{max}} positions.",
             "your-initial-position-label": "Your initial position",
+            "your-initial-positions-label": "Your initial position(s)",
             "your-initial-position-tooltip": "Selecting the initial position you will provide initial liquidity for the market. The initial amount deducted from your account is the same as the ticket price.",
+            "your-initial-positions-tooltip": "Selecting the initial position(s) and entering the initial amount(s) you will provide initial liquidity for the market.",
             "add-position-label": "ADD position",
             "positioning-end-label": "Positioning end (UTC)",
             "positioning-end-tooltip": "The length of the positioning phase has to be at least {{min}} hours and must not be more than {{max}} month.",
@@ -306,7 +309,11 @@
                 "bid": "Bid",
                 "withdrawal": "Withdrawal",
                 "changePosition": "Change position",
-                "claim": "Claim"
+                "claim": "Claim",
+                "claimRefund": "Claim refund",
+                "resolveMarket": "Resolve market",
+                "resetMakretresult": "Reset market result",
+                "openDispute": "Open dispute"
             },
             "no-results": "No transactions associated with this market."
         }

@@ -92,10 +92,9 @@ const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market 
     const bidPercentage = creatorPercentage + resolverPercentage + safeBoxPercentage;
     const withdrawalPercentage = marketsParameters ? marketsParameters.withdrawalPercentage : 0;
 
-    const showTicketInfo = market.canUsersPlacePosition;
-    const showTicketBid = showTicketInfo && currentPositionOnContract === 0;
-    const showTicketChangePosition = showTicketInfo && currentPositionOnContract !== selectedPosition;
-    const showTicketWithdraw = showTicketInfo && canWithdraw && currentPositionOnContract > 0;
+    const showBid = market.canUsersPlacePosition && currentPositionOnContract === 0;
+    const showChangePosition = market.canUsersPlacePosition && currentPositionOnContract !== selectedPosition;
+    const showWithdraw = market.canUsersPlacePosition && canWithdraw && currentPositionOnContract > 0;
     const showCancel = market.canCreatorCancelMarket && walletAddress.toLowerCase() === market.creator.toLowerCase();
 
     const insufficientBalance =
@@ -188,11 +187,7 @@ const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market 
                     toast.update(
                         id,
                         getSuccessToastOptions(
-                            t(
-                                `market.toast-messsage.${
-                                    showTicketBid ? 'ticket-bid-success' : 'change-position-success'
-                                }`
-                            )
+                            t(`market.toast-messsage.${showBid ? 'ticket-bid-success' : 'change-position-success'}`)
                         )
                     );
                     setIsBidding(false);
@@ -266,7 +261,7 @@ const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market 
                 </MarketButton>
             );
         }
-        if (insufficientBalance && showTicketBid) {
+        if (insufficientBalance && showBid) {
             return (
                 <MarketButton type="secondary" disabled={true}>
                     {t(`common.errors.insufficient-balance`)}
@@ -280,7 +275,7 @@ const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market 
                 </MarketButton>
             );
         }
-        if (!hasAllowance && showTicketBid) {
+        if (!hasAllowance && showBid) {
             return (
                 <MarketButton type="secondary" disabled={isAllowing} onClick={() => setOpenApprovalModal(true)}>
                     {!isAllowing
@@ -291,7 +286,7 @@ const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market 
                 </MarketButton>
             );
         }
-        if (showTicketBid) {
+        if (showBid) {
             return (
                 <MarketButton type="secondary" disabled={isBidButtonDisabled} onClick={handleBid}>
                     {!isBidding ? t('market.button.bid-label') : t('market.button.bid-progress-label')}
@@ -300,14 +295,14 @@ const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market 
         }
         return (
             <>
-                {showTicketChangePosition && (
+                {showChangePosition && (
                     <MarketButton type="secondary" disabled={isChangePositionButtonDisabled} onClick={handleBid}>
                         {!isBidding
                             ? t('market.button.change-position-label')
                             : t('market.button.change-position-progress-label')}
                     </MarketButton>
                 )}
-                {showTicketWithdraw && (
+                {showWithdraw && (
                     <MarketButton type="secondary" disabled={isWithdrawButtonDisabled} onClick={handleWithdraw}>
                         {!isWithdrawing
                             ? t('market.button.withdraw-label')
@@ -365,7 +360,7 @@ const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market 
                     </PositionContainer>
                 ))}
             </Positions>
-            {showTicketInfo && (
+            {market.canUsersPlacePosition && (
                 <>
                     <MainInfo>
                         {t('market.ticket-price-label')}:{' '}
