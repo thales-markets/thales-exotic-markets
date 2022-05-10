@@ -160,7 +160,9 @@
             "cancel-progress-label": "Canceling in progress...",
             "distribute-fees-bonds-label": "Distribute fees and bonds",
             "distribute-bonds-label": "Distribute bonds",
-            "distribute-progress-label": "Distributing in progress..."
+            "distribute-progress-label": "Distributing in progress...",
+            "pause-market-label": "Pause market",
+            "pause-progress-label": "Pausing in progress..."
         },
         "toast-messsage": {
             "transaction-pending": "Transaction pending",
@@ -177,7 +179,8 @@
             "cancel-market-success": "Market successfully canceled",
             "get-usd-success": "{{amount}} successfully minted",
             "fees-bonds-distribute-success": "Fees and bonds successfully sent",
-            "bonds-distribute-success": "Bonds successfully sent"
+            "bonds-distribute-success": "Bonds successfully sent",
+            "pause-success": "Market successfully paused"
         },
         "filter-label": {
             "global": {
