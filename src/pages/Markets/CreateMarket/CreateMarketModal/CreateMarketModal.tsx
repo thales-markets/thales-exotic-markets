@@ -16,9 +16,17 @@ type CreateMarketModalProps = {
     isSubmitting: boolean;
     onClose: () => void;
     fixedBondAmount: number | string;
+    onSubmit: () => void;
+    isOnOpenModal: boolean;
 };
 
-export const CreateMarketModal: React.FC<CreateMarketModalProps> = ({ isSubmitting, onClose, fixedBondAmount }) => {
+export const CreateMarketModal: React.FC<CreateMarketModalProps> = ({
+    isSubmitting,
+    onClose,
+    fixedBondAmount,
+    onSubmit,
+    isOnOpenModal,
+}) => {
     const { t } = useTranslation();
     const isWalletConnected = useSelector((state: RootState) => getIsWalletConnected(state));
 
@@ -33,7 +41,15 @@ export const CreateMarketModal: React.FC<CreateMarketModalProps> = ({ isSubmitti
             );
         }
         return (
-            <ModalButton disabled={isButtonDisabled} onClick={onClose}>
+            <ModalButton
+                disabled={isButtonDisabled}
+                onClick={() => {
+                    onClose();
+                    if (!isOnOpenModal) {
+                        onSubmit();
+                    }
+                }}
+            >
                 {t('market.create-market.modal.button-label')}
             </ModalButton>
         );
@@ -42,6 +58,12 @@ export const CreateMarketModal: React.FC<CreateMarketModalProps> = ({ isSubmitti
     return (
         <Modal title={t('market.create-market.modal.title')} onClose={onClose} shouldCloseOnOverlayClick={false}>
             <Container>
+                <WarningMessage>
+                    <WarningIcon />
+                    {isOnOpenModal
+                        ? t('market.create-market.modal.warning-open')
+                        : t('market.create-market.modal.warning-submit')}
+                </WarningMessage>
                 <Trans
                     i18nKey={'market.create-market.modal.text'}
                     components={[
@@ -65,7 +87,14 @@ export const CreateMarketModal: React.FC<CreateMarketModalProps> = ({ isSubmitti
                         ),
                     }}
                 />
-                <ButtonContainer>{getSubmitButton()}</ButtonContainer>
+                <ButtonContainer>
+                    <ProceedMessage>
+                        {isOnOpenModal
+                            ? t('market.create-market.modal.proceed-open')
+                            : t('market.create-market.modal.proceed-submit')}
+                    </ProceedMessage>
+                    {getSubmitButton()}
+                </ButtonContainer>
             </Container>
         </Modal>
     );
@@ -84,8 +113,31 @@ const Container = styled(FlexDivColumnCentered)`
     }
 `;
 
-const ButtonContainer = styled(FlexDivCentered)`
-    margin: 30px 0 0 0;
+const WarningMessage = styled(FlexDivCentered)`
+    color: #e53720;
+    font-size: 24px;
+    margin-bottom: 15px;
+`;
+
+const WarningIcon = styled.i`
+    font-size: 28px;
+    font-style: normal;
+    margin-right: 4px;
+    &:before {
+        font-family: ExoticIcons !important;
+        content: '\\004A';
+        color: #e53720;
+    }
+`;
+
+const ButtonContainer = styled(FlexDivColumnCentered)`
+    margin: 20px 0 0 0;
+    align-items: center;
+    font-size: 20px;
+`;
+
+const ProceedMessage = styled(FlexDivCentered)`
+    margin-bottom: 10px;
 `;
 
 const ModalButton = styled(Button)``;
