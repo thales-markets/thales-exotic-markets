@@ -8,6 +8,7 @@ export enum GlobalFilterEnum {
     Disputed = 'Disputed',
     YourPositions = 'YourPositions',
     Claim = 'Claim',
+    YourNotPositionedMarkets = 'YourNotPositionedMarkets',
 }
 
 export enum SortDirection {

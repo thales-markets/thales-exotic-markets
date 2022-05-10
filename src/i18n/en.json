@@ -192,7 +192,8 @@
                 "paused": "Paused",
                 "disputed": "Disputed",
                 "yourpositions": "Your positions",
-                "claim": "Claimable"
+                "claim": "Claimable",
+                "yournotpositionedmarkets": "Your not positioned markets"
             },
             "all": "All"
         },

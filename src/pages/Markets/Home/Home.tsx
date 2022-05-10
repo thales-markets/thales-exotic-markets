@@ -63,6 +63,23 @@ const Home: React.FC = () => {
         id: 0,
         label: t('market.filter-label.all'),
     };
+
+    const firstLevelFilters = [
+        GlobalFilterEnum.Active,
+        GlobalFilterEnum.ResolvePending,
+        GlobalFilterEnum.RecentlyResolved,
+        GlobalFilterEnum.Resolved,
+        GlobalFilterEnum.Cancelled,
+        GlobalFilterEnum.Paused,
+        GlobalFilterEnum.Disputed,
+    ];
+
+    const secondLevelFilters = [
+        GlobalFilterEnum.YourPositions,
+        GlobalFilterEnum.Claim,
+        GlobalFilterEnum.YourNotPositionedMarkets,
+    ];
+
     const [tagFilter, setTagFilter] = useLocalStorage(LOCAL_STORAGE_KEYS.FILTER_TAGS, allTagsFilterItem);
     const [availableTags, setAvailableTags] = useState<Tags>([allTagsFilterItem]);
 
@@ -176,7 +193,12 @@ const Home: React.FC = () => {
     const accountPositionsCount = useMemo(() => {
         return tagsFilteredMarkets.filter((market: MarketInfo) => {
             const accountPosition: AccountPosition = accountPositions[market.address];
-            return !!accountPosition && accountPosition.position > 0;
+            return (
+                !!accountPosition &&
+                accountPosition.position > 0 &&
+                market.status !== MarketStatus.ResolvedConfirmed &&
+                market.status !== MarketStatus.CancelledConfirmed
+            );
         }).length;
     }, [tagsFilteredMarkets, accountPositions]);
 
@@ -184,6 +206,13 @@ const Home: React.FC = () => {
         return tagsFilteredMarkets.filter((market: MarketInfo) => {
             const accountPosition: AccountPosition = accountPositions[market.address];
             return isClaimAvailable(market, accountPosition);
+        }).length;
+    }, [tagsFilteredMarkets, accountPositions]);
+
+    const accountNotPositionedCount = useMemo(() => {
+        return tagsFilteredMarkets.filter((market: MarketInfo) => {
+            const accountPosition: AccountPosition = accountPositions[market.address];
+            return (!accountPosition || accountPosition.position === 0) && market.status === MarketStatus.Open;
         }).length;
     }, [tagsFilteredMarkets, accountPositions]);
 
@@ -225,13 +254,24 @@ const Home: React.FC = () => {
             case GlobalFilterEnum.YourPositions:
                 filteredMarkets = filteredMarkets.filter((market: MarketInfo) => {
                     const accountPosition: AccountPosition = accountPositions[market.address];
-                    return !!accountPosition && accountPosition.position > 0;
+                    return (
+                        !!accountPosition &&
+                        accountPosition.position > 0 &&
+                        market.status !== MarketStatus.ResolvedConfirmed &&
+                        market.status !== MarketStatus.CancelledConfirmed
+                    );
                 });
                 break;
             case GlobalFilterEnum.Claim:
                 filteredMarkets = filteredMarkets.filter((market: MarketInfo) => {
                     const accountPosition: AccountPosition = accountPositions[market.address];
                     return isClaimAvailable(market, accountPosition);
+                });
+                break;
+            case GlobalFilterEnum.YourNotPositionedMarkets:
+                filteredMarkets = filteredMarkets.filter((market: MarketInfo) => {
+                    const accountPosition: AccountPosition = accountPositions[market.address];
+                    return (!accountPosition || accountPosition.position === 0) && market.status === MarketStatus.Open;
                 });
                 break;
             default:
@@ -278,46 +318,73 @@ const Home: React.FC = () => {
         dispatch(setMarketSearch(''));
     };
 
+    const getCount = (filter: GlobalFilterEnum) => {
+        switch (filter) {
+            case GlobalFilterEnum.Active:
+                return acitveCount;
+            case GlobalFilterEnum.ResolvePending:
+                return resolvePendingCount;
+            case GlobalFilterEnum.RecentlyResolved:
+                return recentlyResolvedCount;
+            case GlobalFilterEnum.Resolved:
+                return resolvedCount;
+            case GlobalFilterEnum.Cancelled:
+                return cancelledCount;
+            case GlobalFilterEnum.Paused:
+                return pausedCount;
+            case GlobalFilterEnum.Disputed:
+                return disputedCount;
+            case GlobalFilterEnum.YourPositions:
+                return accountPositionsCount;
+            case GlobalFilterEnum.Claim:
+                return accountClaimsCount;
+            case GlobalFilterEnum.YourNotPositionedMarkets:
+                return accountNotPositionedCount;
+            default:
+                return undefined;
+        }
+    };
+
     const marketsList = globalFilteredMarkets;
 
     return (
         <Container>
             <FiltersContainer>
                 <GlobalFiltersContainer>
-                    {Object.values(GlobalFilterEnum).map((filterItem) => {
-                        const count =
-                            filterItem === GlobalFilterEnum.Active
-                                ? acitveCount
-                                : filterItem === GlobalFilterEnum.ResolvePending
-                                ? resolvePendingCount
-                                : filterItem === GlobalFilterEnum.RecentlyResolved
-                                ? recentlyResolvedCount
-                                : filterItem === GlobalFilterEnum.Resolved
-                                ? resolvedCount
-                                : filterItem === GlobalFilterEnum.Cancelled
-                                ? cancelledCount
-                                : filterItem === GlobalFilterEnum.Paused
-                                ? pausedCount
-                                : filterItem === GlobalFilterEnum.Disputed
-                                ? disputedCount
-                                : filterItem === GlobalFilterEnum.YourPositions
-                                ? accountPositionsCount
-                                : filterItem === GlobalFilterEnum.Claim
-                                ? accountClaimsCount
-                                : undefined;
-
-                        return (
-                            <GlobalFilter
-                                disabled={false}
-                                selected={globalFilter === filterItem}
-                                onClick={() => setGlobalFilter(filterItem)}
-                                key={filterItem}
-                                count={count}
-                            >
-                                {t(`market.filter-label.global.${filterItem.toLowerCase()}`)}
-                            </GlobalFilter>
-                        );
-                    })}
+                    {Object.values(GlobalFilterEnum)
+                        .filter((filterItem) => firstLevelFilters.includes(filterItem))
+                        .map((filterItem) => {
+                            return (
+                                <GlobalFilter
+                                    disabled={false}
+                                    selected={globalFilter === filterItem}
+                                    onClick={() => setGlobalFilter(filterItem)}
+                                    key={filterItem}
+                                    count={getCount(filterItem)}
+                                >
+                                    {t(`market.filter-label.global.${filterItem.toLowerCase()}`)}
+                                </GlobalFilter>
+                            );
+                        })}
+                </GlobalFiltersContainer>
+            </FiltersContainer>
+            <FiltersContainer>
+                <GlobalFiltersContainer>
+                    {Object.values(GlobalFilterEnum)
+                        .filter((filterItem) => secondLevelFilters.includes(filterItem))
+                        .map((filterItem) => {
+                            return (
+                                <GlobalFilter
+                                    disabled={false}
+                                    selected={globalFilter === filterItem}
+                                    onClick={() => setGlobalFilter(filterItem)}
+                                    key={filterItem}
+                                    count={getCount(filterItem)}
+                                >
+                                    {t(`market.filter-label.global.${filterItem.toLowerCase()}`)}
+                                </GlobalFilter>
+                            );
+                        })}
                 </GlobalFiltersContainer>
             </FiltersContainer>
             <FiltersContainer>
@@ -397,7 +464,7 @@ const Container = styled(FlexDivColumn)`
 `;
 
 const FiltersContainer = styled(FlexDivRow)`
-    margin-bottom: 4px;
+    margin-bottom: 2px;
     :first-child {
         margin-top: 50px;
     }
