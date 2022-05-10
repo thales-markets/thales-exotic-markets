@@ -68,9 +68,9 @@ const SearchIcon = styled.i`
 `;
 
 const CloseIcon = styled.i`
-    font-size: 15px;
+    font-size: 12px;
     position: absolute;
-    top: 5px;
+    top: 8px;
     right: 9px;
     cursor: pointer;
     &:before {
