@@ -21,9 +21,10 @@ const useAccountMarketDataQuery = (
                     winningAmount: 0,
                     canWithdraw: false,
                     userAlreadyClaimedAmount: 0,
+                    isPauserAddress: false,
                 };
 
-                const { signer } = networkConnector;
+                const { signer, marketManagerContract } = networkConnector;
                 if (signer && walletAddress !== '') {
                     const contractWithSigner = new ethers.Contract(marketAddress, marketContract.abi, signer);
                     const [
@@ -32,18 +33,21 @@ const useAccountMarketDataQuery = (
                         winningAmount,
                         canWithdraw,
                         userAlreadyClaimedAmount,
+                        isPauserAddress,
                     ] = await Promise.all([
                         contractWithSigner.getUserClaimableAmount(walletAddress),
                         contractWithSigner.canUserClaim(walletAddress),
                         contractWithSigner.getUserPotentialWinningAmount(walletAddress),
                         contractWithSigner.canUserWithdraw(walletAddress),
                         contractWithSigner.userAlreadyClaimed(walletAddress),
+                        marketManagerContract?.isPauserAddress(walletAddress),
                     ]);
                     marketData.claimAmount = bigNumberFormatter(claimAmount);
                     marketData.canClaim = canClaim;
                     marketData.winningAmount = bigNumberFormatter(winningAmount);
                     marketData.canWithdraw = canWithdraw;
                     marketData.userAlreadyClaimedAmount = bigNumberFormatter(userAlreadyClaimedAmount);
+                    marketData.isPauserAddress = isPauserAddress;
                 }
 
                 return marketData;

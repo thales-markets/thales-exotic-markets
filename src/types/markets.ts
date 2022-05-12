@@ -69,6 +69,7 @@ export type AccountMarketData = {
     winningAmount: number;
     canWithdraw: boolean;
     userAlreadyClaimedAmount: number;
+    isPauserAddress: boolean;
 };
 
 export type AccountMarketTicketData = AccountMarketData & {

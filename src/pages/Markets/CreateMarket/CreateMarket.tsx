@@ -94,6 +94,7 @@ const CreateMarket: React.FC = () => {
     const [paymentTokenBalance, setPaymentTokenBalance] = useState<number | string>('');
     const [openApprovalModal, setOpenApprovalModal] = useState<boolean>(false);
     const [openCreateMarketModal, setOpenCreateMarketModal] = useState<boolean>(true);
+    const [isOnOpenModal, setIsOnOpenModal] = useState<boolean>(true);
     const [minTime, setMinTime] = useState<Date>(DATE_PICKER_MIN_DATE);
     const [minDate, setMinDate] = useState<Date>(DATE_PICKER_MIN_DATE);
     const [maxTime, setMaxTime] = useState<Date>(DATE_PICKER_MAX_DATE);
@@ -380,7 +381,13 @@ const CreateMarket: React.FC = () => {
             );
         }
         return (
-            <CreateMarketButton disabled={isButtonDisabled} onClick={handleSubmit}>
+            <CreateMarketButton
+                disabled={isButtonDisabled}
+                onClick={() => {
+                    setOpenCreateMarketModal(true);
+                    setIsOnOpenModal(false);
+                }}
+            >
                 {!isSubmitting
                     ? t('market.create-market.button.create-market-label')
                     : t('market.create-market.button.create-market-progress-label')}
@@ -660,6 +667,8 @@ const CreateMarket: React.FC = () => {
                     isSubmitting={isSubmitting}
                     onClose={() => setOpenCreateMarketModal(false)}
                     fixedBondAmount={fixedBondAmount}
+                    onSubmit={handleSubmit}
+                    isOnOpenModal={isOnOpenModal}
                 />
             )}
         </Container>

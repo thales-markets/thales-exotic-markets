@@ -24,6 +24,12 @@ import Button from 'components/Button';
 import useAccountMarketDataQuery from 'queries/markets/useAccountMarketDataQuery';
 import { Info, InfoContent, InfoLabel } from 'components/common';
 import DataSource from 'pages/Markets/components/DataSource';
+import marketContract from 'utils/contracts/exoticPositionalTicketMarketContract';
+import networkConnector from 'utils/networkConnector';
+import { toast } from 'react-toastify';
+import { ethers } from 'ethers';
+import { refetchMarketData } from 'utils/queryConnector';
+import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
 
 type MarketDetailsProps = {
     market: MarketData;
@@ -37,6 +43,8 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
     const isWalletConnected = useSelector((state: RootState) => getIsWalletConnected(state));
     const [isOracleCouncilMember, setIsOracleCouncilMember] = useState<boolean>(true);
     const [isClaimAvailable, setIsClaimAvailable] = useState<boolean>(false);
+    const [isPausing, setIsPausing] = useState<boolean>(false);
+    const [showPause, setShowPause] = useState<boolean>(false);
 
     const oracleCouncilMemberQuery = useOracleCouncilMemberQuery(walletAddress, networkId, {
         enabled: isAppReady && isWalletConnected,
@@ -55,16 +63,43 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
     useEffect(() => {
         if (accountMarketDataQuery.isSuccess && accountMarketDataQuery.data !== undefined) {
             setIsClaimAvailable((accountMarketDataQuery.data as AccountMarketData).canClaim && !market.isPaused);
+            setShowPause((accountMarketDataQuery.data as AccountMarketData).isPauserAddress && !market.isPaused);
         }
-    }, [accountMarketDataQuery.isSuccess, accountMarketDataQuery.data]);
+    }, [accountMarketDataQuery.isSuccess, accountMarketDataQuery.data, market.isPaused]);
 
     const canOpenDispute =
         !market.isMarketClosedForDisputes &&
         !isOracleCouncilMember &&
         walletAddress.toLowerCase() !== market.creator.toLowerCase() &&
-        !market.isPaused;
+        !market.isPaused &&
+        market.status !== MarketStatusEnum.CancelledConfirmed;
 
-    const showNumberOfOpenDisputes = !market.canUsersClaim;
+    const showNumberOfOpenDisputes = !market.canUsersClaim && market.status !== MarketStatusEnum.CancelledConfirmed;
+
+    const handlePause = async () => {
+        const { signer } = networkConnector;
+        if (signer) {
+            const id = toast.loading(t('market.toast-messsage.transaction-pending'));
+            setIsPausing(true);
+
+            try {
+                const marketContractWithSigner = new ethers.Contract(market.address, marketContract.abi, signer);
+
+                const tx = await marketContractWithSigner.setPaused(true);
+                const txResult = await tx.wait();
+
+                if (txResult && txResult.transactionHash) {
+                    refetchMarketData(market.address, walletAddress);
+                    toast.update(id, getSuccessToastOptions(t('market.toast-messsage.pause-success')));
+                    setIsPausing(false);
+                }
+            } catch (e) {
+                console.log(e);
+                toast.update(id, getErrorToastOptions(t('common.errors.unknown-error-try-again')));
+                setIsPausing(false);
+            }
+        }
+    };
 
     return (
         <MarketContainer>
@@ -80,7 +115,13 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
             {!market.isTicketType && market.status === MarketStatusEnum.Open && (
                 <PositioningPhaseOpenBid market={market} />
             )}
-
+            {showPause && (
+                <ButtonContainer>
+                    <Button type="secondary" disabled={isPausing} onClick={handlePause}>
+                        {!isPausing ? t('market.button.pause-market-label') : t('market.button.pause-progress-label')}
+                    </Button>
+                </ButtonContainer>
+            )}
             <StatusSourceContainer>
                 <StatusSourceInfo />
                 <MarketStatus market={market} fontSize={25} fontWeight={700} isClaimAvailable={isClaimAvailable} />
@@ -178,6 +219,11 @@ const OpenDisputeButton = styled(Button)`
     font-size: 17px;
     margin-bottom: 4px;
     margin-left: 6px;
+`;
+
+const ButtonContainer = styled(FlexDivColumn)`
+    margin-bottom: 10px;
+    align-items: center;
 `;
 
 export default MarketDetails;

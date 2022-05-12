@@ -22,9 +22,10 @@ const useAccountMarketTicketDataQuery = (
                     winningAmount: 0,
                     canWithdraw: false,
                     userAlreadyClaimedAmount: 0,
+                    isPauserAddress: false,
                 };
 
-                const { signer } = networkConnector;
+                const { signer, marketManagerContract } = networkConnector;
                 if (signer && walletAddress !== '') {
                     const contractWithSigner = new ethers.Contract(marketAddress, marketContract.abi, signer);
                     const [
@@ -34,6 +35,7 @@ const useAccountMarketTicketDataQuery = (
                         winningAmount,
                         canWithdraw,
                         userAlreadyClaimedAmount,
+                        isPauserAddress,
                     ] = await Promise.all([
                         contractWithSigner.userPosition(walletAddress),
                         contractWithSigner.getUserClaimableAmount(walletAddress),
@@ -41,6 +43,7 @@ const useAccountMarketTicketDataQuery = (
                         contractWithSigner.getUserPotentialWinningAmount(walletAddress),
                         contractWithSigner.canUserWithdraw(walletAddress),
                         contractWithSigner.userAlreadyClaimed(walletAddress),
+                        marketManagerContract?.isPauserAddress(walletAddress),
                     ]);
                     marketData.position = Number(userPosition);
                     marketData.claimAmount = bigNumberFormatter(claimAmount);
@@ -48,6 +51,7 @@ const useAccountMarketTicketDataQuery = (
                     marketData.winningAmount = bigNumberFormatter(winningAmount);
                     marketData.canWithdraw = canWithdraw;
                     marketData.userAlreadyClaimedAmount = bigNumberFormatter(userAlreadyClaimedAmount);
+                    marketData.isPauserAddress = isPauserAddress;
                 }
 
                 return marketData;
