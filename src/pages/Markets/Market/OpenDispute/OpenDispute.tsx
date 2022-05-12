@@ -4,7 +4,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { FlexDivColumn, FlexDivStart } from 'styles/common';
 import Button from 'components/Button';
-import { MAXIMUM_INPUT_CHARACTERS } from 'constants/markets';
+import { MarketStatus, MAXIMUM_INPUT_CHARACTERS } from 'constants/markets';
 import { useSelector } from 'react-redux';
 import { RootState } from 'redux/rootReducer';
 import useMarketQuery from 'queries/markets/useMarketQuery';
@@ -105,7 +105,8 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
         !market.isMarketClosedForDisputes &&
         !isOracleCouncilMember &&
         walletAddress.toLowerCase() !== market.creator.toLowerCase() &&
-        !market.isPaused;
+        !market.isPaused &&
+        market.status !== MarketStatus.CancelledConfirmed;
 
     const disputePrice = market ? market.disputePrice : 0;
     const arbitraryRewardForDisputor = market ? market.arbitraryRewardForDisputor : 0;

@@ -1,9 +1,14 @@
 export enum GlobalFilterEnum {
-    All = 'All',
+    Active = 'Active',
+    ResolvePending = 'ResolvePending',
+    RecentlyResolved = 'RecentlyResolved',
+    Resolved = 'Resolved',
+    Cancelled = 'Cancelled',
+    Paused = 'Paused',
     Disputed = 'Disputed',
     YourPositions = 'YourPositions',
     Claim = 'Claim',
-    // History = 'History',
+    YourNotPositionedMarkets = 'YourNotPositionedMarkets',
 }
 
 export enum SortDirection {

@@ -22,6 +22,7 @@ const Search: React.FC<SearchProps> = ({ text, handleChange }) => {
             <IconWrapper>
                 <SearchIcon />
             </IconWrapper>
+            <CloseIcon onClick={() => handleChange('')} />
         </Wrapper>
     );
 };
@@ -39,7 +40,7 @@ const Input = styled.input`
     width: 230px;
     height: 28px;
     padding-left: 30px;
-    padding-right: 10px;
+    padding-right: 30px;
     font-size: 18px;
     outline: none;
 `;
@@ -63,6 +64,19 @@ const SearchIcon = styled.i`
         font-family: ExoticIcons !important;
         content: '\\0042';
         color: ${(props) => props.theme.button.background.secondary};
+    }
+`;
+
+const CloseIcon = styled.i`
+    font-size: 12px;
+    position: absolute;
+    top: 8px;
+    right: 9px;
+    cursor: pointer;
+    &:before {
+        font-family: ExoticIcons !important;
+        content: '\\004F';
+        color: ${(props) => props.theme.textColor.primary};
     }
 `;
 

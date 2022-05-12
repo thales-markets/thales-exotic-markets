@@ -9,6 +9,14 @@
             "get-usd-progress": "Minting {{amount}}...",
             "disclaimer": "By connecting a wallet you acknowledge that you have read and understand the Exotic Markets <a target=\"_blank\" href={{link}}>disclaimer</a> and agree to its conditions of use."
         },
+        "swap": {
+            "title": "Get {{currencyKey}}",
+            "from-label": "From",
+            "to-label": "To",
+            "balance-label": "Balance: {{amount}}",
+            "swap-label": "Swap",
+            "swap-progress-label": "Swapping in progress..."
+        },
         "enable-wallet-access": {
             "approve-label": "Approve {{currencyKey}}",
             "approve-progress-label": "Approving {{currencyKey}}...",
@@ -160,7 +168,9 @@
             "cancel-progress-label": "Canceling in progress...",
             "distribute-fees-bonds-label": "Distribute fees and bonds",
             "distribute-bonds-label": "Distribute bonds",
-            "distribute-progress-label": "Distributing in progress..."
+            "distribute-progress-label": "Distributing in progress...",
+            "pause-market-label": "Pause market",
+            "pause-progress-label": "Pausing in progress..."
         },
         "toast-messsage": {
             "transaction-pending": "Transaction pending",
@@ -177,22 +187,29 @@
             "cancel-market-success": "Market successfully canceled",
             "get-usd-success": "{{amount}} successfully minted",
             "fees-bonds-distribute-success": "Fees and bonds successfully sent",
-            "bonds-distribute-success": "Bonds successfully sent"
+            "bonds-distribute-success": "Bonds successfully sent",
+            "pause-success": "Market successfully paused",
+            "swap-success": "Successfully bought {{currencyKey}}"
         },
         "filter-label": {
             "global": {
-                "all": "All markets",
+                "active": "Active",
+                "resolvepending": "Resolve pending",
+                "recentlyresolved": "Recently resolved",
+                "resolved": "Resolved",
+                "cancelled": "Cancelled",
+                "paused": "Paused",
                 "disputed": "Disputed",
                 "yourpositions": "Your positions",
                 "claim": "Claimable",
-                "history": "History"
+                "yournotpositionedmarkets": "Your not positioned markets"
             },
             "all": "All"
         },
         "back-to-markets": "Back to markets",
         "back-to-market": "Back to market",
         "no-markets-found": "No markets found",
-        "view-all-markets": "View all markets",
+        "view-all-markets": "View all active markets",
         "create-market": {
             "question-label": "Question",
             "question-tooltip": "The question that defines a market.",
@@ -237,7 +254,11 @@
             "modal": {
                 "title": "Create market",
                 "text": "<0>In order to create a market, users must post a bond of {{amount}}. By creating this market you are subjecting your bond to potential slashing if the market question does not adhere to the guidelines displayed. The guidelines can also be found on <0 />.</0><1>If you do not understand any of the written guidelines or how they are applied, it is encouraged that you do not proceed and seek feedback from the community in the <0 />.</1><2>It is highly recommended that users read up on <0 /> before creating any markets as to avoid the potential of being slashed for the posted bond.</2><3>Once a Market is created there is no way for Thales to stop any disputes against the deployed market. All disputes are settled by the Oracle Council who act independently of Thales in judging whether a dispute is valid or not, therefore caution is urged!</3>",
-                "button-label": "Proceed"
+                "button-label": "Proceed",
+                "warning-open": "WARNING!",
+                "warning-submit": "WARNING BOND MAY BE AT RISK!",
+                "proceed-open": "I understand the risks and want to proceed",
+                "proceed-submit": "I definitely understand the risks and want to proceed"
             }
         },
         "resolve-market": {
