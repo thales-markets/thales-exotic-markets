@@ -43,10 +43,21 @@ const MarketCard: React.FC<MarketCardProps> = ({ market, accountPosition }) => {
                 ))}
             </Positions>
             <Info fontSize={18} marginBottom={15}>
-                <InfoLabel>{t('market.ticket-price-label')}:</InfoLabel>
-                <InfoContent>
-                    {formatCurrencyWithKey(PAYMENT_CURRENCY, market.ticketPrice, DEFAULT_CURRENCY_DECIMALS, true)}
-                </InfoContent>
+                {market.isTicketType ? (
+                    <>
+                        <InfoLabel>{t('market.ticket-price-label')}:</InfoLabel>
+                        <InfoContent>
+                            {formatCurrencyWithKey(
+                                PAYMENT_CURRENCY,
+                                market.ticketPrice,
+                                DEFAULT_CURRENCY_DECIMALS,
+                                true
+                            )}
+                        </InfoContent>
+                    </>
+                ) : (
+                    <InfoContent>{t('market.open-bid-label')}</InfoContent>
+                )}
             </Info>
             <MarketStatus market={market} fontWeight={700} isClaimAvailable={claimAvailable} />
             <CardFooter>

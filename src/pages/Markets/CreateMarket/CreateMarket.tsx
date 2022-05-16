@@ -16,7 +16,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { FlexDivColumn, FlexDivRow } from 'styles/common';
+import { FlexDivColumn, FlexDivRow, FlexDivStart } from 'styles/common';
 import { Tag } from 'react-tag-autocomplete';
 import TagsInput from 'components/fields/TagsInput';
 import Description from './Description';
@@ -54,6 +54,7 @@ import Tooltip from 'components/Tooltip';
 import CreateMarketModal from './CreateMarketModal';
 import { isValidHttpsUrl } from 'utils/markets';
 import BidInput from 'components/fields/BidInput';
+import FieldValidationMessage from 'components/FieldValidationMessage';
 
 const calculateMinTime = (currentDate: Date, minDate: Date) => {
     const isMinDateCurrentDate = isSameDay(currentDate, minDate);
@@ -100,8 +101,9 @@ const CreateMarket: React.FC = () => {
     const [maxTime, setMaxTime] = useState<Date>(DATE_PICKER_MAX_DATE);
     const [maxDate, setMaxDate] = useState<Date>(DATE_PICKER_MAX_DATE);
     const [isTicketPriceValid, setIsTicketPriceValid] = useState<boolean>(true);
+    const [areOpetBidAmountsValid, setAreOpetBidAmountsValid] = useState<boolean>(true);
     const [initialPosition, setInitialPosition] = useState<number>(0);
-    const [initialPositions, setInitialPositions] = useState<number[]>(new Array(2).fill(0));
+    const [initialPositions, setInitialPositions] = useState<(number | string)[]>(new Array(2).fill(''));
     const [marketsParameters, setMarketsParameters] = useState<MarketsParameters | undefined>(undefined);
 
     const marketsParametersQuery = useMarketsParametersQuery(networkId, {
@@ -163,6 +165,9 @@ const CreateMarket: React.FC = () => {
     const maximumPositionsAllowed = marketsParameters ? marketsParameters.maximumPositionsAllowed : MAXIMUM_POSITIONS;
     const minFixedTicketPrice = marketsParameters ? marketsParameters.minFixedTicketPrice : MINIMUM_TICKET_PRICE;
     const maxFixedTicketPrice = marketsParameters ? marketsParameters.maxFixedTicketPrice : MAXIMUM_TICKET_PRICE;
+    const maxAmountForOpenBidPosition = marketsParameters
+        ? marketsParameters.maxAmountForOpenBidPosition
+        : MAXIMUM_TICKET_PRICE;
 
     const creatorPercentage = marketsParameters ? marketsParameters.creatorPercentage : 0;
     const withdrawalPercentage = marketsParameters ? marketsParameters.withdrawalPercentage : 0;
@@ -190,7 +195,7 @@ const CreateMarket: React.FC = () => {
         (initialPosition > 0 && marketType === MarketType.TICKET) ||
         (initialPositions.some((position) => Number(position) > 0) && marketType === MarketType.OPEN_BID);
 
-    const initialPositionsSum = initialPositions.reduce((a, b) => a + b, 0);
+    const initialPositionsSum = initialPositions.reduce((a, b) => Number(a) + Number(b), 0);
     const requiredFunds =
         marketType === MarketType.TICKET
             ? Number(fixedBondAmount) + Number(ticketPrice)
@@ -213,6 +218,7 @@ const CreateMarket: React.FC = () => {
         insufficientBalance ||
         creationRestrictedToOwner ||
         !isTicketPriceValid ||
+        !areOpetBidAmountsValid ||
         !isDataSourceValid;
 
     useEffect(() => {
@@ -285,7 +291,7 @@ const CreateMarket: React.FC = () => {
                     (marketType === MarketType.TICKET ? ticketPrice : 0).toString()
                 );
                 const parsedInitialPositions = initialPositions.map((position) =>
-                    ethers.utils.parseEther(position.toString())
+                    ethers.utils.parseEther(Number(position).toString())
                 );
                 const formmatedTags = tags.map((tag) => tag.id);
 
@@ -363,6 +369,11 @@ const CreateMarket: React.FC = () => {
         if (!isTicketPriceValid) {
             return <CreateMarketButton disabled={true}>{t(`common.errors.invalid-ticket-price`)}</CreateMarketButton>;
         }
+        if (!areOpetBidAmountsValid) {
+            return (
+                <CreateMarketButton disabled={true}>{t(`common.errors.invalid-initial-amounts`)}</CreateMarketButton>
+            );
+        }
         if (!areMarketDataEntered) {
             return <CreateMarketButton disabled={true}>{getEnterMarketDataMessage()}</CreateMarketButton>;
         }
@@ -398,7 +409,7 @@ const CreateMarket: React.FC = () => {
     const addPosition = () => {
         setPositions([...positions, '']);
         setInitialPosition(0);
-        setInitialPositions(new Array(positions.length + 1).fill(0));
+        setInitialPositions(new Array(positions.length + 1).fill(''));
     };
 
     const removePosition = (index: number) => {
@@ -406,7 +417,7 @@ const CreateMarket: React.FC = () => {
         newPostions.splice(index, 1);
         setPositions(newPostions);
         setInitialPosition(0);
-        setInitialPositions(new Array(newPostions.length).fill(0));
+        setInitialPositions(new Array(newPostions.length).fill(''));
     };
 
     const setPositionText = (index: number, text: string) => {
@@ -414,7 +425,7 @@ const CreateMarket: React.FC = () => {
         newPostions[index] = text;
         setPositions(newPostions);
         setInitialPosition(0);
-        setInitialPositions(new Array(newPostions.length).fill(0));
+        setInitialPositions(new Array(newPostions.length).fill(''));
     };
 
     const addTag = (tag: Tag) => {
@@ -457,7 +468,17 @@ const CreateMarket: React.FC = () => {
                     Number(ticketPrice) <= maxFixedTicketPrice) ||
                 marketType === MarketType.OPEN_BID
         );
-    }, [ticketPrice, marketType]);
+        setAreOpetBidAmountsValid(
+            (marketType === MarketType.OPEN_BID &&
+                initialPositions.every((position) => {
+                    return (
+                        (Number(position) >= minFixedTicketPrice && Number(position) <= maxAmountForOpenBidPosition) ||
+                        Number(position) === 0
+                    );
+                })) ||
+                marketType === MarketType.TICKET
+        );
+    }, [ticketPrice, marketType, initialPositions]);
 
     return (
         <Container>
@@ -613,12 +634,12 @@ const CreateMarket: React.FC = () => {
                                 ) : (
                                     <BidInput
                                         value={initialPositions[index]}
-                                        label={position.trim() === '' ? '...' : position}
+                                        label={position.trim() === '' ? '...' : `${position}`}
                                         disabled={isSubmitting || creationRestrictedToOwner}
                                         key={`yourPositionKey${position}${index}`}
                                         onChange={(_, value) => {
                                             const newInitialPositions = [...initialPositions];
-                                            newInitialPositions[index] = Number(value);
+                                            newInitialPositions[index] = value;
                                             setInitialPositions(newInitialPositions);
                                         }}
                                         currencyLabel={PAYMENT_CURRENCY}
@@ -626,6 +647,26 @@ const CreateMarket: React.FC = () => {
                                 );
                             })}
                         </YourPostions>
+                        <ValidationContainer>
+                            <FieldValidationMessage
+                                showValidation={!areOpetBidAmountsValid}
+                                message={t(`common.errors.invalid-initial-amounts-extended`, {
+                                    min: formatCurrencyWithKey(
+                                        PAYMENT_CURRENCY,
+                                        minFixedTicketPrice,
+                                        DEFAULT_CURRENCY_DECIMALS,
+                                        true
+                                    ),
+                                    max: formatCurrencyWithKey(
+                                        PAYMENT_CURRENCY,
+                                        maxAmountForOpenBidPosition,
+                                        DEFAULT_CURRENCY_DECIMALS,
+                                        true
+                                    ),
+                                })}
+                                hideArrow
+                            />
+                        </ValidationContainer>
                     </YourPostionsContainer>
                     <ButtonContainer>
                         <BondInfo>
@@ -706,6 +747,14 @@ const YourPostions = styled(FlexDivColumn)<{ isTicketType: boolean }>`
     label {
         align-self: ${(props) => (props.isTicketType ? 'start' : 'center')};
     }
+    > div {
+        margin-top: 5px;
+        margin-bottom: 5px;
+        align-self: start;
+        :not(:first-child) {
+            margin-top: 10px;
+        }
+    }
 `;
 
 const CreateMarketButton = styled(Button)``;
@@ -713,6 +762,12 @@ const CreateMarketButton = styled(Button)``;
 const ButtonContainer = styled(FlexDivColumn)`
     margin: 40px 0 0 0;
     align-items: center;
+`;
+
+const ValidationContainer = styled(FlexDivStart)`
+    > div {
+        width: fit-content;
+    }
 `;
 
 export default CreateMarket;

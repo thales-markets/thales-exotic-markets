@@ -105,6 +105,7 @@ export type MarketsParameters = {
     marketSourceStringLimit: number;
     marketPositionStringLimit: number;
     openBidAllowed: boolean;
+    maxAmountForOpenBidPosition: number;
 };
 
 export type TagInfo = {

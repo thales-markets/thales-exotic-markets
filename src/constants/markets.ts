@@ -31,6 +31,7 @@ export const MAXIMUM_POSITIONS = 5;
 export const MAXIMUM_TAGS = 5;
 export const MINIMUM_TICKET_PRICE = 10;
 export const MAXIMUM_TICKET_PRICE = 1000;
+export const MAXIMUM_PER_OPEN_BID_POSITION = 1000;
 
 export const DATE_PICKER_MAX_LENGTH_MONTHS = 1;
 export const TODAYS_DATE = new Date();

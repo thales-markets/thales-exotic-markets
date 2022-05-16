@@ -45,13 +45,15 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
     const [isCanceling, setIsCanceling] = useState<boolean>(false);
     const [openApprovalModal, setOpenApprovalModal] = useState<boolean>(false);
     const [paymentTokenBalance, setPaymentTokenBalance] = useState<number | string>('');
-    const [selectedPositions, setSelectedPositions] = useState<number[]>(new Array(market.positions.length).fill(0));
-    // we need two positionOnContract, one is set on success, the second one only from query
-    const [currentPositionsOnContract, setCurrentPositionsOnContract] = useState<number[]>(
-        new Array(market.positions.length).fill(0)
+    const [selectedPositions, setSelectedPositions] = useState<(number | string)[]>(
+        new Array(market.positions.length).fill('')
     );
-    const [positionsOnContract, setPositionsOnContract] = useState<number[]>(
-        new Array(market.positions.length).fill(0)
+    // we need two positionOnContract, one is set on success, the second one only from query
+    const [currentPositionsOnContract, setCurrentPositionsOnContract] = useState<(number | string)[]>(
+        new Array(market.positions.length).fill('')
+    );
+    const [positionsOnContract, setPositionsOnContract] = useState<(number | string)[]>(
+        new Array(market.positions.length).fill('')
     );
     const [winningAmount, setWinningAmount] = useState<number>(0);
     const [canWithdraw, setCanWithdraw] = useState<boolean>(false);
@@ -100,15 +102,21 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
     const showBid =
         market.canUsersPlacePosition && currentPositionsOnContract.every((position) => Number(position) === 0);
     const showChangePosition =
-        market.canUsersPlacePosition && currentPositionsOnContract.some((position) => Number(position) > 0);
+        market.canUsersPlacePosition &&
+        !showBid &&
+        selectedPositions.some((position, index) => Number(currentPositionsOnContract[index]) !== Number(position));
     const showWithdraw =
         market.canUsersPlacePosition &&
         canWithdraw &&
         currentPositionsOnContract.some((position) => Number(position) > 0);
     const showCancel = market.canCreatorCancelMarket && walletAddress.toLowerCase() === market.creator.toLowerCase();
 
+    const selectedPositionsSum = selectedPositions.reduce((a, b) => Number(a) + Number(b), 0);
+    const currentPositionsOnContractSum = currentPositionsOnContract.reduce((a, b) => Number(a) + Number(b), 0);
+    const requiredFunds = market.isTicketType ? Number(market.ticketPrice) : Number(selectedPositionsSum);
+
     const insufficientBalance =
-        Number(paymentTokenBalance) < Number(market.ticketPrice) || Number(paymentTokenBalance) === 0;
+        Number(paymentTokenBalance) < Number(requiredFunds) || Number(paymentTokenBalance) === 0;
     const isPositionSelected = selectedPositions.some((position) => Number(position) > 0);
 
     const isBidButtonDisabled =
@@ -131,9 +139,9 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
             const addressToApprove = thalesBondsContract.address;
             const getAllowance = async () => {
                 try {
-                    const parsedTicketPrice = ethers.utils.parseEther(Number(market.ticketPrice).toString());
+                    const parsedRequiredFunds = ethers.utils.parseEther(Number(requiredFunds).toString());
                     const allowance = await checkAllowance(
-                        parsedTicketPrice,
+                        parsedRequiredFunds,
                         paymentTokenContractWithSigner,
                         walletAddress,
                         addressToApprove
@@ -147,7 +155,7 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                 getAllowance();
             }
         }
-    }, [walletAddress, isWalletConnected, hasAllowance, market.ticketPrice, isAllowing, isBidding, isWithdrawing]);
+    }, [walletAddress, isWalletConnected, hasAllowance, requiredFunds, isAllowing, isBidding, isWithdrawing]);
 
     const handleAllowance = async (approveAmount: BigNumber) => {
         const { paymentTokenContract, thalesBondsContract, signer } = networkConnector;
@@ -237,8 +245,8 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                     refetchMarketData(market.address, walletAddress);
                     toast.update(id, getSuccessToastOptions(t('market.toast-messsage.withdraw-success')));
                     setIsWithdrawing(false);
-                    setCurrentPositionsOnContract(new Array(market.positions.length).fill(0));
-                    setSelectedPositions(new Array(market.positions.length).fill(0));
+                    setCurrentPositionsOnContract(new Array(market.positions.length).fill(''));
+                    setSelectedPositions(new Array(market.positions.length).fill(''));
                 }
             } catch (e) {
                 console.log(e);
@@ -291,7 +299,7 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
         if (!isPositionSelected) {
             return (
                 <MarketButton type="secondary" disabled={true}>
-                    {t(`common.errors.select-position`)}
+                    {t(`common.errors.select-positions`)}
                 </MarketButton>
             );
         }
@@ -318,8 +326,8 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                 {showChangePosition && (
                     <MarketButton type="secondary" disabled={isChangePositionButtonDisabled} onClick={handleBid}>
                         {!isBidding
-                            ? t('market.button.change-position-label')
-                            : t('market.button.change-position-progress-label')}
+                            ? t('market.button.update-positions-label')
+                            : t('market.button.update-positions-progress-label')}
                     </MarketButton>
                 )}
                 {showWithdraw && (
@@ -329,7 +337,7 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                         onClick={() => handleWithdraw(0)}
                     >
                         {!isWithdrawing
-                            ? t('market.button.withdraw-label')
+                            ? t('market.button.withdraw-all-label')
                             : t('market.button.withdraw-progress-label')}
                     </MarketButton>
                 )}
@@ -350,16 +358,17 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                         <PositionLabel>{position}</PositionLabel>
                         <BidInput
                             value={selectedPositions[index]}
-                            label="Bid amount:"
+                            label={`${t('market.bid-amount-label')}:`}
                             onChange={(_, value) => {
                                 const newSelectedPositions = [...selectedPositions];
-                                newSelectedPositions[index] = Number(value);
+                                newSelectedPositions[index] = value;
                                 setSelectedPositions(newSelectedPositions);
                             }}
                             currencyLabel={PAYMENT_CURRENCY}
                             selected={Number(selectedPositions[index]) > 0}
                             showWithdraw={showWithdraw && Number(currentPositionsOnContract[index]) > 0}
                             onWithdrawClick={() => handleWithdraw(index + 1)}
+                            initialValue={currentPositionsOnContract[index]}
                         />
                         <Info>
                             <InfoLabel>{t('market.pool-size-label')}:</InfoLabel>
@@ -444,6 +453,57 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                 </>
             )}
             <ButtonContainer>
+                {showChangePosition && (
+                    <Info>
+                        <InfoLabel>{t('market.your-previous-bid-amount-label')}:</InfoLabel>
+                        <InfoContent>
+                            {formatCurrencyWithKey(PAYMENT_CURRENCY, currentPositionsOnContractSum)}
+                        </InfoContent>
+                        <Tooltip
+                            overlay={
+                                <BidAmountOverlayContainer>
+                                    <div>{t('market.your-previous-positions-label')}:</div>
+                                    {market.positions.map((position: string, index: number) => (
+                                        <span key={`previousBidAmount${index}`}>
+                                            -{' '}
+                                            {formatCurrencyWithKey(PAYMENT_CURRENCY, currentPositionsOnContract[index])}{' '}
+                                            for {position}
+                                        </span>
+                                    ))}
+                                </BidAmountOverlayContainer>
+                            }
+                        />
+                    </Info>
+                )}
+                {market.canUsersPlacePosition && (
+                    <Info marginBottom={10}>
+                        <InfoLabel>
+                            {showChangePosition
+                                ? t('market.your-new-bid-amount-label')
+                                : t('market.your-total-bid-amount-label')}
+                            :
+                        </InfoLabel>
+                        <InfoContent>{formatCurrencyWithKey(PAYMENT_CURRENCY, selectedPositionsSum)}</InfoContent>
+                        <Tooltip
+                            overlay={
+                                <BidAmountOverlayContainer>
+                                    <div>
+                                        {showChangePosition
+                                            ? t('market.your-new-positions-label')
+                                            : t('market.your-positions-label')}
+                                        :
+                                    </div>
+                                    {market.positions.map((position: string, index: number) => (
+                                        <span key={`newBidAmount${index}`}>
+                                            - {formatCurrencyWithKey(PAYMENT_CURRENCY, selectedPositions[index])} for{' '}
+                                            {position}
+                                        </span>
+                                    ))}
+                                </BidAmountOverlayContainer>
+                            }
+                        />
+                    </Info>
+                )}
                 {getButtons()}
                 {showCancel && (
                     <MarketButton type="secondary" disabled={isCancelButtonDisabled} onClick={handleCancel}>
@@ -455,7 +515,7 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
             </ButtonContainer>
             {openApprovalModal && (
                 <ApprovalModal
-                    defaultAmount={market.ticketPrice}
+                    defaultAmount={requiredFunds}
                     tokenSymbol={PAYMENT_CURRENCY}
                     isAllowing={isAllowing}
                     onSubmit={handleAllowance}
@@ -487,6 +547,13 @@ const FeesOverlayContainer = styled(FlexDivColumn)`
         :last-of-type {
             margin-bottom: 5px;
         }
+    }
+`;
+
+const BidAmountOverlayContainer = styled(FlexDivColumn)`
+    text-align: start;
+    div {
+        margin-bottom: 5px;
     }
 `;
 
