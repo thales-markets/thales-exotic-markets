@@ -180,6 +180,7 @@ export type AccountDisputeData = {
 export type AccountPosition = {
     market: string;
     position: number;
+    positions: number[];
     isWithdrawn: boolean;
     isClaimed: boolean;
 };
@@ -198,7 +199,8 @@ export type MarketTransactionType =
     | 'claimRefund'
     | 'resolveMarket'
     | 'resetMarketResult'
-    | 'openDispute';
+    | 'openDispute'
+    | 'updatePositions';
 
 export type MarketTransaction = {
     hash: string;
@@ -208,6 +210,9 @@ export type MarketTransaction = {
     amount: number | string;
     blockNumber: number;
     position: string;
+    positions: number[];
+    positionLabels: string[];
+    isTicketType: boolean;
 };
 
 export type MarketTransactions = MarketTransaction[];

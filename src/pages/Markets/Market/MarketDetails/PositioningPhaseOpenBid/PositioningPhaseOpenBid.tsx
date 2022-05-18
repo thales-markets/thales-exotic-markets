@@ -113,7 +113,7 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
 
     const selectedPositionsSum = selectedPositions.reduce((a, b) => Number(a) + Number(b), 0);
     const currentPositionsOnContractSum = currentPositionsOnContract.reduce((a, b) => Number(a) + Number(b), 0);
-    const requiredFunds = market.isTicketType ? Number(market.ticketPrice) : Number(selectedPositionsSum);
+    const requiredFunds = Number(selectedPositionsSum) - Number(currentPositionsOnContractSum);
 
     const insufficientBalance =
         Number(paymentTokenBalance) < Number(requiredFunds) || Number(paymentTokenBalance) === 0;
@@ -289,7 +289,7 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                 </MarketButton>
             );
         }
-        if (insufficientBalance && showBid) {
+        if (insufficientBalance && (showBid || showChangePosition)) {
             return (
                 <MarketButton type="secondary" disabled={true}>
                     {t(`common.errors.insufficient-balance`)}
@@ -467,7 +467,7 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                                         <span key={`previousBidAmount${index}`}>
                                             -{' '}
                                             {formatCurrencyWithKey(PAYMENT_CURRENCY, currentPositionsOnContract[index])}{' '}
-                                            for {position}
+                                            on {position}
                                         </span>
                                     ))}
                                 </BidAmountOverlayContainer>
@@ -495,7 +495,7 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                                     </div>
                                     {market.positions.map((position: string, index: number) => (
                                         <span key={`newBidAmount${index}`}>
-                                            - {formatCurrencyWithKey(PAYMENT_CURRENCY, selectedPositions[index])} for{' '}
+                                            - {formatCurrencyWithKey(PAYMENT_CURRENCY, selectedPositions[index])} on{' '}
                                             {position}
                                         </span>
                                     ))}

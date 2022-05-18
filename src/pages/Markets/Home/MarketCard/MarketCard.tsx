@@ -28,19 +28,25 @@ const MarketCard: React.FC<MarketCardProps> = ({ market, accountPosition }) => {
         <Container isClaimAvailable={claimAvailable}>
             <MarketTitle>{market.question}</MarketTitle>
             <Positions>
-                {market.positions.map((position: string, index: number) => (
-                    <Position
-                        key={`${position}${index}`}
-                        className={
-                            market.status === MarketStatusEnum.Open || market.winningPosition === index + 1
-                                ? ''
-                                : 'disabled'
-                        }
-                    >
-                        {!!accountPosition && accountPosition.position === index + 1 && <Checkmark />}
-                        <PositionLabel>{position}</PositionLabel>
-                    </Position>
-                ))}
+                {market.positions.map((position: string, index: number) => {
+                    const isPositionAvailable =
+                        !!accountPosition &&
+                        ((market.isTicketType && accountPosition.position === index + 1) ||
+                            (!market.isTicketType && accountPosition.positions[index] > 0));
+                    return (
+                        <Position
+                            key={`${position}${index}`}
+                            className={
+                                market.status === MarketStatusEnum.Open || market.winningPosition === index + 1
+                                    ? ''
+                                    : 'disabled'
+                            }
+                        >
+                            {isPositionAvailable && <Checkmark />}
+                            <PositionLabel>{position}</PositionLabel>
+                        </Position>
+                    );
+                })}
             </Positions>
             <Info fontSize={18} marginBottom={15}>
                 {market.isTicketType ? (
