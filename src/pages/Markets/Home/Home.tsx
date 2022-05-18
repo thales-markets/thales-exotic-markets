@@ -166,7 +166,9 @@ const Home: React.FC = () => {
 
     const recentlyResolvedCount = useMemo(() => {
         return tagsFilteredMarkets.filter(
-            (market: MarketInfo) => market.status === MarketStatus.ResolvedPendingConfirmation
+            (market: MarketInfo) =>
+                market.status === MarketStatus.ResolvedPendingConfirmation ||
+                market.status === MarketStatus.CancelledPendingConfirmation
         ).length;
     }, [tagsFilteredMarkets]);
 
@@ -225,7 +227,9 @@ const Home: React.FC = () => {
                 break;
             case GlobalFilterEnum.RecentlyResolved:
                 filteredMarkets = filteredMarkets.filter(
-                    (market: MarketInfo) => market.status === MarketStatus.ResolvedPendingConfirmation
+                    (market: MarketInfo) =>
+                        market.status === MarketStatus.ResolvedPendingConfirmation ||
+                        market.status === MarketStatus.CancelledPendingConfirmation
                 );
                 break;
             case GlobalFilterEnum.Resolved:
