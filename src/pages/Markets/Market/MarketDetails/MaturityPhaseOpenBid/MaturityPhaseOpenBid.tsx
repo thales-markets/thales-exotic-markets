@@ -66,6 +66,10 @@ const MaturityPhaseOpenBid: React.FC<MaturityPhaseOpenBidProps> = ({ market }) =
         market.status === MarketStatus.CancelledDisputed ||
         market.status === MarketStatus.CancelledPendingConfirmation;
 
+    const selectedPositionsSum = accountMarketData
+        ? accountMarketData.userPositions.reduce((a, b) => Number(a) + Number(b), 0)
+        : 0;
+
     const handleClaim = async () => {
         const { signer } = networkConnector;
         if (signer) {
@@ -229,6 +233,28 @@ const MaturityPhaseOpenBid: React.FC<MaturityPhaseOpenBidProps> = ({ market }) =
                     );
                 })}
             </Positions>
+            <Info fontSize={18}>
+                <InfoLabel>{t('market.your-total-bid-amount-label')}:</InfoLabel>
+                <InfoContent>{formatCurrencyWithKey(PAYMENT_CURRENCY, selectedPositionsSum)}</InfoContent>
+                <Tooltip
+                    overlay={
+                        <BidAmountOverlayContainer>
+                            <div>{t('market.your-positions-label')}:</div>
+                            {market.positions.map((position: string, index: number) => (
+                                <span key={`newBidAmount${index}`}>
+                                    -{' '}
+                                    {formatCurrencyWithKey(
+                                        PAYMENT_CURRENCY,
+                                        accountMarketData ? accountMarketData.userPositions[index] : 0
+                                    )}{' '}
+                                    on {position}
+                                </span>
+                            ))}
+                        </BidAmountOverlayContainer>
+                    }
+                    iconFontSize={20}
+                />
+            </Info>
             {showFeeData && (
                 <FeesContainer>
                     {!isCancelled && (
@@ -330,6 +356,7 @@ const MaturityPhaseOpenBid: React.FC<MaturityPhaseOpenBidProps> = ({ market }) =
 
 const FeesContainer = styled(FlexDivColumn)`
     align-items: center;
+    margin-top: 30px;
 `;
 
 const ButtonContainer = styled(FlexDivColumn)`
@@ -364,6 +391,13 @@ const NothingToClaim = styled(FlexDivCentered)<{ marginTop?: number }>`
 
 const NoWinnersOverlayContainer = styled(FlexDivColumn)`
     text-align: justify;
+`;
+
+const BidAmountOverlayContainer = styled(FlexDivColumn)`
+    text-align: start;
+    div {
+        margin-bottom: 5px;
+    }
 `;
 
 export default MaturityPhaseOpenBid;

@@ -476,7 +476,7 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
             )}
             <ButtonContainer>
                 {showChangePosition && (
-                    <Info>
+                    <Info fontSize={18}>
                         <InfoLabel>{t('market.your-previous-bid-amount-label')}:</InfoLabel>
                         <InfoContent>
                             {formatCurrencyWithKey(PAYMENT_CURRENCY, currentPositionsOnContractSum)}
@@ -494,11 +494,12 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                                     ))}
                                 </BidAmountOverlayContainer>
                             }
+                            iconFontSize={20}
                         />
                     </Info>
                 )}
                 {market.canUsersPlacePosition && (
-                    <Info>
+                    <Info fontSize={18}>
                         <InfoLabel>
                             {showChangePosition
                                 ? t('market.your-new-bid-amount-label')
@@ -523,6 +524,7 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                                     ))}
                                 </BidAmountOverlayContainer>
                             }
+                            iconFontSize={20}
                         />
                     </Info>
                 )}
