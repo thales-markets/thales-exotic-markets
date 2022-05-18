@@ -12,6 +12,7 @@ import {
     MAXIMUM_TAGS,
     MINIMUM_TICKET_PRICE,
     MAXIMUM_TICKET_PRICE,
+    MAXIMUM_PER_OPEN_BID_POSITION,
 } from 'constants/markets';
 import React, { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -167,7 +168,7 @@ const CreateMarket: React.FC = () => {
     const maxFixedTicketPrice = marketsParameters ? marketsParameters.maxFixedTicketPrice : MAXIMUM_TICKET_PRICE;
     const maxAmountForOpenBidPosition = marketsParameters
         ? marketsParameters.maxAmountForOpenBidPosition
-        : MAXIMUM_TICKET_PRICE;
+        : MAXIMUM_PER_OPEN_BID_POSITION;
 
     const creatorPercentage = marketsParameters ? marketsParameters.creatorPercentage : 0;
     const withdrawalPercentage = marketsParameters ? marketsParameters.withdrawalPercentage : 0;

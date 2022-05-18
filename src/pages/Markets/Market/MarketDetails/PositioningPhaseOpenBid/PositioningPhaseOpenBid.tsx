@@ -27,6 +27,8 @@ import useMarketsParametersQuery from 'queries/markets/useMarketsParametersQuery
 import Tooltip from 'components/Tooltip';
 import { refetchMarketData } from 'utils/queryConnector';
 import BidInput from 'components/fields/BidInput';
+import FieldValidationMessage from 'components/FieldValidationMessage';
+import { MAXIMUM_PER_OPEN_BID_POSITION, MINIMUM_TICKET_PRICE } from 'constants/markets';
 
 type PositioningPhaseOpenBidProps = {
     market: MarketData;
@@ -98,6 +100,10 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
     const safeBoxPercentage = marketsParameters ? marketsParameters.safeBoxPercentage : 0;
     const bidPercentage = creatorPercentage + resolverPercentage + safeBoxPercentage;
     const withdrawalPercentage = marketsParameters ? marketsParameters.withdrawalPercentage : 0;
+    const minFixedTicketPrice = marketsParameters ? marketsParameters.minFixedTicketPrice : MINIMUM_TICKET_PRICE;
+    const maxAmountForOpenBidPosition = marketsParameters
+        ? marketsParameters.maxAmountForOpenBidPosition
+        : MAXIMUM_PER_OPEN_BID_POSITION;
 
     const showBid =
         market.canUsersPlacePosition && currentPositionsOnContract.every((position) => Number(position) === 0);
@@ -114,10 +120,17 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
     const selectedPositionsSum = selectedPositions.reduce((a, b) => Number(a) + Number(b), 0);
     const currentPositionsOnContractSum = currentPositionsOnContract.reduce((a, b) => Number(a) + Number(b), 0);
     const requiredFunds = Number(selectedPositionsSum) - Number(currentPositionsOnContractSum);
+    const isNewAmountValid = Number(selectedPositionsSum) >= Number(currentPositionsOnContractSum);
 
     const insufficientBalance =
         Number(paymentTokenBalance) < Number(requiredFunds) || Number(paymentTokenBalance) === 0;
     const isPositionSelected = selectedPositions.some((position) => Number(position) > 0);
+    const areOpetBidAmountsValid = selectedPositions.every((position) => {
+        return (
+            (Number(position) >= minFixedTicketPrice && Number(position) <= maxAmountForOpenBidPosition) ||
+            Number(position) === 0
+        );
+    });
 
     const isBidButtonDisabled =
         isBidding ||
@@ -126,9 +139,17 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
         !isWalletConnected ||
         !hasAllowance ||
         insufficientBalance ||
-        !isPositionSelected;
+        !isPositionSelected ||
+        !isNewAmountValid ||
+        !areOpetBidAmountsValid;
     const isChangePositionButtonDisabled =
-        isBidding || isWithdrawing || isCanceling || !isWalletConnected || !isPositionSelected;
+        isBidding ||
+        isWithdrawing ||
+        isCanceling ||
+        !isWalletConnected ||
+        !isPositionSelected ||
+        !isNewAmountValid ||
+        !areOpetBidAmountsValid;
     const isWithdrawButtonDisabled = isBidding || isWithdrawing || isCanceling || !isWalletConnected;
     const isCancelButtonDisabled = isBidding || isWithdrawing || isCanceling || !isWalletConnected;
 
@@ -369,6 +390,7 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                             showWithdraw={showWithdraw && Number(currentPositionsOnContract[index]) > 0}
                             onWithdrawClick={() => handleWithdraw(index + 1)}
                             initialValue={currentPositionsOnContract[index]}
+                            disabled={isWithdrawButtonDisabled}
                         />
                         <Info>
                             <InfoLabel>{t('market.pool-size-label')}:</InfoLabel>
@@ -476,7 +498,7 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                     </Info>
                 )}
                 {market.canUsersPlacePosition && (
-                    <Info marginBottom={10}>
+                    <Info>
                         <InfoLabel>
                             {showChangePosition
                                 ? t('market.your-new-bid-amount-label')
@@ -504,6 +526,31 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                         />
                     </Info>
                 )}
+                <ValidationContainer>
+                    <FieldValidationMessage
+                        showValidation={!isNewAmountValid}
+                        message={t(`common.errors.invalid-new-open-bid-amounts`)}
+                        hideArrow
+                    />
+                    <FieldValidationMessage
+                        showValidation={!areOpetBidAmountsValid}
+                        message={t(`common.errors.invalid-amounts-extended`, {
+                            min: formatCurrencyWithKey(
+                                PAYMENT_CURRENCY,
+                                minFixedTicketPrice,
+                                DEFAULT_CURRENCY_DECIMALS,
+                                true
+                            ),
+                            max: formatCurrencyWithKey(
+                                PAYMENT_CURRENCY,
+                                maxAmountForOpenBidPosition,
+                                DEFAULT_CURRENCY_DECIMALS,
+                                true
+                            ),
+                        })}
+                        hideArrow
+                    />
+                </ValidationContainer>
                 {getButtons()}
                 {showCancel && (
                     <MarketButton type="secondary" disabled={isCancelButtonDisabled} onClick={handleCancel}>
@@ -559,6 +606,14 @@ const BidAmountOverlayContainer = styled(FlexDivColumn)`
 
 const RoiOverlayContainer = styled(FlexDivColumn)`
     text-align: justify;
+`;
+
+const ValidationContainer = styled(FlexDivColumn)`
+    align-items: center;
+    margin-bottom: 10px;
+    > div {
+        width: fit-content;
+    }
 `;
 
 export default PositioningPhaseOpenBid;

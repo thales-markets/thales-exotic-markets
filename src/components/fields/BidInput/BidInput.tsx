@@ -48,7 +48,7 @@ const BidInput: React.FC<BidInputProps> = ({
             />
             {showWithdraw && (
                 <ButtonContainer selected={selected}>
-                    <WithdrawButton onClick={onWithdrawClick}>{`Withdraw ${formatCurrencyWithKey(
+                    <WithdrawButton onClick={onWithdrawClick} disabled={disabled}>{`Withdraw ${formatCurrencyWithKey(
                         PAYMENT_CURRENCY,
                         initialValue ? initialValue : 0
                     )}`}</WithdrawButton>
@@ -70,6 +70,9 @@ const Container = styled(FlexDivColumn)<{ selected?: boolean }>`
         line-height: 16px;
         border-color: ${(props) =>
             props.selected ? props.theme.borderColor.tertiary : props.theme.borderColor.primary};
+        &:disabled {
+            opacity: 1;
+        }
     }
     .field-container {
         flex-direction: row;
@@ -90,6 +93,9 @@ const Container = styled(FlexDivColumn)<{ selected?: boolean }>`
         font-size: 16px;
         line-height: 16px;
         padding: 12px 10px 0 0;
+        &.disabled {
+            opacity: 1;
+        }
     }
 `;
 
@@ -105,6 +111,9 @@ const ButtonContainer = styled.div<{ selected?: boolean }>`
             ${(props) => (props.selected ? props.theme.borderColor.tertiary : props.theme.borderColor.primary)};
         color: ${(props) => (props.selected ? props.theme.textColor.tertiary : props.theme.textColor.primary)};
         &:hover {
+            opacity: 1;
+        }
+        &:disabled {
             opacity: 1;
         }
     }

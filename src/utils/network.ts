@@ -1,11 +1,8 @@
-import { getContractFactory, predeploys } from '@eth-optimism/contracts';
 import detectEthereumProvider from '@metamask/detect-provider';
 import { DEFAULT_NETWORK_ID } from 'constants/defaults';
 import { GWEI_UNIT } from 'constants/network';
 import { BigNumber } from 'ethers';
-import { serializeTransaction, UnsignedTransaction } from 'ethers/lib/utils';
 import { EthereumProvider, NetworkId } from 'types/network';
-import networkConnector from 'utils/networkConnector';
 
 export const NetworkIdByName: Record<string, NetworkId> = {
     OptimsimMainnet: 10,
@@ -63,26 +60,6 @@ export const isNetworkSupported = (networkId: number | string): networkId is Net
 };
 
 export const formatGwei = (wei: number) => wei / GWEI_UNIT;
-
-export const getL1FeeInWei = async (txRequest: any) => {
-    const OVM_GasPriceOracle = getContractFactory('OVM_GasPriceOracle', networkConnector.signer).attach(
-        predeploys.OVM_GasPriceOracle
-    );
-    const unsignedTx = (await networkConnector.signer?.populateTransaction(txRequest)) as UnsignedTransaction;
-    if (unsignedTx) {
-        const serializedTx = serializeTransaction({
-            nonce: unsignedTx.nonce ? parseInt(unsignedTx.nonce.toString(10), 10) : 0,
-            value: unsignedTx.value,
-            gasPrice: unsignedTx.gasPrice,
-            gasLimit: unsignedTx.gasLimit,
-            to: unsignedTx.to,
-            data: unsignedTx.data,
-        });
-        const l1FeeInWei = await OVM_GasPriceOracle.getL1Fee(serializedTx);
-        return l1FeeInWei.toNumber();
-    }
-    return null;
-};
 
 export const checkAllowance = async (amount: BigNumber, token: any, walletAddress: string, spender: string) => {
     try {

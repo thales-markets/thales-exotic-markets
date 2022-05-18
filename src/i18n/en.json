@@ -57,6 +57,8 @@
             "invalid-ticket-price-extended": "The ticket price must be between {{min}} and {{max}}",
             "invalid-initial-amounts": "Invalid initial amount(s)",
             "invalid-initial-amounts-extended": "The initial amount per position must be between {{min}} and {{max}}",
+            "invalid-amounts-extended": "The amount per position must be between {{min}} and {{max}}",
+            "invalid-new-open-bid-amounts": "The new bid amount can not be lower than the previous",
             "invalid-data-source": "Invalid data source",
             "invalid-data-source-extended": "Data source is invalid. Data source must be a URL with https prefix.",
             "insufficient-balance-wallet": "Please ensure your wallet has sufficient {{currencyKey}}",
