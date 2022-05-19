@@ -2,7 +2,7 @@ import { useQuery, UseQueryOptions } from 'react-query';
 import QUERY_KEYS from 'constants/queryKeys';
 import { AccountMarketOpenBidData } from 'types/markets';
 import { BigNumberish, ethers } from 'ethers';
-import marketContract from 'utils/contracts/exoticPositionalTicketMarketContract';
+import marketContract from 'utils/contracts/exoticPositionalOpenBidMarketContract';
 import networkConnector from 'utils/networkConnector';
 import { bigNumberFormatter } from 'utils/formatters/ethers';
 
@@ -19,7 +19,6 @@ const useAccountMarketOpenBidDataQuery = (
                     userPositions: [],
                     claimAmount: 0,
                     canClaim: false,
-                    winningAmount: 0,
                     canWithdraw: false,
                     userAlreadyClaimedAmount: 0,
                     isPauserAddress: false,
@@ -32,7 +31,6 @@ const useAccountMarketOpenBidDataQuery = (
                         userPositions,
                         claimAmount,
                         canClaim,
-                        winningAmount,
                         canWithdraw,
                         userAlreadyClaimedAmount,
                         isPauserAddress,
@@ -40,7 +38,6 @@ const useAccountMarketOpenBidDataQuery = (
                         contractWithSigner.getAllUserPositions(walletAddress),
                         contractWithSigner.getUserClaimableAmount(walletAddress),
                         contractWithSigner.canUserClaim(walletAddress),
-                        contractWithSigner.getUserPotentialWinningAmount(walletAddress),
                         contractWithSigner.canUserWithdraw(walletAddress),
                         contractWithSigner.userAlreadyClaimed(walletAddress),
                         marketManagerContract?.isPauserAddress(walletAddress),
@@ -50,7 +47,6 @@ const useAccountMarketOpenBidDataQuery = (
                     );
                     marketData.claimAmount = bigNumberFormatter(claimAmount);
                     marketData.canClaim = canClaim;
-                    marketData.winningAmount = bigNumberFormatter(winningAmount);
                     marketData.canWithdraw = canWithdraw;
                     marketData.userAlreadyClaimedAmount = bigNumberFormatter(userAlreadyClaimedAmount);
                     marketData.isPauserAddress = isPauserAddress;

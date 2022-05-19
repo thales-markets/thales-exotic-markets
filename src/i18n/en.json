@@ -127,6 +127,7 @@
         "total-pool-size-label": "Total pool size",
         "number-of-participants-label": "Number of participants",
         "roi-label": "ROI",
+        "current-roi-label": "Current ROI",
         "roi-tooltip": "Displayed ROI is not guaranteed. Profits are based on the current bids in the pool and they are prone to change. Actual ROI is determined at the end of the positioning phase.",
         "winnings-per-ticket-label": "Winnings per ticket",
         "claim-amount-ticket-label": "Claim amount per ticket",

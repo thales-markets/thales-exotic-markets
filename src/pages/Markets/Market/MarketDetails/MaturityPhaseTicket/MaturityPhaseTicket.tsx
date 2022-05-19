@@ -220,7 +220,7 @@ const MaturityPhaseTicket: React.FC<MaturityPhaseTicketProps> = ({ market }) => 
                                 </InfoContent>
                             </Info>
                         )}
-                        {(market.winningPosition === index + 1 || market.noWinners) && (
+                        {market.winningPosition === index + 1 && (
                             <Info>
                                 <InfoLabel>{t('market.roi-label')}:</InfoLabel>
                                 <InfoContent>

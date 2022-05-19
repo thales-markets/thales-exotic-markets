@@ -18,7 +18,6 @@ import Button from 'components/Button';
 import { MarketStatus } from 'constants/markets';
 import { toast } from 'react-toastify';
 import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
-import { getRoi } from 'utils/markets';
 import { Info, InfoContent, InfoLabel, MainInfo, PositionContainer, PositionLabel, Positions } from 'components/common';
 import { refetchMarketData } from 'utils/queryConnector';
 import Tooltip from 'components/Tooltip';
@@ -215,16 +214,15 @@ const MaturityPhaseOpenBid: React.FC<MaturityPhaseOpenBidProps> = ({ market }) =
                                     )}
                                 </InfoContent>
                             </Info>
-                            {(market.winningPosition === index + 1 || market.noWinners) && (
+                            {market.winningPosition === index + 1 && (
                                 <Info>
                                     <InfoLabel>{t('market.roi-label')}:</InfoLabel>
                                     <InfoContent>
                                         {formatPercentage(
-                                            getRoi(
-                                                accountMarketData ? accountMarketData.userPositions[index] : 0,
-                                                claimAmount,
-                                                !!accountMarketData && accountMarketData.userPositions[index] > 0
-                                            )
+                                            market.openBidMarketData &&
+                                                market.openBidMarketData.roiPerPosition[index] > 0
+                                                ? market.openBidMarketData.roiPerPosition[index]
+                                                : 0
                                         )}
                                     </InfoContent>
                                 </Info>

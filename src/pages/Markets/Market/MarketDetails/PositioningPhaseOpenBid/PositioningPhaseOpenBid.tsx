@@ -21,7 +21,6 @@ import onboardConnector from 'utils/onboardConnector';
 import useAccountMarketOpenBidDataQuery from 'queries/markets/useAccountMarketOpenBidDataQuery';
 import { toast } from 'react-toastify';
 import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
-import { getRoi } from 'utils/markets';
 import { Info, InfoContent, InfoLabel, PositionOpenBidContainer, PositionLabel, Positions } from 'components/common';
 import useMarketsParametersQuery from 'queries/markets/useMarketsParametersQuery';
 import Tooltip from 'components/Tooltip';
@@ -54,10 +53,6 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
     const [currentPositionsOnContract, setCurrentPositionsOnContract] = useState<(number | string)[]>(
         new Array(market.positions.length).fill('')
     );
-    const [positionsOnContract, setPositionsOnContract] = useState<(number | string)[]>(
-        new Array(market.positions.length).fill('')
-    );
-    const [winningAmount, setWinningAmount] = useState<number>(0);
     const [canWithdraw, setCanWithdraw] = useState<boolean>(false);
     const [marketsParameters, setMarketsParameters] = useState<MarketsParameters | undefined>(undefined);
 
@@ -68,8 +63,6 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
     useEffect(() => {
         if (accountMarketDataQuery.isSuccess && accountMarketDataQuery.data) {
             setCurrentPositionsOnContract(accountMarketDataQuery.data.userPositions);
-            setPositionsOnContract(accountMarketDataQuery.data.userPositions);
-            setWinningAmount(accountMarketDataQuery.data.winningAmount);
             setSelectedPositions(accountMarketDataQuery.data.userPositions);
             setCanWithdraw(accountMarketDataQuery.data.canWithdraw);
         }
@@ -222,10 +215,8 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                 const formattedAmounts: BigNumberish[] = [];
 
                 selectedPositions.forEach((position, index) => {
-                    if (Number(position) > 0) {
-                        formattedPositions.push(index + 1);
-                        formattedAmounts.push(ethers.utils.parseEther(Number(position).toString()));
-                    }
+                    formattedPositions.push(index + 1);
+                    formattedAmounts.push(ethers.utils.parseEther(Number(position).toString()));
                 });
 
                 const tx = await marketContractWithSigner.takeOpenBidPositions(formattedPositions, formattedAmounts);
@@ -404,22 +395,12 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                             </InfoContent>
                         </Info>
                         <Info>
-                            <InfoLabel>{t('market.roi-label')}:</InfoLabel>
+                            <InfoLabel>{t('market.current-roi-label')}:</InfoLabel>
                             <InfoContent>
                                 {formatPercentage(
-                                    getRoi(
-                                        market.ticketPrice,
-                                        positionsOnContract.some((position) => Number(position) > 0)
-                                            ? market.fixedMarketData
-                                                ? market.fixedMarketData.winningAmountsNewUser[index]
-                                                : 0
-                                            : Number(positionsOnContract[index] > 0)
-                                            ? winningAmount
-                                            : market.fixedMarketData
-                                            ? market.fixedMarketData.winningAmountsNoPosition[index]
-                                            : 0,
-                                        true
-                                    )
+                                    market.openBidMarketData && market.openBidMarketData.roiPerPosition[index] > 0
+                                        ? market.openBidMarketData.roiPerPosition[index]
+                                        : 0
                                 )}
                             </InfoContent>
                             <Tooltip overlay={<RoiOverlayContainer>{t('market.roi-tooltip')}</RoiOverlayContainer>} />

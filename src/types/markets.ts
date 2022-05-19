@@ -42,6 +42,10 @@ export type FixedMarketData = {
     winningAmountPerTicket: number;
 };
 
+export type OpenBidMarketData = {
+    roiPerPosition: number[];
+};
+
 export type MarketData = MarketInfo & {
     claimablePoolSize: number;
     poolSizePerPosition: number[];
@@ -59,6 +63,7 @@ export type MarketData = MarketInfo & {
     totalFees: number;
     canIssueFees: boolean;
     fixedMarketData?: FixedMarketData;
+    openBidMarketData?: OpenBidMarketData;
 };
 
 export type Markets = MarketInfo[];
@@ -66,7 +71,6 @@ export type Markets = MarketInfo[];
 export type AccountMarketData = {
     claimAmount: number;
     canClaim: boolean;
-    winningAmount: number;
     canWithdraw: boolean;
     userAlreadyClaimedAmount: number;
     isPauserAddress: boolean;
@@ -74,6 +78,7 @@ export type AccountMarketData = {
 
 export type AccountMarketTicketData = AccountMarketData & {
     position: number;
+    winningAmount: number;
 };
 
 export type AccountMarketOpenBidData = AccountMarketData & {

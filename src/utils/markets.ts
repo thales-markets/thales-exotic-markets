@@ -1,8 +1,10 @@
 import { MarketStatus } from 'constants/markets';
 import { AccountPosition, MarketInfo } from 'types/markets';
 
-export const getRoi = (ticketPrice: number, potentialWinnings: number, showRoi: boolean) =>
-    showRoi ? (potentialWinnings - ticketPrice) / ticketPrice : 0;
+export const getRoi = (investment: number, potentialWinnings: number, showRoi: boolean) => {
+    const roi = showRoi ? (potentialWinnings - investment) / investment : 0;
+    return roi > 0 ? roi : 0;
+};
 
 export const isClaimAvailable = (market: MarketInfo, accountPosition?: AccountPosition) =>
     !market.isPaused &&
