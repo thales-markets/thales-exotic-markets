@@ -104,7 +104,7 @@ const CreateMarket: React.FC = () => {
     const [isTicketPriceValid, setIsTicketPriceValid] = useState<boolean>(true);
     const [areOpetBidAmountsValid, setAreOpetBidAmountsValid] = useState<boolean>(true);
     const [initialPosition, setInitialPosition] = useState<number>(0);
-    const [initialPositions, setInitialPositions] = useState<(number | string)[]>(new Array(2).fill(''));
+    const [initialPositions, setInitialPositions] = useState<(number | string)[]>(new Array(2).fill('0'));
     const [marketsParameters, setMarketsParameters] = useState<MarketsParameters | undefined>(undefined);
 
     const marketsParametersQuery = useMarketsParametersQuery(networkId, {
@@ -410,7 +410,7 @@ const CreateMarket: React.FC = () => {
     const addPosition = () => {
         setPositions([...positions, '']);
         setInitialPosition(0);
-        setInitialPositions(new Array(positions.length + 1).fill(''));
+        setInitialPositions(new Array(positions.length + 1).fill('0'));
     };
 
     const removePosition = (index: number) => {
@@ -418,7 +418,7 @@ const CreateMarket: React.FC = () => {
         newPostions.splice(index, 1);
         setPositions(newPostions);
         setInitialPosition(0);
-        setInitialPositions(new Array(newPostions.length).fill(''));
+        setInitialPositions(new Array(newPostions.length).fill('0'));
     };
 
     const setPositionText = (index: number, text: string) => {
@@ -426,7 +426,7 @@ const CreateMarket: React.FC = () => {
         newPostions[index] = text;
         setPositions(newPostions);
         setInitialPosition(0);
-        setInitialPositions(new Array(newPostions.length).fill(''));
+        setInitialPositions(new Array(newPostions.length).fill('0'));
     };
 
     const addTag = (tag: Tag) => {

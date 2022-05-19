@@ -1,6 +1,7 @@
 import Button from 'components/Button';
 import { PAYMENT_CURRENCY } from 'constants/currency';
 import React, { ChangeEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { FlexDivColumn } from 'styles/common';
 import { formatCurrencyWithKey } from 'utils/formatters/number';
@@ -18,6 +19,7 @@ type BidInputProps = {
     showWithdraw?: boolean;
     onWithdrawClick?: () => void;
     initialValue?: string | number;
+    isWithdrawing?: boolean;
 };
 
 const BidInput: React.FC<BidInputProps> = ({
@@ -32,8 +34,11 @@ const BidInput: React.FC<BidInputProps> = ({
     showWithdraw,
     onWithdrawClick,
     initialValue,
+    isWithdrawing,
     ...rest
 }) => {
+    const { t } = useTranslation();
+
     return (
         <Container selected={selected}>
             <NumericInput
@@ -48,10 +53,11 @@ const BidInput: React.FC<BidInputProps> = ({
             />
             {showWithdraw && (
                 <ButtonContainer selected={selected}>
-                    <WithdrawButton onClick={onWithdrawClick} disabled={disabled}>{`Withdraw ${formatCurrencyWithKey(
-                        PAYMENT_CURRENCY,
-                        initialValue ? initialValue : 0
-                    )}`}</WithdrawButton>
+                    <WithdrawButton onClick={onWithdrawClick} disabled={disabled}>
+                        {t(`market.button.withdraw-amount-${isWithdrawing ? 'progress-' : ''}label`, {
+                            amount: formatCurrencyWithKey(PAYMENT_CURRENCY, initialValue ? initialValue : 0),
+                        })}
+                    </WithdrawButton>
                 </ButtonContainer>
             )}
         </Container>

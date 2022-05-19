@@ -47,14 +47,15 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
     const [openApprovalModal, setOpenApprovalModal] = useState<boolean>(false);
     const [paymentTokenBalance, setPaymentTokenBalance] = useState<number | string>('');
     const [selectedPositions, setSelectedPositions] = useState<(number | string)[]>(
-        new Array(market.positions.length).fill('')
+        new Array(market.positions.length).fill('0')
     );
     // we need two positionOnContract, one is set on success, the second one only from query
     const [currentPositionsOnContract, setCurrentPositionsOnContract] = useState<(number | string)[]>(
-        new Array(market.positions.length).fill('')
+        new Array(market.positions.length).fill('0')
     );
     const [canWithdraw, setCanWithdraw] = useState<boolean>(false);
     const [marketsParameters, setMarketsParameters] = useState<MarketsParameters | undefined>(undefined);
+    const [withdrawPosition, setWithdrawPosition] = useState<number>(-1);
 
     const accountMarketDataQuery = useAccountMarketOpenBidDataQuery(market.address, walletAddress, {
         enabled: isAppReady && isWalletConnected,
@@ -246,6 +247,7 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
         if (signer) {
             const id = toast.loading(t('market.toast-messsage.transaction-pending'));
             setIsWithdrawing(true);
+            setWithdrawPosition(position);
 
             try {
                 const marketContractWithSigner = new ethers.Contract(market.address, marketContract.abi, signer);
@@ -257,13 +259,22 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                     refetchMarketData(market.address, walletAddress);
                     toast.update(id, getSuccessToastOptions(t('market.toast-messsage.withdraw-success')));
                     setIsWithdrawing(false);
-                    setCurrentPositionsOnContract(new Array(market.positions.length).fill(''));
-                    setSelectedPositions(new Array(market.positions.length).fill(''));
+                    setWithdrawPosition(-1);
+                    if (position === 0) {
+                        setSelectedPositions(new Array(market.positions.length).fill('0'));
+                        setCurrentPositionsOnContract(new Array(market.positions.length).fill('0'));
+                    } else {
+                        const newPositions = [...selectedPositions];
+                        newPositions[position - 1] = '0';
+                        setSelectedPositions(newPositions);
+                        setCurrentPositionsOnContract(newPositions);
+                    }
                 }
             } catch (e) {
                 console.log(e);
                 toast.update(id, getErrorToastOptions(t('common.errors.unknown-error-try-again')));
                 setIsWithdrawing(false);
+                setWithdrawPosition(-1);
             }
         }
     };
@@ -348,9 +359,9 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                         disabled={isWithdrawButtonDisabled}
                         onClick={() => handleWithdraw(0)}
                     >
-                        {!isWithdrawing
-                            ? t('market.button.withdraw-all-label')
-                            : t('market.button.withdraw-progress-label')}
+                        {isWithdrawing && withdrawPosition === 0
+                            ? t('market.button.withdraw-progress-label')
+                            : t('market.button.withdraw-all-label')}
                     </MarketButton>
                 )}
             </>
@@ -382,6 +393,7 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                             onWithdrawClick={() => handleWithdraw(index + 1)}
                             initialValue={currentPositionsOnContract[index]}
                             disabled={isWithdrawButtonDisabled}
+                            isWithdrawing={withdrawPosition === index + 1}
                         />
                         <Info>
                             <InfoLabel>{t('market.pool-size-label')}:</InfoLabel>

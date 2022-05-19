@@ -175,6 +175,8 @@
             "withdraw-label": "Withdraw",
             "withdraw-all-label": "Withdraw ALL",
             "withdraw-progress-label": "Withdrawal in progress...",
+            "withdraw-amount-label": "Withdraw {{amount}}",
+            "withdraw-amount-progress-label": "Withdrawing {{amount}}...",
             "resolve-market-label": "Resolve market",
             "resolve-market-progress-label": "Resolving in progress...",
             "claim-label": "Claim",
