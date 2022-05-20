@@ -20,6 +20,7 @@ type BidInputProps = {
     onWithdrawClick?: () => void;
     initialValue?: string | number;
     isWithdrawing?: boolean;
+    withdrawDisabled?: boolean;
 };
 
 const BidInput: React.FC<BidInputProps> = ({
@@ -35,6 +36,7 @@ const BidInput: React.FC<BidInputProps> = ({
     onWithdrawClick,
     initialValue,
     isWithdrawing,
+    withdrawDisabled,
     ...rest
 }) => {
     const { t } = useTranslation();
@@ -52,8 +54,8 @@ const BidInput: React.FC<BidInputProps> = ({
                 currencyLabel={currencyLabel}
             />
             {showWithdraw && (
-                <ButtonContainer selected={selected}>
-                    <WithdrawButton onClick={onWithdrawClick} disabled={disabled}>
+                <ButtonContainer selected={selected} disabled={!!withdrawDisabled}>
+                    <WithdrawButton onClick={onWithdrawClick} disabled={disabled || withdrawDisabled}>
                         {t(`market.button.withdraw-amount-${isWithdrawing ? 'progress-' : ''}label`, {
                             amount: formatCurrencyWithKey(PAYMENT_CURRENCY, initialValue ? initialValue : 0),
                         })}
@@ -105,7 +107,7 @@ const Container = styled(FlexDivColumn)<{ selected?: boolean }>`
     }
 `;
 
-const ButtonContainer = styled.div<{ selected?: boolean }>`
+const ButtonContainer = styled.div<{ selected?: boolean; disabled: boolean }>`
     margin-top: 6px;
     button {
         background: transparent;
@@ -117,10 +119,10 @@ const ButtonContainer = styled.div<{ selected?: boolean }>`
             ${(props) => (props.selected ? props.theme.borderColor.tertiary : props.theme.borderColor.primary)};
         color: ${(props) => (props.selected ? props.theme.textColor.tertiary : props.theme.textColor.primary)};
         &:hover {
-            opacity: 1;
+            opacity: ${(props) => (props.disabled ? 0.6 : 1)};
         }
         &:disabled {
-            opacity: 1;
+            opacity: ${(props) => (props.disabled ? 0.6 : 1)};
         }
     }
 `;

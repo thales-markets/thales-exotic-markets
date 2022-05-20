@@ -27,7 +27,12 @@ import Tooltip from 'components/Tooltip';
 import { refetchMarketData } from 'utils/queryConnector';
 import BidInput from 'components/fields/BidInput';
 import FieldValidationMessage from 'components/FieldValidationMessage';
-import { MAXIMUM_PER_OPEN_BID_POSITION, MINIMUM_TICKET_PRICE } from 'constants/markets';
+import {
+    MAXIMUM_PER_OPEN_BID_POSITION,
+    MAXIMUM_WITHDRAW_PERCENTAGE,
+    MINIMUM_TICKET_PRICE,
+    WITHDRAW_PROTECTION_DURATION,
+} from 'constants/markets';
 
 type PositioningPhaseOpenBidProps = {
     market: MarketData;
@@ -116,6 +121,9 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
     const requiredFunds = Number(selectedPositionsSum) - Number(currentPositionsOnContractSum);
     const isNewAmountValid = Number(selectedPositionsSum) >= Number(currentPositionsOnContractSum);
 
+    const isWithdrawProtectionDuration = Date.now() + WITHDRAW_PROTECTION_DURATION > market.endOfPositioning;
+    const maxWithdrawAmount = (MAXIMUM_WITHDRAW_PERCENTAGE * Number(market.poolSize)) / 100;
+
     const insufficientBalance =
         Number(paymentTokenBalance) < Number(requiredFunds) || Number(paymentTokenBalance) === 0;
     const isPositionSelected = selectedPositions.some((position) => Number(position) > 0);
@@ -144,8 +152,12 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
         !isPositionSelected ||
         !isNewAmountValid ||
         !areOpetBidAmountsValid;
-    const isWithdrawButtonDisabled = isBidding || isWithdrawing || isCanceling || !isWalletConnected;
+    const areWithdrawButtonsDisabled = isBidding || isWithdrawing || isCanceling || !isWalletConnected;
+    const isWithdrawAllButtonDisabled =
+        areWithdrawButtonsDisabled ||
+        (isWithdrawProtectionDuration && Number(currentPositionsOnContractSum) > maxWithdrawAmount);
     const isCancelButtonDisabled = isBidding || isWithdrawing || isCanceling || !isWalletConnected;
+    const isPositionCardDisabled = isBidding || isWithdrawing || isCanceling;
 
     useEffect(() => {
         const { paymentTokenContract, thalesBondsContract, signer } = networkConnector;
@@ -356,7 +368,7 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                 {showWithdraw && (
                     <MarketButton
                         type="secondary"
-                        disabled={isWithdrawButtonDisabled}
+                        disabled={isWithdrawAllButtonDisabled}
                         onClick={() => handleWithdraw(0)}
                     >
                         {isWithdrawing && withdrawPosition === 0
@@ -374,7 +386,7 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                 {market.positions.map((position: string, index: number) => (
                     <PositionOpenBidContainer
                         key={position}
-                        className={`${isBidding || isWithdrawing ? 'disabled' : ''} ${
+                        className={`${isPositionCardDisabled ? 'disabled' : ''} ${
                             Number(selectedPositions[index]) > 0 ? 'selected' : ''
                         }`}
                     >
@@ -392,8 +404,12 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                             showWithdraw={showWithdraw && Number(currentPositionsOnContract[index]) > 0}
                             onWithdrawClick={() => handleWithdraw(index + 1)}
                             initialValue={currentPositionsOnContract[index]}
-                            disabled={isWithdrawButtonDisabled}
+                            disabled={isPositionCardDisabled}
                             isWithdrawing={withdrawPosition === index + 1}
+                            withdrawDisabled={
+                                isWithdrawProtectionDuration &&
+                                Number(currentPositionsOnContract[index]) > maxWithdrawAmount
+                            }
                         />
                         <Info>
                             <InfoLabel>{t('market.pool-size-label')}:</InfoLabel>
