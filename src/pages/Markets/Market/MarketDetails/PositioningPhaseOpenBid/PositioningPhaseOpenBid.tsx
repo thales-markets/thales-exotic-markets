@@ -123,6 +123,8 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
 
     const isWithdrawProtectionDuration = Date.now() + WITHDRAW_PROTECTION_DURATION > market.endOfPositioning;
     const maxWithdrawAmount = (MAXIMUM_WITHDRAW_PERCENTAGE * Number(market.poolSize)) / 100;
+    const hasMoreThanLimitInProtectionPeriod =
+        isWithdrawProtectionDuration && Number(currentPositionsOnContractSum) > maxWithdrawAmount;
 
     const insufficientBalance =
         Number(paymentTokenBalance) < Number(requiredFunds) || Number(paymentTokenBalance) === 0;
@@ -151,11 +153,10 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
         !isWalletConnected ||
         !isPositionSelected ||
         !isNewAmountValid ||
-        !areOpetBidAmountsValid;
+        !areOpetBidAmountsValid ||
+        hasMoreThanLimitInProtectionPeriod;
     const areWithdrawButtonsDisabled = isBidding || isWithdrawing || isCanceling || !isWalletConnected;
-    const isWithdrawAllButtonDisabled =
-        areWithdrawButtonsDisabled ||
-        (isWithdrawProtectionDuration && Number(currentPositionsOnContractSum) > maxWithdrawAmount);
+    const isWithdrawAllButtonDisabled = areWithdrawButtonsDisabled || hasMoreThanLimitInProtectionPeriod;
     const isCancelButtonDisabled = isBidding || isWithdrawing || isCanceling || !isWalletConnected;
     const isPositionCardDisabled = isBidding || isWithdrawing || isCanceling;
 
