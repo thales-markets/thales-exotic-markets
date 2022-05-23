@@ -7,7 +7,7 @@ import { RootState } from 'redux/rootReducer';
 import styled from 'styled-components';
 import { FlexDivColumn } from 'styles/common';
 import { MarketData, MarketsParameters } from 'types/markets';
-import { formatCurrencyWithKey, formatPercentage } from 'utils/formatters/number';
+import { formatCurrency, formatCurrencyWithKey, formatPercentage } from 'utils/formatters/number';
 import { PAYMENT_CURRENCY, DEFAULT_CURRENCY_DECIMALS } from 'constants/currency';
 import { getIsWalletConnected, getNetworkId, getWalletAddress } from 'redux/modules/wallet';
 import { checkAllowance } from 'utils/network';
@@ -33,6 +33,7 @@ import {
     MINIMUM_TICKET_PRICE,
     WITHDRAW_PROTECTION_DURATION,
 } from 'constants/markets';
+import WithdrawalRulesModal from 'pages/Markets/components/WithdrawalRulesModal';
 
 type PositioningPhaseOpenBidProps = {
     market: MarketData;
@@ -61,6 +62,7 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
     const [canWithdraw, setCanWithdraw] = useState<boolean>(false);
     const [marketsParameters, setMarketsParameters] = useState<MarketsParameters | undefined>(undefined);
     const [withdrawPosition, setWithdrawPosition] = useState<number>(-1);
+    const [openWithdrawalRulesModal, setOpenWithdrawalRulesModal] = useState<boolean>(false);
 
     const accountMarketDataQuery = useAccountMarketOpenBidDataQuery(market.address, walletAddress, {
         enabled: isAppReady && isWalletConnected,
@@ -460,25 +462,34 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                         />
                     </Info>
                     {market.isWithdrawalAllowed ? (
-                        <Info>
-                            <InfoLabel>{t('market.withdrawal-fee-label')}:</InfoLabel>
-                            <InfoContent>{withdrawalPercentage}%</InfoContent>
-                            <Tooltip
-                                overlay={
-                                    <FeesOverlayContainer>
-                                        <Trans
-                                            i18nKey="market.withdrawal-fee-tooltip"
-                                            components={[<div key="1" />, <span key="2" />]}
-                                            values={{
-                                                withdrawalPercentage,
-                                                creatorPercentage: withdrawalPercentage / 2,
-                                                safeBoxPercentage: withdrawalPercentage / 2,
-                                            }}
-                                        />
-                                    </FeesOverlayContainer>
-                                }
-                            />
-                        </Info>
+                        <>
+                            <Info>
+                                <InfoLabel>{t('market.withdrawal-fee-label')}:</InfoLabel>
+                                <InfoContent>{withdrawalPercentage}%</InfoContent>
+                                <Tooltip
+                                    overlay={
+                                        <FeesOverlayContainer>
+                                            <Trans
+                                                i18nKey="market.withdrawal-fee-tooltip"
+                                                components={[<div key="1" />, <span key="2" />]}
+                                                values={{
+                                                    withdrawalPercentage,
+                                                    creatorPercentage: withdrawalPercentage / 2,
+                                                    safeBoxPercentage: withdrawalPercentage / 2,
+                                                }}
+                                            />
+                                        </FeesOverlayContainer>
+                                    }
+                                />
+                            </Info>
+                            <Info>
+                                <InfoLabel>{t('market.withdrawal-allowed')}</InfoLabel>
+                                <WithdrawalRulesComponent onClick={() => setOpenWithdrawalRulesModal(true)}>
+                                    {t('market.withdrawal-rules-label')}
+                                </WithdrawalRulesComponent>
+                                .
+                            </Info>
+                        </>
                     ) : (
                         <Info>{t('market.withdrawal-not-allowed')}</Info>
                     )}
@@ -581,6 +592,16 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                     onClose={() => setOpenApprovalModal(false)}
                 />
             )}
+            {openWithdrawalRulesModal && (
+                <WithdrawalRulesModal
+                    onClose={() => setOpenWithdrawalRulesModal(false)}
+                    withdrawalPeriodInHours={formatCurrency(
+                        (market.endOfPositioning - market.withdrawalPeriod) / 1000 / 60 / 60,
+                        DEFAULT_CURRENCY_DECIMALS,
+                        true
+                    )}
+                />
+            )}
         </>
     );
 };
@@ -607,6 +628,12 @@ const FeesOverlayContainer = styled(FlexDivColumn)`
             margin-bottom: 5px;
         }
     }
+`;
+
+const WithdrawalRulesComponent = styled.span`
+    font-style: italic;
+    font-weight: 700;
+    cursor: pointer;
 `;
 
 const BidAmountOverlayContainer = styled(FlexDivColumn)`

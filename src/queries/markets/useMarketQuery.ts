@@ -32,6 +32,7 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                     noWinners,
                     allFees,
                     canIssueFees,
+                    withdrawalPeriod,
                     creatorBond,
                 ] = await Promise.all([
                     marketDataContract?.getAllMarketData(marketAddress),
@@ -44,6 +45,7 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                     contract?.noWinners(),
                     contract?.getAllFees(),
                     contract?.canIssueFees(),
+                    contract?.withdrawalPeriod(),
                     thalesBondsContract?.getCreatorBondForMarket(marketAddress),
                 ]);
 
@@ -132,6 +134,7 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                     safeBoxFee: bigNumberFormatter(safeBoxFee),
                     totalFees: bigNumberFormatter(totalFees),
                     canIssueFees,
+                    withdrawalPeriod: Number(withdrawalPeriod) * 1000,
                 };
 
                 market.status = getMarketStatus(market);

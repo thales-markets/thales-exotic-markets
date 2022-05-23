@@ -62,6 +62,7 @@ export type MarketData = MarketInfo & {
     safeBoxFee: number;
     totalFees: number;
     canIssueFees: boolean;
+    withdrawalPeriod: number;
     fixedMarketData?: FixedMarketData;
     openBidMarketData?: OpenBidMarketData;
 };
