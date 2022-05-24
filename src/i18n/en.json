@@ -196,7 +196,8 @@
             "pause-market-label": "Pause market",
             "pause-progress-label": "Pausing in progress...",
             "update-positions-label": "Update positions",
-            "update-positions-progress-label": "Updating in progress..."
+            "update-positions-progress-label": "Updating in progress...",
+            "reset-positions-label": "Reset positions"
         },
         "toast-messsage": {
             "transaction-pending": "Transaction pending",

@@ -106,12 +106,12 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
         ? marketsParameters.maxAmountForOpenBidPosition
         : MAXIMUM_PER_OPEN_BID_POSITION;
 
+    const arePostionsChanged = selectedPositions.some(
+        (position, index) => Number(currentPositionsOnContract[index]) !== Number(position)
+    );
     const showBid =
         market.canUsersPlacePosition && currentPositionsOnContract.every((position) => Number(position) === 0);
-    const showChangePosition =
-        market.canUsersPlacePosition &&
-        !showBid &&
-        selectedPositions.some((position, index) => Number(currentPositionsOnContract[index]) !== Number(position));
+    const showChangePosition = market.canUsersPlacePosition && !showBid && arePostionsChanged;
     const showWithdraw =
         market.canUsersPlacePosition &&
         canWithdraw &&
@@ -376,7 +376,7 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                     >
                         {isWithdrawing && withdrawPosition === 0
                             ? t('market.button.withdraw-progress-label')
-                            : t('market.button.withdraw-all-label')}
+                            : t('market.button.withdraw-label')}
                     </MarketButton>
                 )}
             </>
@@ -404,7 +404,6 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                             }}
                             currencyLabel={PAYMENT_CURRENCY}
                             selected={Number(selectedPositions[index]) > 0}
-                            showWithdraw={showWithdraw && Number(currentPositionsOnContract[index]) > 0}
                             onWithdrawClick={() => handleWithdraw(index + 1)}
                             initialValue={currentPositionsOnContract[index]}
                             disabled={isPositionCardDisabled}
@@ -574,6 +573,11 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                         hideArrow
                     />
                 </ValidationContainer>
+                {arePostionsChanged && (
+                    <MarketButton type="secondary" onClick={() => setSelectedPositions(currentPositionsOnContract)}>
+                        {t('market.button.reset-positions-label')}
+                    </MarketButton>
+                )}
                 {getButtons()}
                 {showCancel && (
                     <MarketButton type="secondary" disabled={isCancelButtonDisabled} onClick={handleCancel}>

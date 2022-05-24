@@ -52,6 +52,7 @@ const BidInput: React.FC<BidInputProps> = ({
                 showValidation={showValidation}
                 validationMessage={validationMessage}
                 currencyLabel={currencyLabel}
+                selectOnFocus
             />
             {showWithdraw && (
                 <ButtonContainer selected={selected} disabled={!!withdrawDisabled}>
