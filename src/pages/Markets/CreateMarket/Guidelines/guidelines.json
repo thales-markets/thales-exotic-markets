@@ -20,11 +20,7 @@
         "tooltip": "market eg: Will ETH hit $xxxx price by xx/xx/xx date? With the Positional Phase set to end 2weeks from the date of market creation.\n - YES\n - NO\n \n If ETH hits the target price before the end of the Positional Phase (2 weeks), the market must be resolved as [cancelled] by the market creator. Any other resolution will be subject to dispute and slashing"
     },
     {
-        "text": "End of positioning must not be more than 1 month into the future",
-        "tooltip": ""
-    },
-    {
-        "text": "Market resolution/question should not be more than 6 months into the future",
+        "text": "Positioning phase should not be more than 1 year into the future and Market resolution/question should not be more than 2 years into the future",
         "tooltip": ""
     },
     {
