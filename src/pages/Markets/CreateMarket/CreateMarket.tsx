@@ -644,6 +644,7 @@ const CreateMarket: React.FC = () => {
                                             setInitialPositions(newInitialPositions);
                                         }}
                                         currencyLabel={PAYMENT_CURRENCY}
+                                        inputDisabled={isSubmitting || creationRestrictedToOwner}
                                     />
                                 );
                             })}

@@ -21,6 +21,7 @@ type BidInputProps = {
     initialValue?: string | number;
     isWithdrawing?: boolean;
     withdrawDisabled?: boolean;
+    inputDisabled?: boolean;
 };
 
 const BidInput: React.FC<BidInputProps> = ({
@@ -37,12 +38,13 @@ const BidInput: React.FC<BidInputProps> = ({
     initialValue,
     isWithdrawing,
     withdrawDisabled,
+    inputDisabled,
     ...rest
 }) => {
     const { t } = useTranslation();
 
     return (
-        <Container selected={selected}>
+        <Container selected={selected} inputDisabled={inputDisabled}>
             <NumericInput
                 {...rest}
                 value={value}
@@ -67,7 +69,7 @@ const BidInput: React.FC<BidInputProps> = ({
     );
 };
 
-const Container = styled(FlexDivColumn)<{ selected?: boolean }>`
+const Container = styled(FlexDivColumn)<{ selected?: boolean; inputDisabled?: boolean }>`
     margin-top: 10px;
     margin-bottom: 10px;
     align-items: center;
@@ -80,7 +82,7 @@ const Container = styled(FlexDivColumn)<{ selected?: boolean }>`
         border-color: ${(props) =>
             props.selected ? props.theme.borderColor.tertiary : props.theme.borderColor.primary};
         &:disabled {
-            opacity: 1;
+            opacity: ${(props) => (props.inputDisabled ? 0.4 : 1)};
         }
     }
     .field-container {
@@ -103,7 +105,7 @@ const Container = styled(FlexDivColumn)<{ selected?: boolean }>`
         line-height: 16px;
         padding: 12px 10px 0 0;
         &.disabled {
-            opacity: 1;
+            opacity: ${(props) => (props.inputDisabled ? 0.4 : 1)};
         }
     }
 `;

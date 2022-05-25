@@ -574,7 +574,11 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                     />
                 </ValidationContainer>
                 {arePostionsChanged && (
-                    <MarketButton type="secondary" onClick={() => setSelectedPositions(currentPositionsOnContract)}>
+                    <MarketButton
+                        type="secondary"
+                        disabled={isPositionCardDisabled}
+                        onClick={() => setSelectedPositions(currentPositionsOnContract)}
+                    >
                         {t('market.button.reset-positions-label')}
                     </MarketButton>
                 )}
