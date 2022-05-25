@@ -341,7 +341,7 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                 </MarketButton>
             );
         }
-        if (!hasAllowance && showBid) {
+        if (!hasAllowance) {
             return (
                 <MarketButton type="secondary" disabled={isAllowing} onClick={() => setOpenApprovalModal(true)}>
                     {!isAllowing
