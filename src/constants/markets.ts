@@ -34,7 +34,7 @@ export const MAXIMUM_TICKET_PRICE = 1000;
 export const MAXIMUM_PER_OPEN_BID_POSITION = 1000;
 export const MAXIMUM_WITHDRAW_PERCENTAGE = 10;
 
-export const DATE_PICKER_MAX_LENGTH_MONTHS = 1;
+export const DATE_PICKER_MAX_LENGTH_MONTHS = 12;
 export const TODAYS_DATE = new Date();
 export const DATE_PICKER_MIN_DATE = TODAYS_DATE; // today's date
 
@@ -42,7 +42,7 @@ export const WITHDRAW_PROTECTION_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 
 const maxDate = new Date();
 maxDate.setMonth(maxDate.getMonth() + DATE_PICKER_MAX_LENGTH_MONTHS);
-export const DATE_PICKER_MAX_DATE = maxDate; // 2 month from now
+export const DATE_PICKER_MAX_DATE = maxDate; // 12 months from now
 
 export const MAXIMUM_INPUT_CHARACTERS = 200;
 

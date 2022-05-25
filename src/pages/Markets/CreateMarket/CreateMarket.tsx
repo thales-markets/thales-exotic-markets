@@ -534,7 +534,7 @@ const CreateMarket: React.FC = () => {
                         label={t('market.create-market.positioning-end-label')}
                         tooltip={t('market.create-market.positioning-end-tooltip', {
                             min: formatCurrency(minimumPositioningDuration / 60 / 60, DEFAULT_CURRENCY_DECIMALS, true),
-                            max: DATE_PICKER_MAX_LENGTH_MONTHS,
+                            max: DATE_PICKER_MAX_LENGTH_MONTHS / 12,
                         })}
                         disabled={isSubmitting || creationRestrictedToOwner}
                         minTime={minTime}

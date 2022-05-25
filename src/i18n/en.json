@@ -250,7 +250,7 @@
             "your-initial-positions-tooltip": "Selecting the initial position(s) and entering the initial amount(s) you will provide initial liquidity for the market.",
             "add-position-label": "ADD position",
             "positioning-end-label": "Positioning end (UTC)",
-            "positioning-end-tooltip": "The length of the positioning phase has to be at least {{min}} hours and must not be more than {{max}} month.",
+            "positioning-end-tooltip": "The length of the positioning phase has to be at least {{min}} hours and must not be more than {{max}} year.",
             "type-label": "Type",
             "type-tooltip": "For Fixed ticket market one wallet can buy only one ticket and choose a single position. For Open bid market one wallet can enter multiple bids and spread the bids across multiple positions.",
             "type-toggle-tooltip": "Only ticket type is available now",
