@@ -7,6 +7,9 @@ import Table from 'components/Table';
 import ViewEtherscanLink from 'components/ViewEtherscanLink';
 import { MarketTransaction, MarketTransactions } from 'types/markets';
 import { PAYMENT_CURRENCY } from 'constants/currency';
+import styled from 'styled-components';
+import { FlexDivColumn } from 'styles/common';
+import Tooltip from 'components/Tooltip';
 
 type TransactionsTableProps = {
     transactions: MarketTransactions;
@@ -24,7 +27,7 @@ export const TransactionsTable: FC<TransactionsTableProps> = memo(({ transaction
                         Header: <>{t('market.table.date-time-col')}</>,
                         accessor: 'timestamp',
                         Cell: (cellProps: CellProps<MarketTransaction, MarketTransaction['timestamp']>) => (
-                            <p>{formatTxTimestamp(cellProps.cell.value)}</p>
+                            <CellContent>{formatTxTimestamp(cellProps.cell.value)}</CellContent>
                         ),
                         width: 150,
                         sortable: true,
@@ -33,7 +36,7 @@ export const TransactionsTable: FC<TransactionsTableProps> = memo(({ transaction
                         Header: <>{t('market.table.type-col')}</>,
                         accessor: 'type',
                         Cell: (cellProps: CellProps<MarketTransaction, MarketTransaction['type']>) => (
-                            <p>{t(`market.table.type.${cellProps.cell.value}`)}</p>
+                            <CellContent>{t(`market.table.type.${cellProps.cell.value}`)}</CellContent>
                         ),
                         width: 150,
                         sortable: true,
@@ -42,7 +45,7 @@ export const TransactionsTable: FC<TransactionsTableProps> = memo(({ transaction
                         Header: <>{t('market.table.position-col')}</>,
                         accessor: 'position',
                         Cell: (cellProps: CellProps<MarketTransaction, MarketTransaction['position']>) => (
-                            <p>{cellProps.cell.value}</p>
+                            <CellContent>{cellProps.cell.value}</CellContent>
                         ),
                         width: 150,
                         sortable: true,
@@ -51,13 +54,47 @@ export const TransactionsTable: FC<TransactionsTableProps> = memo(({ transaction
                         Header: <>{t('market.table.amount-col')}</>,
                         sortType: 'basic',
                         accessor: 'amount',
-                        Cell: (cellProps: CellProps<MarketTransaction, MarketTransaction['amount']>) => (
-                            <p>
-                                {Number(cellProps.cell.value) > 0
-                                    ? formatCurrencyWithKey(PAYMENT_CURRENCY, cellProps.cell.value)
-                                    : '-'}
-                            </p>
-                        ),
+                        Cell: (cellProps: CellProps<MarketTransaction, MarketTransaction['amount']>) => {
+                            return !cellProps.cell.row.original.isTicketType &&
+                                (cellProps.cell.row.original.type === 'bid' ||
+                                    cellProps.cell.row.original.type === 'updatePositions') ? (
+                                <Tooltip
+                                    component={
+                                        <CellContent>
+                                            {Number(cellProps.cell.value) > 0
+                                                ? formatCurrencyWithKey(PAYMENT_CURRENCY, cellProps.cell.value)
+                                                : '-'}
+                                        </CellContent>
+                                    }
+                                    overlay={
+                                        <PositionOverlayContainer>
+                                            <div>{t('market.table.position-col-tooltip-title')}:</div>
+                                            {cellProps.cell.row.original.positionLabels.map(
+                                                (position: string, index: number) => {
+                                                    if (cellProps.cell.row.original.positions[index] === 0) return;
+                                                    return (
+                                                        <span key={`position${index}`}>
+                                                            -{' '}
+                                                            {formatCurrencyWithKey(
+                                                                PAYMENT_CURRENCY,
+                                                                cellProps.cell.row.original.positions[index]
+                                                            )}{' '}
+                                                            on {position}
+                                                        </span>
+                                                    );
+                                                }
+                                            )}
+                                        </PositionOverlayContainer>
+                                    }
+                                />
+                            ) : (
+                                <CellContent>
+                                    {Number(cellProps.cell.value) > 0
+                                        ? formatCurrencyWithKey(PAYMENT_CURRENCY, cellProps.cell.value)
+                                        : '-'}
+                                </CellContent>
+                            );
+                        },
                         width: 150,
                         sortable: true,
                     },
@@ -77,5 +114,16 @@ export const TransactionsTable: FC<TransactionsTableProps> = memo(({ transaction
         </>
     );
 });
+
+const CellContent = styled.span`
+    padding: 4px 0;
+`;
+
+const PositionOverlayContainer = styled(FlexDivColumn)`
+    text-align: start;
+    div {
+        margin-bottom: 5px;
+    }
+`;
 
 export default TransactionsTable;

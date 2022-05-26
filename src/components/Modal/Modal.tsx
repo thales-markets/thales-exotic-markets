@@ -7,6 +7,7 @@ type ModalProps = {
     title: string;
     shouldCloseOnOverlayClick?: boolean;
     onClose: () => void;
+    hideClose?: boolean;
 };
 
 ReactModal.setAppElement('#root');
@@ -28,7 +29,7 @@ const customStyles = {
     },
 };
 
-export const Modal: React.FC<ModalProps> = ({ title, onClose, children, shouldCloseOnOverlayClick }) => {
+export const Modal: React.FC<ModalProps> = ({ title, onClose, children, shouldCloseOnOverlayClick, hideClose }) => {
     return (
         <ReactModal
             isOpen
@@ -39,7 +40,7 @@ export const Modal: React.FC<ModalProps> = ({ title, onClose, children, shouldCl
             <Container>
                 <Header>
                     <Title>{title}</Title>
-                    <FlexDivRow>{<CloseIcon onClick={onClose} />}</FlexDivRow>
+                    {!hideClose && <FlexDivRow>{<CloseIcon onClick={onClose} />}</FlexDivRow>}
                 </Header>
                 {children}
             </Container>

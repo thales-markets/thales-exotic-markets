@@ -18,7 +18,6 @@ const useAccountMarketDataQuery = (
                 const marketData: AccountMarketData = {
                     claimAmount: 0,
                     canClaim: false,
-                    winningAmount: 0,
                     canWithdraw: false,
                     userAlreadyClaimedAmount: 0,
                     isPauserAddress: false,
@@ -30,21 +29,18 @@ const useAccountMarketDataQuery = (
                     const [
                         claimAmount,
                         canClaim,
-                        winningAmount,
                         canWithdraw,
                         userAlreadyClaimedAmount,
                         isPauserAddress,
                     ] = await Promise.all([
                         contractWithSigner.getUserClaimableAmount(walletAddress),
                         contractWithSigner.canUserClaim(walletAddress),
-                        contractWithSigner.getUserPotentialWinningAmount(walletAddress),
                         contractWithSigner.canUserWithdraw(walletAddress),
                         contractWithSigner.userAlreadyClaimed(walletAddress),
                         marketManagerContract?.isPauserAddress(walletAddress),
                     ]);
                     marketData.claimAmount = bigNumberFormatter(claimAmount);
                     marketData.canClaim = canClaim;
-                    marketData.winningAmount = bigNumberFormatter(winningAmount);
                     marketData.canWithdraw = canWithdraw;
                     marketData.userAlreadyClaimedAmount = bigNumberFormatter(userAlreadyClaimedAmount);
                     marketData.isPauserAddress = isPauserAddress;

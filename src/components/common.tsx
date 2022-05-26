@@ -38,8 +38,8 @@ export const InfoContent = styled.span`
 
 export const MainInfo = styled(Info)`
     font-weight: bold;
-    font-size: 25px;
-    line-height: 35px;
+    font-size: 20px;
+    line-height: 25px;
 `;
 
 export const Positions = styled(FlexDivColumn)`

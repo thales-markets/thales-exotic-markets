@@ -28,6 +28,7 @@ const DataSource: React.FC<DataSourceProps> = ({ dataSource }) => {
                     <DataSourceLabel>{t('market.data-source-label')}</DataSourceLabel>
                 </Container>
             }
+            interactive
         />
     );
 };

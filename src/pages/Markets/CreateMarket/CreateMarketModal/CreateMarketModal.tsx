@@ -56,7 +56,12 @@ export const CreateMarketModal: React.FC<CreateMarketModalProps> = ({
     };
 
     return (
-        <Modal title={t('market.create-market.modal.title')} onClose={onClose} shouldCloseOnOverlayClick={false}>
+        <Modal
+            title={t('market.create-market.modal.title')}
+            onClose={onClose}
+            shouldCloseOnOverlayClick={false}
+            hideClose
+        >
             <Container>
                 <WarningMessage>
                     <WarningIcon />

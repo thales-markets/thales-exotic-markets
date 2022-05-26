@@ -337,7 +337,7 @@ const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market 
                             </InfoContent>
                         </Info>
                         <Info>
-                            <InfoLabel>{t('market.roi-label')}:</InfoLabel>
+                            <InfoLabel>{t('market.current-roi-label')}:</InfoLabel>
                             <InfoContent>
                                 {formatPercentage(
                                     getRoi(
