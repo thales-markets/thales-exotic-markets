@@ -9,12 +9,13 @@ type TooltipProps = {
     iconFontSize?: number;
     marginLeft?: number;
     top?: number;
+    interactive?: boolean;
 };
 
-const Tooltip: React.FC<TooltipProps> = ({ component, overlay, iconFontSize, marginLeft, top }) => {
+const Tooltip: React.FC<TooltipProps> = ({ component, overlay, iconFontSize, marginLeft, top, interactive }) => {
     return (
         <Container>
-            <ReactTooltip overlay={overlay} placement="top">
+            <ReactTooltip overlay={overlay} placement="top" mouseLeaveDelay={interactive ? 0.1 : 0}>
                 {component ? component : <InfoIcon iconFontSize={iconFontSize} marginLeft={marginLeft} top={top} />}
             </ReactTooltip>
         </Container>

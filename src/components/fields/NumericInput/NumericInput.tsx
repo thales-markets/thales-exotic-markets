@@ -18,6 +18,7 @@ type NumericInputProps = {
     validationMessage?: string;
     currencyLabel?: string;
     tooltip?: string;
+    selectOnFocus?: boolean;
 };
 
 const INVALID_CHARS = ['-', '+', 'e'];
@@ -35,6 +36,7 @@ const NumericInput: React.FC<NumericInputProps> = ({
     validationMessage,
     currencyLabel,
     tooltip,
+    selectOnFocus,
     ...rest
 }) => {
     const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -82,6 +84,11 @@ const NumericInput: React.FC<NumericInputProps> = ({
                 min="0"
                 max={max || 'any'}
                 step={step || 'any'}
+                onFocus={(e) => {
+                    if (selectOnFocus) {
+                        e.target.select();
+                    }
+                }}
             />
             {currencyLabel && (
                 <CurrencyLabel className={`currency-label ${disabled ? 'disabled' : ''}`}>

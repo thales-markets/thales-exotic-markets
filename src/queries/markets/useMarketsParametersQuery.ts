@@ -10,6 +10,7 @@ import {
     MAXIMUM_TAGS,
     MINIMUM_TICKET_PRICE,
     MAXIMUM_TICKET_PRICE,
+    MAXIMUM_PER_OPEN_BID_POSITION,
 } from 'constants/markets';
 
 // we need buffer because of contract handling of strings
@@ -41,6 +42,7 @@ const useMarketsParametersQuery = (networkId: NetworkId, options?: UseQueryOptio
                     marketSourceStringLimit: MAXIMUM_INPUT_CHARACTERS,
                     marketPositionStringLimit: MAXIMUM_INPUT_CHARACTERS,
                     openBidAllowed: false,
+                    maxAmountForOpenBidPosition: MAXIMUM_PER_OPEN_BID_POSITION,
                 };
                 const marketManagerContract = networkConnector.marketManagerContract;
                 if (marketManagerContract) {
@@ -64,6 +66,7 @@ const useMarketsParametersQuery = (networkId: NetworkId, options?: UseQueryOptio
                         marketSourceStringLimit,
                         marketPositionStringLimit,
                         openBidAllowed,
+                        maxAmountForOpenBidPosition,
                     ] = await Promise.all([
                         marketManagerContract.fixedBondAmount(),
                         marketManagerContract.maximumPositionsAllowed(),
@@ -84,6 +87,7 @@ const useMarketsParametersQuery = (networkId: NetworkId, options?: UseQueryOptio
                         marketManagerContract.marketSourceStringLimit(),
                         marketManagerContract.marketPositionStringLimit(),
                         marketManagerContract.openBidAllowed(),
+                        marketManagerContract.maxAmountForOpenBidPosition(),
                     ]);
 
                     marketsParameters.fixedBondAmount = bigNumberFormatter(fixedBondAmount);
@@ -113,6 +117,7 @@ const useMarketsParametersQuery = (networkId: NetworkId, options?: UseQueryOptio
                         Number(marketPositionStringLimit) / POSITION_LENGTH_MULTIPLIER
                     );
                     marketsParameters.openBidAllowed = openBidAllowed;
+                    marketsParameters.maxAmountForOpenBidPosition = bigNumberFormatter(maxAmountForOpenBidPosition);
                 }
 
                 return marketsParameters;

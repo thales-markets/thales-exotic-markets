@@ -2,14 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { FlexDivCentered, FlexDivColumn } from 'styles/common';
-import { AccountMarketTicketData, MarketData } from 'types/markets';
+import { AccountMarketOpenBidData, MarketData } from 'types/markets';
 import { formatCurrencyWithKey, formatPercentage } from 'utils/formatters/number';
 import { PAYMENT_CURRENCY, DEFAULT_CURRENCY_DECIMALS } from 'constants/currency';
 import { RootState } from 'redux/rootReducer';
 import { getIsAppReady } from 'redux/modules/app';
 import { getIsWalletConnected, getWalletAddress } from 'redux/modules/wallet';
 import { useSelector } from 'react-redux';
-import useAccountMarketTicketDataQuery from 'queries/markets/useAccountMarketTicketDataQuery';
+import useAccountMarketOpenBidDataQuery from 'queries/markets/useAccountMarketOpenBidDataQuery';
 import onboardConnector from 'utils/onboardConnector';
 import networkConnector from 'utils/networkConnector';
 import marketContract from 'utils/contracts/exoticPositionalTicketMarketContract';
@@ -18,25 +18,24 @@ import Button from 'components/Button';
 import { MarketStatus } from 'constants/markets';
 import { toast } from 'react-toastify';
 import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
-import { getRoi } from 'utils/markets';
 import { Info, InfoContent, InfoLabel, MainInfo, PositionContainer, PositionLabel, Positions } from 'components/common';
 import { refetchMarketData } from 'utils/queryConnector';
 import Tooltip from 'components/Tooltip';
 
-type MaturityPhaseTicketProps = {
+type MaturityPhaseOpenBidProps = {
     market: MarketData;
 };
 
-const MaturityPhaseTicket: React.FC<MaturityPhaseTicketProps> = ({ market }) => {
+const MaturityPhaseOpenBid: React.FC<MaturityPhaseOpenBidProps> = ({ market }) => {
     const { t } = useTranslation();
     const isAppReady = useSelector((state: RootState) => getIsAppReady(state));
     const walletAddress = useSelector((state: RootState) => getWalletAddress(state)) || '';
     const isWalletConnected = useSelector((state: RootState) => getIsWalletConnected(state));
-    const [accountMarketData, setAccountMarketData] = useState<AccountMarketTicketData | undefined>(undefined);
+    const [accountMarketData, setAccountMarketData] = useState<AccountMarketOpenBidData | undefined>(undefined);
     const [isClaiming, setIsClaiming] = useState<boolean>(false);
     const [isDistributing, setIsDistributing] = useState<boolean>(false);
 
-    const accountMarketDataQuery = useAccountMarketTicketDataQuery(market.address, walletAddress, {
+    const accountMarketDataQuery = useAccountMarketOpenBidDataQuery(market.address, walletAddress, {
         enabled: isAppReady && isWalletConnected,
     });
 
@@ -65,6 +64,10 @@ const MaturityPhaseTicket: React.FC<MaturityPhaseTicketProps> = ({ market }) => 
         market.status === MarketStatus.CancelledConfirmed ||
         market.status === MarketStatus.CancelledDisputed ||
         market.status === MarketStatus.CancelledPendingConfirmation;
+
+    const selectedPositionsSum = accountMarketData
+        ? accountMarketData.userPositions.reduce((a, b) => Number(a) + Number(b), 0)
+        : 0;
 
     const handleClaim = async () => {
         const { signer } = networkConnector;
@@ -176,72 +179,80 @@ const MaturityPhaseTicket: React.FC<MaturityPhaseTicketProps> = ({ market }) => 
         );
     };
 
-    const selectedPosition = accountMarketData ? accountMarketData.position : 0;
-
     return (
         <>
             <Positions>
-                {market.positions.map((position: string, index: number) => (
-                    <PositionContainer
-                        key={position}
-                        className={`${market.winningPosition !== index + 1 ? 'disabled' : ''} ${
-                            index + 1 === selectedPosition ? 'selected' : ''
-                        } maturity`}
-                    >
-                        <PositionLabel>{position}</PositionLabel>
-                        <Info>
-                            <InfoLabel>{t('market.pool-size-label')}:</InfoLabel>
-                            <InfoContent>
-                                {formatCurrencyWithKey(
-                                    PAYMENT_CURRENCY,
-                                    market.poolSizePerPosition[index],
-                                    DEFAULT_CURRENCY_DECIMALS,
-                                    true
-                                )}
-                            </InfoContent>
-                        </Info>
-                        {(market.winningPosition === index + 1 || market.noWinners) && (
+                {market.positions.map((position: string, index: number) => {
+                    const isPositionSelected = accountMarketData && accountMarketData.userPositions[index] > 0;
+                    return (
+                        <PositionContainer
+                            key={position}
+                            className={`${market.winningPosition !== index + 1 ? 'disabled' : ''} ${
+                                isPositionSelected ? 'selected' : ''
+                            } maturity`}
+                        >
+                            <PositionLabel>{position}</PositionLabel>
                             <Info>
-                                <InfoLabel>
-                                    {t(
-                                        `market.${
-                                            market.noWinners ? 'claim-amount-ticket-label' : 'winnings-per-ticket-label'
-                                        }`
-                                    )}
-                                    :
-                                </InfoLabel>
+                                <InfoLabel>{t('market.pool-size-label')}:</InfoLabel>
                                 <InfoContent>
                                     {formatCurrencyWithKey(
                                         PAYMENT_CURRENCY,
-                                        market.fixedMarketData ? market.fixedMarketData.winningAmountPerTicket : 0,
+                                        market.poolSizePerPosition[index],
                                         DEFAULT_CURRENCY_DECIMALS,
                                         true
                                     )}
                                 </InfoContent>
                             </Info>
-                        )}
-                        {market.winningPosition === index + 1 && (
                             <Info>
-                                <InfoLabel>{t('market.roi-label')}:</InfoLabel>
+                                <InfoLabel>{t('market.your-bid-amount-label')}:</InfoLabel>
                                 <InfoContent>
-                                    {formatPercentage(
-                                        getRoi(
-                                            market.ticketPrice,
-                                            market.fixedMarketData ? market.fixedMarketData.winningAmountPerTicket : 0,
-                                            !!market.fixedMarketData &&
-                                                market.fixedMarketData.winningAmountPerTicket > 0
-                                        )
+                                    {formatCurrencyWithKey(
+                                        PAYMENT_CURRENCY,
+                                        accountMarketData ? accountMarketData.userPositions[index] : 0,
+                                        DEFAULT_CURRENCY_DECIMALS,
+                                        true
                                     )}
                                 </InfoContent>
                             </Info>
-                        )}
-                    </PositionContainer>
-                ))}
+                            {market.winningPosition === index + 1 && (
+                                <Info>
+                                    <InfoLabel>{t('market.roi-label')}:</InfoLabel>
+                                    <InfoContent>
+                                        {formatPercentage(
+                                            market.openBidMarketData &&
+                                                market.openBidMarketData.roiPerPosition[index] > 0
+                                                ? market.openBidMarketData.roiPerPosition[index]
+                                                : 0
+                                        )}
+                                    </InfoContent>
+                                </Info>
+                            )}
+                        </PositionContainer>
+                    );
+                })}
             </Positions>
-            <MainInfo>
-                {t('market.ticket-price-label')}:{' '}
-                {formatCurrencyWithKey(PAYMENT_CURRENCY, market.ticketPrice, DEFAULT_CURRENCY_DECIMALS, true)}
-            </MainInfo>
+            <Info fontSize={18}>
+                <InfoLabel>{t('market.your-total-bid-amount-label')}:</InfoLabel>
+                <InfoContent>{formatCurrencyWithKey(PAYMENT_CURRENCY, selectedPositionsSum)}</InfoContent>
+                <Tooltip
+                    overlay={
+                        <BidAmountOverlayContainer>
+                            <div>{t('market.your-positions-label')}:</div>
+                            {market.positions.map((position: string, index: number) => (
+                                <span key={`newBidAmount${index}`}>
+                                    -{' '}
+                                    {formatCurrencyWithKey(
+                                        PAYMENT_CURRENCY,
+                                        accountMarketData ? accountMarketData.userPositions[index] : 0
+                                    )}{' '}
+                                    on {position}
+                                </span>
+                            ))}
+                        </BidAmountOverlayContainer>
+                    }
+                    iconFontSize={20}
+                />
+            </Info>
             {showFeeData && (
                 <FeesContainer>
                     {!isCancelled && (
@@ -380,4 +391,11 @@ const NoWinnersOverlayContainer = styled(FlexDivColumn)`
     text-align: justify;
 `;
 
-export default MaturityPhaseTicket;
+const BidAmountOverlayContainer = styled(FlexDivColumn)`
+    text-align: start;
+    div {
+        margin-bottom: 5px;
+    }
+`;
+
+export default MaturityPhaseOpenBid;

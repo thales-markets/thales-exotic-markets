@@ -6,6 +6,7 @@ import networkConnector from 'utils/networkConnector';
 import { bigNumberFormatter } from 'utils/formatters/ethers';
 import { MarketStatus } from 'constants/markets';
 import marketContract from 'utils/contracts/exoticPositionalTicketMarketContract';
+import openBidMarketContract from 'utils/contracts/exoticPositionalOpenBidMarketContract';
 import { getMarketStatus } from 'utils/markets';
 
 const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketData | undefined>) => {
@@ -31,6 +32,7 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                     noWinners,
                     allFees,
                     canIssueFees,
+                    withdrawalPeriod,
                     creatorBond,
                 ] = await Promise.all([
                     marketDataContract?.getAllMarketData(marketAddress),
@@ -43,6 +45,7 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                     contract?.noWinners(),
                     contract?.getAllFees(),
                     contract?.canIssueFees(),
+                    contract?.withdrawalPeriod(),
                     thalesBondsContract?.getCreatorBondForMarket(marketAddress),
                 ]);
 
@@ -131,6 +134,7 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                     safeBoxFee: bigNumberFormatter(safeBoxFee),
                     totalFees: bigNumberFormatter(totalFees),
                     canIssueFees,
+                    withdrawalPeriod: Number(withdrawalPeriod) * 1000,
                 };
 
                 market.status = getMarketStatus(market);
@@ -154,6 +158,19 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                             bigNumberFormatter(item)
                         ),
                         winningAmountPerTicket: bigNumberFormatter(winningAmountPerTicket),
+                    };
+                } else {
+                    const openBidContract = new ethers.Contract(
+                        marketAddress,
+                        openBidMarketContract.abi,
+                        networkConnector.provider
+                    );
+                    const [winningPerPosition] = await Promise.all([
+                        openBidContract?.getPotentialOpenBidWinningForAllPositions(),
+                    ]);
+
+                    market.openBidMarketData = {
+                        roiPerPosition: winningPerPosition.map((item: BigNumberish) => bigNumberFormatter(item) - 1),
                     };
                 }
 

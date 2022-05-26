@@ -42,6 +42,10 @@ export type FixedMarketData = {
     winningAmountPerTicket: number;
 };
 
+export type OpenBidMarketData = {
+    roiPerPosition: number[];
+};
+
 export type MarketData = MarketInfo & {
     claimablePoolSize: number;
     poolSizePerPosition: number[];
@@ -58,7 +62,9 @@ export type MarketData = MarketInfo & {
     safeBoxFee: number;
     totalFees: number;
     canIssueFees: boolean;
+    withdrawalPeriod: number;
     fixedMarketData?: FixedMarketData;
+    openBidMarketData?: OpenBidMarketData;
 };
 
 export type Markets = MarketInfo[];
@@ -66,7 +72,6 @@ export type Markets = MarketInfo[];
 export type AccountMarketData = {
     claimAmount: number;
     canClaim: boolean;
-    winningAmount: number;
     canWithdraw: boolean;
     userAlreadyClaimedAmount: number;
     isPauserAddress: boolean;
@@ -74,6 +79,7 @@ export type AccountMarketData = {
 
 export type AccountMarketTicketData = AccountMarketData & {
     position: number;
+    winningAmount: number;
 };
 
 export type AccountMarketOpenBidData = AccountMarketData & {
@@ -105,6 +111,7 @@ export type MarketsParameters = {
     marketSourceStringLimit: number;
     marketPositionStringLimit: number;
     openBidAllowed: boolean;
+    maxAmountForOpenBidPosition: number;
 };
 
 export type TagInfo = {
@@ -179,6 +186,7 @@ export type AccountDisputeData = {
 export type AccountPosition = {
     market: string;
     position: number;
+    positions: number[];
     isWithdrawn: boolean;
     isClaimed: boolean;
 };
@@ -197,7 +205,8 @@ export type MarketTransactionType =
     | 'claimRefund'
     | 'resolveMarket'
     | 'resetMarketResult'
-    | 'openDispute';
+    | 'openDispute'
+    | 'updatePositions';
 
 export type MarketTransaction = {
     hash: string;
@@ -207,6 +216,9 @@ export type MarketTransaction = {
     amount: number | string;
     blockNumber: number;
     position: string;
+    positions: number[];
+    positionLabels: string[];
+    isTicketType: boolean;
 };
 
 export type MarketTransactions = MarketTransaction[];

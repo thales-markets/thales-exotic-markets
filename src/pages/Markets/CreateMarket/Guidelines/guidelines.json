@@ -20,11 +20,7 @@
         "tooltip": "market eg: Will ETH hit $xxxx price by xx/xx/xx date? With the Positional Phase set to end 2weeks from the date of market creation.\n - YES\n - NO\n \n If ETH hits the target price before the end of the Positional Phase (2 weeks), the market must be resolved as [cancelled] by the market creator. Any other resolution will be subject to dispute and slashing"
     },
     {
-        "text": "End of positioning must not be more than 1 month into the future",
-        "tooltip": ""
-    },
-    {
-        "text": "Market resolution/question should not be more than 6 months into the future",
+        "text": "Positioning phase should not be more than 1 year into the future and Market resolution/question should not be more than 2 years into the future",
         "tooltip": ""
     },
     {
@@ -48,8 +44,8 @@
         "tooltip": ""
     },
     {
-        "text": "Data source must be a URL link and specific to the event or market that is being tracked and shouldn't be generic",
-        "tooltip": "Eg:\n For a Basketball event, the link should reflect the game being tracked and not just [NBA.com]\n \n Eg:\n For a crypto market, the URL must point to the asset being tracked like [coinbase.com/ETH-USD] and not simply [coinbase.com]\n \n The same applies to any other event or market question related to any of the available tags" 
+        "text": "Data source must be a URL link and specific to the event or market that is being tracked",
+        "tooltip": "It's important to note that the data source is not 100% binding. In the event of a contentious resolution or dispute of results from the given data source, The Oracle Council has discretion in resolving such matters by reviewing multiple data sources and coming up with the most accurate/correct result" 
     },
     {
         "text": "Markets may be resolved as soon as theoretically possible, but cannot be resolved before this threshold is met",

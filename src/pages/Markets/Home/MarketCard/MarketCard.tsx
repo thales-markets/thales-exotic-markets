@@ -28,25 +28,42 @@ const MarketCard: React.FC<MarketCardProps> = ({ market, accountPosition }) => {
         <Container isClaimAvailable={claimAvailable}>
             <MarketTitle>{market.question}</MarketTitle>
             <Positions>
-                {market.positions.map((position: string, index: number) => (
-                    <Position
-                        key={`${position}${index}`}
-                        className={
-                            market.status === MarketStatusEnum.Open || market.winningPosition === index + 1
-                                ? ''
-                                : 'disabled'
-                        }
-                    >
-                        {!!accountPosition && accountPosition.position === index + 1 && <Checkmark />}
-                        <PositionLabel>{position}</PositionLabel>
-                    </Position>
-                ))}
+                {market.positions.map((position: string, index: number) => {
+                    const isPositionAvailable =
+                        !!accountPosition &&
+                        ((market.isTicketType && accountPosition.position === index + 1) ||
+                            (!market.isTicketType && accountPosition.positions[index] > 0));
+                    return (
+                        <Position
+                            key={`${position}${index}`}
+                            className={
+                                market.status === MarketStatusEnum.Open || market.winningPosition === index + 1
+                                    ? ''
+                                    : 'disabled'
+                            }
+                        >
+                            {isPositionAvailable && <Checkmark />}
+                            <PositionLabel>{position}</PositionLabel>
+                        </Position>
+                    );
+                })}
             </Positions>
             <Info fontSize={18} marginBottom={15}>
-                <InfoLabel>{t('market.ticket-price-label')}:</InfoLabel>
-                <InfoContent>
-                    {formatCurrencyWithKey(PAYMENT_CURRENCY, market.ticketPrice, DEFAULT_CURRENCY_DECIMALS, true)}
-                </InfoContent>
+                {market.isTicketType ? (
+                    <>
+                        <InfoLabel>{t('market.ticket-price-label')}:</InfoLabel>
+                        <InfoContent>
+                            {formatCurrencyWithKey(
+                                PAYMENT_CURRENCY,
+                                market.ticketPrice,
+                                DEFAULT_CURRENCY_DECIMALS,
+                                true
+                            )}
+                        </InfoContent>
+                    </>
+                ) : (
+                    <InfoContent>{t('market.open-bid-label')}</InfoContent>
+                )}
             </Info>
             <MarketStatus market={market} fontWeight={700} isClaimAvailable={claimAvailable} />
             <CardFooter>

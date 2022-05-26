@@ -34,7 +34,7 @@ import useAccountPositionsQuery from 'queries/markets/useAccountPositionsQuery';
 import useMarketsParametersQuery from 'queries/markets/useMarketsParametersQuery';
 import { LOCAL_STORAGE_KEYS } from 'constants/storage';
 import useLocalStorage from 'hooks/useLocalStorage';
-import { isClaimAvailable } from 'utils/markets';
+import { isClaimAvailable, isPositionAvailable, isPositionAvailableForPositioning } from 'utils/markets';
 import { getMarketSearch, setMarketSearch } from 'redux/modules/market';
 
 const Home: React.FC = () => {
@@ -166,7 +166,9 @@ const Home: React.FC = () => {
 
     const recentlyResolvedCount = useMemo(() => {
         return tagsFilteredMarkets.filter(
-            (market: MarketInfo) => market.status === MarketStatus.ResolvedPendingConfirmation
+            (market: MarketInfo) =>
+                market.status === MarketStatus.ResolvedPendingConfirmation ||
+                market.status === MarketStatus.CancelledPendingConfirmation
         ).length;
     }, [tagsFilteredMarkets]);
 
@@ -193,12 +195,7 @@ const Home: React.FC = () => {
     const accountPositionsCount = useMemo(() => {
         return tagsFilteredMarkets.filter((market: MarketInfo) => {
             const accountPosition: AccountPosition = accountPositions[market.address];
-            return (
-                !!accountPosition &&
-                accountPosition.position > 0 &&
-                market.status !== MarketStatus.ResolvedConfirmed &&
-                market.status !== MarketStatus.CancelledConfirmed
-            );
+            return isPositionAvailable(market, accountPosition);
         }).length;
     }, [tagsFilteredMarkets, accountPositions]);
 
@@ -212,7 +209,7 @@ const Home: React.FC = () => {
     const accountNotPositionedCount = useMemo(() => {
         return tagsFilteredMarkets.filter((market: MarketInfo) => {
             const accountPosition: AccountPosition = accountPositions[market.address];
-            return (!accountPosition || accountPosition.position === 0) && market.status === MarketStatus.Open;
+            return isPositionAvailableForPositioning(market, accountPosition);
         }).length;
     }, [tagsFilteredMarkets, accountPositions]);
 
@@ -230,7 +227,9 @@ const Home: React.FC = () => {
                 break;
             case GlobalFilterEnum.RecentlyResolved:
                 filteredMarkets = filteredMarkets.filter(
-                    (market: MarketInfo) => market.status === MarketStatus.ResolvedPendingConfirmation
+                    (market: MarketInfo) =>
+                        market.status === MarketStatus.ResolvedPendingConfirmation ||
+                        market.status === MarketStatus.CancelledPendingConfirmation
                 );
                 break;
             case GlobalFilterEnum.Resolved:
@@ -254,12 +253,7 @@ const Home: React.FC = () => {
             case GlobalFilterEnum.YourPositions:
                 filteredMarkets = filteredMarkets.filter((market: MarketInfo) => {
                     const accountPosition: AccountPosition = accountPositions[market.address];
-                    return (
-                        !!accountPosition &&
-                        accountPosition.position > 0 &&
-                        market.status !== MarketStatus.ResolvedConfirmed &&
-                        market.status !== MarketStatus.CancelledConfirmed
-                    );
+                    return isPositionAvailable(market, accountPosition);
                 });
                 break;
             case GlobalFilterEnum.Claim:
@@ -271,7 +265,7 @@ const Home: React.FC = () => {
             case GlobalFilterEnum.YourNotPositionedMarkets:
                 filteredMarkets = filteredMarkets.filter((market: MarketInfo) => {
                     const accountPosition: AccountPosition = accountPositions[market.address];
-                    return (!accountPosition || accountPosition.position === 0) && market.status === MarketStatus.Open;
+                    return isPositionAvailableForPositioning(market, accountPosition);
                 });
                 break;
             default:

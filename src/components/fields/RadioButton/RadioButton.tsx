@@ -65,7 +65,7 @@ const Container = styled.label`
     font-weight: normal;
     font-size: 25px;
     line-height: 35px;
-    height: 35px;
+    min-height: 35px;
     color: ${(props) => props.theme.textColor.primary};
     -webkit-user-select: none;
     -moz-user-select: none;

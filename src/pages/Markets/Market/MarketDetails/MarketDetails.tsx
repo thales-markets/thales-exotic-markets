@@ -30,6 +30,7 @@ import { toast } from 'react-toastify';
 import { ethers } from 'ethers';
 import { refetchMarketData } from 'utils/queryConnector';
 import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
+import MaturityPhaseOpenBid from './MaturityPhaseOpenBid';
 
 type MarketDetailsProps = {
     market: MarketData;
@@ -114,6 +115,9 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
 
             {!market.isTicketType && market.status === MarketStatusEnum.Open && (
                 <PositioningPhaseOpenBid market={market} />
+            )}
+            {!market.isTicketType && market.status !== MarketStatusEnum.Open && (
+                <MaturityPhaseOpenBid market={market} />
             )}
             {showPause && (
                 <ButtonContainer>
