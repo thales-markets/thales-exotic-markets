@@ -322,28 +322,20 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
     const getButtons = () => {
         if (!isWalletConnected) {
             return (
-                <MarketButton type="secondary" onClick={() => onboardConnector.connectWallet()}>
+                <MarketButton onClick={() => onboardConnector.connectWallet()}>
                     {t('common.wallet.connect-your-wallet')}
                 </MarketButton>
             );
         }
         if (insufficientBalance && (showBid || showChangePosition)) {
-            return (
-                <MarketButton type="secondary" disabled={true}>
-                    {t(`common.errors.insufficient-balance`)}
-                </MarketButton>
-            );
+            return <MarketButton disabled={true}>{t(`common.errors.insufficient-balance`)}</MarketButton>;
         }
         if (!isPositionSelected) {
-            return (
-                <MarketButton type="secondary" disabled={true}>
-                    {t(`common.errors.select-positions`)}
-                </MarketButton>
-            );
+            return <MarketButton disabled={true}>{t(`common.errors.select-positions`)}</MarketButton>;
         }
         if (!hasAllowance) {
             return (
-                <MarketButton type="secondary" disabled={isAllowing} onClick={() => setOpenApprovalModal(true)}>
+                <MarketButton disabled={isAllowing} onClick={() => setOpenApprovalModal(true)}>
                     {!isAllowing
                         ? t('common.enable-wallet-access.approve-label', { currencyKey: PAYMENT_CURRENCY })
                         : t('common.enable-wallet-access.approve-progress-label', {
@@ -354,7 +346,7 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
         }
         if (showBid) {
             return (
-                <MarketButton type="secondary" disabled={isBidButtonDisabled} onClick={handleBid}>
+                <MarketButton disabled={isBidButtonDisabled} onClick={handleBid}>
                     {!isBidding ? t('market.button.bid-label') : t('market.button.bid-progress-label')}
                 </MarketButton>
             );
@@ -362,18 +354,14 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
         return (
             <>
                 {showChangePosition && (
-                    <MarketButton type="secondary" disabled={isChangePositionButtonDisabled} onClick={handleBid}>
+                    <MarketButton disabled={isChangePositionButtonDisabled} onClick={handleBid}>
                         {!isBidding
                             ? t('market.button.update-positions-label')
                             : t('market.button.update-positions-progress-label')}
                     </MarketButton>
                 )}
                 {showWithdraw && (
-                    <MarketButton
-                        type="secondary"
-                        disabled={isWithdrawAllButtonDisabled}
-                        onClick={() => handleWithdraw(0)}
-                    >
+                    <MarketButton disabled={isWithdrawAllButtonDisabled} onClick={() => handleWithdraw(0)}>
                         {isWithdrawing && withdrawPosition === 0
                             ? t('market.button.withdraw-progress-label')
                             : t('market.button.withdraw-label')}
@@ -575,7 +563,6 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                 </ValidationContainer>
                 {arePostionsChanged && (
                     <MarketButton
-                        type="secondary"
                         disabled={isPositionCardDisabled}
                         onClick={() => setSelectedPositions(currentPositionsOnContract)}
                     >
@@ -584,7 +571,7 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                 )}
                 {getButtons()}
                 {showCancel && (
-                    <MarketButton type="secondary" disabled={isCancelButtonDisabled} onClick={handleCancel}>
+                    <MarketButton disabled={isCancelButtonDisabled} onClick={handleCancel}>
                         {!isCanceling
                             ? t('market.button.cancel-market-label')
                             : t('market.button.cancel-progress-label')}

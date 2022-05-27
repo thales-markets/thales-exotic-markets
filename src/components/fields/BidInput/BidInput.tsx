@@ -80,7 +80,7 @@ const Container = styled(FlexDivColumn)<{ selected?: boolean; inputDisabled?: bo
         font-size: 16px;
         line-height: 16px;
         border-color: ${(props) =>
-            props.selected ? props.theme.borderColor.tertiary : props.theme.borderColor.primary};
+            props.selected ? props.theme.borderColor.primary : props.theme.borderColor.tertiary};
         &:disabled {
             opacity: ${(props) => (props.inputDisabled ? 0.4 : 1)};
         }

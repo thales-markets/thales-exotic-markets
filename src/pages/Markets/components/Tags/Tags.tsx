@@ -6,16 +6,17 @@ import { getIsAppReady } from 'redux/modules/app';
 import { getNetworkId } from 'redux/modules/wallet';
 import { RootState } from 'redux/rootReducer';
 import styled from 'styled-components';
-import { FlexDivCentered, FlexDivStart } from 'styles/common';
+import { FlexDivCentered, FlexDivStart, TagColors } from 'styles/common';
 import { Tags as TagList } from 'types/markets';
 
 type TagsProps = {
     tags: number[];
     labelFontSize?: number;
     hideLabel?: boolean;
+    paintTags?: boolean;
 };
 
-const Tags: React.FC<TagsProps> = ({ tags, labelFontSize, hideLabel }) => {
+const Tags: React.FC<TagsProps> = ({ tags, labelFontSize, hideLabel, paintTags }) => {
     const { t } = useTranslation();
     const isAppReady = useSelector((state: RootState) => getIsAppReady(state));
     const networkId = useSelector((state: RootState) => getNetworkId(state));
@@ -36,7 +37,15 @@ const Tags: React.FC<TagsProps> = ({ tags, labelFontSize, hideLabel }) => {
             {!hideLabel && <TagLabel labelFontSize={labelFontSize}>{t('market.tags-label')}:</TagLabel>}
             {tags.map((tag: number) => {
                 const findTagItem = availableTags.find((t) => t.id == tag);
-                return findTagItem ? <Tag key={findTagItem.label}>{findTagItem.label}</Tag> : null;
+                const tagIndex = availableTags.findIndex((t) => t.id == tag);
+
+                const colorAvailable = !!paintTags && tagIndex < TagColors.length;
+                const tagColor = colorAvailable ? TagColors[tagIndex] : 'transparent';
+                return findTagItem ? (
+                    <Tag key={findTagItem.label} tagColor={tagColor} colorAvailable={colorAvailable} className="tag">
+                        {findTagItem.label}
+                    </Tag>
+                ) : null;
             })}
         </Container>
     );
@@ -56,8 +65,9 @@ export const TagLabel = styled.span<{ labelFontSize?: number }>`
     margin-bottom: 4px;
 `;
 
-const Tag = styled(FlexDivCentered)`
-    border: 1px solid ${(props) => props.theme.borderColor.tertiary};
+const Tag = styled(FlexDivCentered)<{ tagColor: string; colorAvailable: boolean }>`
+    border: 1px solid ${(props) => (props.colorAvailable ? props.tagColor : props.theme.borderColor.tertiary)};
+    color: ${(props) => (props.colorAvailable ? props.theme.textColor.primary : props.theme.textColor.tertiary)};
     border-radius: 30px;
     font-style: normal;
     font-weight: normal;
@@ -67,6 +77,7 @@ const Tag = styled(FlexDivCentered)`
     margin-left: 6px;
     height: 28px;
     margin-bottom: 4px;
+    background: ${(props) => props.tagColor};
 `;
 
 export default Tags;

@@ -16,12 +16,15 @@ export default {
         background: {
             primary: Colors.GREEN,
             secondary: Colors.WHITE,
+            tertiary: Colors.PURPLE,
         },
         textColor: {
             primary: Colors.PURPLE,
+            secondary: Colors.WHITE,
         },
         borderColor: {
             primary: Colors.PURPLE,
+            secondary: Colors.WHITE,
         },
     },
     input: {

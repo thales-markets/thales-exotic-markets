@@ -25,7 +25,7 @@ const MarketCard: React.FC<MarketCardProps> = ({ market, accountPosition }) => {
         <Container isClaimAvailable={claimAvailable}>
             <TopContainer>
                 <TagsContainer>
-                    <Tags tags={market.tags} hideLabel />
+                    <Tags tags={market.tags} hideLabel paintTags />
                 </TagsContainer>
                 <MarketTitle>{market.question}</MarketTitle>
                 <MarketStatus market={market} fontWeight={700} isClaimAvailable={claimAvailable} />
@@ -78,10 +78,13 @@ const Container = styled(FlexDivColumnCentered)<{ isClaimAvailable: boolean }>`
         border-color: transparent;
         background-origin: border-box;
         color: ${(props) => props.theme.textColor.primary};
+        box-shadow: 0px 20px 40px rgba(0, 0, 0, 0.35);
         div {
             border-color: ${(props) => props.theme.borderColor.primary};
         }
-        box-shadow: 0px 20px 40px rgba(0, 0, 0, 0.35);
+        .tag {
+            background: transparent;
+        }
     }
     align-items: center;
 `;
@@ -89,12 +92,14 @@ const Container = styled(FlexDivColumnCentered)<{ isClaimAvailable: boolean }>`
 const TopContainer = styled(FlexDivColumnCentered)`
     padding: 20px;
     align-items: center;
+    width: 100%;
     border-bottom: 3px dashed ${(props) => props.theme.borderColor.tertiary};
 `;
 
 const BottomContainer = styled(FlexDivColumnCentered)`
     padding: 20px;
     align-items: center;
+    width: 100%;
 `;
 
 const TagsContainer = styled(FlexDivRow)`

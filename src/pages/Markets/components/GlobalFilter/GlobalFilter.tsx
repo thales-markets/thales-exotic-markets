@@ -58,9 +58,9 @@ const Count = styled(FlexDivCentered)<{ readOnly?: boolean }>`
     min-width: 26px;
     height: 26px;
     background: ${(props) =>
-        props.readOnly ? props.theme.button.background.secondary : props.theme.button.textColor.primary};
+        props.readOnly ? props.theme.button.background.secondary : props.theme.button.background.tertiary};
     color: ${(props) =>
-        props.readOnly ? props.theme.button.textColor.primary : props.theme.button.background.secondary};
+        props.readOnly ? props.theme.button.textColor.primary : props.theme.button.textColor.secondary};
     border-radius: 15px;
     padding-left: 4px;
     padding-right: 4px;

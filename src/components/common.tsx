@@ -50,7 +50,16 @@ export const PositionContainer = styled(FlexDivColumn)`
     margin-bottom: 15px;
     cursor: pointer;
     align-items: center;
-    color: ${(props) => props.theme.textColor.primary};
+    color: ${(props) => props.theme.textColor.tertiary};
+    border: 1px solid ${(props) => props.theme.borderColor.tertiary};
+    padding: 10px 20px;
+    border-radius: 15px;
+    width: 350px;
+    i {
+        :before {
+            color: ${(props) => props.theme.textColor.tertiary};
+        }
+    }
     :hover:not(.disabled):not(.maturity) {
         transform: scale(1.05);
     }
@@ -59,26 +68,22 @@ export const PositionContainer = styled(FlexDivColumn)`
         cursor: default;
     }
     &.selected {
-        color: ${(props) => props.theme.button.textColor.primary};
-        background: ${(props) => props.theme.button.background.secondary};
-        border: 1px solid ${(props) => props.theme.button.background.secondary};
+        color: ${(props) => props.theme.textColor.primary};
+        background: ${(props) => props.theme.borderColor.tertiary};
+        border: 1px solid ${(props) => props.theme.borderColor.tertiary};
         i {
             :before {
-                color: ${(props) => props.theme.button.textColor.primary};
+                color: ${(props) => props.theme.textColor.primary};
             }
         }
         div {
-            color: ${(props) => props.theme.button.textColor.primary};
+            color: ${(props) => props.theme.textColor.primary};
         }
     }
     &.maturity:not(.disabled) {
         cursor: default;
         box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.3);
     }
-    border: 1px solid ${(props) => props.theme.borderColor.primary};
-    padding: 10px 20px;
-    border-radius: 15px;
-    width: 350px;
     @media (max-width: 575px) {
         width: 100%;
     }

@@ -294,11 +294,7 @@ const MaturityPhaseOpenBid: React.FC<MaturityPhaseOpenBidProps> = ({ market }) =
                     )}
                     {market.canIssueFees
                         ? isWalletConnected && (
-                              <DistributeButton
-                                  disabled={isClaiming || isDistributing}
-                                  onClick={handleDistribute}
-                                  type="secondary"
-                              >
+                              <DistributeButton disabled={isClaiming || isDistributing} onClick={handleDistribute}>
                                   {!isDistributing
                                       ? t(
                                             `market.button.${

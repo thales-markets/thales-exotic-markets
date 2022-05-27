@@ -256,28 +256,20 @@ const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market 
     const getButtons = () => {
         if (!isWalletConnected) {
             return (
-                <MarketButton type="secondary" onClick={() => onboardConnector.connectWallet()}>
+                <MarketButton onClick={() => onboardConnector.connectWallet()}>
                     {t('common.wallet.connect-your-wallet')}
                 </MarketButton>
             );
         }
         if (insufficientBalance && showBid) {
-            return (
-                <MarketButton type="secondary" disabled={true}>
-                    {t(`common.errors.insufficient-balance`)}
-                </MarketButton>
-            );
+            return <MarketButton disabled={true}>{t(`common.errors.insufficient-balance`)}</MarketButton>;
         }
         if (!isPositionSelected) {
-            return (
-                <MarketButton type="secondary" disabled={true}>
-                    {t(`common.errors.select-position`)}
-                </MarketButton>
-            );
+            return <MarketButton disabled={true}>{t(`common.errors.select-position`)}</MarketButton>;
         }
         if (!hasAllowance && showBid) {
             return (
-                <MarketButton type="secondary" disabled={isAllowing} onClick={() => setOpenApprovalModal(true)}>
+                <MarketButton disabled={isAllowing} onClick={() => setOpenApprovalModal(true)}>
                     {!isAllowing
                         ? t('common.enable-wallet-access.approve-label', { currencyKey: PAYMENT_CURRENCY })
                         : t('common.enable-wallet-access.approve-progress-label', {
@@ -288,7 +280,7 @@ const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market 
         }
         if (showBid) {
             return (
-                <MarketButton type="secondary" disabled={isBidButtonDisabled} onClick={handleBid}>
+                <MarketButton disabled={isBidButtonDisabled} onClick={handleBid}>
                     {!isBidding ? t('market.button.bid-label') : t('market.button.bid-progress-label')}
                 </MarketButton>
             );
@@ -296,14 +288,14 @@ const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market 
         return (
             <>
                 {showChangePosition && (
-                    <MarketButton type="secondary" disabled={isChangePositionButtonDisabled} onClick={handleBid}>
+                    <MarketButton disabled={isChangePositionButtonDisabled} onClick={handleBid}>
                         {!isBidding
                             ? t('market.button.change-position-label')
                             : t('market.button.change-position-progress-label')}
                     </MarketButton>
                 )}
                 {showWithdraw && (
-                    <MarketButton type="secondary" disabled={isWithdrawButtonDisabled} onClick={handleWithdraw}>
+                    <MarketButton disabled={isWithdrawButtonDisabled} onClick={handleWithdraw}>
                         {!isWithdrawing
                             ? t('market.button.withdraw-label')
                             : t('market.button.withdraw-progress-label')}
@@ -414,7 +406,7 @@ const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market 
             <ButtonContainer>
                 {getButtons()}
                 {showCancel && (
-                    <MarketButton type="secondary" disabled={isCancelButtonDisabled} onClick={handleCancel}>
+                    <MarketButton disabled={isCancelButtonDisabled} onClick={handleCancel}>
                         {!isCanceling
                             ? t('market.button.cancel-market-label')
                             : t('market.button.cancel-progress-label')}

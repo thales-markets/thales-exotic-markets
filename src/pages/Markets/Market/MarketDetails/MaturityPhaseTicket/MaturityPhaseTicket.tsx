@@ -283,11 +283,7 @@ const MaturityPhaseTicket: React.FC<MaturityPhaseTicketProps> = ({ market }) => 
                     )}
                     {market.canIssueFees
                         ? isWalletConnected && (
-                              <DistributeButton
-                                  disabled={isClaiming || isDistributing}
-                                  onClick={handleDistribute}
-                                  type="secondary"
-                              >
+                              <DistributeButton disabled={isClaiming || isDistributing} onClick={handleDistribute}>
                                   {!isDistributing
                                       ? t(
                                             `market.button.${

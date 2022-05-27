@@ -45,3 +45,15 @@ export const Colors = {
     WHITE: '#f6f6fe',
     GREEN: '#28d4b4',
 };
+
+export const TagColors = [
+    '#8338EC',
+    '#F72585',
+    '#FB5607',
+    '#E5383B',
+    '#44AF52',
+    '#3A86FF',
+    '#29A89F',
+    '#3CADF1',
+    '#FF9E00',
+];
