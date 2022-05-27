@@ -33,13 +33,12 @@ const Container = styled(FlexDivRowCentered)`
     }
     color: ${(props) => props.theme.textColor.primary};
     margin-right: 20px;
-    padding-bottom: 5px;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     -o-user-select: none;
     user-select: none;
-    margin-bottom: 5px;
+    margin-top: 4px;
 `;
 
 const SortText = styled.span`

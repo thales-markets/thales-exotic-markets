@@ -81,6 +81,7 @@ const Container = styled(FlexDivColumnCentered)<{ isClaimAvailable: boolean }>`
         div {
             border-color: ${(props) => props.theme.borderColor.primary};
         }
+        box-shadow: 0px 20px 40px rgba(0, 0, 0, 0.35);
     }
     align-items: center;
 `;
