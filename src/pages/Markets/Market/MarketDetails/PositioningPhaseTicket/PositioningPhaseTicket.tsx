@@ -376,6 +376,7 @@ const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market 
                                     />
                                 </FeesOverlayContainer>
                             }
+                            darkInfoIcon
                         />
                     </Info>
                     {market.isWithdrawalAllowed ? (
@@ -396,6 +397,7 @@ const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market 
                                         />
                                     </FeesOverlayContainer>
                                 }
+                                darkInfoIcon
                             />
                         </Info>
                     ) : (

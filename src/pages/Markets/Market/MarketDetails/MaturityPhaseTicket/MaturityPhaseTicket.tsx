@@ -314,6 +314,7 @@ const MaturityPhaseTicket: React.FC<MaturityPhaseTicketProps> = ({ market }) => 
                             }
                             iconFontSize={20}
                             marginLeft={4}
+                            darkInfoIcon
                         />
                     </ClaimInfo>
                 )}

@@ -446,6 +446,7 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                                     />
                                 </FeesOverlayContainer>
                             }
+                            darkInfoIcon
                         />
                     </Info>
                     {market.isWithdrawalAllowed ? (
@@ -467,6 +468,7 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                                             />
                                         </FeesOverlayContainer>
                                     }
+                                    darkInfoIcon
                                 />
                             </Info>
                             <Info>
@@ -503,6 +505,7 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                                 </BidAmountOverlayContainer>
                             }
                             iconFontSize={20}
+                            darkInfoIcon
                         />
                     </Info>
                 )}
@@ -533,6 +536,7 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                                 </BidAmountOverlayContainer>
                             }
                             iconFontSize={20}
+                            darkInfoIcon
                         />
                     </Info>
                 )}

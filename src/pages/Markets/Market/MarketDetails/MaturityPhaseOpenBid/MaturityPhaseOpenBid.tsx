@@ -251,6 +251,7 @@ const MaturityPhaseOpenBid: React.FC<MaturityPhaseOpenBidProps> = ({ market }) =
                         </BidAmountOverlayContainer>
                     }
                     iconFontSize={20}
+                    darkInfoIcon
                 />
             </Info>
             {showFeeData && (
@@ -325,6 +326,7 @@ const MaturityPhaseOpenBid: React.FC<MaturityPhaseOpenBidProps> = ({ market }) =
                             }
                             iconFontSize={20}
                             marginLeft={4}
+                            darkInfoIcon
                         />
                     </ClaimInfo>
                 )}
