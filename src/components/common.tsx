@@ -25,7 +25,6 @@ export const Info = styled(FlexDivCentered)<{ fontSize?: number; marginTop?: num
     white-space: nowrap;
     margin-top: ${(props) => props.marginTop || 0}px;
     margin-bottom: ${(props) => props.marginBottom || 0}px;
-    color: ${(props) => props.theme.textColor.primary};
 `;
 
 export const InfoLabel = styled.span`

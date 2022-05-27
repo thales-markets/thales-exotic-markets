@@ -6,8 +6,6 @@ import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { FlexDivColumnCentered, FlexDivRow } from 'styles/common';
 import { AccountPosition, MarketInfo } from 'types/markets';
-import { MarketStatus as MarketStatusEnum } from 'constants/markets';
-import OpenDisputeInfo from 'pages/Markets/components/OpenDisputeInfo';
 import { formatCurrencyWithKey } from 'utils/formatters/number';
 import { DEFAULT_CURRENCY_DECIMALS, PAYMENT_CURRENCY } from 'constants/currency';
 import { Info, InfoContent, InfoLabel } from 'components/common';
@@ -22,72 +20,47 @@ const MarketCard: React.FC<MarketCardProps> = ({ market, accountPosition }) => {
     const { t } = useTranslation();
 
     const claimAvailable = isClaimAvailable(market, accountPosition);
-    const showNumberOfOpenDisputes = !market.canUsersClaim && market.status !== MarketStatusEnum.CancelledConfirmed;
 
     return (
         <Container isClaimAvailable={claimAvailable}>
-            <MarketTitle>{market.question}</MarketTitle>
-            <Positions>
-                {market.positions.map((position: string, index: number) => {
-                    const isPositionAvailable =
-                        !!accountPosition &&
-                        ((market.isTicketType && accountPosition.position === index + 1) ||
-                            (!market.isTicketType && accountPosition.positions[index] > 0));
-                    return (
-                        <Position
-                            key={`${position}${index}`}
-                            className={
-                                market.status === MarketStatusEnum.Open || market.winningPosition === index + 1
-                                    ? ''
-                                    : 'disabled'
-                            }
-                        >
-                            {isPositionAvailable && <Checkmark />}
-                            <PositionLabel>{position}</PositionLabel>
-                        </Position>
-                    );
-                })}
-            </Positions>
-            <Info fontSize={18} marginBottom={15}>
-                {market.isTicketType ? (
-                    <>
-                        <InfoLabel>{t('market.ticket-price-label')}:</InfoLabel>
+            <TopContainer>
+                <TagsContainer>
+                    <Tags tags={market.tags} hideLabel />
+                </TagsContainer>
+                <MarketTitle>{market.question}</MarketTitle>
+                <MarketStatus market={market} fontWeight={700} isClaimAvailable={claimAvailable} />
+            </TopContainer>
+            <BottomContainer>
+                <PoolInfo>
+                    <Info>
+                        <InfoLabel>{t('market.total-pool-size-label')}:</InfoLabel>
                         <InfoContent>
-                            {formatCurrencyWithKey(
-                                PAYMENT_CURRENCY,
-                                market.ticketPrice,
-                                DEFAULT_CURRENCY_DECIMALS,
-                                true
-                            )}
+                            {formatCurrencyWithKey(PAYMENT_CURRENCY, market.poolSize, DEFAULT_CURRENCY_DECIMALS, true)}
                         </InfoContent>
-                    </>
-                ) : (
-                    <InfoContent>{t('market.open-bid-label')}</InfoContent>
-                )}
-            </Info>
-            <MarketStatus market={market} fontWeight={700} isClaimAvailable={claimAvailable} />
-            <CardFooter>
-                <Tags tags={market.tags} />
-                {showNumberOfOpenDisputes && (
-                    <OpenDisputeInfo
-                        numberOfOpenDisputes={market.isMarketClosedForDisputes ? 0 : market.numberOfOpenDisputes}
-                    >
-                        {t('market.open-disputes-label')}
-                    </OpenDisputeInfo>
-                )}
-            </CardFooter>
-            <PoolInfoFooter>
-                <Info>
-                    <InfoLabel>{t('market.total-pool-size-label')}:</InfoLabel>
-                    <InfoContent>
-                        {formatCurrencyWithKey(PAYMENT_CURRENCY, market.poolSize, DEFAULT_CURRENCY_DECIMALS, true)}
-                    </InfoContent>
+                    </Info>
+                    <Info>
+                        <InfoLabel>{t('market.number-of-participants-label')}:</InfoLabel>
+                        <InfoContent>{market.numberOfParticipants}</InfoContent>
+                    </Info>
+                </PoolInfo>
+                <Info fontSize={18}>
+                    {market.isTicketType ? (
+                        <>
+                            <InfoLabel>{t('market.ticket-price-label')}:</InfoLabel>
+                            <InfoContent>
+                                {formatCurrencyWithKey(
+                                    PAYMENT_CURRENCY,
+                                    market.ticketPrice,
+                                    DEFAULT_CURRENCY_DECIMALS,
+                                    true
+                                )}
+                            </InfoContent>
+                        </>
+                    ) : (
+                        <InfoContent>{t('market.open-bid-label')}</InfoContent>
+                    )}
                 </Info>
-                <Info>
-                    <InfoLabel>{t('market.number-of-participants-label')}:</InfoLabel>
-                    <InfoContent>{market.numberOfParticipants}</InfoContent>
-                </Info>
-            </PoolInfoFooter>
+            </BottomContainer>
         </Container>
     );
 };
@@ -97,65 +70,43 @@ const Container = styled(FlexDivColumnCentered)<{ isClaimAvailable: boolean }>`
         ${(props) => (props.isClaimAvailable ? props.theme.borderColor.secondary : props.theme.borderColor.primary)};
     box-sizing: border-box;
     border-radius: 25px;
-    padding: 20px;
     margin: 8px 4px 8px 4px;
+    background: ${(props) => props.theme.background.tertiary};
+    color: ${(props) => props.theme.textColor.tertiary};
     &:hover {
         background: ${(props) => props.theme.background.secondary};
         border-color: transparent;
         background-origin: border-box;
+        color: ${(props) => props.theme.textColor.primary};
+        div {
+            border-color: ${(props) => props.theme.borderColor.primary};
+        }
     }
-`;
-
-const Positions = styled(FlexDivColumnCentered)`
-    margin-bottom: 20px;
     align-items: center;
-    align-self: center;
-    padding: 0 20px;
 `;
 
-const Position = styled.label`
-    display: block;
-    position: relative;
-    margin-bottom: 20px;
-    text-align: center;
-    cursor: pointer;
-    &.disabled {
-        opacity: 0.4;
-    }
+const TopContainer = styled(FlexDivColumnCentered)`
+    padding: 20px;
+    align-items: center;
+    border-bottom: 3px dashed ${(props) => props.theme.borderColor.tertiary};
 `;
 
-const PositionLabel = styled.span`
-    font-style: normal;
-    font-weight: bold;
-    font-size: 20px;
-    line-height: 100%;
-    color: ${(props) => props.theme.textColor.primary};
+const BottomContainer = styled(FlexDivColumnCentered)`
+    padding: 20px;
+    align-items: center;
 `;
 
-const Checkmark = styled.span`
-    :after {
-        content: '';
-        position: absolute;
-        left: -17px;
-        top: -1px;
-        width: 5px;
-        height: 14px;
-        border: solid ${(props) => props.theme.borderColor.primary};
-        border-width: 0 3px 3px 0;
-        -webkit-transform: rotate(45deg);
-        -ms-transform: rotate(45deg);
-        transform: rotate(45deg);
-    }
+const TagsContainer = styled(FlexDivRow)`
+    margin-bottom: 30px;
 `;
 
-const CardFooter = styled(FlexDivRow)`
-    margin-top: 20px;
-    align-items: end;
-`;
-
-const PoolInfoFooter = styled(FlexDivColumnCentered)`
+const PoolInfo = styled(FlexDivColumnCentered)`
     font-size: 15px;
-    margin-top: 10px;
+    padding: 10px 25px;
+    border: 2px solid ${(props) => props.theme.borderColor.tertiary};
+    border-radius: 15px;
+    width: fit-content;
+    margin-bottom: 20px;
 `;
 
 export default MarketCard;

@@ -12,9 +12,10 @@ import { Tags as TagList } from 'types/markets';
 type TagsProps = {
     tags: number[];
     labelFontSize?: number;
+    hideLabel?: boolean;
 };
 
-const Tags: React.FC<TagsProps> = ({ tags, labelFontSize }) => {
+const Tags: React.FC<TagsProps> = ({ tags, labelFontSize, hideLabel }) => {
     const { t } = useTranslation();
     const isAppReady = useSelector((state: RootState) => getIsAppReady(state));
     const networkId = useSelector((state: RootState) => getNetworkId(state));
@@ -32,7 +33,7 @@ const Tags: React.FC<TagsProps> = ({ tags, labelFontSize }) => {
 
     return (
         <Container>
-            <TagLabel labelFontSize={labelFontSize}>{t('market.tags-label')}:</TagLabel>
+            {!hideLabel && <TagLabel labelFontSize={labelFontSize}>{t('market.tags-label')}:</TagLabel>}
             {tags.map((tag: number) => {
                 const findTagItem = availableTags.find((t) => t.id == tag);
                 return findTagItem ? <Tag key={findTagItem.label}>{findTagItem.label}</Tag> : null;
@@ -52,12 +53,11 @@ export const TagLabel = styled.span<{ labelFontSize?: number }>`
     font-size: ${(props) => props.labelFontSize || 15}px;
     line-height: 100%;
     text-align: center;
-    color: ${(props) => props.theme.textColor.primary};
     margin-bottom: 4px;
 `;
 
 const Tag = styled(FlexDivCentered)`
-    border: 1px solid ${(props) => props.theme.borderColor.primary};
+    border: 1px solid ${(props) => props.theme.borderColor.tertiary};
     border-radius: 30px;
     font-style: normal;
     font-weight: normal;
@@ -66,7 +66,6 @@ const Tag = styled(FlexDivCentered)`
     padding: 4px 8px;
     margin-left: 6px;
     height: 28px;
-    color: ${(props) => props.theme.textColor.primary};
     margin-bottom: 4px;
 `;
 
