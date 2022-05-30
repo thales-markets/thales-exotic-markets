@@ -231,7 +231,8 @@
                 "claim": "Claimable",
                 "yournotpositionedmarkets": "Markets you're not positioned in"
             },
-            "all": "All"
+            "all": "All",
+            "all-tags": "All tags"
         },
         "back-to-markets": "Back to markets",
         "back-to-market": "Back to market",

@@ -30,7 +30,7 @@ const Container = styled(FlexDivStart)<{ readOnly?: boolean }>`
     line-height: 102.6%;
     letter-spacing: 0.035em;
     text-transform: uppercase;
-    cursor: ${(props) => (props.readOnly ? 'default' : 'pointer')};
+    cursor: pointer;
     height: 34px;
     &.disabled {
         cursor: default;
@@ -40,7 +40,7 @@ const Container = styled(FlexDivStart)<{ readOnly?: boolean }>`
     :hover {
         background: ${(props) => (props.readOnly ? 'transparent' : '#e1d9e7')};
     }
-    padding: 0 10px;
+    padding: ${(props) => (props.readOnly ? '0 4px' : '0 10px')};
     border-radius: 10px;
     flex-direction: ${(props) => (props.readOnly ? 'row-reverse' : 'row')};
 `;
@@ -64,7 +64,7 @@ const Count = styled(FlexDivCentered)<{ readOnly?: boolean }>`
     border-radius: 15px;
     padding-left: 4px;
     padding-right: 4px;
-    margin-right: ${(props) => (props.readOnly ? 30 : 6)}px;
+    margin-right: ${(props) => (props.readOnly ? 20 : 6)}px;
     margin-left: ${(props) => (props.readOnly ? 6 : 0)}px;
 `;
 
