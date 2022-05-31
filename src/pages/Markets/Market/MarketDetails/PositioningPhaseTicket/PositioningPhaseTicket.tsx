@@ -179,7 +179,9 @@ const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market 
             try {
                 const marketContractWithSigner = new ethers.Contract(market.address, marketContract.abi, signer);
 
-                const tx = await marketContractWithSigner.takeAPosition(selectedPosition);
+                const tx = await marketContractWithSigner.takeAPosition(selectedPosition, {
+                    gasLimit: MAX_GAS_LIMIT,
+                });
                 const txResult = await tx.wait();
 
                 if (txResult && txResult.transactionHash) {
@@ -210,7 +212,9 @@ const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market 
             try {
                 const marketContractWithSigner = new ethers.Contract(market.address, marketContract.abi, signer);
 
-                const tx = await marketContractWithSigner.withdraw();
+                const tx = await marketContractWithSigner.withdraw({
+                    gasLimit: MAX_GAS_LIMIT,
+                });
                 const txResult = await tx.wait();
 
                 if (txResult && txResult.transactionHash) {
@@ -237,7 +241,9 @@ const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market 
             try {
                 const marketManagerContractWithSigner = marketManagerContract.connect(signer);
 
-                const tx = await marketManagerContractWithSigner.cancelMarket(market.address);
+                const tx = await marketManagerContractWithSigner.cancelMarket(market.address, {
+                    gasLimit: MAX_GAS_LIMIT,
+                });
                 const txResult = await tx.wait();
 
                 if (txResult && txResult.transactionHash) {

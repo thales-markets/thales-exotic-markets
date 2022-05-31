@@ -1,5 +1,6 @@
 import Button from 'components/Button';
 import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
+import { MAX_GAS_LIMIT } from 'constants/network';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
@@ -33,7 +34,10 @@ const DisputeOverview: React.FC<DisputeOverviewProps> = ({
 
                 const tx = await thalesOracleCouncilContractWithSigner.claimUnclosedDisputeBonds(
                     disputeInfo.market,
-                    disputeInfo.disputeNumber
+                    disputeInfo.disputeNumber,
+                    {
+                        gasLimit: MAX_GAS_LIMIT,
+                    }
                 );
                 const txResult = await tx.wait();
 

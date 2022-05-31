@@ -187,7 +187,9 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
             try {
                 const thalesOracleCouncilContractWithSigner = thalesOracleCouncilContract.connect(signer);
 
-                const tx = await thalesOracleCouncilContractWithSigner.openDispute(marketAddress, reasonForDispute);
+                const tx = await thalesOracleCouncilContractWithSigner.openDispute(marketAddress, reasonForDispute, {
+                    gasLimit: MAX_GAS_LIMIT,
+                });
                 const txResult = await tx.wait();
 
                 if (txResult && txResult.transactionHash) {

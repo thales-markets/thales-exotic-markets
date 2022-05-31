@@ -21,6 +21,7 @@ import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
 import { Info, InfoContent, InfoLabel, MainInfo, PositionContainer, PositionLabel, Positions } from 'components/common';
 import { refetchMarketData } from 'utils/queryConnector';
 import Tooltip from 'components/Tooltip';
+import { MAX_GAS_LIMIT } from 'constants/network';
 
 type MaturityPhaseOpenBidProps = {
     market: MarketData;
@@ -78,7 +79,9 @@ const MaturityPhaseOpenBid: React.FC<MaturityPhaseOpenBidProps> = ({ market }) =
             try {
                 const marketContractWithSigner = new ethers.Contract(market.address, marketContract.abi, signer);
 
-                const tx = await marketContractWithSigner.claimWinningTicket();
+                const tx = await marketContractWithSigner.claimWinningTicket({
+                    gasLimit: MAX_GAS_LIMIT,
+                });
                 const txResult = await tx.wait();
 
                 if (txResult && txResult.transactionHash) {
@@ -114,7 +117,9 @@ const MaturityPhaseOpenBid: React.FC<MaturityPhaseOpenBidProps> = ({ market }) =
             try {
                 const marketContractWithSigner = new ethers.Contract(market.address, marketContract.abi, signer);
 
-                const tx = await marketContractWithSigner.issueFees();
+                const tx = await marketContractWithSigner.issueFees({
+                    gasLimit: MAX_GAS_LIMIT,
+                });
                 const txResult = await tx.wait();
 
                 if (txResult && txResult.transactionHash) {
