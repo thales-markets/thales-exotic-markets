@@ -7,6 +7,7 @@ import {
     DISPUTE_VOTING_OPTIONS_MARKET_RESOLVED,
     DISPUTE_VOTING_OPTIONS_TRANSLATION_KEYS,
 } from 'constants/markets';
+import { MAX_GAS_LIMIT } from 'constants/network';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
@@ -68,7 +69,10 @@ const DisputeVoting: React.FC<DisputeVotingProps> = ({
                     disputeInfo.market,
                     disputeInfo.disputeNumber,
                     vote,
-                    vote === DisputeVotingOption.ACCEPT_RESULT ? selectedPosition : 0
+                    vote === DisputeVotingOption.ACCEPT_RESULT ? selectedPosition : 0,
+                    {
+                        gasLimit: MAX_GAS_LIMIT,
+                    }
                 );
                 const txResult = await tx.wait();
 

@@ -235,7 +235,9 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                     formattedAmounts.push(ethers.utils.parseEther(Number(position).toString()));
                 });
 
-                const tx = await marketContractWithSigner.takeOpenBidPositions(formattedPositions, formattedAmounts);
+                const tx = await marketContractWithSigner.takeOpenBidPositions(formattedPositions, formattedAmounts, {
+                    gasLimit: MAX_GAS_LIMIT,
+                });
                 const txResult = await tx.wait();
 
                 if (txResult && txResult.transactionHash) {
@@ -267,7 +269,9 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
             try {
                 const marketContractWithSigner = new ethers.Contract(market.address, marketContract.abi, signer);
 
-                const tx = await marketContractWithSigner.withdraw(position);
+                const tx = await marketContractWithSigner.withdraw(position, {
+                    gasLimit: MAX_GAS_LIMIT,
+                });
                 const txResult = await tx.wait();
 
                 if (txResult && txResult.transactionHash) {
@@ -303,7 +307,9 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
             try {
                 const marketManagerContractWithSigner = marketManagerContract.connect(signer);
 
-                const tx = await marketManagerContractWithSigner.cancelMarket(market.address);
+                const tx = await marketManagerContractWithSigner.cancelMarket(market.address, {
+                    gasLimit: MAX_GAS_LIMIT,
+                });
                 const txResult = await tx.wait();
 
                 if (txResult && txResult.transactionHash) {

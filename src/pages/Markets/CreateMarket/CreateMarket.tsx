@@ -305,7 +305,10 @@ const CreateMarket: React.FC = () => {
                     formmatedTags,
                     positions.length,
                     marketType === MarketType.TICKET ? [initialPosition] : parsedInitialPositions,
-                    positions
+                    positions,
+                    {
+                        gasLimit: MAX_GAS_LIMIT,
+                    }
                 );
                 const txResult = await tx.wait();
 

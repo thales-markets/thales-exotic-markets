@@ -31,6 +31,7 @@ import { ethers } from 'ethers';
 import { refetchMarketData } from 'utils/queryConnector';
 import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
 import MaturityPhaseOpenBid from './MaturityPhaseOpenBid';
+import { MAX_GAS_LIMIT } from 'constants/network';
 
 type MarketDetailsProps = {
     market: MarketData;
@@ -86,7 +87,9 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
             try {
                 const marketContractWithSigner = new ethers.Contract(market.address, marketContract.abi, signer);
 
-                const tx = await marketContractWithSigner.setPaused(true);
+                const tx = await marketContractWithSigner.setPaused(true, {
+                    gasLimit: MAX_GAS_LIMIT,
+                });
                 const txResult = await tx.wait();
 
                 if (txResult && txResult.transactionHash) {
