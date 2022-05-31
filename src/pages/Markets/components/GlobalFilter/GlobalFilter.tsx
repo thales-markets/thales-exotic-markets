@@ -31,18 +31,29 @@ const Container = styled(FlexDivStart)<{ readOnly?: boolean }>`
     letter-spacing: 0.035em;
     text-transform: uppercase;
     cursor: pointer;
-    height: 34px;
+    height: ${(props) => (props.readOnly ? 42 : 34)}px;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
     &.disabled {
         cursor: default;
         opacity: 0.4;
     }
     align-items: center;
+    .selected,
     :hover {
         background: ${(props) => (props.readOnly ? 'transparent' : '#e1d9e7')};
     }
-    padding: ${(props) => (props.readOnly ? '0 4px' : '0 10px')};
-    border-radius: 10px;
+    &.selected,
+    &:hover {
+        border-bottom: 5px solid ${(props) => (props.readOnly ? props.theme.borderColor.secondary : 'transparent')};
+    }
+    padding: ${(props) => (props.readOnly ? '0 0' : '0 10px')};
+    border-radius: ${(props) => (props.readOnly ? 0 : 10)}px;
     flex-direction: ${(props) => (props.readOnly ? 'row-reverse' : 'row')};
+    margin-right: ${(props) => (props.readOnly ? 15 : 0)}px;
+    :last-child {
+        margin-right: ${(props) => (props.readOnly ? 25 : 0)}px;
+    }
 `;
 
 const Label = styled.div`
@@ -64,7 +75,7 @@ const Count = styled(FlexDivCentered)<{ readOnly?: boolean }>`
     border-radius: 15px;
     padding-left: 4px;
     padding-right: 4px;
-    margin-right: ${(props) => (props.readOnly ? 20 : 6)}px;
+    margin-right: ${(props) => (props.readOnly ? 0 : 6)}px;
     margin-left: ${(props) => (props.readOnly ? 6 : 0)}px;
 `;
 

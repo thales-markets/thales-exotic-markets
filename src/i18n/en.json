@@ -132,6 +132,7 @@
         "winnings-per-ticket-label": "Winnings per ticket",
         "claim-amount-ticket-label": "Claim amount per ticket",
         "ticket-price-label": "Ticket price",
+        "fixed-ticket-label": "Fixed ticket",
         "open-bid-label": "Open bid",
         "bid-amount-label": "Bid amount",
         "your-previous-bid-amount-label": "Your previous bid amount",

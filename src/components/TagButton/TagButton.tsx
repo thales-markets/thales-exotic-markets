@@ -77,6 +77,7 @@ const Container = styled(FlexDivCentered)<{ invertedColors?: boolean; readOnly?:
     white-space: nowrap;
     text-transform: ${(props) => (props.readOnly ? 'uppercase' : 'none')};
     font-weight: ${(props) => (props.readOnly ? 'bold' : 'normal')};
+    margin-right: ${(props) => (props.readOnly ? 30 : 0)}px;
 `;
 
 export default TagButton;
