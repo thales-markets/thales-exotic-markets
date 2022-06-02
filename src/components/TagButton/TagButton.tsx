@@ -63,7 +63,7 @@ const Container = styled(FlexDivCentered)<{ invertedColors?: boolean; readOnly?:
     &:hover:not(.disabled):not(.read-only) {
         background: ${(props) => (props.invertedColors ? '#e1d9e7' : props.theme.button.background.secondary)};
         color: ${(props) => props.theme.button.textColor.primary};
-        opacity: ${(props) => (props.invertedColors ? 1 : 0)};
+        opacity: ${(props) => (props.invertedColors ? 1 : 0.8)};
     }
     &.disabled {
         cursor: default;
@@ -77,7 +77,7 @@ const Container = styled(FlexDivCentered)<{ invertedColors?: boolean; readOnly?:
     white-space: nowrap;
     text-transform: ${(props) => (props.readOnly ? 'uppercase' : 'none')};
     font-weight: ${(props) => (props.readOnly ? 'bold' : 'normal')};
-    margin-right: ${(props) => (props.readOnly ? 30 : 0)}px;
+    margin-right: ${(props) => (props.readOnly ? 25 : 0)}px;
 `;
 
 export default TagButton;

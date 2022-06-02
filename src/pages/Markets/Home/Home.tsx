@@ -23,7 +23,13 @@ import {
 import GlobalFilter from '../components/GlobalFilter';
 import TagButton from '../../../components/TagButton';
 import MarketsGrid from './MarketsGrid';
-import { GlobalFilterEnum, SortDirection, DEFAULT_SORT_BY, MarketStatus } from 'constants/markets';
+import {
+    GlobalFilterEnum,
+    SortDirection,
+    DEFAULT_SORT_BY,
+    MarketStatus,
+    MarketTypeFilterEnum,
+} from 'constants/markets';
 import SortOption from '../components/SortOption';
 import useTagsQuery from 'queries/markets/useTagsQuery';
 import useAccountPositionsQuery from 'queries/markets/useAccountPositionsQuery';
@@ -35,7 +41,6 @@ import { ReactComponent as FiltersIcon } from 'assets/images/filters-icon.svg';
 import { ReactComponent as SortingsIcon } from 'assets/images/sortings-icon.svg';
 import { ReactComponent as TagsIcon } from 'assets/images/tags-icon.svg';
 import OutsideClickHandler from 'react-outside-click-handler';
-import Toggle from 'components/fields/Toggle';
 
 const Home: React.FC = () => {
     const { t } = useTranslation();
@@ -46,17 +51,15 @@ const Home: React.FC = () => {
     const isWalletConnected = useSelector((state: RootState) => getIsWalletConnected(state));
     const marketSearch = useSelector((state: RootState) => getMarketSearch(state));
     const [globalFilter, setGlobalFilter] = useLocalStorage(LOCAL_STORAGE_KEYS.FILTER_GLOBAL, GlobalFilterEnum.Active);
+    const [typeFilter, setTypeFilter] = useLocalStorage(LOCAL_STORAGE_KEYS.FILTER_TYPE, MarketTypeFilterEnum.AllTypes);
     const [sortDirection, setSortDirection] = useLocalStorage(LOCAL_STORAGE_KEYS.SORT_DIRECTION, SortDirection.ASC);
     const [sortBy, setSortBy] = useLocalStorage(LOCAL_STORAGE_KEYS.SORT_BY, DEFAULT_SORT_BY);
-    const [showTicketMarkets, setShowTicketMarkets] = useLocalStorage(
-        LOCAL_STORAGE_KEYS.FILTER_SHOW_TICKET_MARKETS,
-        true
-    );
     const [lastValidMarkets, setLastValidMarkets] = useState<Markets>([]);
     const [accountPositions, setAccountPositions] = useState<AccountPositionsMap>({});
     const [showFilters, setShowFilters] = useState<boolean>(false);
     const [showSortings, setShowSortings] = useState<boolean>(false);
     const [showTags, setShowTags] = useState<boolean>(false);
+    const [showTypes, setShowTypes] = useState<boolean>(false);
 
     const sortOptions: SortOptionType[] = [
         { id: 1, title: t('market.time-remaining-label') },
@@ -71,6 +74,11 @@ const Home: React.FC = () => {
 
     const [tagFilter, setTagFilter] = useLocalStorage(LOCAL_STORAGE_KEYS.FILTER_TAGS, allTagsFilterItem);
     const [availableTags, setAvailableTags] = useState<Tags>([allTagsFilterItem]);
+
+    const isUserFilter =
+        globalFilter === GlobalFilterEnum.YourPositions ||
+        globalFilter === GlobalFilterEnum.Claim ||
+        globalFilter === GlobalFilterEnum.YourNotPositionedMarkets;
 
     const marketsQuery = useMarketsQuery(networkId, { enabled: isAppReady });
 
@@ -131,37 +139,15 @@ const Home: React.FC = () => {
         return filteredMarkets;
     }, [markets, searchFilteredMarkets, tagFilter, marketSearch]);
 
-    const accountPositionsCount = useMemo(() => {
-        return tagsFilteredMarkets.filter((market: MarketInfo) => {
-            const accountPosition: AccountPosition = accountPositions[market.address];
-            return isPositionAvailable(market, accountPosition);
-        }).length;
-    }, [tagsFilteredMarkets, accountPositions]);
-
-    const accountClaimsCount = useMemo(() => {
-        return tagsFilteredMarkets.filter((market: MarketInfo) => {
-            const accountPosition: AccountPosition = accountPositions[market.address];
-            return isClaimAvailable(market, accountPosition);
-        }).length;
-    }, [tagsFilteredMarkets, accountPositions]);
-
-    const accountNotPositionedCount = useMemo(() => {
-        return tagsFilteredMarkets.filter((market: MarketInfo) => {
-            const accountPosition: AccountPosition = accountPositions[market.address];
-            return isPositionAvailableForPositioning(market, accountPosition);
-        }).length;
-    }, [tagsFilteredMarkets, accountPositions]);
-
     const typeFilteredMarkets = useMemo(
         () =>
             tagsFilteredMarkets.filter(
                 (market: MarketInfo) =>
-                    market.isTicketType === showTicketMarkets ||
-                    globalFilter === GlobalFilterEnum.YourPositions ||
-                    globalFilter === GlobalFilterEnum.Claim ||
-                    globalFilter === GlobalFilterEnum.YourNotPositionedMarkets
+                    typeFilter === MarketTypeFilterEnum.AllTypes ||
+                    (market.isTicketType && typeFilter === MarketTypeFilterEnum.FixedTicket) ||
+                    (!market.isTicketType && typeFilter === MarketTypeFilterEnum.OpenBid)
             ),
-        [tagsFilteredMarkets, showTicketMarkets, globalFilter]
+        [tagsFilteredMarkets, typeFilter, globalFilter]
     );
 
     const acitveCount = useMemo(() => {
@@ -199,6 +185,27 @@ const Home: React.FC = () => {
             (market: MarketInfo) => market.numberOfOpenDisputes > 0 && !market.isMarketClosedForDisputes
         ).length;
     }, [typeFilteredMarkets]);
+
+    const accountPositionsCount = useMemo(() => {
+        return typeFilteredMarkets.filter((market: MarketInfo) => {
+            const accountPosition: AccountPosition = accountPositions[market.address];
+            return isPositionAvailable(market, accountPosition);
+        }).length;
+    }, [typeFilteredMarkets, accountPositions]);
+
+    const accountClaimsCount = useMemo(() => {
+        return typeFilteredMarkets.filter((market: MarketInfo) => {
+            const accountPosition: AccountPosition = accountPositions[market.address];
+            return isClaimAvailable(market, accountPosition);
+        }).length;
+    }, [typeFilteredMarkets, accountPositions]);
+
+    const accountNotPositionedCount = useMemo(() => {
+        return typeFilteredMarkets.filter((market: MarketInfo) => {
+            const accountPosition: AccountPosition = accountPositions[market.address];
+            return isPositionAvailableForPositioning(market, accountPosition);
+        }).length;
+    }, [typeFilteredMarkets, accountPositions]);
 
     const globalFilteredMarkets = useMemo(() => {
         let filteredMarkets = typeFilteredMarkets;
@@ -295,6 +302,7 @@ const Home: React.FC = () => {
 
     const resetFilters = () => {
         setGlobalFilter(GlobalFilterEnum.Active);
+        setTypeFilter(MarketTypeFilterEnum.AllTypes);
         setTagFilter(allTagsFilterItem);
         dispatch(setMarketSearch(''));
     };
@@ -343,7 +351,10 @@ const Home: React.FC = () => {
                                 )}
                             <GlobalFilter
                                 selected={globalFilter === GlobalFilterEnum.YourPositions}
-                                onClick={() => setGlobalFilter(GlobalFilterEnum.YourPositions)}
+                                onClick={() => {
+                                    setTypeFilter(MarketTypeFilterEnum.AllTypes);
+                                    setGlobalFilter(GlobalFilterEnum.YourPositions);
+                                }}
                                 count={getCount(GlobalFilterEnum.YourPositions)}
                                 readOnly
                             >
@@ -351,7 +362,10 @@ const Home: React.FC = () => {
                             </GlobalFilter>
                             <GlobalFilter
                                 selected={globalFilter === GlobalFilterEnum.Claim}
-                                onClick={() => setGlobalFilter(GlobalFilterEnum.Claim)}
+                                onClick={() => {
+                                    setTypeFilter(MarketTypeFilterEnum.AllTypes);
+                                    setGlobalFilter(GlobalFilterEnum.Claim);
+                                }}
                                 count={getCount(GlobalFilterEnum.Claim)}
                                 readOnly
                             >
@@ -369,6 +383,9 @@ const Home: React.FC = () => {
                                             <GlobalFilter
                                                 disabled={false}
                                                 onClick={() => {
+                                                    if (isUserFilter) {
+                                                        setTypeFilter(MarketTypeFilterEnum.AllTypes);
+                                                    }
                                                     setGlobalFilter(filterItem);
                                                     setShowFilters(false);
                                                 }}
@@ -433,7 +450,7 @@ const Home: React.FC = () => {
                                             <TagButton
                                                 selected={tagFilter.id === tag.id}
                                                 onClick={() => {
-                                                    setTagFilter(tagFilter.id === tag.id ? allTagsFilterItem : tag);
+                                                    setTagFilter(tag);
                                                     setShowTags(false);
                                                 }}
                                                 key={tag.label}
@@ -447,20 +464,33 @@ const Home: React.FC = () => {
                             </OutsideClickHandler>
                         )}
                     </FilterItemContainer>
-                    {globalFilter !== GlobalFilterEnum.YourPositions &&
-                        globalFilter !== GlobalFilterEnum.Claim &&
-                        globalFilter !== GlobalFilterEnum.YourNotPositionedMarkets && (
-                            <ToggleContainer>
-                                <Toggle
-                                    isLeftOptionSelected={showTicketMarkets}
-                                    onClick={() => {
-                                        setShowTicketMarkets(!showTicketMarkets);
-                                    }}
-                                    leftText={t('market.fixed-ticket-label')}
-                                    rightText={t('market.open-bid-label')}
-                                />
-                            </ToggleContainer>
+                    <FilterItemContainer>
+                        <FilterItem onClick={() => setShowTypes(true)}>
+                            <Type readOnly={true}>{t(`market.filter-label.type.${typeFilter.toLowerCase()}`)}</Type>
+                        </FilterItem>
+                        {showTypes && (
+                            <OutsideClickHandler onOutsideClick={() => setShowTypes(false)}>
+                                <Filters>
+                                    <CloseIconContainer>
+                                        <CloseIcon onClick={() => setShowTypes(false)} />
+                                    </CloseIconContainer>
+                                    {Object.values(MarketTypeFilterEnum).map((filterItem: string) => {
+                                        return (
+                                            <Type
+                                                onClick={() => {
+                                                    setTypeFilter(filterItem);
+                                                    setShowTypes(false);
+                                                }}
+                                                key={filterItem}
+                                            >
+                                                {t(`market.filter-label.type.${filterItem.toLowerCase()}`)}
+                                            </Type>
+                                        );
+                                    })}
+                                </Filters>
+                            </OutsideClickHandler>
                         )}
+                    </FilterItemContainer>
                 </FiltersContainer>
             </ActionsContainer>
             {marketsQuery.isLoading ? (
@@ -548,22 +578,26 @@ const StyledTagsIcon = styled(TagsIcon)`
     height: 24px;
 `;
 
-const ToggleContainer = styled(FlexDivColumn)`
-    span {
-        text-transform: uppercase;
-    }
-    > div {
-        margin-bottom: 0px;
-    }
-    .toogle {
-        font-size: 15px;
-        line-height: 102.6%;
-        height: 34px;
-        align-items: center;
-    }
-    i {
-        font-size: 50px;
-        margin-top: -4px;
+const Type = styled(FlexDivStart)<{ readOnly?: boolean }>`
+    font-style: normal;
+    font-weight: bold;
+    font-size: 15px;
+    line-height: 102.6%;
+    letter-spacing: 0.035em;
+    cursor: pointer;
+    height: 34px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+    padding: ${(props) => (props.readOnly ? '0 4px' : '0 10px')};
+    border-radius: 10px;
+    align-items: center;
+    text-transform: uppercase;
+    white-space: nowrap;
+    :hover {
+        background: ${(props) => (props.readOnly ? 'transparent' : '#e1d9e7')};
     }
 `;
 

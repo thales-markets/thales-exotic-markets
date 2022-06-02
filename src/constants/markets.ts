@@ -11,6 +11,12 @@ export enum GlobalFilterEnum {
     YourNotPositionedMarkets = 'YourNotPositionedMarkets',
 }
 
+export enum MarketTypeFilterEnum {
+    AllTypes = 'AllTypes',
+    FixedTicket = 'FixedTicket',
+    OpenBid = 'OpenBid',
+}
+
 export enum SortDirection {
     NONE,
     ASC,

@@ -109,6 +109,8 @@
         "search-placeholder": "Search markets",
         "open-markets-label": "Opened",
         "resolved-markets-label": "Resolved",
+        "positioned-markets-label": "Positioned",
+        "claimable-markets-label": "Claimable",
         "status": {
             "open": "Open",
             "cancelled-pending-confirmation": "Cancelled - pending confirmation",
@@ -231,6 +233,11 @@
                 "yourpositions": "Your positions",
                 "claim": "Claimable",
                 "yournotpositionedmarkets": "Markets you're not positioned in"
+            },
+            "type": {
+                "alltypes": "All types",
+                "fixedticket": "Fixed ticket",
+                "openbid": "Open bid"
             },
             "all": "All",
             "all-tags": "All tags"

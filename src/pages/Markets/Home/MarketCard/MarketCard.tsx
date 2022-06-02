@@ -4,12 +4,13 @@ import Tags from 'pages/Markets/components/Tags';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { FlexDivColumnCentered, FlexDivRow } from 'styles/common';
+import { Colors, FlexDivCentered, FlexDivColumnCentered, FlexDivRow } from 'styles/common';
 import { AccountPosition, MarketInfo } from 'types/markets';
 import { formatCurrencyWithKey } from 'utils/formatters/number';
 import { DEFAULT_CURRENCY_DECIMALS, PAYMENT_CURRENCY } from 'constants/currency';
 import { Info, InfoContent, InfoLabel } from 'components/common';
-import { isClaimAvailable } from 'utils/markets';
+import { isClaimAvailable, isPositionAvailable } from 'utils/markets';
+import { MarketStatus as MarketStatusEnum } from 'constants/markets';
 
 type MarketCardProps = {
     market: MarketInfo;
@@ -20,18 +21,84 @@ const MarketCard: React.FC<MarketCardProps> = ({ market, accountPosition }) => {
     const { t } = useTranslation();
 
     const claimAvailable = isClaimAvailable(market, accountPosition);
+    const positionAvailable = isPositionAvailable(market, accountPosition);
+
+    const getColor = () => {
+        if (claimAvailable) {
+            return Colors.PURPLE;
+        }
+        if (positionAvailable) {
+            return Colors.PINK;
+        }
+        if (market.status === MarketStatusEnum.ResolvedConfirmed) {
+            return Colors.GREY;
+        }
+        return Colors.PURPLE;
+    };
+    const color = getColor();
+
+    const getHighlightColor = () => {
+        if (claimAvailable) {
+            return Colors.PURPLE;
+        }
+        return Colors.WHITE;
+    };
+    const highlightColor = getHighlightColor();
+
+    const getHighlightBackgroundColor = () => {
+        if (claimAvailable) {
+            return Colors.GREEN;
+        }
+        if (positionAvailable) {
+            return Colors.PINK;
+        }
+        if (market.status === MarketStatusEnum.ResolvedConfirmed) {
+            return Colors.GREY;
+        }
+        return Colors.WHITE;
+    };
+    const highlightBackgroundColor = getHighlightBackgroundColor();
+
+    const getHighlightText = () => {
+        if (claimAvailable) {
+            return t('market.claimable-markets-label');
+        }
+        if (positionAvailable) {
+            return t('market.positioned-markets-label');
+        }
+        if (market.status === MarketStatusEnum.ResolvedConfirmed) {
+            return t('market.resolved-markets-label');
+        }
+        return '';
+    };
+
+    const hasHighlight = claimAvailable || positionAvailable || market.status === MarketStatusEnum.ResolvedConfirmed;
 
     return (
-        <Container isClaimAvailable={claimAvailable}>
-            <TopContainer>
+        <Container isClaimAvailable={claimAvailable} color={color}>
+            {hasHighlight && (
+                <HighlightContainer
+                    color={highlightColor}
+                    backgroundColor={highlightBackgroundColor}
+                    className="highlight"
+                >
+                    {getHighlightText()}
+                </HighlightContainer>
+            )}
+            <TopContainer color={color}>
                 <TagsContainer>
-                    <Tags tags={market.tags} hideLabel paintTags />
+                    <Tags
+                        tags={market.tags}
+                        color={hasHighlight ? color : undefined}
+                        hideLabel
+                        paintTags={!hasHighlight}
+                    />
                 </TagsContainer>
                 <MarketTitle>{market.question}</MarketTitle>
                 <MarketStatus market={market} fontWeight={700} isClaimAvailable={claimAvailable} />
             </TopContainer>
             <BottomContainer>
-                <PoolInfo>
+                <PoolInfo color={color}>
                     <Info>
                         <InfoLabel>{t('market.total-pool-size-label')}:</InfoLabel>
                         <InfoContent>
@@ -65,14 +132,13 @@ const MarketCard: React.FC<MarketCardProps> = ({ market, accountPosition }) => {
     );
 };
 
-const Container = styled(FlexDivColumnCentered)<{ isClaimAvailable: boolean }>`
-    border: ${(props) => (props.isClaimAvailable ? 2 : 1)}px solid
-        ${(props) => (props.isClaimAvailable ? props.theme.borderColor.secondary : props.theme.borderColor.primary)};
+const Container = styled(FlexDivColumnCentered)<{ isClaimAvailable: boolean; color: string }>`
+    border: none;
     box-sizing: border-box;
     border-radius: 25px;
     margin: 8px 4px 8px 4px;
     background: ${(props) => props.theme.background.tertiary};
-    color: ${(props) => props.theme.textColor.tertiary};
+    color: ${(props) => props.color};
     &:hover {
         background: ${(props) => props.theme.background.secondary};
         border-color: transparent;
@@ -84,16 +150,34 @@ const Container = styled(FlexDivColumnCentered)<{ isClaimAvailable: boolean }>`
         }
         .tag {
             background: transparent;
+            color: ${(props) => props.theme.textColor.primary};
+        }
+        .highlight {
+            background: transparent;
+            color: ${(props) => props.theme.textColor.primary};
         }
     }
     align-items: center;
+    overflow: hidden;
 `;
 
-const TopContainer = styled(FlexDivColumnCentered)`
+const HighlightContainer = styled(FlexDivCentered)<{ color: string; backgroundColor: string }>`
+    height: 28px;
+    color: ${(props) => props.color};
+    background: ${(props) => props.backgroundColor};
+    width: 100%;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 100%;
+    text-align: center;
+    text-transform: uppercase;
+`;
+
+const TopContainer = styled(FlexDivColumnCentered)<{ color: string }>`
     padding: 20px;
     align-items: center;
     width: 100%;
-    border-bottom: 3px dashed ${(props) => props.theme.borderColor.tertiary};
+    border-bottom: 3px dashed ${(props) => props.color};
 `;
 
 const BottomContainer = styled(FlexDivColumnCentered)`
@@ -106,10 +190,10 @@ const TagsContainer = styled(FlexDivRow)`
     margin-bottom: 30px;
 `;
 
-const PoolInfo = styled(FlexDivColumnCentered)`
+const PoolInfo = styled(FlexDivColumnCentered)<{ color: string }>`
     font-size: 15px;
     padding: 10px 25px;
-    border: 2px solid ${(props) => props.theme.borderColor.tertiary};
+    border: 2px solid ${(props) => props.color};
     border-radius: 15px;
     width: fit-content;
     margin-bottom: 20px;
