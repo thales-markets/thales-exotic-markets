@@ -131,9 +131,37 @@ const Home: React.FC = () => {
         return filteredMarkets;
     }, [markets, searchFilteredMarkets, tagFilter, marketSearch]);
 
+    const accountPositionsCount = useMemo(() => {
+        return tagsFilteredMarkets.filter((market: MarketInfo) => {
+            const accountPosition: AccountPosition = accountPositions[market.address];
+            return isPositionAvailable(market, accountPosition);
+        }).length;
+    }, [tagsFilteredMarkets, accountPositions]);
+
+    const accountClaimsCount = useMemo(() => {
+        return tagsFilteredMarkets.filter((market: MarketInfo) => {
+            const accountPosition: AccountPosition = accountPositions[market.address];
+            return isClaimAvailable(market, accountPosition);
+        }).length;
+    }, [tagsFilteredMarkets, accountPositions]);
+
+    const accountNotPositionedCount = useMemo(() => {
+        return tagsFilteredMarkets.filter((market: MarketInfo) => {
+            const accountPosition: AccountPosition = accountPositions[market.address];
+            return isPositionAvailableForPositioning(market, accountPosition);
+        }).length;
+    }, [tagsFilteredMarkets, accountPositions]);
+
     const typeFilteredMarkets = useMemo(
-        () => tagsFilteredMarkets.filter((market: MarketInfo) => market.isTicketType === showTicketMarkets),
-        [tagsFilteredMarkets, showTicketMarkets]
+        () =>
+            tagsFilteredMarkets.filter(
+                (market: MarketInfo) =>
+                    market.isTicketType === showTicketMarkets ||
+                    globalFilter === GlobalFilterEnum.YourPositions ||
+                    globalFilter === GlobalFilterEnum.Claim ||
+                    globalFilter === GlobalFilterEnum.YourNotPositionedMarkets
+            ),
+        [tagsFilteredMarkets, showTicketMarkets, globalFilter]
     );
 
     const acitveCount = useMemo(() => {
@@ -171,27 +199,6 @@ const Home: React.FC = () => {
             (market: MarketInfo) => market.numberOfOpenDisputes > 0 && !market.isMarketClosedForDisputes
         ).length;
     }, [typeFilteredMarkets]);
-
-    const accountPositionsCount = useMemo(() => {
-        return typeFilteredMarkets.filter((market: MarketInfo) => {
-            const accountPosition: AccountPosition = accountPositions[market.address];
-            return isPositionAvailable(market, accountPosition);
-        }).length;
-    }, [typeFilteredMarkets, accountPositions]);
-
-    const accountClaimsCount = useMemo(() => {
-        return typeFilteredMarkets.filter((market: MarketInfo) => {
-            const accountPosition: AccountPosition = accountPositions[market.address];
-            return isClaimAvailable(market, accountPosition);
-        }).length;
-    }, [typeFilteredMarkets, accountPositions]);
-
-    const accountNotPositionedCount = useMemo(() => {
-        return typeFilteredMarkets.filter((market: MarketInfo) => {
-            const accountPosition: AccountPosition = accountPositions[market.address];
-            return isPositionAvailableForPositioning(market, accountPosition);
-        }).length;
-    }, [typeFilteredMarkets, accountPositions]);
 
     const globalFilteredMarkets = useMemo(() => {
         let filteredMarkets = typeFilteredMarkets;
@@ -440,16 +447,20 @@ const Home: React.FC = () => {
                             </OutsideClickHandler>
                         )}
                     </FilterItemContainer>
-                    <ToggleContainer>
-                        <Toggle
-                            isLeftOptionSelected={showTicketMarkets}
-                            onClick={() => {
-                                setShowTicketMarkets(!showTicketMarkets);
-                            }}
-                            leftText={t('market.fixed-ticket-label')}
-                            rightText={t('market.open-bid-label')}
-                        />
-                    </ToggleContainer>
+                    {globalFilter !== GlobalFilterEnum.YourPositions &&
+                        globalFilter !== GlobalFilterEnum.Claim &&
+                        globalFilter !== GlobalFilterEnum.YourNotPositionedMarkets && (
+                            <ToggleContainer>
+                                <Toggle
+                                    isLeftOptionSelected={showTicketMarkets}
+                                    onClick={() => {
+                                        setShowTicketMarkets(!showTicketMarkets);
+                                    }}
+                                    leftText={t('market.fixed-ticket-label')}
+                                    rightText={t('market.open-bid-label')}
+                                />
+                            </ToggleContainer>
+                        )}
                 </FiltersContainer>
             </ActionsContainer>
             {marketsQuery.isLoading ? (

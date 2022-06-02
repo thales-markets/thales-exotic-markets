@@ -69,8 +69,9 @@ export const PositionContainer = styled(FlexDivColumn)`
     }
     &.selected {
         color: ${(props) => props.theme.textColor.primary};
-        background: ${(props) => props.theme.borderColor.tertiary};
-        border: 1px solid ${(props) => props.theme.borderColor.tertiary};
+        background: ${(props) => props.theme.background.secondary};
+        border-color: transparent;
+        background-origin: border-box;
         i {
             :before {
                 color: ${(props) => props.theme.textColor.primary};
