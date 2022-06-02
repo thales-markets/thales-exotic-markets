@@ -4,7 +4,7 @@ import Tags from 'pages/Markets/components/Tags';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { Colors, FlexDivCentered, FlexDivColumnCentered, FlexDivRow } from 'styles/common';
+import { Colors, FlexDivCentered, FlexDivColumn, FlexDivColumnCentered, FlexDivRow } from 'styles/common';
 import { AccountPosition, MarketInfo } from 'types/markets';
 import { formatCurrencyWithKey } from 'utils/formatters/number';
 import { DEFAULT_CURRENCY_DECIMALS, PAYMENT_CURRENCY } from 'constants/currency';
@@ -95,7 +95,14 @@ const MarketCard: React.FC<MarketCardProps> = ({ market, accountPosition }) => {
                     />
                 </TagsContainer>
                 <MarketTitle>{market.question}</MarketTitle>
-                <MarketStatus market={market} fontWeight={700} isClaimAvailable={claimAvailable} />
+                {market.status === MarketStatusEnum.ResolvedConfirmed ? (
+                    <WinningPositionContainer>
+                        <WinningPositionLabel>{t('market.winnings-position-label')}:</WinningPositionLabel>
+                        <WinningPosition>{market.positions[market.winningPosition - 1]}</WinningPosition>
+                    </WinningPositionContainer>
+                ) : (
+                    <MarketStatus market={market} fontWeight={700} isClaimAvailable={claimAvailable} />
+                )}
             </TopContainer>
             <BottomContainer>
                 <PoolInfo color={color}>
@@ -197,6 +204,25 @@ const PoolInfo = styled(FlexDivColumnCentered)<{ color: string }>`
     border-radius: 15px;
     width: fit-content;
     margin-bottom: 20px;
+`;
+
+const WinningPositionContainer = styled(FlexDivColumn)``;
+
+const WinningPositionLabel = styled.span`
+    font-style: normal;
+    font-weight: normal;
+    font-size: 15px;
+    line-height: 100%;
+    text-align: center;
+    margin-bottom: 4px;
+`;
+
+const WinningPosition = styled.span`
+    font-style: normal;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 100%;
+    text-align: center;
 `;
 
 export default MarketCard;
