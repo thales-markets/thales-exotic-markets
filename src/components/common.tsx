@@ -41,20 +41,21 @@ export const MainInfo = styled(Info)`
     line-height: 25px;
 `;
 
-export const Positions = styled(FlexDivColumn)`
+export const Positions = styled(FlexDivCentered)`
     margin-bottom: 20px;
-    align-items: center;
+    flex-wrap: wrap;
 `;
 
 export const PositionContainer = styled(FlexDivColumn)`
-    margin-bottom: 15px;
+    margin: 10px;
     cursor: pointer;
     align-items: center;
     color: ${(props) => props.theme.textColor.tertiary};
     border: 1px solid ${(props) => props.theme.borderColor.tertiary};
     padding: 10px 20px;
     border-radius: 15px;
-    width: 350px;
+    max-width: 350px;
+    min-width: 350px;
     i {
         :before {
             color: ${(props) => props.theme.textColor.tertiary};
@@ -86,7 +87,8 @@ export const PositionContainer = styled(FlexDivColumn)`
         box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.3);
     }
     @media (max-width: 575px) {
-        width: 100%;
+        max-width: 100%;
+        min-width: 100%;
     }
 `;
 
@@ -95,6 +97,9 @@ export const PositionOpenBidContainer = styled(PositionContainer)`
     :hover:not(.disabled):not(.maturity) {
         transform: none;
     }
+    max-width: 250px;
+    min-width: 250px;
+    border: none;
 `;
 
 export const Position = styled.span`

@@ -381,32 +381,8 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
         <>
             <Positions>
                 {market.positions.map((position: string, index: number) => (
-                    <PositionOpenBidContainer
-                        key={position}
-                        className={`${isPositionCardDisabled ? 'disabled' : ''} ${
-                            Number(selectedPositions[index]) > 0 ? 'selected' : ''
-                        }`}
-                    >
+                    <PositionOpenBidContainer key={position} className={`${isPositionCardDisabled ? 'disabled' : ''}`}>
                         <PositionLabel>{position}</PositionLabel>
-                        <BidInput
-                            value={selectedPositions[index]}
-                            label={`${t('market.bid-amount-label')}:`}
-                            onChange={(_, value) => {
-                                const newSelectedPositions = [...selectedPositions];
-                                newSelectedPositions[index] = value;
-                                setSelectedPositions(newSelectedPositions);
-                            }}
-                            currencyLabel={PAYMENT_CURRENCY}
-                            selected={Number(selectedPositions[index]) > 0}
-                            onWithdrawClick={() => handleWithdraw(index + 1)}
-                            initialValue={currentPositionsOnContract[index]}
-                            disabled={isPositionCardDisabled}
-                            isWithdrawing={withdrawPosition === index + 1}
-                            withdrawDisabled={
-                                isWithdrawProtectionDuration &&
-                                Number(currentPositionsOnContract[index]) > maxWithdrawAmount
-                            }
-                        />
                         <Info>
                             <InfoLabel>{t('market.pool-size-label')}:</InfoLabel>
                             <InfoContent>
@@ -429,6 +405,25 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                             </InfoContent>
                             <Tooltip overlay={<RoiOverlayContainer>{t('market.roi-tooltip')}</RoiOverlayContainer>} />
                         </Info>
+                        <BidInput
+                            value={selectedPositions[index]}
+                            label={`${t('market.bid-amount-label')}:`}
+                            onChange={(_, value) => {
+                                const newSelectedPositions = [...selectedPositions];
+                                newSelectedPositions[index] = value;
+                                setSelectedPositions(newSelectedPositions);
+                            }}
+                            currencyLabel={PAYMENT_CURRENCY}
+                            onWithdrawClick={() => handleWithdraw(index + 1)}
+                            initialValue={currentPositionsOnContract[index]}
+                            disabled={isPositionCardDisabled}
+                            isWithdrawing={withdrawPosition === index + 1}
+                            withdrawDisabled={
+                                isWithdrawProtectionDuration &&
+                                Number(currentPositionsOnContract[index]) > maxWithdrawAmount
+                            }
+                            simpleInput
+                        />
                     </PositionOpenBidContainer>
                 ))}
             </Positions>

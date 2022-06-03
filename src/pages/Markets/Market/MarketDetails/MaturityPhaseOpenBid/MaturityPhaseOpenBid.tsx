@@ -379,12 +379,11 @@ const DistributeButton = styled(Button)`
 
 const NothingToClaim = styled(FlexDivCentered)<{ marginTop?: number }>`
     background: transparent;
-    border: 1px solid ${(props) => props.theme.borderColor.primary};
+    border: 1px solid ${(props) => props.theme.borderColor.tertiary};
     border-radius: 30px;
     font-style: normal;
     font-weight: bold;
     font-size: 17px;
-    color: ${(props) => props.theme.textColor.primary};
     min-height: 28px;
     padding: 5px 20px;
     margin-top: ${(props) => props.marginTop || 0}px;
