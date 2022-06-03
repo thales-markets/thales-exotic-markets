@@ -111,7 +111,7 @@ export const Position = styled.span`
 export const PositionLabel = styled.span<{ hasPaddingLeft?: boolean }>`
     font-style: normal;
     font-weight: bold;
-    font-size: 25px;
+    font-size: 21px;
     line-height: 30px;
     text-align: center;
     padding-left: ${(props) => (props.hasPaddingLeft ? 35 : 0)}px;

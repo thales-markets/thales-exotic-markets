@@ -94,6 +94,7 @@ const GetUsd: React.FC = () => {
                             }
                         }}
                         disabled={isSubmitting}
+                        fontSize={15}
                     >
                         {isSubmitting
                             ? t('common.wallet.get-usd-progress', {

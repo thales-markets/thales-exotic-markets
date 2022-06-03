@@ -47,7 +47,6 @@ const Container = styled(FlexDivCentered)<{ invertedColors?: boolean; readOnly?:
                 : props.theme.borderColor.primary};
     border-radius: 30px;
     font-style: normal;
-    font-weight: normal;
     font-size: 15px;
     line-height: 20px;
     padding: 4px 8px;
@@ -76,7 +75,7 @@ const Container = styled(FlexDivCentered)<{ invertedColors?: boolean; readOnly?:
     user-select: none;
     white-space: nowrap;
     text-transform: ${(props) => (props.readOnly ? 'uppercase' : 'none')};
-    font-weight: ${(props) => (props.readOnly ? 'bold' : 'normal')};
+    font-weight: ${(props) => (props.readOnly || props.invertedColors ? 'bold' : 'normal')};
     margin-right: ${(props) => (props.readOnly ? 25 : 0)}px;
 `;
 

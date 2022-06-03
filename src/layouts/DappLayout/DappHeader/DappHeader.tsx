@@ -56,6 +56,7 @@ const DappHeader: React.FC<DappHeaderProps> = ({ showSearch }) => {
                                     onClick={() => {
                                         navigateTo(ROUTES.Markets.CreateMarket);
                                     }}
+                                    fontSize={15}
                                 >
                                     {t('market.button.create-market-label')}
                                 </Button>

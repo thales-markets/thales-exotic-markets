@@ -86,14 +86,14 @@ const Tag = styled(FlexDivCentered)<{ tagColor: string; colorAvailable: boolean;
     border-radius: 30px;
     font-style: normal;
     font-weight: normal;
-    font-size: 15px;
+    font-size: ${(props) => (props.hideLabel ? 13 : 15)}px;
     line-height: 20px;
-    padding: 4px 8px;
+    padding: 2px 8px;
     margin-left: 6px;
     :first-child {
         margin-left: ${(props) => (props.hideLabel ? 0 : 6)}px;
     }
-    height: 28px;
+    height: ${(props) => (props.hideLabel ? 24 : 28)}px;
     margin-bottom: 4px;
     background: ${(props) => props.tagColor};
 `;

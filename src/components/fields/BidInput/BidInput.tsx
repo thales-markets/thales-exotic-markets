@@ -1,5 +1,6 @@
 import Button from 'components/Button';
 import { PAYMENT_CURRENCY } from 'constants/currency';
+import { BID_INPUT_STEP } from 'constants/markets';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
@@ -69,8 +70,14 @@ const BidInput: React.FC<BidInputProps> = ({
             )}
             {simpleInput && (
                 <>
-                    <Minus onClick={(e) => onChange(e, Number(value) < 10 ? 0 : Number(value) - 10)}>-</Minus>
-                    <Plus onClick={(e) => onChange(e, Number(value) + 10)}>+</Plus>
+                    <Minus
+                        onClick={(e) =>
+                            onChange(e, Number(value) < BID_INPUT_STEP ? 0 : Number(value) - BID_INPUT_STEP)
+                        }
+                    >
+                        -
+                    </Minus>
+                    <Plus onClick={(e) => onChange(e, Number(value) + BID_INPUT_STEP)}>+</Plus>
                 </>
             )}
         </Container>
@@ -143,7 +150,7 @@ const ButtonContainer = styled.div<{ selected?: boolean; disabled: boolean }>`
 const Minus = styled(FlexDivCentered)`
     font-weight: bold;
     position: absolute;
-    font-size: 22px;
+    font-size: 27px;
     top: 0px;
     left: 2px;
     width: 30px;

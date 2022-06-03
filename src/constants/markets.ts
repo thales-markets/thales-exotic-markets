@@ -52,6 +52,8 @@ export const DATE_PICKER_MAX_DATE = maxDate; // 12 months from now
 
 export const MAXIMUM_INPUT_CHARACTERS = 200;
 
+export const BID_INPUT_STEP = 10;
+
 export enum MarketStatus {
     Open = 'open',
     CancelledPendingConfirmation = 'cancelled-pending-confirmation',

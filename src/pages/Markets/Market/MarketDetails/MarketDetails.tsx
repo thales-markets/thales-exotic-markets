@@ -214,7 +214,7 @@ const TopContainer = styled(FlexDivColumnCentered)`
 `;
 
 const BottomContainer = styled(FlexDivColumnCentered)`
-    padding: 20px 30px 0px 30px;
+    padding: 10px 30px 0px 30px;
     width: 100%;
     @media (max-width: 767px) {
         padding: 20px 20px 0px 20px;
@@ -223,6 +223,7 @@ const BottomContainer = styled(FlexDivColumnCentered)`
 
 const Footer = styled(FlexDivRow)`
     margin-top: 10px;
+    align-items: end;
     > div {
         width: 33%;
     }

@@ -41,8 +41,11 @@ const Input = styled.input`
     height: 28px;
     padding-left: 30px;
     padding-right: 30px;
-    font-size: 18px;
+    font-size: 15px;
     outline: none;
+    ::placeholder {
+        text-align: center;
+    }
 `;
 
 const IconWrapper = styled.div`

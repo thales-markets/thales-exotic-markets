@@ -94,14 +94,14 @@ const MarketCard: React.FC<MarketCardProps> = ({ market, accountPosition }) => {
                         paintTags={!hasHighlight}
                     />
                 </TagsContainer>
-                <MarketTitle>{market.question}</MarketTitle>
+                <MarketTitle fontSize={18}>{market.question}</MarketTitle>
                 {market.status === MarketStatusEnum.ResolvedConfirmed ? (
                     <WinningPositionContainer>
                         <WinningPositionLabel>{t('market.winnings-position-label')}:</WinningPositionLabel>
                         <WinningPosition>{market.positions[market.winningPosition - 1]}</WinningPosition>
                     </WinningPositionContainer>
                 ) : (
-                    <MarketStatus market={market} fontWeight={700} isClaimAvailable={claimAvailable} />
+                    <MarketStatus market={market} fontWeight={700} fontSize={18} isClaimAvailable={claimAvailable} />
                 )}
             </TopContainer>
             <BottomContainer>
@@ -117,7 +117,7 @@ const MarketCard: React.FC<MarketCardProps> = ({ market, accountPosition }) => {
                         <InfoContent>{market.numberOfParticipants}</InfoContent>
                     </Info>
                 </PoolInfo>
-                <Info fontSize={18}>
+                <Info fontSize={15}>
                     {market.isTicketType ? (
                         <>
                             <InfoLabel>{t('market.ticket-price-label')}:</InfoLabel>
@@ -195,11 +195,14 @@ const BottomContainer = styled(FlexDivColumnCentered)`
 
 const TagsContainer = styled(FlexDivRow)`
     margin-bottom: 30px;
+    > div {
+        justify-content: center;
+    }
 `;
 
 const PoolInfo = styled(FlexDivColumnCentered)<{ color: string }>`
     font-size: 15px;
-    padding: 10px 25px;
+    padding: 8px 20px;
     border: 2px solid ${(props) => props.color};
     border-radius: 15px;
     width: fit-content;

@@ -600,6 +600,7 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                         DEFAULT_CURRENCY_DECIMALS,
                         true
                     )}
+                    isTicketType={false}
                 />
             )}
         </>
