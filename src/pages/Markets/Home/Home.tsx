@@ -60,6 +60,7 @@ const Home: React.FC = () => {
     const [showSortings, setShowSortings] = useState<boolean>(false);
     const [showTags, setShowTags] = useState<boolean>(false);
     const [showTypes, setShowTypes] = useState<boolean>(false);
+    const [isMobile, setIsMobile] = useState(false);
 
     const sortOptions: SortOptionType[] = [
         { id: 1, title: t('market.time-remaining-label') },
@@ -79,6 +80,22 @@ const Home: React.FC = () => {
         globalFilter === GlobalFilterEnum.YourPositions ||
         globalFilter === GlobalFilterEnum.Claim ||
         globalFilter === GlobalFilterEnum.YourNotPositionedMarkets;
+
+    const handleResize = () => {
+        if (window.innerWidth <= 500) {
+            setIsMobile(true);
+        } else {
+            setIsMobile(false);
+        }
+    };
+
+    useEffect(() => {
+        window.addEventListener('resize', handleResize);
+        handleResize();
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
 
     const marketsQuery = useMarketsQuery(networkId, { enabled: isAppReady });
 
@@ -341,14 +358,15 @@ const Home: React.FC = () => {
             <ActionsContainer>
                 <FiltersContainer>
                     <FilterItemContainer>
-                        <FilterItem>
+                        <FilterItem onClick={() => (isMobile ? setShowFilters(true) : null)}>
                             <StyledFiltersIcon onClick={() => setShowFilters(true)} />
-                            {globalFilter !== GlobalFilterEnum.YourPositions &&
-                                globalFilter !== GlobalFilterEnum.Claim && (
-                                    <GlobalFilter selected={true} count={getCount(globalFilter)} readOnly>
-                                        {t(`market.filter-label.global.${globalFilter.toLowerCase()}`)}
-                                    </GlobalFilter>
-                                )}
+                            {((globalFilter !== GlobalFilterEnum.YourPositions &&
+                                globalFilter !== GlobalFilterEnum.Claim) ||
+                                isMobile) && (
+                                <GlobalFilter selected={true} count={getCount(globalFilter)} readOnly>
+                                    {t(`market.filter-label.global.${globalFilter.toLowerCase()}`)}
+                                </GlobalFilter>
+                            )}
                             <GlobalFilter
                                 selected={globalFilter === GlobalFilterEnum.YourPositions}
                                 onClick={() => {
@@ -540,7 +558,7 @@ const FilterItemContainer = styled(FlexDivStart)`
     position: relative;
     @media (max-width: 500px) {
         width: 100%;
-        padding: 4px 20px;
+        padding: 5px 20px;
     }
 `;
 

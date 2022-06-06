@@ -137,6 +137,7 @@ const WalletContainer = styled(FlexDivRowCentered)`
     }
     @media (max-width: 500px) {
         width: 100%;
+        justify-content: center;
     }
 `;
 
