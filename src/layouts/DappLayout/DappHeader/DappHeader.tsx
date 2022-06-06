@@ -92,8 +92,19 @@ const RightContainer = styled(FlexDivRowCentered)`
             }
         }
     }
+    @media (max-width: 500px) {
+        padding: 0px 20px;
+        width: 100%;
+    }
 `;
 
-const ButtonsContainer = styled(FlexDivRowCentered)``;
+const ButtonsContainer = styled(FlexDivRowCentered)`
+    @media (max-width: 500px) {
+        width: 100%;
+        button {
+            width: 100%;
+        }
+    }
+`;
 
 export default DappHeader;

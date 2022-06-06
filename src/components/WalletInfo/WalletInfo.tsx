@@ -102,6 +102,9 @@ const Container = styled(FlexDivCentered)`
     @media (max-width: 767px) {
         min-width: auto;
     }
+    @media (max-width: 500px) {
+        width: 100%;
+    }
 `;
 
 const WalletContainer = styled(FlexDivRowCentered)`
@@ -132,12 +135,19 @@ const WalletContainer = styled(FlexDivRowCentered)`
             display: inline;
         }
     }
+    @media (max-width: 500px) {
+        width: 100%;
+    }
 `;
 
 const Wallet = styled(FlexDivRowCentered)`
     padding-right: 10px;
     width: 95px;
     text-align: center;
+    @media (max-width: 500px) {
+        width: 100%;
+        justify-content: center;
+    }
 `;
 
 const Balance = styled(FlexDivRowCentered)`
@@ -169,6 +179,11 @@ const WalletOptions = styled(FlexDivColumn)`
     color: ${(props) => props.theme.button.textColor.primary};
     @media (max-width: 767px) {
         right: -127px;
+    }
+    @media (max-width: 500px) {
+        left: 0px;
+        right: auto;
+        width: 100%;
     }
 `;
 

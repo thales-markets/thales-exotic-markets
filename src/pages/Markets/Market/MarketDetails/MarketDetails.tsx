@@ -182,7 +182,7 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
                             )}
                             {canOpenDispute && (
                                 <SPAAnchor href={buildOpenDisputeLink(market.address)}>
-                                    <OpenDisputeButton>
+                                    <OpenDisputeButton type="tertiary">
                                         {t(
                                             `market.button.${
                                                 market.isOpen ? 'dispute-market-label' : 'dispute-resolution-label'

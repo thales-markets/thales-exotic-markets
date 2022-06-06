@@ -8,12 +8,21 @@ type GlobalFilterProps = {
     count?: number;
     onClick?: (param: any) => void;
     readOnly?: boolean;
+    className?: string;
 };
 
-const GlobalFilter: React.FC<GlobalFilterProps> = ({ disabled, selected, onClick, children, count, readOnly }) => {
+const GlobalFilter: React.FC<GlobalFilterProps> = ({
+    disabled,
+    selected,
+    onClick,
+    children,
+    count,
+    readOnly,
+    className,
+}) => {
     return (
         <Container
-            className={`${disabled ? 'disabled' : ''} ${selected ? 'selected' : ''}`}
+            className={`${className ? className : ''} ${disabled ? 'disabled' : ''} ${selected ? 'selected' : ''}`}
             onClick={onClick}
             readOnly={readOnly}
         >
@@ -53,6 +62,15 @@ const Container = styled(FlexDivStart)<{ readOnly?: boolean }>`
     margin-right: ${(props) => (props.readOnly ? 15 : 0)}px;
     :last-child {
         margin-right: ${(props) => (props.readOnly ? 25 : 0)}px;
+    }
+    @media (max-width: 500px) {
+        &.single-item {
+            display: none;
+        }
+        &.selected,
+        &:hover {
+            border-bottom: 5px solid transparent;
+        }
     }
 `;
 

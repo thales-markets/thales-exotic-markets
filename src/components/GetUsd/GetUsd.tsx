@@ -119,6 +119,12 @@ const Container = styled(FlexDivCentered)`
     button {
         padding: 0 20px;
     }
+    @media (max-width: 500px) {
+        width: 100%;
+        button {
+            width: 100%;
+        }
+    }
 `;
 
 export default GetUsd;

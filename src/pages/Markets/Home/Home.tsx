@@ -356,6 +356,7 @@ const Home: React.FC = () => {
                                     setGlobalFilter(GlobalFilterEnum.YourPositions);
                                 }}
                                 count={getCount(GlobalFilterEnum.YourPositions)}
+                                className="single-item"
                                 readOnly
                             >
                                 {t(`market.filter-label.global.${GlobalFilterEnum.YourPositions.toLowerCase()}`)}
@@ -366,6 +367,7 @@ const Home: React.FC = () => {
                                     setTypeFilter(MarketTypeFilterEnum.AllTypes);
                                     setGlobalFilter(GlobalFilterEnum.Claim);
                                 }}
+                                className="single-item"
                                 count={getCount(GlobalFilterEnum.Claim)}
                                 readOnly
                             >
@@ -375,9 +377,6 @@ const Home: React.FC = () => {
                         {showFilters && (
                             <OutsideClickHandler onOutsideClick={() => setShowFilters(false)}>
                                 <Filters>
-                                    <CloseIconContainer>
-                                        <CloseIcon onClick={() => setShowFilters(false)} />
-                                    </CloseIconContainer>
                                     {Object.values(GlobalFilterEnum).map((filterItem) => {
                                         return (
                                             <GlobalFilter
@@ -401,38 +400,6 @@ const Home: React.FC = () => {
                         )}
                     </FilterItemContainer>
                     <FilterItemContainer>
-                        <FilterItem onClick={() => setShowSortings(true)}>
-                            <StyledSortingsIcon />
-                            <SortOption selected={true} sortDirection={sortDirection} readOnly>
-                                {sortOptions.find((sortOption) => sortOption.id === sortBy)?.title}
-                            </SortOption>
-                        </FilterItem>
-                        {showSortings && (
-                            <OutsideClickHandler onOutsideClick={() => setShowSortings(false)}>
-                                <Filters>
-                                    <CloseIconContainer>
-                                        <CloseIcon onClick={() => setShowSortings(false)} />
-                                    </CloseIconContainer>
-                                    {sortOptions.map((sortOption) => {
-                                        return (
-                                            <SortOption
-                                                selected={sortOption.id === sortBy}
-                                                sortDirection={sortDirection}
-                                                onClick={() => {
-                                                    setSort(sortOption);
-                                                    setShowSortings(false);
-                                                }}
-                                                key={sortOption.title}
-                                            >
-                                                {sortOption.title}
-                                            </SortOption>
-                                        );
-                                    })}
-                                </Filters>
-                            </OutsideClickHandler>
-                        )}
-                    </FilterItemContainer>
-                    <FilterItemContainer>
                         <FilterItem onClick={() => setShowTags(true)}>
                             <StyledTagsIcon />
                             <TagButton className="read-only" readOnly>
@@ -442,9 +409,6 @@ const Home: React.FC = () => {
                         {showTags && (
                             <OutsideClickHandler onOutsideClick={() => setShowTags(false)}>
                                 <Filters>
-                                    <CloseIconContainer>
-                                        <CloseIcon onClick={() => setShowTags(false)} />
-                                    </CloseIconContainer>
                                     {availableTags.map((tag: TagInfo) => {
                                         return (
                                             <TagButton
@@ -471,9 +435,6 @@ const Home: React.FC = () => {
                         {showTypes && (
                             <OutsideClickHandler onOutsideClick={() => setShowTypes(false)}>
                                 <Filters>
-                                    <CloseIconContainer>
-                                        <CloseIcon onClick={() => setShowTypes(false)} />
-                                    </CloseIconContainer>
                                     {Object.values(MarketTypeFilterEnum).map((filterItem: string) => {
                                         return (
                                             <Type
@@ -485,6 +446,35 @@ const Home: React.FC = () => {
                                             >
                                                 {t(`market.filter-label.type.${filterItem.toLowerCase()}`)}
                                             </Type>
+                                        );
+                                    })}
+                                </Filters>
+                            </OutsideClickHandler>
+                        )}
+                    </FilterItemContainer>
+                    <FilterItemContainer>
+                        <FilterItem onClick={() => setShowSortings(true)}>
+                            <StyledSortingsIcon />
+                            <SortOption selected={true} sortDirection={sortDirection} readOnly>
+                                {sortOptions.find((sortOption) => sortOption.id === sortBy)?.title}
+                            </SortOption>
+                        </FilterItem>
+                        {showSortings && (
+                            <OutsideClickHandler onOutsideClick={() => setShowSortings(false)}>
+                                <Filters>
+                                    {sortOptions.map((sortOption) => {
+                                        return (
+                                            <SortOption
+                                                selected={sortOption.id === sortBy}
+                                                sortDirection={sortDirection}
+                                                onClick={() => {
+                                                    setSort(sortOption);
+                                                    setShowSortings(false);
+                                                }}
+                                                key={sortOption.title}
+                                            >
+                                                {sortOption.title}
+                                            </SortOption>
                                         );
                                     })}
                                 </Filters>
@@ -531,7 +521,7 @@ const ActionsContainer = styled(FlexDivRow)`
     }
     @media (max-width: 767px) {
         :first-child {
-            margin-top: 55px;
+            margin-top: 15px;
         }
     }
 `;
@@ -540,11 +530,18 @@ const FiltersContainer = styled(FlexDivStart)`
     flex-wrap: wrap;
     align-items: center;
     position: relative;
+    @media (max-width: 500px) {
+        flex-direction: column;
+    }
 `;
 
 const FilterItemContainer = styled(FlexDivStart)`
     align-items: center;
     position: relative;
+    @media (max-width: 500px) {
+        width: 100%;
+        padding: 4px 20px;
+    }
 `;
 
 const FilterItem = styled(FlexDivStart)`
@@ -562,7 +559,10 @@ const Filters = styled(FlexDivColumn)`
     background: ${(props) => props.theme.background.tertiary};
     color: ${(props) => props.theme.textColor.tertiary};
     box-shadow: 0px 20px 40px rgba(0, 0, 0, 0.35);
-    padding: 15px 10px;
+    padding: 15px 15px;
+    @media (max-width: 500px) {
+        left: 20px;
+    }
 `;
 
 const StyledFiltersIcon = styled(FiltersIcon)`
@@ -572,10 +572,16 @@ const StyledFiltersIcon = styled(FiltersIcon)`
 
 const StyledSortingsIcon = styled(SortingsIcon)`
     height: 24px;
+    @media (max-width: 500px) {
+        margin: 0px 3px 0px 3px;
+    }
 `;
 
 const StyledTagsIcon = styled(TagsIcon)`
     height: 24px;
+    @media (max-width: 500px) {
+        margin: 0px 5px 0px 10px;
+    }
 `;
 
 const Type = styled(FlexDivStart)<{ readOnly?: boolean }>`
@@ -599,6 +605,7 @@ const Type = styled(FlexDivStart)<{ readOnly?: boolean }>`
     :hover {
         background: ${(props) => (props.readOnly ? 'transparent' : '#e1d9e7')};
     }
+    margin-right: ${(props) => (props.readOnly ? 25 : 0)}px;
 `;
 
 const NoMarketsContainer = styled(FlexDivColumnCentered)`
@@ -620,23 +627,6 @@ const NoMarketsLabel = styled.span`
 const LoaderContainer = styled(FlexDivColumn)`
     position: relative;
     min-height: 300px;
-`;
-
-const CloseIconContainer = styled(FlexDivStart)`
-    align-items: center;
-    width: fit-content;
-    align-self: center;
-    margin-bottom: 6px;
-`;
-
-const CloseIcon = styled.i`
-    font-size: 18px;
-    cursor: pointer;
-    &:before {
-        font-family: ExoticIcons !important;
-        content: '\\004F';
-        color: ${(props) => props.theme.button.textColor.primary};
-    }
 `;
 
 export default Home;

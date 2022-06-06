@@ -30,6 +30,9 @@ const Search: React.FC<SearchProps> = ({ text, handleChange }) => {
 const Wrapper = styled(FlexDivStart)`
     position: relative;
     width: fit-content;
+    @media (max-width: 500px) {
+        width: 100%;
+    }
 `;
 
 const Input = styled.input`
@@ -45,6 +48,9 @@ const Input = styled.input`
     outline: none;
     ::placeholder {
         text-align: center;
+    }
+    @media (max-width: 500px) {
+        width: 100%;
     }
 `;
 
