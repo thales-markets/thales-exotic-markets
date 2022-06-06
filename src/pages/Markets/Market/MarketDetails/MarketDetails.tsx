@@ -32,6 +32,8 @@ import { refetchMarketData } from 'utils/queryConnector';
 import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
 import MaturityPhaseOpenBid from './MaturityPhaseOpenBid';
 import { MAX_GAS_LIMIT } from 'constants/network';
+import { TwitterShareButton } from 'react-share';
+import { ReactComponent as TwitterIcon } from 'assets/images/twitter-icon.svg';
 
 type MarketDetailsProps = {
     market: MarketData;
@@ -111,6 +113,9 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
                 <MarketTitle fontSize={25} marginBottom={40}>
                     {market.question}
                 </MarketTitle>
+                <TwitterShareButton url={window.location.href} title={market.question}>
+                    <StyledTwitterIcon />
+                </TwitterShareButton>
 
                 {market.isTicketType && market.status === MarketStatusEnum.Open && (
                     <PositioningPhaseTicket market={market} />
@@ -271,6 +276,10 @@ const OpenDisputeButton = styled(Button)`
 const ButtonContainer = styled(FlexDivColumn)`
     margin-bottom: 10px;
     align-items: center;
+`;
+
+const StyledTwitterIcon = styled(TwitterIcon)`
+    height: 26px;
 `;
 
 export default MarketDetails;
