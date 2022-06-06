@@ -96,7 +96,9 @@
         "input-characters-note": "{{entered }} / {{max}}",
         "view": "View",
         "guidelines": "guidelines",
-        "built-on": "Built on"
+        "built-on": "Built on",
+        "twitter-text-short": "\n\nMarket available in @ex0t1c_markets",
+        "twitter-text-long": "\n\nWhat do you think?\n\nMarket available in @ex0t1c_markets"
     },
     "footer": {
         "all-rights-reserved": "© {{year}} eXoticV ALL RIGHTS RESERVED."

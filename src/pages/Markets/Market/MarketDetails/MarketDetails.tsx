@@ -34,6 +34,7 @@ import MaturityPhaseOpenBid from './MaturityPhaseOpenBid';
 import { MAX_GAS_LIMIT } from 'constants/network';
 import { TwitterShareButton } from 'react-share';
 import { ReactComponent as TwitterIcon } from 'assets/images/twitter-icon.svg';
+import { LINKS } from 'constants/links';
 
 type MarketDetailsProps = {
     market: MarketData;
@@ -107,13 +108,17 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
         }
     };
 
+    const twitterText = `${market.question}${t(
+        `common.twitter-text-${market.question.length > 198 ? 'short' : 'long'}`
+    )}`;
+
     return (
         <MarketContainer>
             <TopContainer>
                 <MarketTitle fontSize={25} marginBottom={40}>
                     {market.question}
                 </MarketTitle>
-                <TwitterShareButton url={window.location.href} title={market.question}>
+                <TwitterShareButton url={`${LINKS.ExoticMarkets}markets/${market.address}`} title={twitterText}>
                     <StyledTwitterIcon />
                 </TwitterShareButton>
 
@@ -199,13 +204,14 @@ const MarketContainer = styled(FlexDivColumn)`
     box-shadow: 0px 20px 40px rgba(0, 0, 0, 0.35);
     border-radius: 25px;
     width: 100%;
-    padding: 40px 0px 30px 0px;
+    padding: 50px 0px 30px 0px;
     background: ${(props) => props.theme.background.tertiary};
     color: ${(props) => props.theme.textColor.tertiary};
     flex: initial;
     @media (max-width: 767px) {
-        padding: 30px 0px 20px 0px;
+        padding: 35px 0px 20px 0px;
     }
+    position: relative;
 `;
 
 const TopContainer = styled(FlexDivColumnCentered)`
@@ -279,7 +285,14 @@ const ButtonContainer = styled(FlexDivColumn)`
 `;
 
 const StyledTwitterIcon = styled(TwitterIcon)`
-    height: 26px;
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    height: 22px;
+    @media (max-width: 767px) {
+        top: 10px;
+        right: 15px;
+    }
 `;
 
 export default MarketDetails;
