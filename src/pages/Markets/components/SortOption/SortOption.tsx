@@ -47,6 +47,9 @@ const Container = styled(FlexDivStart)<{ readOnly?: boolean }>`
     padding: ${(props) => (props.readOnly ? '0 4px' : '0 10px')};
     border-radius: 10px;
     align-items: center;
+    @media (max-width: 500px) {
+        font-size: ${(props) => (props.readOnly ? 13 : 15)}px;
+    }
 `;
 
 const SortText = styled.span`
@@ -57,7 +60,6 @@ const SortText = styled.span`
 const SortIcon = styled.i<{ selected: boolean; sortDirection: SortDirection; readOnly?: boolean }>`
     font-size: ${(props) => (props.selected && props.sortDirection !== SortDirection.NONE ? 22 : 18)}px;
     margin-bottom: 2px;
-    margin-right: ${(props) => (props.readOnly ? 25 : 0)}px;
     &:before {
         font-family: ExoticIcons !important;
         content: ${(props) =>

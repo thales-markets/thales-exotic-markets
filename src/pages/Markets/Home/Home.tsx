@@ -37,9 +37,6 @@ import { LOCAL_STORAGE_KEYS } from 'constants/storage';
 import useLocalStorage from 'hooks/useLocalStorage';
 import { isClaimAvailable, isPositionAvailable, isPositionAvailableForPositioning } from 'utils/markets';
 import { getMarketSearch, setMarketSearch } from 'redux/modules/market';
-import { ReactComponent as FiltersIcon } from 'assets/images/filters-icon.svg';
-import { ReactComponent as SortingsIcon } from 'assets/images/sortings-icon.svg';
-import { ReactComponent as TagsIcon } from 'assets/images/tags-icon.svg';
 import OutsideClickHandler from 'react-outside-click-handler';
 
 const Home: React.FC = () => {
@@ -359,7 +356,7 @@ const Home: React.FC = () => {
                 <FiltersContainer>
                     <FilterItemContainer>
                         <FilterItem onClick={() => (isMobile ? setShowFilters(true) : null)}>
-                            <StyledFiltersIcon onClick={() => setShowFilters(true)} />
+                            <FiltersIcon onClick={() => setShowFilters(true)} />
                             {((globalFilter !== GlobalFilterEnum.YourPositions &&
                                 globalFilter !== GlobalFilterEnum.Claim) ||
                                 isMobile) && (
@@ -367,30 +364,34 @@ const Home: React.FC = () => {
                                     {t(`market.filter-label.global.${globalFilter.toLowerCase()}`)}
                                 </GlobalFilter>
                             )}
-                            <GlobalFilter
-                                selected={globalFilter === GlobalFilterEnum.YourPositions}
-                                onClick={() => {
-                                    setTypeFilter(MarketTypeFilterEnum.AllTypes);
-                                    setGlobalFilter(GlobalFilterEnum.YourPositions);
-                                }}
-                                count={getCount(GlobalFilterEnum.YourPositions)}
-                                className="single-item"
-                                readOnly
-                            >
-                                {t(`market.filter-label.global.${GlobalFilterEnum.YourPositions.toLowerCase()}`)}
-                            </GlobalFilter>
-                            <GlobalFilter
-                                selected={globalFilter === GlobalFilterEnum.Claim}
-                                onClick={() => {
-                                    setTypeFilter(MarketTypeFilterEnum.AllTypes);
-                                    setGlobalFilter(GlobalFilterEnum.Claim);
-                                }}
-                                className="single-item"
-                                count={getCount(GlobalFilterEnum.Claim)}
-                                readOnly
-                            >
-                                {t(`market.filter-label.global.${GlobalFilterEnum.Claim.toLowerCase()}`)}
-                            </GlobalFilter>
+                            {!isMobile && (
+                                <GlobalFilter
+                                    selected={globalFilter === GlobalFilterEnum.YourPositions}
+                                    onClick={() => {
+                                        setTypeFilter(MarketTypeFilterEnum.AllTypes);
+                                        setGlobalFilter(GlobalFilterEnum.YourPositions);
+                                    }}
+                                    count={getCount(GlobalFilterEnum.YourPositions)}
+                                    className="single-item"
+                                    readOnly
+                                >
+                                    {t(`market.filter-label.global.${GlobalFilterEnum.YourPositions.toLowerCase()}`)}
+                                </GlobalFilter>
+                            )}
+                            {!isMobile && (
+                                <GlobalFilter
+                                    selected={globalFilter === GlobalFilterEnum.Claim}
+                                    onClick={() => {
+                                        setTypeFilter(MarketTypeFilterEnum.AllTypes);
+                                        setGlobalFilter(GlobalFilterEnum.Claim);
+                                    }}
+                                    className="single-item"
+                                    count={getCount(GlobalFilterEnum.Claim)}
+                                    readOnly
+                                >
+                                    {t(`market.filter-label.global.${GlobalFilterEnum.Claim.toLowerCase()}`)}
+                                </GlobalFilter>
+                            )}
                         </FilterItem>
                         {showFilters && (
                             <OutsideClickHandler onOutsideClick={() => setShowFilters(false)}>
@@ -418,8 +419,33 @@ const Home: React.FC = () => {
                         )}
                     </FilterItemContainer>
                     <FilterItemContainer>
+                        <FilterItem onClick={() => setShowTypes(true)}>
+                            <TypesIcon />
+                            <Type readOnly={true}>{t(`market.filter-label.type.${typeFilter.toLowerCase()}`)}</Type>
+                        </FilterItem>
+                        {showTypes && (
+                            <OutsideClickHandler onOutsideClick={() => setShowTypes(false)}>
+                                <Filters>
+                                    {Object.values(MarketTypeFilterEnum).map((filterItem: string) => {
+                                        return (
+                                            <Type
+                                                onClick={() => {
+                                                    setTypeFilter(filterItem);
+                                                    setShowTypes(false);
+                                                }}
+                                                key={filterItem}
+                                            >
+                                                {t(`market.filter-label.type.${filterItem.toLowerCase()}`)}
+                                            </Type>
+                                        );
+                                    })}
+                                </Filters>
+                            </OutsideClickHandler>
+                        )}
+                    </FilterItemContainer>
+                    <FilterItemContainer>
                         <FilterItem onClick={() => setShowTags(true)}>
-                            <StyledTagsIcon />
+                            <TagsIcon />
                             <TagButton className="read-only" readOnly>
                                 {tagFilter.label}
                             </TagButton>
@@ -447,32 +473,8 @@ const Home: React.FC = () => {
                         )}
                     </FilterItemContainer>
                     <FilterItemContainer>
-                        <FilterItem onClick={() => setShowTypes(true)}>
-                            <Type readOnly={true}>{t(`market.filter-label.type.${typeFilter.toLowerCase()}`)}</Type>
-                        </FilterItem>
-                        {showTypes && (
-                            <OutsideClickHandler onOutsideClick={() => setShowTypes(false)}>
-                                <Filters>
-                                    {Object.values(MarketTypeFilterEnum).map((filterItem: string) => {
-                                        return (
-                                            <Type
-                                                onClick={() => {
-                                                    setTypeFilter(filterItem);
-                                                    setShowTypes(false);
-                                                }}
-                                                key={filterItem}
-                                            >
-                                                {t(`market.filter-label.type.${filterItem.toLowerCase()}`)}
-                                            </Type>
-                                        );
-                                    })}
-                                </Filters>
-                            </OutsideClickHandler>
-                        )}
-                    </FilterItemContainer>
-                    <FilterItemContainer>
                         <FilterItem onClick={() => setShowSortings(true)}>
-                            <StyledSortingsIcon />
+                            <SortingsIcon />
                             <SortOption selected={true} sortDirection={sortDirection} readOnly>
                                 {sortOptions.find((sortOption) => sortOption.id === sortBy)?.title}
                             </SortOption>
@@ -548,17 +550,13 @@ const FiltersContainer = styled(FlexDivStart)`
     flex-wrap: wrap;
     align-items: center;
     position: relative;
-    @media (max-width: 500px) {
-        flex-direction: column;
-    }
 `;
 
 const FilterItemContainer = styled(FlexDivStart)`
     align-items: center;
     position: relative;
     @media (max-width: 500px) {
-        width: 100%;
-        padding: 5px 20px;
+        padding: 5px 0px;
     }
 `;
 
@@ -578,27 +576,57 @@ const Filters = styled(FlexDivColumn)`
     color: ${(props) => props.theme.textColor.tertiary};
     box-shadow: 0px 20px 40px rgba(0, 0, 0, 0.35);
     padding: 15px 15px;
+`;
+
+const FiltersIcon = styled.i`
+    font-size: 28px;
+    margin-right: 10px;
+    margin-left: 4px;
+    &:before {
+        font-family: ExoticIcons !important;
+        content: '\\0053';
+        color: ${(props) => props.theme.textColor.primary};
+    }
     @media (max-width: 500px) {
-        left: 20px;
+        font-size: 24px;
     }
 `;
 
-const StyledFiltersIcon = styled(FiltersIcon)`
-    height: 26px;
+const SortingsIcon = styled.i`
+    font-size: 28px;
     margin-right: 4px;
-`;
-
-const StyledSortingsIcon = styled(SortingsIcon)`
-    height: 24px;
+    &:before {
+        font-family: ExoticIcons !important;
+        content: '\\0051';
+        color: ${(props) => props.theme.textColor.primary};
+    }
     @media (max-width: 500px) {
-        margin: 0px 3px 0px 3px;
+        font-size: 24px;
     }
 `;
 
-const StyledTagsIcon = styled(TagsIcon)`
-    height: 24px;
+const TagsIcon = styled.i`
+    font-size: 26px;
+    &:before {
+        font-family: ExoticIcons !important;
+        content: '\\0054';
+        color: ${(props) => props.theme.textColor.primary};
+    }
     @media (max-width: 500px) {
-        margin: 0px 5px 0px 10px;
+        font-size: 22px;
+    }
+`;
+
+const TypesIcon = styled.i`
+    font-size: 30px;
+    margin-right: 4px;
+    &:before {
+        font-family: ExoticIcons !important;
+        content: '\\0055';
+        color: ${(props) => props.theme.textColor.primary};
+    }
+    @media (max-width: 500px) {
+        font-size: 26px;
     }
 `;
 
@@ -624,6 +652,10 @@ const Type = styled(FlexDivStart)<{ readOnly?: boolean }>`
         background: ${(props) => (props.readOnly ? 'transparent' : '#e1d9e7')};
     }
     margin-right: ${(props) => (props.readOnly ? 25 : 0)}px;
+    @media (max-width: 500px) {
+        font-size: ${(props) => (props.readOnly ? 13 : 15)}px;
+        margin-right: 0px;
+    }
 `;
 
 const NoMarketsContainer = styled(FlexDivColumnCentered)`

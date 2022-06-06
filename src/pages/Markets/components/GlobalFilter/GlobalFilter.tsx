@@ -64,13 +64,13 @@ const Container = styled(FlexDivStart)<{ readOnly?: boolean }>`
         margin-right: ${(props) => (props.readOnly ? 25 : 0)}px;
     }
     @media (max-width: 500px) {
-        &.single-item {
-            display: none;
-        }
         &.selected,
         &:hover {
             border-bottom: 5px solid transparent;
         }
+    }
+    @media (max-width: 500px) {
+        font-size: ${(props) => (props.readOnly ? 13 : 15)}px;
     }
 `;
 
