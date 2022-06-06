@@ -119,8 +119,8 @@
             "cancelled-disputed": "Cancelled - under dispute",
             "cancelled-confirmed": "Cancelled",
             "paused": "Paused",
-            "resolve-pending": "Resolve pending",
-            "resolve-pending-disputed": "Resolve pending - under dispute",
+            "resolve-pending": "Pending resolution",
+            "resolve-pending-disputed": "Pending resolution - under dispute",
             "resolved-pending-confirmation": "Resolved - pending confirmation",
             "resolved-disputed": "Resolved - under dispute",
             "resolved-confirmed": "Resolved",
@@ -228,7 +228,7 @@
         "filter-label": {
             "global": {
                 "active": "Active",
-                "resolvepending": "Resolve pending",
+                "resolvepending": "Pending resolution",
                 "recentlyresolved": "Recently resolved",
                 "resolved": "Resolved",
                 "cancelled": "Cancelled",
@@ -236,7 +236,7 @@
                 "disputed": "Disputed",
                 "yourpositions": "Your positions",
                 "claim": "Claimable",
-                "yournotpositionedmarkets": "Markets you're not positioned in"
+                "yournotpositionedmarkets": "Without position"
             },
             "type": {
                 "alltypes": "All types",
