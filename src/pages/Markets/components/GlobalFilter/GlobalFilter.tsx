@@ -71,6 +71,9 @@ const Container = styled(FlexDivStart)<{ readOnly?: boolean }>`
     }
     @media (max-width: 500px) {
         font-size: ${(props) => (props.readOnly ? 13 : 15)}px;
+        :last-child {
+            margin-right: ${(props) => (props.readOnly ? 15 : 0)}px;
+        }
     }
 `;
 
@@ -95,6 +98,11 @@ const Count = styled(FlexDivCentered)<{ readOnly?: boolean }>`
     padding-right: 4px;
     margin-right: ${(props) => (props.readOnly ? 0 : 6)}px;
     margin-left: ${(props) => (props.readOnly ? 6 : 0)}px;
+    @media (max-width: 500px) {
+        min-width: 22px;
+        height: 22px;
+        margin-left: ${(props) => (props.readOnly ? 4 : 0)}px;
+    }
 `;
 
 export default GlobalFilter;

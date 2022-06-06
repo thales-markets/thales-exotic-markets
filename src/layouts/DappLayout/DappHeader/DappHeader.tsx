@@ -93,7 +93,7 @@ const RightContainer = styled(FlexDivRowCentered)`
         }
     }
     @media (max-width: 500px) {
-        padding: 0px 20px;
+        padding: 0px 4px;
         width: 100%;
     }
 `;

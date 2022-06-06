@@ -79,6 +79,8 @@ const Container = styled(FlexDivCentered)<{ invertedColors?: boolean; readOnly?:
     margin-right: ${(props) => (props.readOnly ? 25 : 0)}px;
     @media (max-width: 500px) {
         font-size: ${(props) => (props.readOnly ? 13 : 15)}px;
+        margin-right: ${(props) => (props.readOnly ? 15 : 0)}px;
+        padding: 4px 0px;
     }
 `;
 

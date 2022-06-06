@@ -550,13 +550,16 @@ const FiltersContainer = styled(FlexDivStart)`
     flex-wrap: wrap;
     align-items: center;
     position: relative;
+    @media (max-width: 500px) {
+        padding: 0px 4px;
+    }
 `;
 
 const FilterItemContainer = styled(FlexDivStart)`
     align-items: center;
     position: relative;
     @media (max-width: 500px) {
-        padding: 5px 0px;
+        padding: 3px 0px;
     }
 `;
 
@@ -589,6 +592,8 @@ const FiltersIcon = styled.i`
     }
     @media (max-width: 500px) {
         font-size: 24px;
+        margin-right: 4px;
+        margin-left: 0px;
     }
 `;
 
@@ -602,6 +607,7 @@ const SortingsIcon = styled.i`
     }
     @media (max-width: 500px) {
         font-size: 24px;
+        margin-right: 0px;
     }
 `;
 
@@ -627,6 +633,7 @@ const TypesIcon = styled.i`
     }
     @media (max-width: 500px) {
         font-size: 26px;
+        margin-right: 0px;
     }
 `;
 
@@ -654,7 +661,7 @@ const Type = styled(FlexDivStart)<{ readOnly?: boolean }>`
     margin-right: ${(props) => (props.readOnly ? 25 : 0)}px;
     @media (max-width: 500px) {
         font-size: ${(props) => (props.readOnly ? 13 : 15)}px;
-        margin-right: 0px;
+        margin-right: ${(props) => (props.readOnly ? 15 : 0)}px;
     }
 `;
 
