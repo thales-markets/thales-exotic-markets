@@ -209,7 +209,7 @@ const MarketContainer = styled(FlexDivColumn)`
     color: ${(props) => props.theme.textColor.tertiary};
     flex: initial;
     @media (max-width: 767px) {
-        padding: 35px 0px 20px 0px;
+        padding: 40px 0px 20px 0px;
     }
     position: relative;
 `;
@@ -286,12 +286,12 @@ const ButtonContainer = styled(FlexDivColumn)`
 
 const StyledTwitterIcon = styled(TwitterIcon)`
     position: absolute;
-    top: 15px;
-    right: 20px;
+    top: 20px;
+    right: 25px;
     height: 22px;
     @media (max-width: 767px) {
-        top: 10px;
-        right: 15px;
+        top: 15px;
+        right: 20px;
     }
 `;
 
