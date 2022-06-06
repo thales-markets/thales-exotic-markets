@@ -161,6 +161,9 @@ const Info = styled.span`
     font-weight: normal;
     font-size: 12.5px;
     line-height: 17px;
+    @media (max-width: 500px) {
+        font-size: 15px;
+    }
 `;
 
 const Currency = styled(Info)`
