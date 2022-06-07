@@ -560,6 +560,7 @@ const FilterItemContainer = styled(FlexDivStart)`
     position: relative;
     @media (max-width: 500px) {
         padding: 3px 0px;
+        position: initial;
     }
 `;
 
@@ -579,6 +580,13 @@ const Filters = styled(FlexDivColumn)`
     color: ${(props) => props.theme.textColor.tertiary};
     box-shadow: 0px 20px 40px rgba(0, 0, 0, 0.35);
     padding: 15px 15px;
+    @media (max-width: 500px) {
+        left: 0px;
+        top: 0px;
+        right: 0px;
+        margin-left: auto;
+        margin-right: auto;
+    }
 `;
 
 const FiltersIcon = styled.i`
