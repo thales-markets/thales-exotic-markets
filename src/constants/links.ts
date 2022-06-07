@@ -4,4 +4,5 @@ export const LINKS = {
     ThalesGithubGuidelines:
         'https://github.com/thales-markets/thales-improvement-proposals/blob/main/TIPs/Oracle_Council.md',
     ThalesTip28: 'https://github.com/thales-markets/thales-improvement-proposals/blob/main/TIPs/TIP-28.md',
+    ExoticMarkets: 'https://exoticmarkets.xyz/#/',
 };

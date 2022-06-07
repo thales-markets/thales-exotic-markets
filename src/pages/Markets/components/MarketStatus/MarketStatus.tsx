@@ -75,7 +75,6 @@ const StatusLabel = styled.span<{ labelFontSize?: number }>`
     font-size: ${(props) => props.labelFontSize || 15}px;
     line-height: 100%;
     text-align: center;
-    color: ${(props) => props.theme.textColor.primary};
     margin-bottom: 4px;
 `;
 
@@ -85,7 +84,6 @@ const Status = styled.span<{ fontSize?: number; fontWeight?: number }>`
     font-weight: ${(props) => props.fontWeight || 400};
     line-height: 100%;
     text-align: center;
-    color: ${(props) => props.theme.textColor.primary};
 `;
 
 export default MarketStatus;

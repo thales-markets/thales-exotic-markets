@@ -96,7 +96,9 @@
         "input-characters-note": "{{entered }} / {{max}}",
         "view": "View",
         "guidelines": "guidelines",
-        "built-on": "Built on"
+        "built-on": "Built on",
+        "twitter-text-short": "\n\nMarket available in @ex0t1c_markets",
+        "twitter-text-long": "\n\nWhat do you think?\n\nMarket available in @ex0t1c_markets"
     },
     "footer": {
         "all-rights-reserved": "© {{year}} eXoticV ALL RIGHTS RESERVED."
@@ -109,14 +111,16 @@
         "search-placeholder": "Search markets",
         "open-markets-label": "Opened",
         "resolved-markets-label": "Resolved",
+        "positioned-markets-label": "Positioned",
+        "claimable-markets-label": "Claimable",
         "status": {
             "open": "Open",
             "cancelled-pending-confirmation": "Cancelled - pending confirmation",
             "cancelled-disputed": "Cancelled - under dispute",
             "cancelled-confirmed": "Cancelled",
             "paused": "Paused",
-            "resolve-pending": "Resolve pending",
-            "resolve-pending-disputed": "Resolve pending - under dispute",
+            "resolve-pending": "Pending resolution",
+            "resolve-pending-disputed": "Pending resolution - under dispute",
             "resolved-pending-confirmation": "Resolved - pending confirmation",
             "resolved-disputed": "Resolved - under dispute",
             "resolved-confirmed": "Resolved",
@@ -130,8 +134,10 @@
         "current-roi-label": "Current ROI",
         "roi-tooltip": "Displayed ROI is not guaranteed. Profits are based on the current bids in the pool and they are prone to change. Actual ROI is determined at the end of the positioning phase.",
         "winnings-per-ticket-label": "Winnings per ticket",
+        "winnings-position-label": "Winning position",
         "claim-amount-ticket-label": "Claim amount per ticket",
         "ticket-price-label": "Ticket price",
+        "fixed-ticket-label": "Fixed ticket",
         "open-bid-label": "Open bid",
         "bid-amount-label": "Bid amount",
         "your-previous-bid-amount-label": "Your previous bid amount",
@@ -164,7 +170,8 @@
         "withdrawal-rules-label": "withdrawal rules",
         "withdrawal-rules-modal": {
             "title": "Withdrawal rules",
-            "text": "<0><0>If allowed, withdrawals can be made only up to {{withdrawalPeriodInHours}} hours before positioning ends.</0><0>During the last 24 hours of positioning, the user can not withdraw more than 10% of total market liquidity and only one withdrawal is allowed during that time.</0><0>During the last 24 hours of positioning, the user can not do repositioning if it has more than 10% of total market liquidity.</0></0>"
+            "ticket-text": "<0><0>If allowed, withdrawals can be made only up to {{withdrawalPeriodInHours}} hours before positioning ends.</0></0>",
+            "open-bid-text": "<0><0>If allowed, withdrawals can be made only up to {{withdrawalPeriodInHours}} hours before positioning ends.</0><0>During the last 24 hours of positioning, the user can not withdraw more than 10% of total market liquidity and only one withdrawal is allowed during that time.</0><0>During the last 24 hours of positioning, the user can not do repositioning if it has more than 10% of total market liquidity.</0></0>"
         },
         "creator-fee-label": "Creator fee earnings",
         "resolver-fee-label": "Resolver fee earnings",
@@ -221,17 +228,23 @@
         "filter-label": {
             "global": {
                 "active": "Active",
-                "resolvepending": "Resolve pending",
+                "resolvepending": "Pending resolution",
                 "recentlyresolved": "Recently resolved",
                 "resolved": "Resolved",
                 "cancelled": "Cancelled",
                 "paused": "Paused",
                 "disputed": "Disputed",
-                "yourpositions": "Your positions",
+                "yourpositions": "My positions",
                 "claim": "Claimable",
-                "yournotpositionedmarkets": "Markets you're not positioned in"
+                "yournotpositionedmarkets": "Without position"
             },
-            "all": "All"
+            "type": {
+                "alltypes": "All types",
+                "fixedticket": "Fixed ticket",
+                "openbid": "Open bid"
+            },
+            "all": "All",
+            "all-tags": "All tags"
         },
         "back-to-markets": "Back to markets",
         "back-to-market": "Back to market",

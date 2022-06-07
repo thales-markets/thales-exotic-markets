@@ -25,7 +25,6 @@ export const Info = styled(FlexDivCentered)<{ fontSize?: number; marginTop?: num
     white-space: nowrap;
     margin-top: ${(props) => props.marginTop || 0}px;
     margin-bottom: ${(props) => props.marginBottom || 0}px;
-    color: ${(props) => props.theme.textColor.primary};
 `;
 
 export const InfoLabel = styled.span`
@@ -42,16 +41,26 @@ export const MainInfo = styled(Info)`
     line-height: 25px;
 `;
 
-export const Positions = styled(FlexDivColumn)`
+export const Positions = styled(FlexDivCentered)`
     margin-bottom: 20px;
-    align-items: center;
+    flex-wrap: wrap;
 `;
 
 export const PositionContainer = styled(FlexDivColumn)`
-    margin-bottom: 15px;
+    margin: 10px;
     cursor: pointer;
     align-items: center;
-    color: ${(props) => props.theme.textColor.primary};
+    color: ${(props) => props.theme.textColor.tertiary};
+    border: 1px solid ${(props) => props.theme.borderColor.tertiary};
+    padding: 10px 20px;
+    border-radius: 15px;
+    max-width: 350px;
+    min-width: 350px;
+    i {
+        :before {
+            color: ${(props) => props.theme.textColor.tertiary};
+        }
+    }
     :hover:not(.disabled):not(.maturity) {
         transform: scale(1.05);
     }
@@ -60,28 +69,26 @@ export const PositionContainer = styled(FlexDivColumn)`
         cursor: default;
     }
     &.selected {
-        color: ${(props) => props.theme.button.textColor.primary};
-        background: ${(props) => props.theme.button.background.secondary};
-        border: 1px solid ${(props) => props.theme.button.background.secondary};
+        color: ${(props) => props.theme.textColor.primary};
+        background: ${(props) => props.theme.background.secondary};
+        border-color: transparent;
+        background-origin: border-box;
         i {
             :before {
-                color: ${(props) => props.theme.button.textColor.primary};
+                color: ${(props) => props.theme.textColor.primary};
             }
         }
         div {
-            color: ${(props) => props.theme.button.textColor.primary};
+            color: ${(props) => props.theme.textColor.primary};
         }
     }
     &.maturity:not(.disabled) {
         cursor: default;
         box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.3);
     }
-    border: 1px solid ${(props) => props.theme.borderColor.primary};
-    padding: 10px 20px;
-    border-radius: 15px;
-    width: 350px;
     @media (max-width: 575px) {
-        width: 100%;
+        max-width: 100%;
+        min-width: 100%;
     }
 `;
 
@@ -90,6 +97,9 @@ export const PositionOpenBidContainer = styled(PositionContainer)`
     :hover:not(.disabled):not(.maturity) {
         transform: none;
     }
+    max-width: 250px;
+    min-width: 250px;
+    border: none;
 `;
 
 export const Position = styled.span`
@@ -101,7 +111,7 @@ export const Position = styled.span`
 export const PositionLabel = styled.span<{ hasPaddingLeft?: boolean }>`
     font-style: normal;
     font-weight: bold;
-    font-size: 25px;
+    font-size: 21px;
     line-height: 30px;
     text-align: center;
     padding-left: ${(props) => (props.hasPaddingLeft ? 35 : 0)}px;
