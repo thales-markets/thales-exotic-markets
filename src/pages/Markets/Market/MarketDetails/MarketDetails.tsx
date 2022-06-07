@@ -33,7 +33,6 @@ import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
 import MaturityPhaseOpenBid from './MaturityPhaseOpenBid';
 import { MAX_GAS_LIMIT } from 'constants/network';
 import { TwitterShareButton } from 'react-share';
-import { ReactComponent as TwitterIcon } from 'assets/images/twitter-icon.svg';
 import { LINKS } from 'constants/links';
 
 type MarketDetailsProps = {
@@ -119,7 +118,7 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
                     {market.question}
                 </MarketTitle>
                 <TwitterShareButton url={`${LINKS.ExoticMarkets}markets/${market.address}`} title={twitterText}>
-                    <StyledTwitterIcon />
+                    <TwitterIcon />
                 </TwitterShareButton>
 
                 {market.isTicketType && market.status === MarketStatusEnum.Open && (
@@ -284,11 +283,15 @@ const ButtonContainer = styled(FlexDivColumn)`
     align-items: center;
 `;
 
-const StyledTwitterIcon = styled(TwitterIcon)`
+const TwitterIcon = styled.i`
     position: absolute;
     top: 20px;
     right: 25px;
-    height: 22px;
+    font-size: 26px;
+    &:before {
+        font-family: ExoticIcons !important;
+        content: '\\0050';
+    }
     @media (max-width: 767px) {
         top: 15px;
         right: 20px;

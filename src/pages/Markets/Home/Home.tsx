@@ -571,8 +571,8 @@ const FilterItem = styled(FlexDivStart)`
 
 const Filters = styled(FlexDivColumn)`
     position: absolute;
-    left: 0;
-    top: 0;
+    left: -4px;
+    top: -2px;
     border-radius: 20px;
     z-index: 100;
     background: ${(props) => props.theme.background.tertiary};
