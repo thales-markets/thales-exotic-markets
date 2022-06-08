@@ -13,9 +13,10 @@ type MarketsGridProps = {
 };
 
 const breakpointColumnsObj = {
-    default: 3,
-    1200: 2,
-    850: 1,
+    default: 4,
+    1200: 3,
+    850: 2,
+    500: 1,
 };
 
 const MarketsGrid: React.FC<MarketsGridProps> = ({ markets, accountPositions }) => {

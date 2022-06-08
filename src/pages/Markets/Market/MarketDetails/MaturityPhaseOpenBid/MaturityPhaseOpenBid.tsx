@@ -21,6 +21,7 @@ import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
 import { Info, InfoContent, InfoLabel, MainInfo, PositionContainer, PositionLabel, Positions } from 'components/common';
 import { refetchMarketData } from 'utils/queryConnector';
 import Tooltip from 'components/Tooltip';
+import { MAX_GAS_LIMIT } from 'constants/network';
 
 type MaturityPhaseOpenBidProps = {
     market: MarketData;
@@ -78,7 +79,9 @@ const MaturityPhaseOpenBid: React.FC<MaturityPhaseOpenBidProps> = ({ market }) =
             try {
                 const marketContractWithSigner = new ethers.Contract(market.address, marketContract.abi, signer);
 
-                const tx = await marketContractWithSigner.claimWinningTicket();
+                const tx = await marketContractWithSigner.claimWinningTicket({
+                    gasLimit: MAX_GAS_LIMIT,
+                });
                 const txResult = await tx.wait();
 
                 if (txResult && txResult.transactionHash) {
@@ -114,7 +117,9 @@ const MaturityPhaseOpenBid: React.FC<MaturityPhaseOpenBidProps> = ({ market }) =
             try {
                 const marketContractWithSigner = new ethers.Contract(market.address, marketContract.abi, signer);
 
-                const tx = await marketContractWithSigner.issueFees();
+                const tx = await marketContractWithSigner.issueFees({
+                    gasLimit: MAX_GAS_LIMIT,
+                });
                 const txResult = await tx.wait();
 
                 if (txResult && txResult.transactionHash) {
@@ -251,6 +256,7 @@ const MaturityPhaseOpenBid: React.FC<MaturityPhaseOpenBidProps> = ({ market }) =
                         </BidAmountOverlayContainer>
                     }
                     iconFontSize={20}
+                    darkInfoIcon
                 />
             </Info>
             {showFeeData && (
@@ -294,11 +300,7 @@ const MaturityPhaseOpenBid: React.FC<MaturityPhaseOpenBidProps> = ({ market }) =
                     )}
                     {market.canIssueFees
                         ? isWalletConnected && (
-                              <DistributeButton
-                                  disabled={isClaiming || isDistributing}
-                                  onClick={handleDistribute}
-                                  type="secondary"
-                              >
+                              <DistributeButton disabled={isClaiming || isDistributing} onClick={handleDistribute}>
                                   {!isDistributing
                                       ? t(
                                             `market.button.${
@@ -329,6 +331,7 @@ const MaturityPhaseOpenBid: React.FC<MaturityPhaseOpenBidProps> = ({ market }) =
                             }
                             iconFontSize={20}
                             marginLeft={4}
+                            darkInfoIcon
                         />
                     </ClaimInfo>
                 )}
@@ -376,12 +379,11 @@ const DistributeButton = styled(Button)`
 
 const NothingToClaim = styled(FlexDivCentered)<{ marginTop?: number }>`
     background: transparent;
-    border: 1px solid ${(props) => props.theme.borderColor.primary};
+    border: 1px solid ${(props) => props.theme.borderColor.tertiary};
     border-radius: 30px;
     font-style: normal;
     font-weight: bold;
     font-size: 17px;
-    color: ${(props) => props.theme.textColor.primary};
     min-height: 28px;
     padding: 5px 20px;
     margin-top: ${(props) => props.marginTop || 0}px;

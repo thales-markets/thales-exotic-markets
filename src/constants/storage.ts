@@ -4,7 +4,7 @@ export const LOCAL_STORAGE_KEYS = {
     SORT_DIRECTION: 'sortDirection',
     SORT_BY: 'sortBy',
     FILTER_GLOBAL: 'filterGlobal',
+    FILTER_TYPE: 'filterType',
     FILTER_MARKET_SEARCH: 'filterMarketSearch',
-    FILTER_SHOW_OPEN_MARKETS: 'filterShowOpenMarkets',
     FILTER_TAGS: 'filterTags',
 };

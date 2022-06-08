@@ -94,6 +94,7 @@ const GetUsd: React.FC = () => {
                             }
                         }}
                         disabled={isSubmitting}
+                        fontSize={15}
                     >
                         {isSubmitting
                             ? t('common.wallet.get-usd-progress', {
@@ -117,6 +118,12 @@ const Container = styled(FlexDivCentered)`
     height: 28px;
     button {
         padding: 0 20px;
+    }
+    @media (max-width: 500px) {
+        width: 100%;
+        button {
+            width: 100%;
+        }
     }
 `;
 

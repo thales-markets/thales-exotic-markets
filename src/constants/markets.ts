@@ -11,6 +11,12 @@ export enum GlobalFilterEnum {
     YourNotPositionedMarkets = 'YourNotPositionedMarkets',
 }
 
+export enum MarketTypeFilterEnum {
+    AllTypes = 'AllTypes',
+    FixedTicket = 'FixedTicket',
+    OpenBid = 'OpenBid',
+}
+
 export enum SortDirection {
     NONE,
     ASC,
@@ -45,6 +51,8 @@ maxDate.setMonth(maxDate.getMonth() + DATE_PICKER_MAX_LENGTH_MONTHS);
 export const DATE_PICKER_MAX_DATE = maxDate; // 12 months from now
 
 export const MAXIMUM_INPUT_CHARACTERS = 200;
+
+export const BID_INPUT_STEP = 10;
 
 export enum MarketStatus {
     Open = 'open',

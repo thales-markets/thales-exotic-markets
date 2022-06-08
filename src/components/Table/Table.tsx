@@ -123,7 +123,6 @@ const TableBody = styled.div`
 `;
 
 const TableRow = styled(FlexDiv)`
-    min-height: 38px;
     font-weight: 600;
     font-size: 14px;
     line-height: 100%;
@@ -137,7 +136,7 @@ const TableRowHead = styled(TableRow)`
 
 const TableCell = styled(FlexDivCentered)`
     flex: 1;
-    min-width: 0px;
+    min-height: 36px;
     width: 150px;
     justify-content: left;
     &:first-child {

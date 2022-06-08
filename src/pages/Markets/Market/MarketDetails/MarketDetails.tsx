@@ -31,6 +31,9 @@ import { ethers } from 'ethers';
 import { refetchMarketData } from 'utils/queryConnector';
 import { getErrorToastOptions, getSuccessToastOptions } from 'config/toast';
 import MaturityPhaseOpenBid from './MaturityPhaseOpenBid';
+import { MAX_GAS_LIMIT } from 'constants/network';
+import { TwitterShareButton } from 'react-share';
+import { LINKS } from 'constants/links';
 
 type MarketDetailsProps = {
     market: MarketData;
@@ -86,7 +89,9 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
             try {
                 const marketContractWithSigner = new ethers.Contract(market.address, marketContract.abi, signer);
 
-                const tx = await marketContractWithSigner.setPaused(true);
+                const tx = await marketContractWithSigner.setPaused(true, {
+                    gasLimit: MAX_GAS_LIMIT,
+                });
                 const txResult = await tx.wait();
 
                 if (txResult && txResult.transactionHash) {
@@ -102,72 +107,93 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
         }
     };
 
+    const twitterText = `${market.question}${t(
+        `common.twitter-text-${market.question.length > 198 ? 'short' : 'long'}`
+    )}`;
+
     return (
         <MarketContainer>
-            <MarketTitle fontSize={25} marginBottom={40}>
-                {market.question}
-            </MarketTitle>
+            <TopContainer>
+                <MarketTitle fontSize={25} marginBottom={40}>
+                    {market.question}
+                </MarketTitle>
+                <TwitterShareButton url={`${LINKS.ExoticMarkets}markets/${market.address}`} title={twitterText}>
+                    <TwitterIcon />
+                </TwitterShareButton>
 
-            {market.isTicketType && market.status === MarketStatusEnum.Open && (
-                <PositioningPhaseTicket market={market} />
-            )}
-            {market.isTicketType && market.status !== MarketStatusEnum.Open && <MaturityPhaseTicket market={market} />}
+                {market.isTicketType && market.status === MarketStatusEnum.Open && (
+                    <PositioningPhaseTicket market={market} />
+                )}
+                {market.isTicketType && market.status !== MarketStatusEnum.Open && (
+                    <MaturityPhaseTicket market={market} />
+                )}
 
-            {!market.isTicketType && market.status === MarketStatusEnum.Open && (
-                <PositioningPhaseOpenBid market={market} />
-            )}
-            {!market.isTicketType && market.status !== MarketStatusEnum.Open && (
-                <MaturityPhaseOpenBid market={market} />
-            )}
-            {showPause && (
-                <ButtonContainer>
-                    <Button type="secondary" disabled={isPausing} onClick={handlePause}>
-                        {!isPausing ? t('market.button.pause-market-label') : t('market.button.pause-progress-label')}
-                    </Button>
-                </ButtonContainer>
-            )}
-            <StatusSourceContainer>
-                <StatusSourceInfo />
+                {!market.isTicketType && market.status === MarketStatusEnum.Open && (
+                    <PositioningPhaseOpenBid market={market} />
+                )}
+                {!market.isTicketType && market.status !== MarketStatusEnum.Open && (
+                    <MaturityPhaseOpenBid market={market} />
+                )}
+                {showPause && (
+                    <ButtonContainer>
+                        <Button disabled={isPausing} onClick={handlePause}>
+                            {!isPausing
+                                ? t('market.button.pause-market-label')
+                                : t('market.button.pause-progress-label')}
+                        </Button>
+                    </ButtonContainer>
+                )}
                 <MarketStatus market={market} fontSize={25} fontWeight={700} isClaimAvailable={isClaimAvailable} />
-                {showNumberOfOpenDisputes ? <DataSource dataSource={market.dataSource} /> : <StatusSourceInfo />}
-            </StatusSourceContainer>
-            <Footer>
-                <Tags tags={market.tags} />
-                <FlexDivColumnCentered>
-                    <Info>
-                        <InfoLabel>{t('market.total-pool-size-label')}:</InfoLabel>
-                        <InfoContent>
-                            {formatCurrencyWithKey(PAYMENT_CURRENCY, market.poolSize, DEFAULT_CURRENCY_DECIMALS, true)}
-                        </InfoContent>
-                    </Info>
-                    <Info>
-                        <InfoLabel>{t('market.number-of-participants-label')}:</InfoLabel>
-                        <InfoContent>{market.numberOfParticipants}</InfoContent>
-                    </Info>
-                </FlexDivColumnCentered>
-                <OpenDisputeContainer>
-                    {showNumberOfOpenDisputes ? (
-                        <OpenDisputeInfo
-                            numberOfOpenDisputes={market.isMarketClosedForDisputes ? 0 : market.numberOfOpenDisputes}
-                        >
-                            {t('market.open-disputes-label')}
-                        </OpenDisputeInfo>
-                    ) : (
+            </TopContainer>
+            <BottomContainer>
+                <Footer>
+                    <Tags tags={market.tags} />
+                    <FlexDivColumnCentered>
+                        <PoolInfo>
+                            <Info>
+                                <InfoLabel>{t('market.total-pool-size-label')}:</InfoLabel>
+                                <InfoContent>
+                                    {formatCurrencyWithKey(
+                                        PAYMENT_CURRENCY,
+                                        market.poolSize,
+                                        DEFAULT_CURRENCY_DECIMALS,
+                                        true
+                                    )}
+                                </InfoContent>
+                            </Info>
+                            <Info>
+                                <InfoLabel>{t('market.number-of-participants-label')}:</InfoLabel>
+                                <InfoContent>{market.numberOfParticipants}</InfoContent>
+                            </Info>
+                        </PoolInfo>
+                    </FlexDivColumnCentered>
+                    <FooterRightContainer>
                         <DataSource dataSource={market.dataSource} />
-                    )}
-                    {canOpenDispute && (
-                        <SPAAnchor href={buildOpenDisputeLink(market.address)}>
-                            <OpenDisputeButton type="secondary">
-                                {t(
-                                    `market.button.${
-                                        market.isOpen ? 'dispute-market-label' : 'dispute-resolution-label'
-                                    }`
-                                )}
-                            </OpenDisputeButton>
-                        </SPAAnchor>
-                    )}
-                </OpenDisputeContainer>
-            </Footer>
+                        <OpenDisputeContainer>
+                            {showNumberOfOpenDisputes && (
+                                <OpenDisputeInfo
+                                    numberOfOpenDisputes={
+                                        market.isMarketClosedForDisputes ? 0 : market.numberOfOpenDisputes
+                                    }
+                                >
+                                    {t('market.open-disputes-label')}
+                                </OpenDisputeInfo>
+                            )}
+                            {canOpenDispute && (
+                                <SPAAnchor href={buildOpenDisputeLink(market.address)}>
+                                    <OpenDisputeButton type="tertiary">
+                                        {t(
+                                            `market.button.${
+                                                market.isOpen ? 'dispute-market-label' : 'dispute-resolution-label'
+                                            }`
+                                        )}
+                                    </OpenDisputeButton>
+                                </SPAAnchor>
+                            )}
+                        </OpenDisputeContainer>
+                    </FooterRightContainer>
+                </Footer>
+            </BottomContainer>
         </MarketContainer>
     );
 };
@@ -177,38 +203,65 @@ const MarketContainer = styled(FlexDivColumn)`
     box-shadow: 0px 20px 40px rgba(0, 0, 0, 0.35);
     border-radius: 25px;
     width: 100%;
-    padding: 40px 40px 30px 40px;
-    background: ${(props) => props.theme.background.secondary};
+    padding: 50px 0px 30px 0px;
+    background: ${(props) => props.theme.background.tertiary};
+    color: ${(props) => props.theme.textColor.tertiary};
     flex: initial;
     @media (max-width: 767px) {
-        padding: 30px 20px 20px 20px;
+        padding: 40px 0px 20px 0px;
     }
+    position: relative;
 `;
 
-const StatusSourceContainer = styled(FlexDivRow)`
-    align-items: end;
+const TopContainer = styled(FlexDivColumnCentered)`
+    padding: 0px 30px 20px 30px;
+    align-items: center;
+    width: 100%;
+    border-bottom: 3px dashed ${(props) => props.theme.borderColor.tertiary};
     @media (max-width: 767px) {
-        flex-direction: column;
-        align-items: center;
+        padding: 0px 20px 20px 20px;
     }
 `;
 
-const StatusSourceInfo = styled(FlexDivRow)`
-    width: 146px;
+const BottomContainer = styled(FlexDivColumnCentered)`
+    padding: 10px 30px 0px 30px;
+    width: 100%;
+    @media (max-width: 767px) {
+        padding: 20px 20px 0px 20px;
+    }
 `;
 
 const Footer = styled(FlexDivRow)`
     margin-top: 10px;
+    align-items: end;
     > div {
         width: 33%;
     }
     @media (max-width: 767px) {
+        margin-top: 0;
         > div {
             width: 100%;
-            margin-top: 10px;
             justify-content: center;
+            :not(:first-child) {
+                margin-top: 10px;
+            }
         }
         flex-direction: column;
+    }
+`;
+
+const PoolInfo = styled(FlexDivColumnCentered)`
+    padding: 10px 25px;
+    border: 2px solid ${(props) => props.theme.borderColor.tertiary};
+    border-radius: 15px;
+    width: fit-content;
+    align-self: center;
+`;
+
+const FooterRightContainer = styled(FlexDivColumnCentered)`
+    align-items: end;
+    @media (max-width: 767px) {
+        align-items: center;
     }
 `;
 
@@ -228,6 +281,21 @@ const OpenDisputeButton = styled(Button)`
 const ButtonContainer = styled(FlexDivColumn)`
     margin-bottom: 10px;
     align-items: center;
+`;
+
+const TwitterIcon = styled.i`
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    font-size: 26px;
+    &:before {
+        font-family: ExoticIcons !important;
+        content: '\\0050';
+    }
+    @media (max-width: 767px) {
+        top: 15px;
+        right: 20px;
+    }
 `;
 
 export default MarketDetails;

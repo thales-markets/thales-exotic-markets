@@ -34,20 +34,17 @@ const DataSource: React.FC<DataSourceProps> = ({ dataSource }) => {
 };
 
 const Container = styled(FlexDivCentered)`
-    @media (max-width: 767px) {
-        margin-top: 20px;
-    }
+    margin-bottom: 10px;
 `;
 
 const DataSourceLabel = styled.span`
     background: transparent;
-    border: 1px solid ${(props) => props.theme.borderColor.primary};
+    border: 1px solid ${(props) => props.theme.borderColor.tertiary};
     padding: 5px 20px;
     border-radius: 30px;
     font-style: normal;
     font-weight: bold;
     font-size: 17px;
-    color: ${(props) => props.theme.textColor.primary};
     text-align: center;
     outline: none;
     text-transform: none;

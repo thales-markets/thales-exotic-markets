@@ -143,7 +143,9 @@ const ResolveMarket: React.FC<ResolveMarketProps> = ({ market }) => {
             try {
                 const marketManagerContractWithSigner = marketManagerContract.connect(signer);
 
-                const tx = await marketManagerContractWithSigner.resolveMarket(market.address, outcomePosition);
+                const tx = await marketManagerContractWithSigner.resolveMarket(market.address, outcomePosition, {
+                    gasLimit: MAX_GAS_LIMIT,
+                });
                 const txResult = await tx.wait();
 
                 if (txResult && txResult.transactionHash) {

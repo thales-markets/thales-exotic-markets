@@ -169,7 +169,7 @@ const DatePickerContainer = styled(FlexDivColumn)`
     }
 
     .react-datepicker__day--keyboard-selected {
-        background: ${(props) => props.theme.background.tertiary} !important;
+        background: ${(props) => props.theme.borderColor.tertiary} !important;
     }
 
     .react-datepicker__week .react-datepicker__day--selected,
@@ -297,8 +297,8 @@ const DatePickerContainer = styled(FlexDivColumn)`
     .react-datepicker-popper[data-placement^='bottom'] .react-datepicker__triangle {
         :before,
         :after {
-            border-bottom-color: ${(props) => props.theme.background.tertiary} !important;
-            border-top-color: ${(props) => props.theme.background.tertiary} !important;
+            border-bottom-color: ${(props) => props.theme.borderColor.tertiary} !important;
+            border-top-color: ${(props) => props.theme.borderColor.tertiary} !important;
             top: 0px !important;
             display: none;
         }
@@ -307,8 +307,8 @@ const DatePickerContainer = styled(FlexDivColumn)`
     .react-datepicker-popper[data-placement^='top'] .react-datepicker__triangle {
         :before,
         :after {
-            border-bottom-color: ${(props) => props.theme.background.tertiary} !important;
-            border-top-color: ${(props) => props.theme.background.tertiary} !important;
+            border-bottom-color: ${(props) => props.theme.borderColor.tertiary} !important;
+            border-top-color: ${(props) => props.theme.borderColor.tertiary} !important;
             top: -8px !important;
             display: none;
         }
