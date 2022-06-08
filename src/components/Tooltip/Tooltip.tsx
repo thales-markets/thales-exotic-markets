@@ -10,13 +10,31 @@ type TooltipProps = {
     marginLeft?: number;
     top?: number;
     interactive?: boolean;
+    darkInfoIcon?: boolean;
 };
 
-const Tooltip: React.FC<TooltipProps> = ({ component, overlay, iconFontSize, marginLeft, top, interactive }) => {
+const Tooltip: React.FC<TooltipProps> = ({
+    component,
+    overlay,
+    iconFontSize,
+    marginLeft,
+    top,
+    interactive,
+    darkInfoIcon,
+}) => {
     return (
         <Container>
             <ReactTooltip overlay={overlay} placement="top" mouseLeaveDelay={interactive ? 0.1 : 0}>
-                {component ? component : <InfoIcon iconFontSize={iconFontSize} marginLeft={marginLeft} top={top} />}
+                {component ? (
+                    component
+                ) : (
+                    <InfoIcon
+                        iconFontSize={iconFontSize}
+                        marginLeft={marginLeft}
+                        top={top}
+                        darkInfoIcon={darkInfoIcon}
+                    />
+                )}
             </ReactTooltip>
         </Container>
     );
@@ -27,7 +45,7 @@ const Container = styled.span`
     width: fit-content;
 `;
 
-const InfoIcon = styled.i<{ iconFontSize?: number; marginLeft?: number; top?: number }>`
+const InfoIcon = styled.i<{ iconFontSize?: number; marginLeft?: number; top?: number; darkInfoIcon?: boolean }>`
     font-size: ${(props) => props.iconFontSize || 17}px;
     font-weight: normal;
     cursor: pointer;
@@ -37,7 +55,7 @@ const InfoIcon = styled.i<{ iconFontSize?: number; marginLeft?: number; top?: nu
     &:before {
         font-family: ExoticIcons !important;
         content: '\\0044';
-        color: ${(props) => props.theme.textColor.primary};
+        color: ${(props) => (props.darkInfoIcon ? props.theme.textColor.tertiary : props.theme.textColor.primary)};
     }
 `;
 

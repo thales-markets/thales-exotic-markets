@@ -7,16 +7,21 @@ import Modal from 'components/Modal';
 type WithdrawalRulesModalProps = {
     onClose: () => void;
     withdrawalPeriodInHours: string | number;
+    isTicketType: boolean;
 };
 
-export const WithdrawalRulesModal: React.FC<WithdrawalRulesModalProps> = ({ onClose, withdrawalPeriodInHours }) => {
+export const WithdrawalRulesModal: React.FC<WithdrawalRulesModalProps> = ({
+    onClose,
+    withdrawalPeriodInHours,
+    isTicketType,
+}) => {
     const { t } = useTranslation();
 
     return (
         <Modal title={t('market.withdrawal-rules-modal.title')} onClose={onClose}>
             <Container>
                 <Trans
-                    i18nKey="market.withdrawal-rules-modal.text"
+                    i18nKey={`market.withdrawal-rules-modal.${isTicketType ? 'ticket-text' : 'open-bid-text'}`}
                     components={[
                         <ul key="1">
                             <li key="0" />

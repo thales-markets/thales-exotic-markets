@@ -20,7 +20,6 @@ const Title = styled.span<{ fontSize?: number; marginBottom?: number }>`
     font-size: ${(props) => props.fontSize || 25}px;
     line-height: 100%;
     text-align: center;
-    color: ${(props) => props.theme.textColor.primary};
     margin-bottom: ${(props) => props.marginBottom || 35}px;
 `;
 

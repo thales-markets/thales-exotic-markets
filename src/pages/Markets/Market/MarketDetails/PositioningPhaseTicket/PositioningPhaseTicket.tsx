@@ -7,7 +7,7 @@ import { RootState } from 'redux/rootReducer';
 import styled from 'styled-components';
 import { FlexDivColumn } from 'styles/common';
 import { MarketData, MarketsParameters } from 'types/markets';
-import { formatCurrencyWithKey, formatPercentage } from 'utils/formatters/number';
+import { formatCurrencyWithKey, formatPercentage, formatCurrency } from 'utils/formatters/number';
 import { PAYMENT_CURRENCY, DEFAULT_CURRENCY_DECIMALS } from 'constants/currency';
 import { getIsWalletConnected, getNetworkId, getWalletAddress } from 'redux/modules/wallet';
 import { checkAllowance } from 'utils/network';
@@ -26,6 +26,7 @@ import { Info, InfoContent, InfoLabel, MainInfo, PositionContainer, PositionLabe
 import useMarketsParametersQuery from 'queries/markets/useMarketsParametersQuery';
 import Tooltip from 'components/Tooltip';
 import { refetchMarketData } from 'utils/queryConnector';
+import WithdrawalRulesModal from 'pages/Markets/components/WithdrawalRulesModal';
 
 type PositioningPhaseTicketProps = {
     market: MarketData;
@@ -51,6 +52,7 @@ const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market 
     const [winningAmount, setWinningAmount] = useState<number>(0);
     const [canWithdraw, setCanWithdraw] = useState<boolean>(false);
     const [marketsParameters, setMarketsParameters] = useState<MarketsParameters | undefined>(undefined);
+    const [openWithdrawalRulesModal, setOpenWithdrawalRulesModal] = useState<boolean>(false);
 
     const accountMarketDataQuery = useAccountMarketTicketDataQuery(market.address, walletAddress, {
         enabled: isAppReady && isWalletConnected,
@@ -262,28 +264,20 @@ const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market 
     const getButtons = () => {
         if (!isWalletConnected) {
             return (
-                <MarketButton type="secondary" onClick={() => onboardConnector.connectWallet()}>
+                <MarketButton onClick={() => onboardConnector.connectWallet()}>
                     {t('common.wallet.connect-your-wallet')}
                 </MarketButton>
             );
         }
         if (insufficientBalance && showBid) {
-            return (
-                <MarketButton type="secondary" disabled={true}>
-                    {t(`common.errors.insufficient-balance`)}
-                </MarketButton>
-            );
+            return <MarketButton disabled={true}>{t(`common.errors.insufficient-balance`)}</MarketButton>;
         }
         if (!isPositionSelected) {
-            return (
-                <MarketButton type="secondary" disabled={true}>
-                    {t(`common.errors.select-position`)}
-                </MarketButton>
-            );
+            return <MarketButton disabled={true}>{t(`common.errors.select-position`)}</MarketButton>;
         }
         if (!hasAllowance && showBid) {
             return (
-                <MarketButton type="secondary" disabled={isAllowing} onClick={() => setOpenApprovalModal(true)}>
+                <MarketButton disabled={isAllowing} onClick={() => setOpenApprovalModal(true)}>
                     {!isAllowing
                         ? t('common.enable-wallet-access.approve-label', { currencyKey: PAYMENT_CURRENCY })
                         : t('common.enable-wallet-access.approve-progress-label', {
@@ -294,7 +288,7 @@ const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market 
         }
         if (showBid) {
             return (
-                <MarketButton type="secondary" disabled={isBidButtonDisabled} onClick={handleBid}>
+                <MarketButton disabled={isBidButtonDisabled} onClick={handleBid}>
                     {!isBidding ? t('market.button.bid-label') : t('market.button.bid-progress-label')}
                 </MarketButton>
             );
@@ -302,14 +296,14 @@ const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market 
         return (
             <>
                 {showChangePosition && (
-                    <MarketButton type="secondary" disabled={isChangePositionButtonDisabled} onClick={handleBid}>
+                    <MarketButton disabled={isChangePositionButtonDisabled} onClick={handleBid}>
                         {!isBidding
                             ? t('market.button.change-position-label')
                             : t('market.button.change-position-progress-label')}
                     </MarketButton>
                 )}
                 {showWithdraw && (
-                    <MarketButton type="secondary" disabled={isWithdrawButtonDisabled} onClick={handleWithdraw}>
+                    <MarketButton disabled={isWithdrawButtonDisabled} onClick={handleWithdraw}>
                         {!isWithdrawing
                             ? t('market.button.withdraw-label')
                             : t('market.button.withdraw-progress-label')}
@@ -390,28 +384,39 @@ const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market 
                                     />
                                 </FeesOverlayContainer>
                             }
+                            darkInfoIcon
                         />
                     </Info>
                     {market.isWithdrawalAllowed ? (
-                        <Info>
-                            <InfoLabel>{t('market.withdrawal-fee-label')}:</InfoLabel>
-                            <InfoContent>{withdrawalPercentage}%</InfoContent>
-                            <Tooltip
-                                overlay={
-                                    <FeesOverlayContainer>
-                                        <Trans
-                                            i18nKey="market.withdrawal-fee-tooltip"
-                                            components={[<div key="1" />, <span key="2" />]}
-                                            values={{
-                                                withdrawalPercentage,
-                                                creatorPercentage: withdrawalPercentage / 2,
-                                                safeBoxPercentage: withdrawalPercentage / 2,
-                                            }}
-                                        />
-                                    </FeesOverlayContainer>
-                                }
-                            />
-                        </Info>
+                        <>
+                            <Info>
+                                <InfoLabel>{t('market.withdrawal-fee-label')}:</InfoLabel>
+                                <InfoContent>{withdrawalPercentage}%</InfoContent>
+                                <Tooltip
+                                    overlay={
+                                        <FeesOverlayContainer>
+                                            <Trans
+                                                i18nKey="market.withdrawal-fee-tooltip"
+                                                components={[<div key="1" />, <span key="2" />]}
+                                                values={{
+                                                    withdrawalPercentage,
+                                                    creatorPercentage: withdrawalPercentage / 2,
+                                                    safeBoxPercentage: withdrawalPercentage / 2,
+                                                }}
+                                            />
+                                        </FeesOverlayContainer>
+                                    }
+                                    darkInfoIcon
+                                />
+                            </Info>
+                            <Info>
+                                <InfoLabel>{t('market.withdrawal-allowed')}</InfoLabel>
+                                <WithdrawalRulesComponent onClick={() => setOpenWithdrawalRulesModal(true)}>
+                                    {t('market.withdrawal-rules-label')}
+                                </WithdrawalRulesComponent>
+                                .
+                            </Info>
+                        </>
                     ) : (
                         <Info>{t('market.withdrawal-not-allowed')}</Info>
                     )}
@@ -420,7 +425,7 @@ const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market 
             <ButtonContainer>
                 {getButtons()}
                 {showCancel && (
-                    <MarketButton type="secondary" disabled={isCancelButtonDisabled} onClick={handleCancel}>
+                    <MarketButton disabled={isCancelButtonDisabled} onClick={handleCancel}>
                         {!isCanceling
                             ? t('market.button.cancel-market-label')
                             : t('market.button.cancel-progress-label')}
@@ -434,6 +439,19 @@ const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market 
                     isAllowing={isAllowing}
                     onSubmit={handleAllowance}
                     onClose={() => setOpenApprovalModal(false)}
+                />
+            )}
+            {openWithdrawalRulesModal && (
+                <WithdrawalRulesModal
+                    onClose={() => setOpenWithdrawalRulesModal(false)}
+                    withdrawalPeriodInHours={formatCurrency(
+                        // hardcode for now
+                        8,
+                        // (market.endOfPositioning - market.withdrawalPeriod) / 1000 / 60 / 60,
+                        DEFAULT_CURRENCY_DECIMALS,
+                        true
+                    )}
+                    isTicketType={true}
                 />
             )}
         </>
@@ -466,6 +484,12 @@ const FeesOverlayContainer = styled(FlexDivColumn)`
 
 const RoiOverlayContainer = styled(FlexDivColumn)`
     text-align: justify;
+`;
+
+const WithdrawalRulesComponent = styled.span`
+    font-style: italic;
+    font-weight: 700;
+    cursor: pointer;
 `;
 
 export default PositioningPhaseTicket;

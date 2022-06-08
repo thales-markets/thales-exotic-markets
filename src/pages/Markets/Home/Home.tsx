@@ -16,26 +16,28 @@ import {
     AccountPositionsMap,
     MarketInfo,
     Markets,
-    MarketsParameters,
     SortOptionType,
     TagInfo,
     Tags,
 } from 'types/markets';
 import GlobalFilter from '../components/GlobalFilter';
 import TagButton from '../../../components/TagButton';
-import { TagLabel } from '../components/Tags/Tags';
 import MarketsGrid from './MarketsGrid';
-import { navigateTo } from 'utils/routes';
-import ROUTES from 'constants/routes';
-import { GlobalFilterEnum, SortDirection, DEFAULT_SORT_BY, MarketStatus } from 'constants/markets';
+import {
+    GlobalFilterEnum,
+    SortDirection,
+    DEFAULT_SORT_BY,
+    MarketStatus,
+    MarketTypeFilterEnum,
+} from 'constants/markets';
 import SortOption from '../components/SortOption';
 import useTagsQuery from 'queries/markets/useTagsQuery';
 import useAccountPositionsQuery from 'queries/markets/useAccountPositionsQuery';
-import useMarketsParametersQuery from 'queries/markets/useMarketsParametersQuery';
 import { LOCAL_STORAGE_KEYS } from 'constants/storage';
 import useLocalStorage from 'hooks/useLocalStorage';
 import { isClaimAvailable, isPositionAvailable, isPositionAvailableForPositioning } from 'utils/markets';
 import { getMarketSearch, setMarketSearch } from 'redux/modules/market';
+import OutsideClickHandler from 'react-outside-click-handler';
 
 const Home: React.FC = () => {
     const { t } = useTranslation();
@@ -46,12 +48,16 @@ const Home: React.FC = () => {
     const isWalletConnected = useSelector((state: RootState) => getIsWalletConnected(state));
     const marketSearch = useSelector((state: RootState) => getMarketSearch(state));
     const [globalFilter, setGlobalFilter] = useLocalStorage(LOCAL_STORAGE_KEYS.FILTER_GLOBAL, GlobalFilterEnum.Active);
+    const [typeFilter, setTypeFilter] = useLocalStorage(LOCAL_STORAGE_KEYS.FILTER_TYPE, MarketTypeFilterEnum.AllTypes);
     const [sortDirection, setSortDirection] = useLocalStorage(LOCAL_STORAGE_KEYS.SORT_DIRECTION, SortDirection.ASC);
     const [sortBy, setSortBy] = useLocalStorage(LOCAL_STORAGE_KEYS.SORT_BY, DEFAULT_SORT_BY);
-    // const [showOpenMarkets, setShowOpenMarkets] = useLocalStorage(LOCAL_STORAGE_KEYS.FILTER_SHOW_OPEN_MARKETS, true);
     const [lastValidMarkets, setLastValidMarkets] = useState<Markets>([]);
     const [accountPositions, setAccountPositions] = useState<AccountPositionsMap>({});
-    const [marketsParameters, setMarketsParameters] = useState<MarketsParameters | undefined>(undefined);
+    const [showFilters, setShowFilters] = useState<boolean>(false);
+    const [showSortings, setShowSortings] = useState<boolean>(false);
+    const [showTags, setShowTags] = useState<boolean>(false);
+    const [showTypes, setShowTypes] = useState<boolean>(false);
+    const [isMobile, setIsMobile] = useState(false);
 
     const sortOptions: SortOptionType[] = [
         { id: 1, title: t('market.time-remaining-label') },
@@ -61,41 +67,32 @@ const Home: React.FC = () => {
 
     const allTagsFilterItem: TagInfo = {
         id: 0,
-        label: t('market.filter-label.all'),
+        label: t('market.filter-label.all-tags'),
     };
-
-    const firstLevelFilters = [
-        GlobalFilterEnum.Active,
-        GlobalFilterEnum.ResolvePending,
-        GlobalFilterEnum.RecentlyResolved,
-        GlobalFilterEnum.Resolved,
-        GlobalFilterEnum.Cancelled,
-        GlobalFilterEnum.Paused,
-        GlobalFilterEnum.Disputed,
-    ];
-
-    const secondLevelFilters = [
-        GlobalFilterEnum.YourPositions,
-        GlobalFilterEnum.Claim,
-        GlobalFilterEnum.YourNotPositionedMarkets,
-    ];
 
     const [tagFilter, setTagFilter] = useLocalStorage(LOCAL_STORAGE_KEYS.FILTER_TAGS, allTagsFilterItem);
     const [availableTags, setAvailableTags] = useState<Tags>([allTagsFilterItem]);
 
-    const marketsParametersQuery = useMarketsParametersQuery(networkId, {
-        enabled: isAppReady,
-    });
+    const isUserFilter =
+        globalFilter === GlobalFilterEnum.YourPositions ||
+        globalFilter === GlobalFilterEnum.Claim ||
+        globalFilter === GlobalFilterEnum.YourNotPositionedMarkets;
+
+    const handleResize = () => {
+        if (window.innerWidth <= 500) {
+            setIsMobile(true);
+        } else {
+            setIsMobile(false);
+        }
+    };
 
     useEffect(() => {
-        if (marketsParametersQuery.isSuccess && marketsParametersQuery.data) {
-            setMarketsParameters(marketsParametersQuery.data);
-        }
-    }, [marketsParametersQuery.isSuccess, marketsParametersQuery.data]);
-
-    const creationRestrictedToOwner = marketsParameters
-        ? marketsParameters.creationRestrictedToOwner && marketsParameters.owner !== walletAddress
-        : true;
+        window.addEventListener('resize', handleResize);
+        handleResize();
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
 
     const marketsQuery = useMarketsQuery(networkId, { enabled: isAppReady });
 
@@ -156,65 +153,76 @@ const Home: React.FC = () => {
         return filteredMarkets;
     }, [markets, searchFilteredMarkets, tagFilter, marketSearch]);
 
+    const typeFilteredMarkets = useMemo(
+        () =>
+            tagsFilteredMarkets.filter(
+                (market: MarketInfo) =>
+                    typeFilter === MarketTypeFilterEnum.AllTypes ||
+                    (market.isTicketType && typeFilter === MarketTypeFilterEnum.FixedTicket) ||
+                    (!market.isTicketType && typeFilter === MarketTypeFilterEnum.OpenBid)
+            ),
+        [tagsFilteredMarkets, typeFilter, globalFilter]
+    );
+
     const acitveCount = useMemo(() => {
-        return tagsFilteredMarkets.filter((market: MarketInfo) => market.status === MarketStatus.Open).length;
-    }, [tagsFilteredMarkets]);
+        return typeFilteredMarkets.filter((market: MarketInfo) => market.status === MarketStatus.Open).length;
+    }, [typeFilteredMarkets]);
 
     const resolvePendingCount = useMemo(() => {
-        return tagsFilteredMarkets.filter((market: MarketInfo) => market.status === MarketStatus.ResolvePending).length;
-    }, [tagsFilteredMarkets]);
+        return typeFilteredMarkets.filter((market: MarketInfo) => market.status === MarketStatus.ResolvePending).length;
+    }, [typeFilteredMarkets]);
 
     const recentlyResolvedCount = useMemo(() => {
-        return tagsFilteredMarkets.filter(
+        return typeFilteredMarkets.filter(
             (market: MarketInfo) =>
                 market.status === MarketStatus.ResolvedPendingConfirmation ||
                 market.status === MarketStatus.CancelledPendingConfirmation
         ).length;
-    }, [tagsFilteredMarkets]);
+    }, [typeFilteredMarkets]);
 
     const resolvedCount = useMemo(() => {
-        return tagsFilteredMarkets.filter((market: MarketInfo) => market.status === MarketStatus.ResolvedConfirmed)
+        return typeFilteredMarkets.filter((market: MarketInfo) => market.status === MarketStatus.ResolvedConfirmed)
             .length;
-    }, [tagsFilteredMarkets]);
+    }, [typeFilteredMarkets]);
 
     const cancelledCount = useMemo(() => {
-        return tagsFilteredMarkets.filter((market: MarketInfo) => market.status === MarketStatus.CancelledConfirmed)
+        return typeFilteredMarkets.filter((market: MarketInfo) => market.status === MarketStatus.CancelledConfirmed)
             .length;
-    }, [tagsFilteredMarkets]);
+    }, [typeFilteredMarkets]);
 
     const pausedCount = useMemo(() => {
-        return tagsFilteredMarkets.filter((market: MarketInfo) => market.status === MarketStatus.Paused).length;
-    }, [tagsFilteredMarkets]);
+        return typeFilteredMarkets.filter((market: MarketInfo) => market.status === MarketStatus.Paused).length;
+    }, [typeFilteredMarkets]);
 
     const disputedCount = useMemo(() => {
-        return tagsFilteredMarkets.filter(
+        return typeFilteredMarkets.filter(
             (market: MarketInfo) => market.numberOfOpenDisputes > 0 && !market.isMarketClosedForDisputes
         ).length;
-    }, [tagsFilteredMarkets]);
+    }, [typeFilteredMarkets]);
 
     const accountPositionsCount = useMemo(() => {
-        return tagsFilteredMarkets.filter((market: MarketInfo) => {
+        return typeFilteredMarkets.filter((market: MarketInfo) => {
             const accountPosition: AccountPosition = accountPositions[market.address];
             return isPositionAvailable(market, accountPosition);
         }).length;
-    }, [tagsFilteredMarkets, accountPositions]);
+    }, [typeFilteredMarkets, accountPositions]);
 
     const accountClaimsCount = useMemo(() => {
-        return tagsFilteredMarkets.filter((market: MarketInfo) => {
+        return typeFilteredMarkets.filter((market: MarketInfo) => {
             const accountPosition: AccountPosition = accountPositions[market.address];
             return isClaimAvailable(market, accountPosition);
         }).length;
-    }, [tagsFilteredMarkets, accountPositions]);
+    }, [typeFilteredMarkets, accountPositions]);
 
     const accountNotPositionedCount = useMemo(() => {
-        return tagsFilteredMarkets.filter((market: MarketInfo) => {
+        return typeFilteredMarkets.filter((market: MarketInfo) => {
             const accountPosition: AccountPosition = accountPositions[market.address];
             return isPositionAvailableForPositioning(market, accountPosition);
         }).length;
-    }, [tagsFilteredMarkets, accountPositions]);
+    }, [typeFilteredMarkets, accountPositions]);
 
     const globalFilteredMarkets = useMemo(() => {
-        let filteredMarkets = tagsFilteredMarkets;
+        let filteredMarkets = typeFilteredMarkets;
 
         switch (globalFilter) {
             case GlobalFilterEnum.Active:
@@ -284,7 +292,7 @@ const Home: React.FC = () => {
                     return 0;
             }
         });
-    }, [tagsFilteredMarkets, sortBy, sortDirection, globalFilter, accountPositions]);
+    }, [typeFilteredMarkets, sortBy, sortDirection, globalFilter, accountPositions]);
 
     const setSort = (sortOption: SortOptionType) => {
         if (sortBy === sortOption.id) {
@@ -308,6 +316,7 @@ const Home: React.FC = () => {
 
     const resetFilters = () => {
         setGlobalFilter(GlobalFilterEnum.Active);
+        setTypeFilter(MarketTypeFilterEnum.AllTypes);
         setTagFilter(allTagsFilterItem);
         dispatch(setMarketSearch(''));
     };
@@ -343,89 +352,157 @@ const Home: React.FC = () => {
 
     return (
         <Container>
-            <FiltersContainer>
-                <GlobalFiltersContainer>
-                    {Object.values(GlobalFilterEnum)
-                        .filter((filterItem) => firstLevelFilters.includes(filterItem))
-                        .map((filterItem) => {
-                            return (
-                                <GlobalFilter
-                                    disabled={false}
-                                    selected={globalFilter === filterItem}
-                                    onClick={() => setGlobalFilter(filterItem)}
-                                    key={filterItem}
-                                    count={getCount(filterItem)}
-                                >
-                                    {t(`market.filter-label.global.${filterItem.toLowerCase()}`)}
+            <ActionsContainer>
+                <FiltersContainer>
+                    <FilterItemContainer>
+                        <FilterItem onClick={() => (isMobile ? setShowFilters(true) : null)}>
+                            <FiltersIcon onClick={() => setShowFilters(true)} />
+                            {((globalFilter !== GlobalFilterEnum.YourPositions &&
+                                globalFilter !== GlobalFilterEnum.Claim) ||
+                                isMobile) && (
+                                <GlobalFilter selected={true} count={getCount(globalFilter)} readOnly>
+                                    {t(`market.filter-label.global.${globalFilter.toLowerCase()}`)}
                                 </GlobalFilter>
-                            );
-                        })}
-                </GlobalFiltersContainer>
-            </FiltersContainer>
-            <FiltersContainer>
-                <GlobalFiltersContainer>
-                    {Object.values(GlobalFilterEnum)
-                        .filter((filterItem) => secondLevelFilters.includes(filterItem))
-                        .map((filterItem) => {
-                            return (
+                            )}
+                            {!isMobile && (
                                 <GlobalFilter
-                                    disabled={false}
-                                    selected={globalFilter === filterItem}
-                                    onClick={() => setGlobalFilter(filterItem)}
-                                    key={filterItem}
-                                    count={getCount(filterItem)}
+                                    selected={globalFilter === GlobalFilterEnum.YourPositions}
+                                    onClick={() => {
+                                        setTypeFilter(MarketTypeFilterEnum.AllTypes);
+                                        setGlobalFilter(GlobalFilterEnum.YourPositions);
+                                    }}
+                                    count={getCount(GlobalFilterEnum.YourPositions)}
+                                    className="single-item"
+                                    readOnly
                                 >
-                                    {t(`market.filter-label.global.${filterItem.toLowerCase()}`)}
+                                    {t(`market.filter-label.global.${GlobalFilterEnum.YourPositions.toLowerCase()}`)}
                                 </GlobalFilter>
-                            );
-                        })}
-                </GlobalFiltersContainer>
-            </FiltersContainer>
-            <FiltersContainer>
-                <GlobalFiltersContainer>
-                    {sortOptions.map((sortOption) => {
-                        return (
-                            <SortOption
-                                disabled={false}
-                                selected={sortOption.id === sortBy}
-                                sortDirection={sortDirection}
-                                onClick={() => setSort(sortOption)}
-                                key={sortOption.title}
-                            >
-                                {sortOption.title}
-                            </SortOption>
-                        );
-                    })}
-                </GlobalFiltersContainer>
-                {!creationRestrictedToOwner && (
-                    <ButtonsContainer>
-                        <Button
-                            onClick={() => {
-                                navigateTo(ROUTES.Markets.CreateMarket);
-                            }}
-                        >
-                            {t('market.button.create-market-label')}
-                        </Button>
-                    </ButtonsContainer>
-                )}
-            </FiltersContainer>
-            <FiltersContainer>
-                <TagsContainer>
-                    <TagLabel>{t('market.tags-label')}:</TagLabel>
-                    {availableTags.map((tag: TagInfo) => {
-                        return (
-                            <TagButton
-                                disabled={false}
-                                selected={tagFilter.id === tag.id}
-                                onClick={() => setTagFilter(tagFilter.id === tag.id ? allTagsFilterItem : tag)}
-                                key={tag.label}
-                            >
-                                {tag.label}
+                            )}
+                            {!isMobile && (
+                                <GlobalFilter
+                                    selected={globalFilter === GlobalFilterEnum.Claim}
+                                    onClick={() => {
+                                        setTypeFilter(MarketTypeFilterEnum.AllTypes);
+                                        setGlobalFilter(GlobalFilterEnum.Claim);
+                                    }}
+                                    className="single-item"
+                                    count={getCount(GlobalFilterEnum.Claim)}
+                                    readOnly
+                                >
+                                    {t(`market.filter-label.global.${GlobalFilterEnum.Claim.toLowerCase()}`)}
+                                </GlobalFilter>
+                            )}
+                        </FilterItem>
+                        {showFilters && (
+                            <OutsideClickHandler onOutsideClick={() => setShowFilters(false)}>
+                                <Filters>
+                                    {Object.values(GlobalFilterEnum).map((filterItem) => {
+                                        return (
+                                            <GlobalFilter
+                                                disabled={false}
+                                                onClick={() => {
+                                                    if (isUserFilter) {
+                                                        setTypeFilter(MarketTypeFilterEnum.AllTypes);
+                                                    }
+                                                    setGlobalFilter(filterItem);
+                                                    setShowFilters(false);
+                                                }}
+                                                key={filterItem}
+                                                count={getCount(filterItem)}
+                                            >
+                                                {t(`market.filter-label.global.${filterItem.toLowerCase()}`)}
+                                            </GlobalFilter>
+                                        );
+                                    })}
+                                </Filters>
+                            </OutsideClickHandler>
+                        )}
+                    </FilterItemContainer>
+                    <FilterItemContainer>
+                        <FilterItem onClick={() => setShowTypes(true)}>
+                            <TypesIcon />
+                            <Type readOnly={true}>{t(`market.filter-label.type.${typeFilter.toLowerCase()}`)}</Type>
+                        </FilterItem>
+                        {showTypes && (
+                            <OutsideClickHandler onOutsideClick={() => setShowTypes(false)}>
+                                <Filters>
+                                    {Object.values(MarketTypeFilterEnum).map((filterItem: string) => {
+                                        return (
+                                            <Type
+                                                onClick={() => {
+                                                    setTypeFilter(filterItem);
+                                                    setShowTypes(false);
+                                                }}
+                                                key={filterItem}
+                                            >
+                                                {t(`market.filter-label.type.${filterItem.toLowerCase()}`)}
+                                            </Type>
+                                        );
+                                    })}
+                                </Filters>
+                            </OutsideClickHandler>
+                        )}
+                    </FilterItemContainer>
+                    <FilterItemContainer>
+                        <FilterItem onClick={() => setShowTags(true)}>
+                            <TagsIcon />
+                            <TagButton className="read-only" readOnly>
+                                {tagFilter.label}
                             </TagButton>
-                        );
-                    })}
-                </TagsContainer>
-            </FiltersContainer>
+                        </FilterItem>
+                        {showTags && (
+                            <OutsideClickHandler onOutsideClick={() => setShowTags(false)}>
+                                <Filters>
+                                    {availableTags.map((tag: TagInfo) => {
+                                        return (
+                                            <TagButton
+                                                selected={tagFilter.id === tag.id}
+                                                onClick={() => {
+                                                    setTagFilter(tag);
+                                                    setShowTags(false);
+                                                }}
+                                                key={tag.label}
+                                                invertedColors
+                                            >
+                                                {tag.label}
+                                            </TagButton>
+                                        );
+                                    })}
+                                </Filters>
+                            </OutsideClickHandler>
+                        )}
+                    </FilterItemContainer>
+                    <FilterItemContainer>
+                        <FilterItem onClick={() => setShowSortings(true)}>
+                            <SortingsIcon />
+                            <SortOption selected={true} sortDirection={sortDirection} readOnly>
+                                {sortOptions.find((sortOption) => sortOption.id === sortBy)?.title}
+                            </SortOption>
+                        </FilterItem>
+                        {showSortings && (
+                            <OutsideClickHandler onOutsideClick={() => setShowSortings(false)}>
+                                <Filters>
+                                    {sortOptions.map((sortOption) => {
+                                        return (
+                                            <SortOption
+                                                selected={sortOption.id === sortBy}
+                                                sortDirection={sortDirection}
+                                                onClick={() => {
+                                                    setSort(sortOption);
+                                                    setShowSortings(false);
+                                                }}
+                                                key={sortOption.title}
+                                            >
+                                                {sortOption.title}
+                                            </SortOption>
+                                        );
+                                    })}
+                                </Filters>
+                            </OutsideClickHandler>
+                        )}
+                    </FilterItemContainer>
+                </FiltersContainer>
+            </ActionsContainer>
             {marketsQuery.isLoading ? (
                 <LoaderContainer>
                     <SimpleLoader />
@@ -457,33 +534,143 @@ const Container = styled(FlexDivColumn)`
     width: 100%;
 `;
 
-const FiltersContainer = styled(FlexDivRow)`
-    margin-bottom: 2px;
+const ActionsContainer = styled(FlexDivRow)`
+    margin-bottom: 8px;
     :first-child {
-        margin-top: 50px;
+        margin-top: 40px;
     }
     @media (max-width: 767px) {
         :first-child {
-            margin-top: 60px;
+            margin-top: 15px;
         }
     }
 `;
 
-const GlobalFiltersContainer = styled(FlexDivStart)`
+const FiltersContainer = styled(FlexDivStart)`
     flex-wrap: wrap;
     align-items: center;
+    position: relative;
+    @media (max-width: 500px) {
+        padding: 0px 4px;
+    }
 `;
 
-const ButtonsContainer = styled(FlexDivColumn)`
-    align-items: end;
-    margin-bottom: 14px;
-`;
-
-const TagsContainer = styled(FlexDivStart)`
-    flex-wrap: wrap;
+const FilterItemContainer = styled(FlexDivStart)`
     align-items: center;
-    margin-bottom: 10px;
-    margin-right: 20px;
+    position: relative;
+    @media (max-width: 500px) {
+        padding: 3px 0px;
+        position: initial;
+    }
+`;
+
+const FilterItem = styled(FlexDivStart)`
+    align-items: center;
+    cursor: pointer;
+    flex-wrap: wrap;
+`;
+
+const Filters = styled(FlexDivColumn)`
+    position: absolute;
+    left: -4px;
+    top: -2px;
+    border-radius: 20px;
+    z-index: 100;
+    background: ${(props) => props.theme.background.tertiary};
+    color: ${(props) => props.theme.textColor.tertiary};
+    box-shadow: 0px 20px 40px rgba(0, 0, 0, 0.35);
+    padding: 15px 15px;
+    @media (max-width: 500px) {
+        left: 0px;
+        top: 0px;
+        right: 0px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+`;
+
+const FiltersIcon = styled.i`
+    font-size: 28px;
+    margin-right: 10px;
+    margin-left: 4px;
+    &:before {
+        font-family: ExoticIcons !important;
+        content: '\\0053';
+        color: ${(props) => props.theme.textColor.primary};
+    }
+    @media (max-width: 500px) {
+        font-size: 24px;
+        margin-right: 4px;
+        margin-left: 0px;
+    }
+`;
+
+const SortingsIcon = styled.i`
+    font-size: 28px;
+    margin-right: 4px;
+    &:before {
+        font-family: ExoticIcons !important;
+        content: '\\0051';
+        color: ${(props) => props.theme.textColor.primary};
+    }
+    @media (max-width: 500px) {
+        font-size: 24px;
+        margin-right: 0px;
+    }
+`;
+
+const TagsIcon = styled.i`
+    font-size: 26px;
+    &:before {
+        font-family: ExoticIcons !important;
+        content: '\\0054';
+        color: ${(props) => props.theme.textColor.primary};
+    }
+    @media (max-width: 500px) {
+        font-size: 22px;
+    }
+`;
+
+const TypesIcon = styled.i`
+    font-size: 30px;
+    margin-right: 4px;
+    &:before {
+        font-family: ExoticIcons !important;
+        content: '\\0055';
+        color: ${(props) => props.theme.textColor.primary};
+    }
+    @media (max-width: 500px) {
+        font-size: 26px;
+        margin-right: 0px;
+    }
+`;
+
+const Type = styled(FlexDivStart)<{ readOnly?: boolean }>`
+    font-style: normal;
+    font-weight: bold;
+    font-size: 15px;
+    line-height: 102.6%;
+    letter-spacing: 0.035em;
+    cursor: pointer;
+    height: 34px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+    padding: ${(props) => (props.readOnly ? '0 4px' : '0 10px')};
+    border-radius: 10px;
+    align-items: center;
+    text-transform: uppercase;
+    white-space: nowrap;
+    :hover {
+        background: ${(props) => (props.readOnly ? 'transparent' : '#e1d9e7')};
+    }
+    margin-right: ${(props) => (props.readOnly ? 25 : 0)}px;
+    @media (max-width: 500px) {
+        font-size: ${(props) => (props.readOnly ? 13 : 15)}px;
+        margin-right: ${(props) => (props.readOnly ? 15 : 0)}px;
+    }
 `;
 
 const NoMarketsContainer = styled(FlexDivColumnCentered)`
