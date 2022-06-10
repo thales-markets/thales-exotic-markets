@@ -34,7 +34,7 @@ import MaturityPhaseOpenBid from './MaturityPhaseOpenBid';
 import { MAX_GAS_LIMIT } from 'constants/network';
 import { TwitterShareButton } from 'react-share';
 import { LINKS } from 'constants/links';
-import { toJpeg } from 'html-to-image';
+import { toPng } from 'html-to-image';
 import { formatShareDateWithTime } from 'utils/formatters/date';
 
 type MarketDetailsProps = {
@@ -120,10 +120,10 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
             return;
         }
 
-        toJpeg(shareRef.current, { cacheBust: true })
+        toPng(shareRef.current, { cacheBust: true })
             .then((dataUrl) => {
                 const link = document.createElement('a');
-                link.download = `exotic_share__${formatShareDateWithTime(Date.now())}.jpg`;
+                link.download = `exotic_share__${formatShareDateWithTime(Date.now())}.png`;
                 link.href = dataUrl;
                 link.click();
             })
