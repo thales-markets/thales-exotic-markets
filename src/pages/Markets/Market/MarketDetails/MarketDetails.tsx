@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { getIsAppReady } from 'redux/modules/app';
 import { getIsWalletConnected, getNetworkId, getWalletAddress } from 'redux/modules/wallet';
@@ -34,6 +34,8 @@ import MaturityPhaseOpenBid from './MaturityPhaseOpenBid';
 import { MAX_GAS_LIMIT } from 'constants/network';
 import { TwitterShareButton } from 'react-share';
 import { LINKS } from 'constants/links';
+import { toJpeg } from 'html-to-image';
+import { formatShareDateWithTime } from 'utils/formatters/date';
 
 type MarketDetailsProps = {
     market: MarketData;
@@ -111,8 +113,27 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
         `common.twitter-text-${market.question.length > 198 ? 'short' : 'long'}`
     )}`;
 
+    const shareRef = React.useRef() as React.MutableRefObject<HTMLInputElement>;
+
+    const handleDownloadImage = useCallback(() => {
+        if (shareRef.current === null) {
+            return;
+        }
+
+        toJpeg(shareRef.current, { cacheBust: true })
+            .then((dataUrl) => {
+                const link = document.createElement('a');
+                link.download = `exotic_share__${formatShareDateWithTime(Date.now())}.jpg`;
+                link.href = dataUrl;
+                link.click();
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }, [shareRef]);
+
     return (
-        <MarketContainer>
+        <MarketContainer ref={shareRef}>
             <TopContainer>
                 <MarketTitle fontSize={25} marginBottom={40}>
                     {market.question}
@@ -120,6 +141,7 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
                 <TwitterShareButton url={`${LINKS.ExoticMarkets}markets/${market.address}`} title={twitterText}>
                     <TwitterIcon />
                 </TwitterShareButton>
+                <ShareIcon onClick={handleDownloadImage} />
 
                 {market.isTicketType && market.status === MarketStatusEnum.Open && (
                     <PositioningPhaseTicket market={market} />
@@ -199,8 +221,6 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
 };
 
 const MarketContainer = styled(FlexDivColumn)`
-    margin-top: 20px;
-    box-shadow: 0px 20px 40px rgba(0, 0, 0, 0.35);
     border-radius: 25px;
     width: 100%;
     padding: 50px 0px 30px 0px;
@@ -286,11 +306,27 @@ const ButtonContainer = styled(FlexDivColumn)`
 const TwitterIcon = styled.i`
     position: absolute;
     top: 20px;
-    right: 25px;
-    font-size: 26px;
+    right: 66px;
+    font-size: 28px;
     &:before {
         font-family: ExoticIcons !important;
         content: '\\0050';
+    }
+    @media (max-width: 767px) {
+        top: 15px;
+        right: 20px;
+    }
+`;
+
+const ShareIcon = styled.i`
+    position: absolute;
+    top: 19px;
+    right: 25px;
+    font-size: 25px;
+    cursor: pointer;
+    &:before {
+        font-family: ExoticIcons !important;
+        content: '\\0052';
     }
     @media (max-width: 767px) {
         top: 15px;

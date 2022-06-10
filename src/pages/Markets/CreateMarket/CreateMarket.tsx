@@ -729,7 +729,6 @@ const Container = styled(FlexDivColumn)`
 `;
 
 const ContentWrapper = styled(FlexDivRow)`
-    margin-top: 20px;
     @media (max-width: 767px) {
         flex-direction: column;
         width: 100%;

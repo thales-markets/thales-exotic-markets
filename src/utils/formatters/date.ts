@@ -97,3 +97,5 @@ export const setDateTimeToUtcNoon = (date: Date) => {
     date.setUTCHours(12, 0, 0, 0);
     return date;
 };
+
+export const formatShareDateWithTime = (date: Date | number) => format(date, 'yyyy-MM-dd_HH_mm_ss');
