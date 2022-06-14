@@ -600,6 +600,9 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                         DEFAULT_CURRENCY_DECIMALS,
                         true
                     )}
+                    withdrawalPercentage={withdrawalPercentage}
+                    creatorPercentage={withdrawalPercentage / 2}
+                    safeBoxPercentage={withdrawalPercentage / 2}
                     isTicketType={false}
                 />
             )}

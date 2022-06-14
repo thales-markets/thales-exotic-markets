@@ -3,17 +3,24 @@ import { Trans, useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { FlexDivColumnCentered } from 'styles/common';
 import Modal from 'components/Modal';
+import { PAYMENT_CURRENCY } from 'constants/currency';
 
 type WithdrawalRulesModalProps = {
     onClose: () => void;
     withdrawalPeriodInHours: string | number;
     isTicketType: boolean;
+    withdrawalPercentage: number;
+    creatorPercentage: number;
+    safeBoxPercentage: number;
 };
 
 export const WithdrawalRulesModal: React.FC<WithdrawalRulesModalProps> = ({
     onClose,
     withdrawalPeriodInHours,
     isTicketType,
+    withdrawalPercentage,
+    creatorPercentage,
+    safeBoxPercentage,
 }) => {
     const { t } = useTranslation();
 
@@ -27,7 +34,13 @@ export const WithdrawalRulesModal: React.FC<WithdrawalRulesModalProps> = ({
                             <li key="0" />
                         </ul>,
                     ]}
-                    values={{ withdrawalPeriodInHours }}
+                    values={{
+                        withdrawalPeriodInHours,
+                        withdrawalPercentage,
+                        creatorPercentage,
+                        safeBoxPercentage,
+                        currencyKey: PAYMENT_CURRENCY,
+                    }}
                 />
             </Container>
         </Modal>

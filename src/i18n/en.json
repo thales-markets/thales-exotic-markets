@@ -170,8 +170,8 @@
         "withdrawal-rules-label": "withdrawal rules",
         "withdrawal-rules-modal": {
             "title": "Withdrawal rules",
-            "ticket-text": "<0><0>If allowed, withdrawals can be made only up to {{withdrawalPeriodInHours}} hours before positioning ends.</0></0>",
-            "open-bid-text": "<0><0>If allowed, withdrawals can be made only up to {{withdrawalPeriodInHours}} hours before positioning ends.</0><0>During the last 24 hours of positioning, the user can not withdraw more than 10% of total market liquidity and only one withdrawal is allowed during that time.</0><0>During the last 24 hours of positioning, the user can not do repositioning if it has more than 10% of total market liquidity.</0></0>"
+            "ticket-text": "<0><0>If a specific market allows withdrawals, traders can withdraw the {{currencyKey}} paid for their position during the positioning phase, minus a {{withdrawalPercentage}}% total fee ({{creatorPercentage}}% goes to the market creator and {{safeBoxPercentage}}% to the SafeBox).</0><0>If allowed by the market creator, withdrawals can be made only up to {{withdrawalPeriodInHours}} hours before positioning ends.</0></0>",
+            "open-bid-text": "<0><0>If a specific market allows withdrawals, traders can withdraw the {{currencyKey}} paid for their position during the positioning phase, minus a {{withdrawalPercentage}}% total fee ({{creatorPercentage}}% goes to the market creator and {{safeBoxPercentage}}% to the SafeBox).</0><0>If allowed by the market creator, withdrawals can be made only up to {{withdrawalPeriodInHours}} hours before positioning ends.</0><0>During the last 24 hours of positioning, the user can not withdraw more than 10% of total market liquidity and only one withdrawal is allowed during that time.</0><0>During the last 24 hours of positioning, the user can not do repositioning if it has more than 10% of total market liquidity.</0></0>"
         },
         "creator-fee-label": "Creator fee earnings",
         "resolver-fee-label": "Resolver fee earnings",
