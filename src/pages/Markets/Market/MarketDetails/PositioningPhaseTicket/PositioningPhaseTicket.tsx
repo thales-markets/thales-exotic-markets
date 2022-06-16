@@ -490,7 +490,7 @@ const RoiOverlayContainer = styled(FlexDivColumn)`
 `;
 
 const WithdrawalRulesComponent = styled.span`
-    font-style: italic;
+    text-decoration: underline;
     font-weight: 700;
     cursor: pointer;
 `;
