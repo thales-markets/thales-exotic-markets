@@ -5,7 +5,7 @@
 
 Thales: Exotic Positional Markets.
 
-The UI is available on exoticmarkets.xyz(https://exoticmarkets.xyz).
+The UI is available on [exoticmarkets.xyz](https://exoticmarkets.xyz).
 
 ## Tech stack
 
