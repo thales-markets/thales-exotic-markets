@@ -1,0 +1,24 @@
+name: Dispersed Network Release
+
+on:
+  release:
+    types: [ published ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Build application
+        run: |
+          npm install
+          npm run build
+
+      - name: Dispersed Release
+        uses: dispersed-labs/dispersed-release-action@v1
+        with:
+          build_dir: build
+          bundle_name: demo-project-${{ github.ref_name }}.tgz
+          github_token: ${{ secrets.GITHUB_TOKEN }}
