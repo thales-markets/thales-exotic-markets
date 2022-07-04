@@ -101,7 +101,13 @@
         "twitter-text-long": "\n\nWhat do you think?\n\nMarket available in @ex0t1c_markets"
     },
     "footer": {
-        "all-rights-reserved": "© {{year}} eXoticV ALL RIGHTS RESERVED."
+        "all-rights-reserved": "© {{year}} eXoticV ALL RIGHTS RESERVED.",
+        "twitter": "Twitter",
+        "discord": "Discord",
+        "docs": "Docs",
+        "medium": "Medium",
+        "tutorial": "Tutorial",
+        "github": "GitHub"
     },
     "market": {
         "question-label": "Question",
