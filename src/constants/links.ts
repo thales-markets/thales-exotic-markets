@@ -9,8 +9,8 @@ export const LINKS = {
         Twitter: 'https://twitter.com/ex0t1c_markets',
         Discord: 'https://discord.gg/thales',
         Docs: 'https://docs.exoticmarkets.xyz',
-        Medium: 'https://thalesmarket.medium.com/',
-        GitHub: 'https://github.com/thales-markets/thales-exotic-markets',
+        Medium: 'https://medium.com/@exoticmarkets.xyz',
         Tutorial: 'https://www.youtube.com/watch?v=Mx4r_R5A4eQ',
+        GitHub: 'https://github.com/thales-markets/thales-exotic-markets',
     },
 };
