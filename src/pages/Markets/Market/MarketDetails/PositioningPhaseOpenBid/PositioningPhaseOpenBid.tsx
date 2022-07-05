@@ -600,6 +600,9 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                         DEFAULT_CURRENCY_DECIMALS,
                         true
                     )}
+                    withdrawalPercentage={withdrawalPercentage}
+                    creatorPercentage={withdrawalPercentage / 2}
+                    safeBoxPercentage={withdrawalPercentage / 2}
                     isTicketType={false}
                 />
             )}
@@ -632,7 +635,7 @@ const FeesOverlayContainer = styled(FlexDivColumn)`
 `;
 
 const WithdrawalRulesComponent = styled.span`
-    font-style: italic;
+    text-decoration: underline;
     font-weight: 700;
     cursor: pointer;
 `;
