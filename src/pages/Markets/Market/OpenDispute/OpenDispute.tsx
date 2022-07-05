@@ -284,8 +284,9 @@ const OpenDispute: React.FC<OpenDisputeProps> = (props) => {
                             <OpenDisputeNote>
                                 {t('market.dispute.open-dispute-note-label')}{' '}
                                 <GuidelinesNote onClick={() => setOpenGuidelinesModal(true)}>
-                                    {t('common.guidelines')}.
+                                    {t('common.guidelines')}
                                 </GuidelinesNote>
+                                .
                             </OpenDisputeNote>
                         )}
                         <TextAreaInput
@@ -393,9 +394,10 @@ const OpenDisputeNote = styled(FlexDivStart)`
 `;
 
 const GuidelinesNote = styled.span`
-    font-style: italic;
+    text-decoration: underline;
     font-weight: bold;
     cursor: pointer;
+    color: ${(props) => props.theme.textColor.secondary};
 `;
 
 const Form = styled(FlexDivColumn)`
