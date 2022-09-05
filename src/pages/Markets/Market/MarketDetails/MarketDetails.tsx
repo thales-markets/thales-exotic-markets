@@ -117,6 +117,9 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
                 <MarketTitle fontSize={25} marginBottom={40}>
                     {market.question}
                 </MarketTitle>
+                <MarketTitle fontSize={16} marginBottom={40}>
+                    {market.description}
+                </MarketTitle>
                 <TwitterShareButton url={`${LINKS.ExoticMarkets}markets/${market.address}`} title={twitterText}>
                     <TwitterIcon />
                 </TwitterShareButton>

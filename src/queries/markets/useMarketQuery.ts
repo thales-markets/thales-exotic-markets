@@ -52,6 +52,7 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                 const [
                     question,
                     dataSource,
+                    description,
                     ticketType,
                     endOfPositioning,
                     ticketPrice,
@@ -89,6 +90,7 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
                     address: marketAddress,
                     question,
                     dataSource,
+                    description,
                     isTicketType: Number(ticketType) === 0,
                     endOfPositioning: Number(endOfPositioning) * 1000,
                     ticketPrice: bigNumberFormatter(ticketPrice),

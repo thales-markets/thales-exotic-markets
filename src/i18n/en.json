@@ -259,6 +259,8 @@
         "create-market": {
             "question-label": "Question",
             "question-tooltip": "The question that defines a market.",
+            "description-label": "Description",
+            "description-tooltip": "Additional info for market",
             "data-source-label": "Data source",
             "data-source-tooltip": "Market data sources, must be a url linking to a page that will show the result on maturity.",
             "positions-label": "Positions",
