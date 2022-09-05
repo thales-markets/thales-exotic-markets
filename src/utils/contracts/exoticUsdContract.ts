@@ -2,6 +2,7 @@ export const exoticUsdContract = {
     addresses: {
         10: '',
         69: '0x762838253A45a9106cc859ec99dF31DF48FCf735',
+        420: '0xE1ceaa829525a08C1d39A5CEBe4b42aF58d77198',
     },
     abi: [
         { inputs: [], stateMutability: 'nonpayable', type: 'constructor' },
