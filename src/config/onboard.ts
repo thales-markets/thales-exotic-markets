@@ -1,7 +1,7 @@
 import onboard from 'bnc-onboard';
 import { Subscriptions } from 'bnc-onboard/dist/src/interfaces';
 import { NetworkId } from 'types/network';
-import { getInfuraRpcURL, NetworkIdByName } from 'utils/network';
+import { getInfuraRpcURL } from 'utils/network';
 import browserWalletIcon from 'assets/images/browser-wallet.svg';
 import disclaimer from 'assets/docs/exotic-markets-disclaimer.pdf';
 import i18n from 'i18n';
@@ -57,14 +57,15 @@ export const initOnboard = (networkId: NetworkId, subscriptions: Subscriptions) 
                     rpcUrl: infuraRpc,
                     preferred: true,
                 },
-                {
-                    walletName: 'walletConnect',
-                    rpc: {
-                        [NetworkIdByName.OptimsimMainnet]: getInfuraRpcURL(NetworkIdByName.OptimsimMainnet),
-                        [NetworkIdByName.OptimsimKovan]: getInfuraRpcURL(NetworkIdByName.OptimsimKovan),
-                    },
-                    preferred: true,
-                },
+                // {
+                //     walletName: 'walletConnect',
+                //     rpc: {
+                //         [NetworkIdByName.OptimsimMainnet]: getInfuraRpcURL(NetworkIdByName.OptimsimMainnet),
+                //         [NetworkIdByName.OptimsimKovan]: getInfuraRpcURL(NetworkIdByName.OptimsimKovan),
+                //         [NetworkIdByName.OptimismGoerli]: 'https://goerli.optimism.io/',
+                //     },
+                //     preferred: true,
+                // },
                 { walletName: 'coinbase', preferred: true },
                 {
                     walletName: 'portis',
