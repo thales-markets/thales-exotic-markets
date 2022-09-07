@@ -6,7 +6,7 @@ import WalletInfo from 'components/WalletInfo';
 import ROUTES from 'constants/routes';
 import useMarketsParametersQuery from 'queries/markets/useMarketsParametersQuery';
 import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { getIsAppReady } from 'redux/modules/app';
 import { getMarketSearch, setMarketSearch } from 'redux/modules/market';
@@ -45,37 +45,99 @@ const DappHeader: React.FC<DappHeaderProps> = ({ showSearch }) => {
         : true;
 
     return (
-        <Container>
-            <Logo />
-            <RightContainer>
-                {showSearch && (
-                    <>
-                        {!creationRestrictedToOwner && (
-                            <ButtonsContainer>
-                                <Button
-                                    onClick={() => {
-                                        navigateTo(ROUTES.Markets.CreateMarket);
-                                    }}
-                                    fontSize={15}
-                                >
-                                    {t('market.button.create-market-label')}
-                                </Button>
-                            </ButtonsContainer>
-                        )}
-                        <Search text={marketSearch} handleChange={(value) => dispatch(setMarketSearch(value))} />
-                    </>
-                )}
-                <GetUsd />
-                <WalletInfo />
-            </RightContainer>
-        </Container>
+        <>
+            <Banner>
+                <Trans
+                    i18nKey="common.banner"
+                    components={{
+                        1: (
+                            <Link
+                                href="https://medium.com/@exoticmarkets.xyz/exotic-markets-just-got-a-boost-with-added-op-rewards-fa23319042e7"
+                                rel="noreferrer"
+                                target="_blank"
+                            />
+                        ),
+                    }}
+                ></Trans>
+            </Banner>
+            <Container>
+                <Logo />
+                <RightContainer>
+                    {showSearch && (
+                        <>
+                            {!creationRestrictedToOwner && (
+                                <ButtonsContainer>
+                                    <Button
+                                        onClick={() => {
+                                            navigateTo(ROUTES.Markets.CreateMarket);
+                                        }}
+                                        fontSize={15}
+                                    >
+                                        {t('market.button.create-market-label')}
+                                    </Button>
+                                </ButtonsContainer>
+                            )}
+                            <Search text={marketSearch} handleChange={(value) => dispatch(setMarketSearch(value))} />
+                        </>
+                    )}
+                    <GetUsd />
+                    <WalletInfo />
+                </RightContainer>
+            </Container>
+        </>
     );
 };
+
+const Link = styled.a`
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 25px;
+    line-height: 50px;
+    color: white;
+    @media (max-width: 1260px) {
+        font-size: 20px;
+    }
+    @media (max-width: 767px) {
+        font-size: 16px;
+    }
+
+    @media (max-width: 500px) {
+        font-size: 14px;
+    }
+    &:hover {
+        text-decoration: underline;
+    }
+`;
 
 const Container = styled(FlexDivRowCentered)`
     width: 100%;
     @media (max-width: 767px) {
         flex-direction: column;
+    }
+`;
+
+const Banner = styled.div`
+    position: absolute;
+    top: 0;
+    height: 48px;
+    width: 100%;
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 25px;
+    line-height: 50px;
+    background: #f22d45;
+    color: white;
+    text-align: center;
+    @media (max-width: 1260px) {
+        font-size: 20px;
+    }
+    @media (max-width: 767px) {
+        font-size: 16px;
+    }
+    @media (max-width: 500px) {
+        font-size: 14px;
     }
 `;
 
