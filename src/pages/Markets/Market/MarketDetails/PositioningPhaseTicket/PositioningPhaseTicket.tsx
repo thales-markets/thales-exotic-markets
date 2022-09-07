@@ -27,6 +27,7 @@ import useMarketsParametersQuery from 'queries/markets/useMarketsParametersQuery
 import Tooltip from 'components/Tooltip';
 import { refetchMarketData } from 'utils/queryConnector';
 import WithdrawalRulesModal from 'pages/Markets/components/WithdrawalRulesModal';
+import exoticUsdContract from 'utils/contracts/exoticUsdContract';
 
 type PositioningPhaseTicketProps = {
     market: MarketData;
@@ -181,9 +182,15 @@ const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market 
             try {
                 const marketContractWithSigner = new ethers.Contract(market.address, marketContract.abi, signer);
 
-                const tx = await marketContractWithSigner.takeAPosition(selectedPosition, {
-                    gasLimit: MAX_GAS_LIMIT,
-                });
+                const tx = await marketContractWithSigner.takeAPosition(
+                    selectedPosition,
+                    exoticUsdContract.addresses[networkId],
+                    '0',
+                    '0',
+                    {
+                        gasLimit: MAX_GAS_LIMIT,
+                    }
+                );
                 const txResult = await tx.wait();
 
                 if (txResult && txResult.transactionHash) {

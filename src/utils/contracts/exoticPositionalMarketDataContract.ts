@@ -106,11 +106,6 @@ export const exoticPositionalMarketDataContract = {
                             type: 'string',
                         },
                         {
-                            internalType: 'string',
-                            name: 'marketDescription',
-                            type: 'string',
-                        },
-                        {
                             internalType: 'uint256',
                             name: 'ticketType',
                             type: 'uint256',

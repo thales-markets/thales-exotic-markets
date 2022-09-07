@@ -8,7 +8,7 @@ export type MarketInfo = {
     resolvedTime: number;
     question: string;
     dataSource: string;
-    description: string;
+    description?: string;
     isTicketType: boolean;
     endOfPositioning: number;
     ticketPrice: number;
