@@ -34,6 +34,8 @@ import MaturityPhaseOpenBid from './MaturityPhaseOpenBid';
 import { MAX_GAS_LIMIT } from 'constants/network';
 import { TwitterShareButton } from 'react-share';
 import { LINKS } from 'constants/links';
+import CollateralDropdown from './CollateralDropdown';
+import { AVAILABLE_COLLATERALS } from 'constants/tokens';
 
 type MarketDetailsProps = {
     market: MarketData;
@@ -49,6 +51,7 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
     const [isClaimAvailable, setIsClaimAvailable] = useState<boolean>(false);
     const [isPausing, setIsPausing] = useState<boolean>(false);
     const [showPause, setShowPause] = useState<boolean>(false);
+    const [collateral, setCollateral] = useState(AVAILABLE_COLLATERALS[0]);
 
     const oracleCouncilMemberQuery = useOracleCouncilMemberQuery(walletAddress, networkId, {
         enabled: isAppReady && isWalletConnected,
@@ -114,6 +117,7 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
     return (
         <MarketContainer>
             <TopContainer>
+                <CollateralDropdown collateral={collateral} setCollateral={setCollateral}></CollateralDropdown>
                 <MarketTitle fontSize={25} marginBottom={40}>
                     {market.question}
                 </MarketTitle>
