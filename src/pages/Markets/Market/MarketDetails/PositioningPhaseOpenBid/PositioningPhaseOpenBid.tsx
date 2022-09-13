@@ -34,12 +34,20 @@ import {
     WITHDRAW_PROTECTION_DURATION,
 } from 'constants/markets';
 import WithdrawalRulesModal from 'pages/Markets/components/WithdrawalRulesModal';
+import oldExoticPositionalOpenBidMarketContract from 'utils/contracts/oldExoticOpendBidMarketContract';
 
 type PositioningPhaseOpenBidProps = {
     market: MarketData;
+    collateral: {
+        address: string;
+        decimals: number;
+        symbol: string;
+        name: string;
+        logoURI: string;
+    };
 };
 
-const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ market }) => {
+const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ market, collateral }) => {
     const { t } = useTranslation();
     const networkId = useSelector((state: RootState) => getNetworkId(state));
     const isAppReady = useSelector((state: RootState) => getIsAppReady(state));
@@ -225,8 +233,6 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
             setIsBidding(true);
 
             try {
-                const marketContractWithSigner = new ethers.Contract(market.address, marketContract.abi, signer);
-
                 const formattedPositions: number[] = [];
                 const formattedAmounts: BigNumberish[] = [];
 
@@ -235,9 +241,41 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                     formattedAmounts.push(ethers.utils.parseEther(Number(position).toString()));
                 });
 
-                const tx = await marketContractWithSigner.takeOpenBidPositions(formattedPositions, formattedAmounts, {
-                    gasLimit: MAX_GAS_LIMIT,
-                });
+                const marketContractWithSigner = new ethers.Contract(market.address, marketContract.abi, signer);
+                let tx;
+
+                try {
+                    await marketContractWithSigner.additionalInfo();
+                    tx = await marketContractWithSigner.takeOpenBidPositions(
+                        formattedPositions,
+                        formattedAmounts,
+                        collateral.address,
+                        '0',
+                        '0',
+                        {
+                            gasLimit: MAX_GAS_LIMIT,
+                        }
+                    );
+                } catch (e) {
+                    console.log(e);
+                    const oldMarketContractWithSigner = new ethers.Contract(
+                        market.address,
+                        oldExoticPositionalOpenBidMarketContract.abi,
+                        signer
+                    );
+                    try {
+                        tx = await oldMarketContractWithSigner.takeOpenBidPositions(
+                            formattedPositions,
+                            formattedAmounts,
+                            {
+                                gasLimit: MAX_GAS_LIMIT,
+                            }
+                        );
+                    } catch (event) {
+                        console.log(event);
+                    }
+                }
+
                 const txResult = await tx.wait();
 
                 if (txResult && txResult.transactionHash) {

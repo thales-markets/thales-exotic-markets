@@ -129,14 +129,14 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
                 </TwitterShareButton>
 
                 {market.isTicketType && market.status === MarketStatusEnum.Open && (
-                    <PositioningPhaseTicket market={market} />
+                    <PositioningPhaseTicket market={market} collateral={collateral} />
                 )}
                 {market.isTicketType && market.status !== MarketStatusEnum.Open && (
                     <MaturityPhaseTicket market={market} />
                 )}
 
                 {!market.isTicketType && market.status === MarketStatusEnum.Open && (
-                    <PositioningPhaseOpenBid market={market} />
+                    <PositioningPhaseOpenBid market={market} collateral={collateral} />
                 )}
                 {!market.isTicketType && market.status !== MarketStatusEnum.Open && (
                     <MaturityPhaseOpenBid market={market} />

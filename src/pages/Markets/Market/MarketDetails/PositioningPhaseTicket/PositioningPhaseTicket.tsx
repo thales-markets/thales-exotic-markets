@@ -16,6 +16,7 @@ import networkConnector from 'utils/networkConnector';
 import { MAX_GAS_LIMIT } from 'constants/network';
 import ApprovalModal from 'components/ApprovalModal';
 import marketContract from 'utils/contracts/exoticPositionalTicketMarketContract';
+import oldMarketContract from 'utils/contracts/oldExoticPositionalTicketMarketContract';
 import usePaymentTokenBalanceQuery from 'queries/wallet/usePaymentTokenBalanceQuery';
 import onboardConnector from 'utils/onboardConnector';
 import useAccountMarketTicketDataQuery from 'queries/markets/useAccountMarketTicketDataQuery';
@@ -27,13 +28,20 @@ import useMarketsParametersQuery from 'queries/markets/useMarketsParametersQuery
 import Tooltip from 'components/Tooltip';
 import { refetchMarketData } from 'utils/queryConnector';
 import WithdrawalRulesModal from 'pages/Markets/components/WithdrawalRulesModal';
-import exoticUsdContract from 'utils/contracts/exoticUsdContract';
 
 type PositioningPhaseTicketProps = {
     market: MarketData;
+    collateral: {
+        address: string;
+        decimals: number;
+        symbol: string;
+        name: string;
+        logoURI: string;
+    };
 };
 
-const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market }) => {
+const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market, collateral }) => {
+    console.log(collateral);
     const { t } = useTranslation();
     const networkId = useSelector((state: RootState) => getNetworkId(state));
     const isAppReady = useSelector((state: RootState) => getIsAppReady(state));
@@ -181,16 +189,29 @@ const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market 
 
             try {
                 const marketContractWithSigner = new ethers.Contract(market.address, marketContract.abi, signer);
+                let tx;
 
-                const tx = await marketContractWithSigner.takeAPosition(
-                    selectedPosition,
-                    exoticUsdContract.addresses[networkId],
-                    '0',
-                    '0',
-                    {
+                try {
+                    await marketContractWithSigner.additionalInfo();
+                    tx = await marketContractWithSigner.takeAPosition(selectedPosition, collateral.address, '0', '0', {
                         gasLimit: MAX_GAS_LIMIT,
+                    });
+                } catch (e) {
+                    console.log(e);
+                    const oldMarketContractWithSigner = new ethers.Contract(
+                        market.address,
+                        oldMarketContract.abi,
+                        signer
+                    );
+                    try {
+                        tx = await oldMarketContractWithSigner.takeAPosition(selectedPosition, {
+                            gasLimit: MAX_GAS_LIMIT,
+                        });
+                    } catch (event) {
+                        console.log(event);
                     }
-                );
+                }
+
                 const txResult = await tx.wait();
 
                 if (txResult && txResult.transactionHash) {
