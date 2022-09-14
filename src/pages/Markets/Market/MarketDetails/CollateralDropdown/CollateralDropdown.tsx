@@ -39,17 +39,19 @@ const CollateralDropdown: React.FC<CollateralProps> = ({ collateral, setCollater
         enabled: true,
     });
 
-    const balances = useCollateralQuery.isSuccess ? useCollateralQuery.data : [];
+    const balances = useCollateralQuery.isSuccess ? useCollateralQuery.data : { susd: 0, dai: 0, usdc: 0, usdt: 0 };
 
     return (
         <Wrapper>
             <CollateraWrapper>
-                {AVAILABLE_COLLATERALS.map((token, index) => {
+                {AVAILABLE_COLLATERALS.map((token) => {
                     return (
                         <Row key={token.address} onClick={setCollateral.bind(this, token)}>
                             <FlexDivCentered style={{ opacity: collateral.address === token.address ? 1 : 0.2 }}>
                                 <Img src={token.logoURI}></Img>
-                                <Balance>{balances ? formatCurrencyWithSign('', balances[index], 2) : 0}</Balance>
+                                <Balance>
+                                    {balances ? formatCurrencyWithSign('', balances[token.symbol.toLowerCase()], 2) : 0}
+                                </Balance>
                             </FlexDivCentered>
                         </Row>
                     );

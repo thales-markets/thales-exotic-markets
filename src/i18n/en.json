@@ -143,6 +143,7 @@
         "winnings-position-label": "Winning position",
         "claim-amount-ticket-label": "Claim amount per ticket",
         "ticket-price-label": "Ticket price",
+        "ticket-price-label-collateral": "Expected to pay",
         "fixed-ticket-label": "Fixed ticket",
         "open-bid-label": "Open bid",
         "bid-amount-label": "Bid amount",
