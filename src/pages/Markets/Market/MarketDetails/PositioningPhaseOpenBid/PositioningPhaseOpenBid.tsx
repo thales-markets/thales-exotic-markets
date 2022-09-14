@@ -35,6 +35,7 @@ import {
 } from 'constants/markets';
 import WithdrawalRulesModal from 'pages/Markets/components/WithdrawalRulesModal';
 import oldExoticPositionalOpenBidMarketContract from 'utils/contracts/oldExoticOpendBidMarketContract';
+import exoticUsdContract from 'utils/contracts/exoticUsdContract';
 
 type PositioningPhaseOpenBidProps = {
     market: MarketData;
@@ -246,10 +247,11 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
 
                 try {
                     await marketContractWithSigner.additionalInfo();
+
                     tx = await marketContractWithSigner.takeOpenBidPositions(
                         formattedPositions,
                         formattedAmounts,
-                        collateral.address,
+                        networkId === 420 ? exoticUsdContract.addresses[networkId] : collateral.address,
                         '0',
                         '0',
                         {
