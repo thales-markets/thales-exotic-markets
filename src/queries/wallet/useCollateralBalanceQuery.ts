@@ -1,6 +1,6 @@
 import { useQuery, UseQueryOptions } from 'react-query';
 import QUERY_KEYS from '../../constants/queryKeys';
-import { bigNumberFormatter } from 'utils/formatters/ethers';
+import { bigNumberFormatterWithDecimals } from 'utils/formatters/ethers';
 import { BALANCE_THRESHOLD } from 'constants/wallet';
 import networkConnector from 'utils/networkConnector';
 import { NetworkId } from 'types/network';
@@ -22,7 +22,10 @@ const useCollateralBalanceQuery = (
                 AVAILABLE_COLLATERALS.map(async (token) => {
                     const contract = new ethers.Contract(token.address, erc20Contract.abi, signer);
 
-                    const balance = bigNumberFormatter(await contract.balanceOf(walletAddress));
+                    const balance = bigNumberFormatterWithDecimals(
+                        await contract.balanceOf(walletAddress),
+                        token.decimals
+                    );
                     return balance < BALANCE_THRESHOLD ? 0 : balance;
                 })
             );
