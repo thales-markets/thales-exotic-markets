@@ -52,10 +52,24 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
     const [isPausing, setIsPausing] = useState<boolean>(false);
     const [showPause, setShowPause] = useState<boolean>(false);
     const [collateral, setCollateral] = useState(AVAILABLE_COLLATERALS[0]);
+    const [multiCollateral, setMultiCollateral] = useState(false);
 
     const oracleCouncilMemberQuery = useOracleCouncilMemberQuery(walletAddress, networkId, {
         enabled: isAppReady && isWalletConnected,
     });
+
+    useEffect(() => {
+        const { signer } = networkConnector;
+        if (signer) {
+            const marketContractWithSigner = new ethers.Contract(market.address, marketContract.abi, signer);
+            marketContractWithSigner
+                .additionalInfo()
+                .then(() => {
+                    setMultiCollateral(true);
+                })
+                .catch(setMultiCollateral(false));
+        }
+    }, []);
 
     useEffect(() => {
         if (oracleCouncilMemberQuery.isSuccess && oracleCouncilMemberQuery.data !== undefined) {
@@ -117,7 +131,9 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
     return (
         <MarketContainer>
             <TopContainer>
-                <CollateralDropdown collateral={collateral} setCollateral={setCollateral}></CollateralDropdown>
+                {multiCollateral && (
+                    <CollateralDropdown collateral={collateral} setCollateral={setCollateral}></CollateralDropdown>
+                )}
                 <MarketTitle fontSize={25} marginBottom={40}>
                     {market.question}
                 </MarketTitle>

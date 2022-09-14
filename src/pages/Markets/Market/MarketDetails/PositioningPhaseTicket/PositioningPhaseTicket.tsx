@@ -41,7 +41,6 @@ type PositioningPhaseTicketProps = {
 };
 
 const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market, collateral }) => {
-    console.log(collateral);
     const { t } = useTranslation();
     const networkId = useSelector((state: RootState) => getNetworkId(state));
     const isAppReady = useSelector((state: RootState) => getIsAppReady(state));
