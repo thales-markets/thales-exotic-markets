@@ -219,7 +219,16 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                 getAllowance();
             }
         }
-    }, [walletAddress, isWalletConnected, hasAllowance, requiredFunds, isAllowing, isBidding, isWithdrawing]);
+    }, [
+        walletAddress,
+        isWalletConnected,
+        hasAllowance,
+        requiredFunds,
+        isAllowing,
+        isBidding,
+        isWithdrawing,
+        collateral,
+    ]);
 
     const handleAllowance = async (approveAmount: BigNumber) => {
         const { thalesBondsContract, signer } = networkConnector;

@@ -136,6 +136,8 @@ const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market,
         Number(balances[collateral.symbol.toLowerCase()]) === 0;
     const isPositionSelected = selectedPosition > 0;
 
+    console.log(hasAllowance);
+
     const isBidButtonDisabled =
         isBidding ||
         isWithdrawing ||
@@ -172,7 +174,16 @@ const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market,
                 getAllowance();
             }
         }
-    }, [walletAddress, isWalletConnected, hasAllowance, market.ticketPrice, isAllowing, isBidding, isWithdrawing]);
+    }, [
+        walletAddress,
+        isWalletConnected,
+        hasAllowance,
+        market.ticketPrice,
+        isAllowing,
+        isBidding,
+        isWithdrawing,
+        collateral,
+    ]);
 
     const handleAllowance = async (approveAmount: BigNumber) => {
         const { thalesBondsContract, signer } = networkConnector;
