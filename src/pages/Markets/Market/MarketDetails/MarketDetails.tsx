@@ -67,7 +67,7 @@ const MarketDetails: React.FC<MarketDetailsProps> = ({ market }) => {
                 .then(() => {
                     setMultiCollateral(true);
                 })
-                .catch(setMultiCollateral(true));
+                .catch(setMultiCollateral(false));
         }
     }, []);
 

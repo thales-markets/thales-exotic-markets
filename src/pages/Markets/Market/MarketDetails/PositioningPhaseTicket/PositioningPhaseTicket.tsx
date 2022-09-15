@@ -27,7 +27,6 @@ import useMarketsParametersQuery from 'queries/markets/useMarketsParametersQuery
 import Tooltip from 'components/Tooltip';
 import { refetchMarketData } from 'utils/queryConnector';
 import WithdrawalRulesModal from 'pages/Markets/components/WithdrawalRulesModal';
-import exoticUsdContract from 'utils/contracts/exoticUsdContract';
 import thalesBondsContract from 'utils/contracts/thalesBondsContract';
 import { AVAILABLE_COLLATERALS } from 'constants/tokens';
 import { bigNumberFormatterWithDecimals } from 'utils/formatters/ethers';
@@ -231,7 +230,7 @@ const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market,
                     await marketContractWithSigner.additionalInfo();
                     tx = await marketContractWithSigner.takeAPosition(
                         selectedPosition,
-                        networkId === 420 ? exoticUsdContract.addresses[networkId] : collateral.address,
+                        collateral.address,
                         ethers.utils.parseEther(quote.toString()),
                         ethers.utils.parseEther('0.02'),
                         {

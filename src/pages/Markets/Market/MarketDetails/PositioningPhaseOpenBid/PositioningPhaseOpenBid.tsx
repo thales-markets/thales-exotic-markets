@@ -35,7 +35,6 @@ import {
 } from 'constants/markets';
 import WithdrawalRulesModal from 'pages/Markets/components/WithdrawalRulesModal';
 import oldExoticPositionalOpenBidMarketContract from 'utils/contracts/oldExoticOpendBidMarketContract';
-import exoticUsdContract from 'utils/contracts/exoticUsdContract';
 import { AVAILABLE_COLLATERALS } from 'constants/tokens';
 import thalesBondsContract from 'utils/contracts/thalesBondsContract';
 import { bigNumberFormatterWithDecimals } from 'utils/formatters/ethers';
@@ -285,7 +284,7 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                     tx = await marketContractWithSigner.takeOpenBidPositions(
                         formattedPositions,
                         formattedAmounts,
-                        networkId === 420 ? exoticUsdContract.addresses[networkId] : collateral.address,
+                        collateral.address,
                         ethers.utils.parseEther(quote.toString()),
                         ethers.utils.parseEther('0.02'),
                         {

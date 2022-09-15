@@ -1,9 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-// import Dai from 'assets/currencies/DAI.svg';
-// import sUSD from 'assets/currencies/sUSD.svg';
-// import USDT from 'assets/currencies/USDT.svg';
-// import USDC from 'assets/currencies/USDC.svg';
+
 import { AVAILABLE_COLLATERALS } from 'constants/tokens';
 import useCollateralBalanceQuery from 'queries/wallet/useCollateralBalanceQuery';
 import { useSelector } from 'react-redux';
@@ -11,7 +8,6 @@ import { RootState } from 'redux/rootReducer';
 import { getNetworkId, getWalletAddress } from 'redux/modules/wallet';
 import { formatCurrencyWithSign } from 'utils/formatters/number';
 import { FlexDivCentered } from 'styles/common';
-// import { USD_SIGN } from 'constants/currency';
 
 type CollateralProps = {
     collateral: {
