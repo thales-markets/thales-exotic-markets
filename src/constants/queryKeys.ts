@@ -54,7 +54,7 @@ export const QUERY_KEYS = {
         ],
         CollateralBalance: (walletAddress: string, networkId: NetworkId) => [
             'wallet',
-            'ollateralBalance',
+            'collateralBalance',
             walletAddress,
             networkId,
         ],
