@@ -32,6 +32,7 @@ import thalesBondsContract from 'utils/contracts/thalesBondsContract';
 import { AVAILABLE_COLLATERALS } from 'constants/tokens';
 import { bigNumberFormatterWithDecimals } from 'utils/formatters/ethers';
 import useCollateralBalanceQuery from 'queries/wallet/useCollateralBalanceQuery';
+import erc20Contract from 'utils/contracts/erc20Abi';
 
 // import thalesBondsContract from 'utils/contracts/thalesBondsContract';
 
@@ -149,16 +150,16 @@ const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market,
     const isCancelButtonDisabled = isBidding || isWithdrawing || isCanceling || !isWalletConnected;
 
     useEffect(() => {
-        const { paymentTokenContract, thalesBondsContract, signer } = networkConnector;
-        if (paymentTokenContract && thalesBondsContract && signer) {
-            const paymentTokenContractWithSigner = paymentTokenContract.connect(signer);
+        const { thalesBondsContract, signer } = networkConnector;
+        if (thalesBondsContract && signer) {
+            const contract = new ethers.Contract(collateral.address, erc20Contract.abi, signer);
             const addressToApprove = thalesBondsContract.address;
             const getAllowance = async () => {
                 try {
                     const parsedTicketPrice = ethers.utils.parseEther(Number(market.ticketPrice).toString());
                     const allowance = await checkAllowance(
                         parsedTicketPrice,
-                        paymentTokenContractWithSigner,
+                        contract,
                         walletAddress,
                         addressToApprove
                     );
@@ -174,16 +175,17 @@ const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market,
     }, [walletAddress, isWalletConnected, hasAllowance, market.ticketPrice, isAllowing, isBidding, isWithdrawing]);
 
     const handleAllowance = async (approveAmount: BigNumber) => {
-        const { paymentTokenContract, thalesBondsContract, signer } = networkConnector;
-        if (paymentTokenContract && thalesBondsContract && signer) {
+        const { thalesBondsContract, signer } = networkConnector;
+        if (thalesBondsContract && signer) {
             const id = toast.loading(t('market.toast-messsage.transaction-pending'));
             setIsAllowing(true);
 
             try {
-                const paymentTokenContractWithSigner = paymentTokenContract.connect(signer);
                 const addressToApprove = thalesBondsContract.address;
 
-                const tx = (await paymentTokenContractWithSigner.approve(addressToApprove, approveAmount, {
+                const contract = new ethers.Contract(collateral.address, erc20Contract.abi, signer);
+
+                const tx = (await contract.approve(addressToApprove, approveAmount, {
                     gasLimit: MAX_GAS_LIMIT,
                 })) as ethers.ContractTransaction;
                 setOpenApprovalModal(false);
@@ -336,9 +338,9 @@ const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market,
             return (
                 <MarketButton disabled={isAllowing} onClick={() => setOpenApprovalModal(true)}>
                     {!isAllowing
-                        ? t('common.enable-wallet-access.approve-label', { currencyKey: PAYMENT_CURRENCY })
+                        ? t('common.enable-wallet-access.approve-label', { currencyKey: collateral.symbol })
                         : t('common.enable-wallet-access.approve-progress-label', {
-                              currencyKey: PAYMENT_CURRENCY,
+                              currencyKey: collateral.symbol,
                           })}
                 </MarketButton>
             );
