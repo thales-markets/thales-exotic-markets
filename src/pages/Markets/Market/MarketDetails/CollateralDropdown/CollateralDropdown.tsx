@@ -43,7 +43,7 @@ const CollateralDropdown: React.FC<CollateralProps> = ({ collateral, setCollater
                 {AVAILABLE_COLLATERALS.map((token) => {
                     return (
                         <Row key={token.address} onClick={setCollateral.bind(this, token)}>
-                            <FlexDivCentered style={{ opacity: collateral.address === token.address ? 1 : 0.2 }}>
+                            <FlexDivCentered style={{ opacity: collateral.address === token.address ? 1 : 0.5 }}>
                                 <Img src={token.logoURI}></Img>
                                 <Balance>
                                     {balances ? formatCurrencyWithSign('', balances[token.symbol.toLowerCase()], 2) : 0}
