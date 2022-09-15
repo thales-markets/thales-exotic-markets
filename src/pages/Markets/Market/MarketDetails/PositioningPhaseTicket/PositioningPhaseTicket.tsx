@@ -219,8 +219,8 @@ const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market,
                     tx = await marketContractWithSigner.takeAPosition(
                         selectedPosition,
                         networkId === 420 ? exoticUsdContract.addresses[networkId] : collateral.address,
-                        '0',
-                        '0',
+                        ethers.utils.parseEther(quote.toString()),
+                        ethers.utils.parseEther('0.02'),
                         {
                             gasLimit: MAX_GAS_LIMIT,
                         }
