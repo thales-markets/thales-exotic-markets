@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import { getIsAppReady } from 'redux/modules/app';
 import { RootState } from 'redux/rootReducer';
 import styled from 'styled-components';
-import { FlexDivColumn } from 'styles/common';
+import { FlexDivCentered, FlexDivColumn } from 'styles/common';
 import { MarketData, MarketsParameters } from 'types/markets';
 import { formatCurrency, formatCurrencyWithKey, formatPercentage } from 'utils/formatters/number';
 import { PAYMENT_CURRENCY, DEFAULT_CURRENCY_DECIMALS } from 'constants/currency';
@@ -36,6 +36,9 @@ import {
 import WithdrawalRulesModal from 'pages/Markets/components/WithdrawalRulesModal';
 import oldExoticPositionalOpenBidMarketContract from 'utils/contracts/oldExoticOpendBidMarketContract';
 import exoticUsdContract from 'utils/contracts/exoticUsdContract';
+import { AVAILABLE_COLLATERALS } from 'constants/tokens';
+import thalesBondsContract from 'utils/contracts/thalesBondsContract';
+import { bigNumberFormatterWithDecimals } from 'utils/formatters/ethers';
 
 type PositioningPhaseOpenBidProps = {
     market: MarketData;
@@ -72,9 +75,14 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
     const [marketsParameters, setMarketsParameters] = useState<MarketsParameters | undefined>(undefined);
     const [withdrawPosition, setWithdrawPosition] = useState<number>(-1);
     const [openWithdrawalRulesModal, setOpenWithdrawalRulesModal] = useState<boolean>(false);
+    const [quote, setQuote] = useState(0);
 
     const accountMarketDataQuery = useAccountMarketOpenBidDataQuery(market.address, walletAddress, {
         enabled: isAppReady && isWalletConnected,
+    });
+
+    const marketsParametersQuery = useMarketsParametersQuery(networkId, {
+        enabled: isAppReady,
     });
 
     useEffect(() => {
@@ -94,10 +102,6 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
             setPaymentTokenBalance(paymentTokenBalanceQuery.data);
         }
     }, [paymentTokenBalanceQuery.isSuccess, paymentTokenBalanceQuery.data]);
-
-    const marketsParametersQuery = useMarketsParametersQuery(networkId, {
-        enabled: isAppReady,
-    });
 
     useEffect(() => {
         if (marketsParametersQuery.isSuccess && marketsParametersQuery.data) {
@@ -131,6 +135,26 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
     const currentPositionsOnContractSum = currentPositionsOnContract.reduce((a, b) => Number(a) + Number(b), 0);
     const requiredFunds = Number(selectedPositionsSum) - Number(currentPositionsOnContractSum);
     const isNewAmountValid = Number(selectedPositionsSum) >= Number(currentPositionsOnContractSum);
+
+    useEffect(() => {
+        if (collateral.address !== AVAILABLE_COLLATERALS[0].address) {
+            const { signer } = networkConnector;
+            const thalesBondsWithSigner = new ethers.Contract(
+                thalesBondsContract.addresses[networkId],
+                thalesBondsContract.abi,
+                signer
+            );
+            thalesBondsWithSigner
+                .getCurveQuoteForDifferentCollateral(
+                    ethers.utils.parseEther(selectedPositionsSum.toString()),
+                    collateral.address.toLowerCase(),
+                    true
+                )
+                .then((data: any) => {
+                    setQuote(bigNumberFormatterWithDecimals(data, collateral.decimals));
+                });
+        }
+    }, [selectedPositionsSum, collateral]);
 
     const isWithdrawProtectionDuration = Date.now() + WITHDRAW_PROTECTION_DURATION > market.endOfPositioning;
     const maxWithdrawAmount = (MAXIMUM_WITHDRAW_PERCENTAGE * Number(market.poolSize)) / 100;
@@ -252,8 +276,8 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                         formattedPositions,
                         formattedAmounts,
                         networkId === 420 ? exoticUsdContract.addresses[networkId] : collateral.address,
-                        '0',
-                        '0',
+                        ethers.utils.parseEther(quote.toString()),
+                        ethers.utils.parseEther('0.02'),
                         {
                             gasLimit: MAX_GAS_LIMIT,
                         }
@@ -552,13 +576,26 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                 )}
                 {market.canUsersPlacePosition && (
                     <Info fontSize={18}>
-                        <InfoLabel>
-                            {showChangePosition
-                                ? t('market.your-new-bid-amount-label')
-                                : t('market.your-total-bid-amount-label')}
-                            :
-                        </InfoLabel>
-                        <InfoContent>{formatCurrencyWithKey(PAYMENT_CURRENCY, selectedPositionsSum)}</InfoContent>
+                        <FlexDivColumn>
+                            <FlexDivCentered>
+                                <InfoLabel>
+                                    {showChangePosition
+                                        ? t('market.your-new-bid-amount-label')
+                                        : t('market.your-total-bid-amount-label')}
+                                    :
+                                </InfoLabel>
+                                <InfoContent>
+                                    {formatCurrencyWithKey(PAYMENT_CURRENCY, selectedPositionsSum)}
+                                </InfoContent>
+                            </FlexDivCentered>
+                            {collateral.symbol !== 'sUSD' && (
+                                <FlexDivCentered>
+                                    <InfoLabel>{t('market.ticket-price-label-collateral')}:</InfoLabel>
+                                    <InfoContent>{formatCurrencyWithKey(collateral.symbol, quote)}</InfoContent>
+                                </FlexDivCentered>
+                            )}
+                        </FlexDivColumn>
+
                         <Tooltip
                             overlay={
                                 <BidAmountOverlayContainer>
