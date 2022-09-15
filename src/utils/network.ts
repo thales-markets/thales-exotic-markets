@@ -7,16 +7,19 @@ import { EthereumProvider, NetworkId } from 'types/network';
 export const NetworkIdByName: Record<string, NetworkId> = {
     OptimsimMainnet: 10,
     OptimsimKovan: 69,
+    OptimsimGoerli: 420,
 };
 
 export const NetworkNameById: Record<NetworkId, string> = {
     10: 'optimism mainnet',
     69: 'optimism kovan',
+    420: 'optimism goerli',
 };
 
 export const InfuraNetworkNameById: Record<NetworkId, string> = {
     10: 'optimism-mainnet',
     69: 'optimism-kovan',
+    420: 'optimism-goerli',
 };
 
 export const hasEthereumInjected = () => !!window.ethereum;

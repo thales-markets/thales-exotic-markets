@@ -6,11 +6,13 @@ export type NetworkMapper = Record<number, number>;
 export const L1_TO_L2_NETWORK_MAPPER: NetworkMapper = {
     1: 10,
     42: 69,
+    5: 420,
 };
 
 export const L2_TO_L1_NETWORK_MAPPER: NetworkMapper = {
     10: 1,
     69: 42,
+    420: 5,
 };
 
 export type OptimismNetwork = {
@@ -35,6 +37,13 @@ export const OPTIMISM_NETWORKS: Record<number, OptimismNetwork> = {
         chainName: 'Optimism Kovan',
         rpcUrls: ['https://kovan.optimism.io'],
         blockExplorerUrls: ['https://kovan-optimistic.etherscan.io/'],
+        iconUrls: ['https://optimism.io/images/metamask_icon.svg', 'https://optimism.io/images/metamask_icon.png'],
+    },
+    420: {
+        chainId: '0x1A4',
+        chainName: 'Optimism Goerli',
+        rpcUrls: ['https://goerli.optimism.io/o'],
+        blockExplorerUrls: ['https://goerli-optimism.etherscan.io/'],
         iconUrls: ['https://optimism.io/images/metamask_icon.svg', 'https://optimism.io/images/metamask_icon.png'],
     },
 };

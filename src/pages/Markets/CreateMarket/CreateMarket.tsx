@@ -83,6 +83,7 @@ const CreateMarket: React.FC = () => {
     const [isAllowing, setIsAllowing] = useState<boolean>(false);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [question, setQuestion] = useState<string>('');
+    const [description, setDescription] = useState<string>('');
     const [dataSource, setDataSource] = useState<string>('');
     const [marketType, setMarketType] = useState<MarketType>(MarketType.TICKET);
     const [ticketPrice, setTicketPrice] = useState<number | string>('');
@@ -182,6 +183,7 @@ const CreateMarket: React.FC = () => {
     const marketPositionStringLimit = marketsParameters
         ? marketsParameters.marketPositionStringLimit
         : MAXIMUM_INPUT_CHARACTERS;
+    const marketDescriptionStringLimit = 2000;
 
     const openBidAllowed = marketsParameters && marketsParameters.openBidAllowed;
 
@@ -299,6 +301,7 @@ const CreateMarket: React.FC = () => {
                 const tx = await marketManagerContractWithSigner.createExoticMarket(
                     question,
                     dataSource,
+                    description,
                     formattedEndOfPositioning,
                     parsedTicketPrice,
                     isWithdrawalAllowed,
@@ -506,6 +509,7 @@ const CreateMarket: React.FC = () => {
                         maximumCharacters={marketQuestionStringLimit}
                         disabled={isSubmitting || creationRestrictedToOwner}
                     />
+
                     <TextAreaInput
                         value={dataSource}
                         onChange={setDataSource}
@@ -519,6 +523,18 @@ const CreateMarket: React.FC = () => {
                         disabled={isSubmitting || creationRestrictedToOwner}
                         showValidation={!isDataSourceValid}
                         validationMessage={t(`common.errors.invalid-data-source-extended`)}
+                    />
+                    <TextAreaInput
+                        value={description}
+                        onChange={setDescription}
+                        label={t('market.create-market.description-label')}
+                        tooltip={t('market.create-market.description-tooltip')}
+                        note={t('common.input-characters-note', {
+                            entered: description.length,
+                            max: marketDescriptionStringLimit,
+                        })}
+                        maximumCharacters={marketDescriptionStringLimit}
+                        disabled={isSubmitting || creationRestrictedToOwner}
                     />
                     <Positions
                         positions={positions}
