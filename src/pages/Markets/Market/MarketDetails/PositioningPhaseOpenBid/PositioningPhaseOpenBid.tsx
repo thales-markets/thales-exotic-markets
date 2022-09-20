@@ -669,7 +669,8 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
             {openApprovalModal && (
                 <ApprovalModal
                     defaultAmount={requiredFunds}
-                    tokenSymbol={PAYMENT_CURRENCY}
+                    tokenSymbol={collateral.symbol}
+                    decimals={collateral.decimals}
                     isAllowing={isAllowing}
                     onSubmit={handleAllowance}
                     onClose={() => setOpenApprovalModal(false)}
