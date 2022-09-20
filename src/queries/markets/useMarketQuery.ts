@@ -85,10 +85,19 @@ const useMarketQuery = (marketAddress: string, options?: UseQueryOptions<MarketD
 
                 const [creatorFee, resolverFee, safeBoxFee, totalFees] = allFees;
 
+                let description = '';
+
+                try {
+                    description = await contract.additionalInfo();
+                } catch (e) {
+                    description = '';
+                }
+
                 const market: MarketData = {
                     address: marketAddress,
                     question,
                     dataSource,
+                    description,
                     isTicketType: Number(ticketType) === 0,
                     endOfPositioning: Number(endOfPositioning) * 1000,
                     ticketPrice: bigNumberFormatter(ticketPrice),

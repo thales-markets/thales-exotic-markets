@@ -39,6 +39,7 @@ export const OP_USDT = {
 };
 
 export const AVAILABLE_TOKENS = [OP_ETH, OP_DAI, OP_USDC, OP_USDT];
+export const AVAILABLE_COLLATERALS = [OP_SUSD, OP_DAI, OP_USDC, OP_USDT];
 
 export const ONE_INCH_EXCHANGE_URL = 'https://api.1inch.exchange/v4.0/';
 export const APPROVE_SPENDER_SUFFIX = '/approve/spender';
