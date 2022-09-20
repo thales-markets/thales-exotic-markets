@@ -204,7 +204,7 @@ const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market,
                 if (txResult && txResult.transactionHash) {
                     toast.update(
                         id,
-                        getSuccessToastOptions(t('market.toast-messsage.approve-success', { token: PAYMENT_CURRENCY }))
+                        getSuccessToastOptions(t('market.toast-messsage.approve-success', { token: collateral.symbol }))
                     );
                     setIsAllowing(false);
                 }
@@ -511,7 +511,8 @@ const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market,
             {openApprovalModal && (
                 <ApprovalModal
                     defaultAmount={market.ticketPrice}
-                    tokenSymbol={PAYMENT_CURRENCY}
+                    tokenSymbol={collateral.symbol}
+                    decimals={collateral.decimals}
                     isAllowing={isAllowing}
                     onSubmit={handleAllowance}
                     onClose={() => setOpenApprovalModal(false)}

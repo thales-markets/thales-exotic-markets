@@ -279,6 +279,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({ onClose }) => {
                 <ApprovalModal
                     defaultAmount={amount}
                     tokenSymbol={selectedToken.symbol}
+                    decimals={selectedToken.decimals}
                     isAllowing={isAllowing}
                     onSubmit={handleAllowance}
                     onClose={() => setOpenApprovalModal(false)}

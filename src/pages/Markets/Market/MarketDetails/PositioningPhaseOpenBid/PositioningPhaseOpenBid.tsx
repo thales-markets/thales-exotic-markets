@@ -16,7 +16,6 @@ import networkConnector from 'utils/networkConnector';
 import { MAX_GAS_LIMIT } from 'constants/network';
 import ApprovalModal from 'components/ApprovalModal';
 import marketContract from 'utils/contracts/exoticPositionalOpenBidMarketContract';
-import usePaymentTokenBalanceQuery from 'queries/wallet/usePaymentTokenBalanceQuery';
 import onboardConnector from 'utils/onboardConnector';
 import useAccountMarketOpenBidDataQuery from 'queries/markets/useAccountMarketOpenBidDataQuery';
 import { toast } from 'react-toastify';
@@ -39,6 +38,7 @@ import { AVAILABLE_COLLATERALS } from 'constants/tokens';
 import thalesBondsContract from 'utils/contracts/thalesBondsContract';
 import { bigNumberFormatterWithDecimals } from 'utils/formatters/ethers';
 import erc20Contract from 'utils/contracts/erc20Abi';
+import useCollateralBalanceQuery from 'queries/wallet/useCollateralBalanceQuery';
 
 type PositioningPhaseOpenBidProps = {
     market: MarketData;
@@ -63,7 +63,6 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
     const [isWithdrawing, setIsWithdrawing] = useState<boolean>(false);
     const [isCanceling, setIsCanceling] = useState<boolean>(false);
     const [openApprovalModal, setOpenApprovalModal] = useState<boolean>(false);
-    const [paymentTokenBalance, setPaymentTokenBalance] = useState<number | string>('');
     const [selectedPositions, setSelectedPositions] = useState<(number | string)[]>(
         new Array(market.positions.length).fill('0')
     );
@@ -93,15 +92,11 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
         }
     }, [accountMarketDataQuery.isSuccess, accountMarketDataQuery.data]);
 
-    const paymentTokenBalanceQuery = usePaymentTokenBalanceQuery(walletAddress, networkId, {
-        enabled: isAppReady && isWalletConnected,
+    const useCollateralQuery = useCollateralBalanceQuery(walletAddress, networkId, {
+        enabled: true,
     });
 
-    useEffect(() => {
-        if (paymentTokenBalanceQuery.isSuccess && paymentTokenBalanceQuery.data !== undefined) {
-            setPaymentTokenBalance(paymentTokenBalanceQuery.data);
-        }
-    }, [paymentTokenBalanceQuery.isSuccess, paymentTokenBalanceQuery.data]);
+    const balances = useCollateralQuery.isSuccess ? useCollateralQuery.data : [];
 
     useEffect(() => {
         if (marketsParametersQuery.isSuccess && marketsParametersQuery.data) {
@@ -162,7 +157,9 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
         isWithdrawProtectionDuration && Number(currentPositionsOnContractSum) > maxWithdrawAmount;
 
     const insufficientBalance =
-        Number(paymentTokenBalance) < Number(requiredFunds) || Number(paymentTokenBalance) === 0;
+        Number(balances[collateral.symbol.toLowerCase()]) < Number(requiredFunds) ||
+        Number(balances[collateral.symbol.toLowerCase()]) === 0;
+
     const isPositionSelected = selectedPositions.some((position) => Number(position) > 0);
     const areOpetBidAmountsValid = selectedPositions.every((position) => {
         return (
@@ -248,7 +245,7 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                 if (txResult && txResult.transactionHash) {
                     toast.update(
                         id,
-                        getSuccessToastOptions(t('market.toast-messsage.approve-success', { token: PAYMENT_CURRENCY }))
+                        getSuccessToastOptions(t('market.toast-messsage.approve-success', { token: collateral.symbol }))
                     );
                     setIsAllowing(false);
                 }
@@ -416,9 +413,9 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
             return (
                 <MarketButton disabled={isAllowing} onClick={() => setOpenApprovalModal(true)}>
                     {!isAllowing
-                        ? t('common.enable-wallet-access.approve-label', { currencyKey: PAYMENT_CURRENCY })
+                        ? t('common.enable-wallet-access.approve-label', { currencyKey: collateral.symbol })
                         : t('common.enable-wallet-access.approve-progress-label', {
-                              currencyKey: PAYMENT_CURRENCY,
+                              currencyKey: collateral.symbol,
                           })}
                 </MarketButton>
             );
@@ -672,7 +669,8 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
             {openApprovalModal && (
                 <ApprovalModal
                     defaultAmount={requiredFunds}
-                    tokenSymbol={PAYMENT_CURRENCY}
+                    tokenSymbol={collateral.symbol}
+                    decimals={collateral.decimals}
                     isAllowing={isAllowing}
                     onSubmit={handleAllowance}
                     onClose={() => setOpenApprovalModal(false)}
