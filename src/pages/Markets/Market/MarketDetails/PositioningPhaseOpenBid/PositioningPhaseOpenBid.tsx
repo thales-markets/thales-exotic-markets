@@ -248,7 +248,7 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                 if (txResult && txResult.transactionHash) {
                     toast.update(
                         id,
-                        getSuccessToastOptions(t('market.toast-messsage.approve-success', { token: PAYMENT_CURRENCY }))
+                        getSuccessToastOptions(t('market.toast-messsage.approve-success', { token: collateral.symbol }))
                     );
                     setIsAllowing(false);
                 }
@@ -416,9 +416,9 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
             return (
                 <MarketButton disabled={isAllowing} onClick={() => setOpenApprovalModal(true)}>
                     {!isAllowing
-                        ? t('common.enable-wallet-access.approve-label', { currencyKey: PAYMENT_CURRENCY })
+                        ? t('common.enable-wallet-access.approve-label', { currencyKey: collateral.symbol })
                         : t('common.enable-wallet-access.approve-progress-label', {
-                              currencyKey: PAYMENT_CURRENCY,
+                              currencyKey: collateral.symbol,
                           })}
                 </MarketButton>
             );
@@ -672,7 +672,8 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
             {openApprovalModal && (
                 <ApprovalModal
                     defaultAmount={requiredFunds}
-                    tokenSymbol={PAYMENT_CURRENCY}
+                    tokenSymbol={collateral.symbol}
+                    decimals={collateral.decimals}
                     isAllowing={isAllowing}
                     onSubmit={handleAllowance}
                     onClose={() => setOpenApprovalModal(false)}
