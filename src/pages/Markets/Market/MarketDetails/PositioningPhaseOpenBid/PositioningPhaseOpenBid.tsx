@@ -34,7 +34,7 @@ import {
 } from 'constants/markets';
 import WithdrawalRulesModal from 'pages/Markets/components/WithdrawalRulesModal';
 import oldExoticPositionalOpenBidMarketContract from 'utils/contracts/oldExoticOpendBidMarketContract';
-import { AVAILABLE_COLLATERALS } from 'constants/tokens';
+import { AVAILABLE_COLLATERALS, OP_SUSD } from 'constants/tokens';
 import thalesBondsContract from 'utils/contracts/thalesBondsContract';
 import { bigNumberFormatterWithDecimals } from 'utils/formatters/ethers';
 import erc20Contract from 'utils/contracts/erc20Abi';
@@ -199,7 +199,12 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
             const addressToApprove = thalesBondsContract.address;
             const getAllowance = async () => {
                 try {
-                    const parsedRequiredFunds = ethers.utils.parseEther(Number(requiredFunds).toString());
+                    const parsedRequiredFunds = ethers.utils.parseUnits(
+                        collateral.address !== OP_SUSD.address
+                            ? Number(quote).toString()
+                            : Number(requiredFunds).toString(),
+                        collateral.decimals
+                    );
                     const allowance = await checkAllowance(
                         parsedRequiredFunds,
                         contract,
@@ -668,7 +673,7 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
             </ButtonContainer>
             {openApprovalModal && (
                 <ApprovalModal
-                    defaultAmount={requiredFunds}
+                    defaultAmount={collateral.address !== OP_SUSD.address ? quote : requiredFunds}
                     tokenSymbol={collateral.symbol}
                     decimals={collateral.decimals}
                     isAllowing={isAllowing}
