@@ -187,6 +187,7 @@ const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market,
         isBidding,
         isWithdrawing,
         collateral,
+        quote,
     ]);
 
     const handleAllowance = async (approveAmount: BigNumber) => {

@@ -229,6 +229,7 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
         isBidding,
         isWithdrawing,
         collateral,
+        quote,
     ]);
 
     const handleAllowance = async (approveAmount: BigNumber) => {
