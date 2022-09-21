@@ -515,7 +515,7 @@ const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market,
             </ButtonContainer>
             {openApprovalModal && (
                 <ApprovalModal
-                    defaultAmount={collateral.address !== OP_SUSD.address ? quote : market.ticketPrice}
+                    defaultAmount={collateral.address !== OP_SUSD.address ? quote.toFixed(2) : market.ticketPrice}
                     tokenSymbol={collateral.symbol}
                     decimals={collateral.decimals}
                     isAllowing={isAllowing}

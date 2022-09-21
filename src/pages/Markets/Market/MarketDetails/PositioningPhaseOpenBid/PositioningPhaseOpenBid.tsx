@@ -673,7 +673,7 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
             </ButtonContainer>
             {openApprovalModal && (
                 <ApprovalModal
-                    defaultAmount={collateral.address !== OP_SUSD.address ? quote : requiredFunds}
+                    defaultAmount={collateral.address !== OP_SUSD.address ? quote.toFixed(2) : requiredFunds}
                     tokenSymbol={collateral.symbol}
                     decimals={collateral.decimals}
                     isAllowing={isAllowing}
