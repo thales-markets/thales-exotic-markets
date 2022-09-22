@@ -28,7 +28,7 @@ import Tooltip from 'components/Tooltip';
 import { refetchMarketData } from 'utils/queryConnector';
 import WithdrawalRulesModal from 'pages/Markets/components/WithdrawalRulesModal';
 import thalesBondsContract from 'utils/contracts/thalesBondsContract';
-import { AVAILABLE_COLLATERALS } from 'constants/tokens';
+import { AVAILABLE_COLLATERALS, OP_SUSD } from 'constants/tokens';
 import { bigNumberFormatterWithDecimals } from 'utils/formatters/ethers';
 import useCollateralBalanceQuery from 'queries/wallet/useCollateralBalanceQuery';
 import erc20Contract from 'utils/contracts/erc20Abi';
@@ -157,7 +157,12 @@ const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market,
             const addressToApprove = thalesBondsContract.address;
             const getAllowance = async () => {
                 try {
-                    const parsedTicketPrice = ethers.utils.parseEther(Number(market.ticketPrice).toString());
+                    const parsedTicketPrice = ethers.utils.parseUnits(
+                        collateral.address !== OP_SUSD.address
+                            ? Number(quote).toString()
+                            : Number(market.ticketPrice).toString(),
+                        collateral.decimals
+                    );
                     const allowance = await checkAllowance(
                         parsedTicketPrice,
                         contract,
@@ -182,6 +187,7 @@ const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market,
         isBidding,
         isWithdrawing,
         collateral,
+        quote,
     ]);
 
     const handleAllowance = async (approveAmount: BigNumber) => {
@@ -204,7 +210,7 @@ const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market,
                 if (txResult && txResult.transactionHash) {
                     toast.update(
                         id,
-                        getSuccessToastOptions(t('market.toast-messsage.approve-success', { token: PAYMENT_CURRENCY }))
+                        getSuccessToastOptions(t('market.toast-messsage.approve-success', { token: collateral.symbol }))
                     );
                     setIsAllowing(false);
                 }
@@ -510,8 +516,9 @@ const PositioningPhaseTicket: React.FC<PositioningPhaseTicketProps> = ({ market,
             </ButtonContainer>
             {openApprovalModal && (
                 <ApprovalModal
-                    defaultAmount={market.ticketPrice}
-                    tokenSymbol={PAYMENT_CURRENCY}
+                    defaultAmount={collateral.address !== OP_SUSD.address ? quote.toFixed(2) : market.ticketPrice}
+                    tokenSymbol={collateral.symbol}
+                    decimals={collateral.decimals}
                     isAllowing={isAllowing}
                     onSubmit={handleAllowance}
                     onClose={() => setOpenApprovalModal(false)}

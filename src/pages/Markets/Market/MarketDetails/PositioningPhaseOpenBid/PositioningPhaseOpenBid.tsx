@@ -16,7 +16,6 @@ import networkConnector from 'utils/networkConnector';
 import { MAX_GAS_LIMIT } from 'constants/network';
 import ApprovalModal from 'components/ApprovalModal';
 import marketContract from 'utils/contracts/exoticPositionalOpenBidMarketContract';
-import usePaymentTokenBalanceQuery from 'queries/wallet/usePaymentTokenBalanceQuery';
 import onboardConnector from 'utils/onboardConnector';
 import useAccountMarketOpenBidDataQuery from 'queries/markets/useAccountMarketOpenBidDataQuery';
 import { toast } from 'react-toastify';
@@ -35,10 +34,11 @@ import {
 } from 'constants/markets';
 import WithdrawalRulesModal from 'pages/Markets/components/WithdrawalRulesModal';
 import oldExoticPositionalOpenBidMarketContract from 'utils/contracts/oldExoticOpendBidMarketContract';
-import { AVAILABLE_COLLATERALS } from 'constants/tokens';
+import { AVAILABLE_COLLATERALS, OP_SUSD } from 'constants/tokens';
 import thalesBondsContract from 'utils/contracts/thalesBondsContract';
 import { bigNumberFormatterWithDecimals } from 'utils/formatters/ethers';
 import erc20Contract from 'utils/contracts/erc20Abi';
+import useCollateralBalanceQuery from 'queries/wallet/useCollateralBalanceQuery';
 
 type PositioningPhaseOpenBidProps = {
     market: MarketData;
@@ -63,7 +63,6 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
     const [isWithdrawing, setIsWithdrawing] = useState<boolean>(false);
     const [isCanceling, setIsCanceling] = useState<boolean>(false);
     const [openApprovalModal, setOpenApprovalModal] = useState<boolean>(false);
-    const [paymentTokenBalance, setPaymentTokenBalance] = useState<number | string>('');
     const [selectedPositions, setSelectedPositions] = useState<(number | string)[]>(
         new Array(market.positions.length).fill('0')
     );
@@ -93,15 +92,11 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
         }
     }, [accountMarketDataQuery.isSuccess, accountMarketDataQuery.data]);
 
-    const paymentTokenBalanceQuery = usePaymentTokenBalanceQuery(walletAddress, networkId, {
-        enabled: isAppReady && isWalletConnected,
+    const useCollateralQuery = useCollateralBalanceQuery(walletAddress, networkId, {
+        enabled: true,
     });
 
-    useEffect(() => {
-        if (paymentTokenBalanceQuery.isSuccess && paymentTokenBalanceQuery.data !== undefined) {
-            setPaymentTokenBalance(paymentTokenBalanceQuery.data);
-        }
-    }, [paymentTokenBalanceQuery.isSuccess, paymentTokenBalanceQuery.data]);
+    const balances = useCollateralQuery.isSuccess ? useCollateralQuery.data : [];
 
     useEffect(() => {
         if (marketsParametersQuery.isSuccess && marketsParametersQuery.data) {
@@ -162,7 +157,9 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
         isWithdrawProtectionDuration && Number(currentPositionsOnContractSum) > maxWithdrawAmount;
 
     const insufficientBalance =
-        Number(paymentTokenBalance) < Number(requiredFunds) || Number(paymentTokenBalance) === 0;
+        Number(balances[collateral.symbol.toLowerCase()]) < Number(requiredFunds) ||
+        Number(balances[collateral.symbol.toLowerCase()]) === 0;
+
     const isPositionSelected = selectedPositions.some((position) => Number(position) > 0);
     const areOpetBidAmountsValid = selectedPositions.every((position) => {
         return (
@@ -202,7 +199,12 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
             const addressToApprove = thalesBondsContract.address;
             const getAllowance = async () => {
                 try {
-                    const parsedRequiredFunds = ethers.utils.parseEther(Number(requiredFunds).toString());
+                    const parsedRequiredFunds = ethers.utils.parseUnits(
+                        collateral.address !== OP_SUSD.address
+                            ? Number(quote).toString()
+                            : Number(requiredFunds).toString(),
+                        collateral.decimals
+                    );
                     const allowance = await checkAllowance(
                         parsedRequiredFunds,
                         contract,
@@ -227,6 +229,7 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
         isBidding,
         isWithdrawing,
         collateral,
+        quote,
     ]);
 
     const handleAllowance = async (approveAmount: BigNumber) => {
@@ -248,7 +251,7 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
                 if (txResult && txResult.transactionHash) {
                     toast.update(
                         id,
-                        getSuccessToastOptions(t('market.toast-messsage.approve-success', { token: PAYMENT_CURRENCY }))
+                        getSuccessToastOptions(t('market.toast-messsage.approve-success', { token: collateral.symbol }))
                     );
                     setIsAllowing(false);
                 }
@@ -671,8 +674,9 @@ const PositioningPhaseOpenBid: React.FC<PositioningPhaseOpenBidProps> = ({ marke
             </ButtonContainer>
             {openApprovalModal && (
                 <ApprovalModal
-                    defaultAmount={requiredFunds}
-                    tokenSymbol={PAYMENT_CURRENCY}
+                    defaultAmount={collateral.address !== OP_SUSD.address ? quote.toFixed(2) : requiredFunds}
+                    tokenSymbol={collateral.symbol}
+                    decimals={collateral.decimals}
                     isAllowing={isAllowing}
                     onSubmit={handleAllowance}
                     onClose={() => setOpenApprovalModal(false)}

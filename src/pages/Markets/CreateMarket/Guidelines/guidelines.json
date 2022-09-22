@@ -16,6 +16,10 @@
         "tooltip": ""
     },
     {
+        "text": "The Market summary must not contain another question in it and must not give a description of the market which contradicts the market question or any of the other input fields. Any spam (irrelevant) content can also result in dispute and slashing",
+        "tooltip": "Eg:\n Use of conflicting dates or event details/participants in the Market summary field than what is used in other input fields"
+    },
+    {
         "text": "Markets that are resolvable before the positioning phase has come to pass, are considered void and all participants will receive a refund on their tickets. This is to prevent new entrants who know the results, from selecting a winning position before the market creator is able to resolve the market",
         "tooltip": "market eg: Will ETH hit $xxxx price by xx/xx/xx date? With the Positional Phase set to end 2weeks from the date of market creation.\n - YES\n - NO\n \n If ETH hits the target price before the end of the Positional Phase (2 weeks), the market must be resolved as [cancelled] by the market creator. Any other resolution will be subject to dispute and slashing"
     },
