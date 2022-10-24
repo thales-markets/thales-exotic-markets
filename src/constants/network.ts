@@ -22,15 +22,23 @@ export type OptimismNetwork = {
     blockExplorerUrls: string[];
     iconUrls: string[];
     fraudProofWindow?: number;
+    nativeCurrency: {
+        symbol: string;
+        decimals: number;
+    };
 };
 
 export const OPTIMISM_NETWORKS: Record<number, OptimismNetwork> = {
     10: {
         chainId: '0xA',
-        chainName: 'Optimism Mainnet',
+        chainName: 'Optimism',
         rpcUrls: ['https://mainnet.optimism.io'],
         blockExplorerUrls: ['https://optimistic.etherscan.io/'],
         iconUrls: ['https://optimism.io/images/metamask_icon.svg', 'https://optimism.io/images/metamask_icon.png'],
+        nativeCurrency: {
+            symbol: 'ETH',
+            decimals: 18,
+        },
     },
     69: {
         chainId: '0x45',
@@ -38,6 +46,10 @@ export const OPTIMISM_NETWORKS: Record<number, OptimismNetwork> = {
         rpcUrls: ['https://kovan.optimism.io'],
         blockExplorerUrls: ['https://kovan-optimistic.etherscan.io/'],
         iconUrls: ['https://optimism.io/images/metamask_icon.svg', 'https://optimism.io/images/metamask_icon.png'],
+        nativeCurrency: {
+            symbol: 'ETH',
+            decimals: 18,
+        },
     },
     420: {
         chainId: '0x1A4',
@@ -45,6 +57,10 @@ export const OPTIMISM_NETWORKS: Record<number, OptimismNetwork> = {
         rpcUrls: ['https://goerli.optimism.io/o'],
         blockExplorerUrls: ['https://goerli-optimism.etherscan.io/'],
         iconUrls: ['https://optimism.io/images/metamask_icon.svg', 'https://optimism.io/images/metamask_icon.png'],
+        nativeCurrency: {
+            symbol: 'ETH',
+            decimals: 18,
+        },
     },
 };
 
