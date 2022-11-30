@@ -17,6 +17,7 @@ type ApprovalModalProps = {
     defaultAmount: number | string;
     tokenSymbol: string;
     isAllowing: boolean;
+    decimals?: number;
     onSubmit: (approveAmount: BigNumber) => void;
     onClose: () => void;
 };
@@ -25,6 +26,7 @@ export const ApprovalModal: React.FC<ApprovalModalProps> = ({
     defaultAmount,
     tokenSymbol,
     isAllowing,
+    decimals,
     onSubmit,
     onClose,
 }) => {
@@ -54,7 +56,9 @@ export const ApprovalModal: React.FC<ApprovalModalProps> = ({
                 disabled={isButtonDisabled}
                 onClick={() =>
                     onSubmit(
-                        approveAll ? ethers.constants.MaxUint256 : ethers.utils.parseEther(Number(amount).toString())
+                        approveAll
+                            ? ethers.constants.MaxUint256
+                            : ethers.utils.parseUnits(Number(amount).toString(), decimals ?? 18)
                     )
                 }
             >

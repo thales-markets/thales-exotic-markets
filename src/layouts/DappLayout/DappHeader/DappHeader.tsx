@@ -45,30 +45,32 @@ const DappHeader: React.FC<DappHeaderProps> = ({ showSearch }) => {
         : true;
 
     return (
-        <Container>
-            <Logo />
-            <RightContainer>
-                {showSearch && (
-                    <>
-                        {!creationRestrictedToOwner && (
-                            <ButtonsContainer>
-                                <Button
-                                    onClick={() => {
-                                        navigateTo(ROUTES.Markets.CreateMarket);
-                                    }}
-                                    fontSize={15}
-                                >
-                                    {t('market.button.create-market-label')}
-                                </Button>
-                            </ButtonsContainer>
-                        )}
-                        <Search text={marketSearch} handleChange={(value) => dispatch(setMarketSearch(value))} />
-                    </>
-                )}
-                <GetUsd />
-                <WalletInfo />
-            </RightContainer>
-        </Container>
+        <>
+            <Container>
+                <Logo />
+                <RightContainer>
+                    {showSearch && (
+                        <>
+                            {!creationRestrictedToOwner && (
+                                <ButtonsContainer>
+                                    <Button
+                                        onClick={() => {
+                                            navigateTo(ROUTES.Markets.CreateMarket);
+                                        }}
+                                        fontSize={15}
+                                    >
+                                        {t('market.button.create-market-label')}
+                                    </Button>
+                                </ButtonsContainer>
+                            )}
+                            <Search text={marketSearch} handleChange={(value) => dispatch(setMarketSearch(value))} />
+                        </>
+                    )}
+                    <GetUsd />
+                    <WalletInfo />
+                </RightContainer>
+            </Container>
+        </>
     );
 };
 

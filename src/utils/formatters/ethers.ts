@@ -8,3 +8,6 @@ export const parseBytes32String = (input: string) => ethers.utils.parseBytes32St
 export const bigNumberFormatter = (value: BigNumberish) => Number(ethers.utils.formatEther(value));
 
 export const getAddress = (addr: string) => ethers.utils.getAddress(addr);
+
+export const bigNumberFormatterWithDecimals = (value: BigNumberish, decimals: number) =>
+    Number(ethers.utils.formatUnits(value, decimals));

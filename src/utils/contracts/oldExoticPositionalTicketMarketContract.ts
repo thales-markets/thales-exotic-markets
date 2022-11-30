@@ -1,4 +1,4 @@
-export const exoticPositionalTicketMarketContract = {
+export const oldExoticPositionalTicketMarketContract = {
     abi: [
         {
             anonymous: false,
@@ -246,19 +246,6 @@ export const exoticPositionalTicketMarketContract = {
             name: 'acceptOwnership',
             outputs: [],
             stateMutability: 'nonpayable',
-            type: 'function',
-        },
-        {
-            inputs: [],
-            name: 'additionalInfo',
-            outputs: [
-                {
-                    internalType: 'string',
-                    name: '',
-                    type: 'string',
-                },
-            ],
-            stateMutability: 'view',
             type: 'function',
         },
         {
@@ -904,11 +891,6 @@ export const exoticPositionalTicketMarketContract = {
                     type: 'string',
                 },
                 {
-                    internalType: 'string',
-                    name: '_additionalInfo',
-                    type: 'string',
-                },
-                {
                     internalType: 'uint256',
                     name: '_endOfPositioning',
                     type: 'uint256',
@@ -1301,21 +1283,6 @@ export const exoticPositionalTicketMarketContract = {
                     name: '_position',
                     type: 'uint256',
                 },
-                {
-                    internalType: 'address',
-                    name: 'collateral',
-                    type: 'address',
-                },
-                {
-                    internalType: 'uint256',
-                    name: 'expectedPayout',
-                    type: 'uint256',
-                },
-                {
-                    internalType: 'uint256',
-                    name: 'additionalSlippage',
-                    type: 'uint256',
-                },
             ],
             name: 'takeAPosition',
             outputs: [],
@@ -1493,4 +1460,4 @@ export const exoticPositionalTicketMarketContract = {
     ],
 };
 
-export default exoticPositionalTicketMarketContract;
+export default oldExoticPositionalTicketMarketContract;

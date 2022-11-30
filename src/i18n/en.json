@@ -98,10 +98,17 @@
         "guidelines": "guidelines",
         "built-on": "Built on",
         "twitter-text-short": "\n\nMarket available in @ex0t1c_markets",
-        "twitter-text-long": "\n\nWhat do you think?\n\nMarket available in @ex0t1c_markets"
+        "twitter-text-long": "\n\nWhat do you think?\n\nMarket available in @ex0t1c_markets",
+        "banner": "OP rewards have started, check how you can earn those on the <1>Exotic OP rewards blog post.</1>"
     },
     "footer": {
-        "all-rights-reserved": "© {{year}} eXoticV ALL RIGHTS RESERVED."
+        "all-rights-reserved": "© {{year}} eXoticV ALL RIGHTS RESERVED.",
+        "twitter": "Twitter",
+        "discord": "Discord",
+        "docs": "Docs",
+        "medium": "Medium",
+        "tutorial": "Tutorial",
+        "github": "GitHub"
     },
     "market": {
         "question-label": "Question",
@@ -137,6 +144,7 @@
         "winnings-position-label": "Winning position",
         "claim-amount-ticket-label": "Claim amount per ticket",
         "ticket-price-label": "Ticket price",
+        "ticket-price-label-collateral": "Expected to pay",
         "fixed-ticket-label": "Fixed ticket",
         "open-bid-label": "Open bid",
         "bid-amount-label": "Bid amount",
@@ -253,6 +261,8 @@
         "create-market": {
             "question-label": "Question",
             "question-tooltip": "The question that defines a market.",
+            "description-label": "Description",
+            "description-tooltip": "Additional info for market",
             "data-source-label": "Data source",
             "data-source-tooltip": "Market data sources, must be a url linking to a page that will show the result on maturity.",
             "positions-label": "Positions",

@@ -52,6 +52,12 @@ export const QUERY_KEYS = {
             walletAddress,
             networkId,
         ],
+        CollateralBalance: (walletAddress: string, networkId: NetworkId) => [
+            'wallet',
+            'collateralBalance',
+            walletAddress,
+            networkId,
+        ],
         SwapApproveSpender: (networkId: NetworkId) => ['wallet', 'swap', 'approveSpender', networkId],
         GetUsdDefaultAmount: (networkId: NetworkId) => ['wallet', 'getUsdDefaultAmount', networkId],
     },
